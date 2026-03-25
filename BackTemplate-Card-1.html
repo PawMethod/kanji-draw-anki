@@ -1,0 +1,581 @@
+<style id="kanji-anti-flicker">
+    /* Static rules – applied by the browser IMMEDIATELY on parse, even with innerHTML */
+    #svg-bg path {
+        stroke-dashoffset: 0 !important;
+        transition: none !important;
+        stroke: var(--stroke-active) !important;
+    }
+
+    .kanji-container {
+        touch-action: auto !important;
+        pointer-events: none !important;
+        transition: none !important;
+    }
+
+    #draw-layer,
+    .card-title {
+        transition: none !important;
+    }
+
+    .action-buttons,
+    #draw-layer,
+    #answer-fallback,
+    #svg-guide {
+        display: none !important;
+    }
+
+    @keyframes fadeInNumbers {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .stroke-number {
+        opacity: 0;
+        animation: fadeInNumbers 0.3s ease-out forwards;
+    }
+
+    .info-btn {
+        opacity: 0;
+        animation: fadeAndSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.05s;
+    }
+</style>
+<script>
+    /* Dynamic stroke colors – requires localStorage access */
+    (function () {
+        try {
+            var ps = JSON.parse(sessionStorage.getItem('kanjiErrors') || localStorage.getItem('kanjiErrors') || '[]');
+            var sc = parseInt(sessionStorage.getItem('kanjiCurrentStroke') || localStorage.getItem('kanjiCurrentStroke') || '0', 10);
+            function _ck(k) { try { var cs = document.cookie.split('; '), i; if (location.protocol !== 'file:') { for (i = 0; i < cs.length; i++) { if (cs[i].indexOf('_k=') === 0) { var obj = JSON.parse(decodeURIComponent(cs[i].substring(3))); if (obj[k] !== undefined) return obj[k]; break } } } for (i = cs.length - 1; i >= 0; i--) { if (cs[i].indexOf(k + '=') === 0) return decodeURIComponent(cs[i].substring(k.length + 1)) } } catch (e) { } return null }
+            var colorOn = (_ck('c1_kanjiOptColorBack') || localStorage.getItem('c1_kanjiOptColorBack') || _ck('kanjiOptColorBack') || localStorage.getItem('kanjiOptColorBack') || 'on') === 'on';
+            if (colorOn && ps.length > 0) {
+                var css = '';
+                for (var i = 0; i < ps.length; i++) {
+                    var m = ps[i] || 0, c = 'var(--stroke-active)';
+                    if (i >= sc && sc !== 0) c = 'var(--stroke-err)';
+                    else if (m >= 3) c = 'var(--stroke-err)';
+                    else if (m === 2) c = 'var(--stroke-warn2)';
+                    else if (m === 1) c = 'var(--stroke-warn1)';
+                    if (c !== 'var(--stroke-active)') css += '#svg-bg path:nth-child(' + (i + 1) + '){stroke:' + c + ' !important} ';
+                }
+                if (css) {
+                    var el = document.getElementById('kanji-anti-flicker');
+                    if (el) el.textContent += css;
+                    else { var s = document.createElement('style'); s.id = 'kanji-anti-flicker'; s.textContent = css; document.head.appendChild(s); }
+                }
+            }
+        } catch (e) { }
+    })();
+</script>
+<div id="is-back-side-marker" style="display:none;"></div>
+
+{{FrontSide}}
+
+<button class="info-btn" onclick="openInfoModal(event)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    Kanji-Info & Merkhilfe
+</button>
+
+<div class="info-overlay" id="info-overlay" onclick="closeInfoModal(event)">
+    <div class="info-modal" onclick="event.stopPropagation()">
+
+        <div class="info-modal-header">
+            <span class="info-modal-title">Übersicht</span>
+            <span class="info-modal-meaning">{{Bedeutung}}</span>
+        </div>
+
+        <div class="info-tags">
+            {{#JLPT}}
+            <span class="info-tag">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+                {{JLPT}}
+            </span>
+            {{/JLPT}}
+            {{#Frequenz}}
+            <span class="info-tag tag-frequency">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                {{Frequenz}}
+            </span>
+            {{/Frequenz}}
+        </div>
+
+        {{#Radikalbaum}}
+        <script id="raw-tree-data" type="text/plain">{{Radikalbaum}}</script>
+        <div class="tree-container custom-tree-box">
+            <div class="tree-root-kanji">{{Kanji}}</div>
+            <div class="tree-children" id="tree-render-target"></div>
+        </div>
+        {{/Radikalbaum}}
+
+        {{#Geschichte}}
+        <div class="info-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6" />
+                <path d="M10 22h4" />
+                <path
+                    d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+            </svg>
+            Eselsbrücke
+        </div>
+        {{/Geschichte}}
+
+        {{#VisuellHinweis}}
+        <div class="visuell-hinweis">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+            </svg>
+            {{VisuellHinweis}}
+        </div>
+        {{/VisuellHinweis}}
+
+        {{#Geschichte}}
+        <p class="info-text-story">{{Geschichte}}</p>
+        {{/Geschichte}}
+
+        {{#HinweisWort}}
+        <div class="info-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            Wortbeispiele
+        </div>
+        <div class="hint-word-box">
+            <div id="raw-hint-words" style="display:none;">{{furigana:HinweisWort}}</div>
+            <div id="formatted-hint-words" class="word-example-list"></div>
+        </div>
+        {{/HinweisWort}}
+
+        <div class="info-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Lesungen
+        </div>
+        <div class="readings-container readings-container--backside">
+            {{#Onyomi}}
+            <div class="reading-row">
+                <span class="reading-label onyomi-label">ON</span><span class="reading-value">{{Onyomi}}</span>
+            </div>
+            {{/Onyomi}}
+            {{#Kunyomi}}
+            <div class="reading-row">
+                <span class="reading-label kunyomi-label">KUN</span><span class="reading-value">{{Kunyomi}}</span>
+            </div>
+            {{/Kunyomi}}
+        </div>
+
+        <div class="info-section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            Externe Links
+        </div>
+        <div class="link-grid">
+            <a class="link-btn" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank">
+                Jisho (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                </svg>
+            </a>
+            <a class="link-btn" href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de"
+                target="_blank">
+                Tatoeba <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                </svg>
+            </a>
+            <a class="link-btn" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank">
+                WaniKani (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                </svg>
+            </a>
+            <a class="link-btn" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank">
+                Koohii (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                </svg>
+            </a>
+        </div>
+
+        <button class="close-settings" onclick="closeInfoModal(event)">Schließen</button>
+    </div>
+</div>
+
+<script>
+    // =======================================================================
+    // BackTemplate-Card-1 (Drawing Card – Back Side)
+    //
+    // Anti-flicker <style> above renders stroke colors BEFORE FrontSide loads.
+    // FrontSide injection provides: safeGetItem, getGlobalConfig, grid, scroll lock.
+    // Back-specific: stroke color grading, stroke numbers, info modal,
+    //                radical tree parser, word examples with furigana toggle.
+    // =======================================================================
+
+    // Provided by FrontSide injection: safeGetItem(), safeSetItem(), getGlobalConfig()
+
+    function safeGetState(key) {
+        try { let val = window.sessionStorage.getItem(key); if (val) return val; } catch (e) { }
+        try { let val = window.localStorage.getItem(key); if (val) return val; } catch (e) { }
+        return null;
+    }
+
+    // SVG paths already have classes from FrontSide injection
+
+    function openInfoModal(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        var ol = document.getElementById('info-overlay');
+        ol.classList.add('active');
+    }
+
+    function closeInfoModal(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var ol = document.getElementById('info-overlay');
+        ol.classList.remove('active');
+    }
+
+    // --- Radical Tree Renderer ---
+
+    (() => {
+        const rawDataEl = document.getElementById('raw-tree-data');
+        const target = document.getElementById('tree-render-target');
+        if (!rawDataEl || !target) return;
+
+        let rawData = rawDataEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ');
+        rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
+        if (!rawData) return;
+
+        function parseFlatTree(str) {
+            let items = [], currentItem = "", inTag = false, inBracket = false;
+            for (let i = 0; i < str.length; i++) {
+                let char = str[i];
+                if (char === '<') inTag = true; else if (char === '>') inTag = false;
+                else if (char === '[') inBracket = true; else if (char === ']') inBracket = false;
+                if (char === ',' && !inTag && !inBracket) {
+                    if (currentItem.trim()) items.push(currentItem.trim());
+                    currentItem = "";
+                } else currentItem += char;
+            }
+            if (currentItem.trim()) items.push(currentItem.trim());
+
+            return items.map(item => {
+                let keyword = "", isPrimitive = false, displayVal = item;
+                let bracketMatch = item.match(/\[(.*?)\]$/);
+                if (bracketMatch) {
+                    keyword = bracketMatch[1];
+                    if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
+                    displayVal = item.replace(/\[.*?\]$/, '').trim();
+                }
+                return { value: displayVal, keyword: keyword, isPrimitive: isPrimitive };
+            });
+        }
+
+        function renderNode(node) {
+            if (!node || !node.value) return '';
+            const kwAttr = node.keyword ? ` data-keyword="${node.keyword}"` : '';
+            let displayVal = node.value;
+            if (displayVal.toLowerCase().includes('<path') && !displayVal.toLowerCase().includes('<svg')) {
+                const isFontRaster = /M\s*\d{3,}/.test(displayVal);
+                displayVal = isFontRaster
+                    ? `<svg class="custom-svg-icon font-stroke-format auto-fit">${displayVal}</svg>`
+                    : `<svg class="custom-svg-icon kanji-stroke-format auto-fit" viewBox="0 0 109 109">${displayVal}</svg>`;
+            }
+            let primitiveBadge = node.isPrimitive ? `<svg class="primitive-tag-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` : '';
+            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${node.keyword}</div>` : '';
+            return `<div class="tree-node tappable"${kwAttr}>${primitiveBadge}<div class="tree-node-char">${displayVal}</div>${tooltipHtml}</div>`;
+        }
+
+        try {
+            const parsedItems = parseFlatTree(rawData);
+            target.innerHTML = parsedItems.map(renderNode).join('');
+            setTimeout(() => {
+                target.querySelectorAll('svg.auto-fit').forEach(svg => {
+                    try {
+                        const bbox = svg.getBBox();
+                        if (bbox.width > 0 && bbox.height > 0) {
+                            const isFont = svg.classList.contains('font-stroke-format');
+                            const padX = bbox.width * (isFont ? 0.02 : 0.10);
+                            const padY = bbox.height * (isFont ? 0.02 : 0.10);
+                            svg.setAttribute('viewBox', `${Math.floor(bbox.x - padX)} ${Math.floor(bbox.y - padY)} ${Math.ceil(bbox.width + padX * 2)} ${Math.ceil(bbox.height + padY * 2)}`);
+                        }
+                    } catch (err) { }
+                });
+            }, 100);
+        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Fehler beim Lesen der Bausteine.</span>`; }
+
+        target.addEventListener('click', function (e) {
+            const node = e.target.closest('.tree-node');
+            if (!node || !node.getAttribute('data-keyword')) return;
+            e.stopPropagation();
+            const wasActive = node.classList.contains('show-tooltip');
+            target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip'));
+            target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed'));
+            if (wasActive) {
+                node.classList.add('tooltip-dismissed');
+            } else {
+                node.classList.add('show-tooltip');
+            }
+        });
+
+        if (window.kanjiHideTooltipHandler) document.removeEventListener('click', window.kanjiHideTooltipHandler);
+        window.kanjiHideTooltipHandler = e => { if (!e.target.closest('.tree-children')) { target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip')); target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed')); } };
+        document.addEventListener('click', window.kanjiHideTooltipHandler);
+    })();
+
+    // --- Word Examples (furigana toggle) ---
+
+    (() => {
+        const rawWordsEl = document.getElementById('raw-hint-words');
+        const targetWordsEl = document.getElementById('formatted-hint-words');
+        if (rawWordsEl && targetWordsEl) {
+            let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
+            targetWordsEl.innerHTML = words.map(word => {
+                word = word.trim();
+                if (!word) return '';
+                let match = word.match(/^(.*?)\s*\((.*?)\)$/);
+                return match
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${match[2]}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+            }).join('');
+            targetWordsEl.addEventListener('click', function (e) {
+                var item = e.target.closest('.word-example-item');
+                if (!item) return;
+                if (item.classList.contains('show-furigana')) {
+                    item.classList.remove('show-furigana');
+                    item.classList.add('furigana-dismissed');
+                } else {
+                    item.classList.remove('furigana-dismissed');
+                    item.classList.add('show-furigana');
+                }
+            });
+        }
+    })();
+
+    // Provided by FrontSide injection: getGlobalConfig()
+
+    // --- Back Side Features (stroke colors, numbers) ---
+
+    (() => {
+        if (!document.getElementById('is-back-side-marker')) return;
+        const svgBg = document.getElementById('svg-bg');
+        if (!svgBg) return;
+        const paths = svgBg.querySelectorAll('path');
+        const afEl = document.getElementById('kanji-anti-flicker');
+
+        const applyBackFeatures = function () {
+            const globalConf = getGlobalConfig();
+            const isColorBack = safeGetItem('c1_kanjiOptColorBack', safeGetItem('kanjiOptColorBack', globalConf.colorBack)) === 'on';
+            const isNumbers = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers)) === 'on';
+
+            let problemStrokes = [];
+            let strokesCompleted = 0;
+
+            if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
+            if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
+
+            const errStr = safeGetState('kanjiErrors');
+            const strokeStr = safeGetState('kanjiCurrentStroke');
+
+            if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
+            if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
+
+            // 1. Compute stroke colors
+            let colorCSS = '';
+            const pathColors = [];
+            paths.forEach((path, index) => {
+                let mistakeCount = problemStrokes[index] || 0;
+                let pathColor = 'var(--stroke-active)';
+                if (isColorBack) {
+                    if (index >= strokesCompleted && strokesCompleted !== 0) pathColor = 'var(--stroke-err)';
+                    else if (mistakeCount >= 3) pathColor = 'var(--stroke-err)';
+                    else if (mistakeCount === 2) pathColor = 'var(--stroke-warn2)';
+                    else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
+                }
+                pathColors.push(pathColor);
+                if (pathColor !== 'var(--stroke-active)') {
+                    colorCSS += '#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important} ';
+                }
+            });
+            // 2. Update anti-flicker stylesheet FIRST (triggers style recalc)
+            if (afEl) {
+                if (!afEl._baseCSS) afEl._baseCSS = afEl.textContent.replace(/#svg-bg path:nth-child\(\d+\)\{stroke:[^}]+\}\s*/g, '');
+                afEl.textContent = afEl._baseCSS + colorCSS;
+            }
+            // 3. Set inline styles AFTER (reliably override the stylesheet)
+            paths.forEach((path, index) => {
+                path.style.setProperty('stroke', pathColors[index], 'important');
+            });
+
+            svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
+
+            if (isNumbers) {
+                const placedPositions = [];
+                const MIN_DISTANCE = 6.0;
+                paths.forEach((path, index) => {
+                    const startPoint = path.getPointAtLength(0);
+                    let nextPoint;
+                    try { nextPoint = path.getPointAtLength(4); } catch (e) { nextPoint = startPoint; }
+
+                    const dx = nextPoint.x - startPoint.x, dy = nextPoint.y - startPoint.y;
+                    const dist = Math.hypot(dx, dy) || 1;
+                    const OFFSET = 4.5;
+                    let finalX = startPoint.x - (dx / dist) * OFFSET, finalY = startPoint.y - (dy / dist) * OFFSET;
+
+                    let collision = true, attempts = 0;
+                    while (collision && attempts < 10) {
+                        collision = false;
+                        for (let pos of placedPositions) {
+                            const d = Math.hypot(finalX - pos.x, finalY - pos.y);
+                            if (d < MIN_DISTANCE) {
+                                collision = true;
+                                let pushDx = finalX - pos.x, pushDy = finalY - pos.y;
+                                if (pushDx === 0 && pushDy === 0) { pushDx = -1; pushDy = -1; }
+                                const pushDist = Math.hypot(pushDx, pushDy), pushPower = (MIN_DISTANCE - d + 0.5);
+                                finalX += (pushDx / pushDist) * pushPower; finalY += (pushDy / pushDist) * pushPower;
+                            }
+                        }
+                        attempts++;
+                    }
+                    placedPositions.push({ x: finalX, y: finalY });
+
+                    const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    textNode.setAttribute("x", finalX);
+                    textNode.setAttribute("y", finalY);
+                    textNode.setAttribute("class", "stroke-number");
+                    textNode.textContent = index + 1;
+                    textNode.style.fill = (pathColors[index] !== 'var(--stroke-active)') ? pathColors[index] : 'var(--text-muted)';
+
+                    textNode.style.stroke = "var(--surface)";
+                    textNode.style.strokeWidth = "1.5px";
+                    textNode.style.strokeLinecap = "round";
+                    textNode.style.strokeLinejoin = "round";
+                    textNode.style.paintOrder = "stroke fill";
+
+                    svgBg.appendChild(textNode);
+                });
+            }
+        };
+
+        // Run synchronously to prevent flicker on card load
+        applyBackFeatures();
+
+        window.kanjiSettingsGlobalHandler = applyBackFeatures;
+    })();
+
+    // --- Cross-Platform Fixes ---
+
+    // Clean up sparkle particles in case of rapid card transition
+    if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
+
+    // checkScrollability + resize already managed by FrontSide script
+    checkScrollability();
+
+    // Scroll guards for info modal (settings modal already guarded by FrontSide)
+    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+
+    // Stylus fix: Apple Pencil / S-Pen don't reliably fire onclick
+    (function () {
+        var lastInfoOpen = 0, lastGearOpen = 0;
+        function addPenHandler(selector, handler) {
+            document.querySelectorAll(selector).forEach(function (el) {
+                if (el._ankiPenFixed) return;
+                el._ankiPenFixed = true;
+                el.addEventListener('pointerup', function (e) {
+                    if (e.pointerType !== 'pen') return;
+                    var now = Date.now();
+                    if (handler === 'info' && now - lastInfoOpen < 400) return;
+                    if (handler === 'gear' && now - lastGearOpen < 400) return;
+                    if (handler === 'info') lastInfoOpen = now;
+                    if (handler === 'gear') lastGearOpen = now;
+                    e.preventDefault(); e.stopPropagation();
+                    var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
+                    document.addEventListener('click', eatClick, true);
+                    setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
+                    if (handler === 'info') openInfoModal(e);
+                    else openSettings(e);
+                });
+            });
+        }
+        addPenHandler('.info-btn', 'info');
+        addPenHandler('.gear-btn', 'gear');
+    })();
+
+    // Link fix: force 1-tap activation on iOS/AnkiDroid (Apple Pencil + finger)
+    document.querySelectorAll('.link-btn[href]').forEach(function (link) {
+        if (link._ankiLinkFixed) return;
+        link._ankiLinkFixed = true;
+        var linkBusy = false;
+        var touchStartX = 0, touchStartY = 0;
+        link.addEventListener('touchstart', function (e) {
+            if (e.touches.length) { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }
+        }, { passive: true });
+        function handleLinkActivation(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Scroll detection: if finger moved > 10px, treat as scroll not tap
+            if (e.type === 'touchend' && e.changedTouches && e.changedTouches.length) {
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                var dy = e.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) return;
+            }
+            if (linkBusy) return;
+            linkBusy = true;
+            var btn = this;
+            var url = btn.getAttribute('href');
+            if (!url) { linkBusy = false; return; }
+            btn.classList.add('link-btn-pressed');
+            setTimeout(function () {
+                btn.classList.remove('link-btn-pressed');
+                // iOS-safe: temporary <a target=_blank> opens in Safari from WKWebView
+                var w = window.open(url, '_blank');
+                if (!w) {
+                    var a = document.createElement('a');
+                    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+                linkBusy = false;
+            }, 120);
+        }
+        link.addEventListener('touchend', handleLinkActivation, { passive: false });
+        link.addEventListener('pointerup', function (e) {
+            if (e.pointerType === 'pen') handleLinkActivation.call(this, e);
+        }, { passive: false });
+        link.addEventListener('click', function (e) { e.preventDefault(); handleLinkActivation.call(this, e); });
+    });
+
+</script>

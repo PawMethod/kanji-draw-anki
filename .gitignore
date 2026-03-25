@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Anki exports
+*.apkg
+*.colpkg
+
+# Backups
+Backup/
+
+# Editors
+.vscode/
+*.swp
+*.swo
+*~

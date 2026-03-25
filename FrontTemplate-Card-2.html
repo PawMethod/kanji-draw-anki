@@ -1,0 +1,725 @@
+<button class="gear-btn" onclick="openSettings(event)" title="Einstellungen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+        </path>
+    </svg>
+</button>
+
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings(event)">
+    <div class="settings-modal" data-tab="c2" onclick="event.stopPropagation()">
+
+        <div class="settings-tabs">
+            <button class="settings-tab" data-tab="c1" onclick="switchSettingsTab('c1', event)">Zeichnen</button>
+            <button class="settings-tab active" data-tab="c2" onclick="switchSettingsTab('c2', event)">Erkennen</button>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                style="width: 20px; height: 20px; stroke-width: 2;">
+                <path d="M4 6h16M4 12h16M4 18h7"></path>
+            </svg> Hilfslinien
+        </h3>
+        <div class="setting-group-title">Muster</div>
+        <div class="visual-options-grid">
+            <label><input type="radio" name="grid-type" value="none" onchange="updateGridSetting('type', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                            opacity="0.4" />
+                    </svg><span>Keine</span></div>
+            </label>
+            <label><input type="radio" name="grid-type" value="cross" onchange="updateGridSetting('type', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                            opacity="0.4" />
+                        <path d="M12 4v16M4 12h16" stroke-width="1.5" />
+                    </svg><span>Kreuz</span></div>
+            </label>
+            <label><input type="radio" name="grid-type" value="full" onchange="updateGridSetting('type', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                            opacity="0.4" />
+                        <path d="M12 4v16M4 12h16M4 4l16 16M4 20L20 4" stroke-width="1.5" />
+                    </svg><span>Voll</span></div>
+            </label>
+        </div>
+        <div class="setting-group-title">Linienstil</div>
+        <div class="visual-options-grid">
+            <label><input type="radio" name="grid-style" value="dotted"
+                    onchange="updateGridSetting('style', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4 12h0.01M8 12h0.01M12 12h0.01M16 12h0.01M20 12h0.01" stroke-width="3"
+                            stroke-linecap="round" />
+                    </svg><span>Punkte</span></div>
+            </label>
+            <label><input type="radio" name="grid-style" value="dashed"
+                    onchange="updateGridSetting('style', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" stroke-dasharray="4 4" />
+                    </svg><span>Striche</span></div>
+            </label>
+            <label><input type="radio" name="grid-style" value="solid"
+                    onchange="updateGridSetting('style', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" />
+                    </svg><span>Linie</span></div>
+            </label>
+        </div>
+        <div class="setting-group-title">Dicke</div>
+        <div class="visual-options-grid">
+            <label><input type="radio" name="grid-thick" value="thin" onchange="updateGridSetting('thick', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="1" />
+                    </svg><span>Dünn</span></div>
+            </label>
+            <label><input type="radio" name="grid-thick" value="medium"
+                    onchange="updateGridSetting('thick', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="2.5" />
+                    </svg><span>Mittel</span></div>
+            </label>
+            <label><input type="radio" name="grid-thick" value="thick"
+                    onchange="updateGridSetting('thick', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="4" />
+                    </svg><span>Dick</span></div>
+            </label>
+        </div>
+        <div class="setting-group-title">Sichtbarkeit</div>
+        <div class="visual-options-grid">
+            <label><input type="radio" name="grid-opac" value="light" onchange="updateGridSetting('opac', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.3" />
+                    </svg><span>Dezent</span></div>
+            </label>
+            <label><input type="radio" name="grid-opac" value="medium" onchange="updateGridSetting('opac', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.6" />
+                    </svg><span>Normal</span></div>
+            </label>
+            <label><input type="radio" name="grid-opac" value="dark" onchange="updateGridSetting('opac', this.value)">
+                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="1" />
+                    </svg><span>Stark</span></div>
+            </label>
+        </div>
+
+        <div class="c1-only-setting" style="display:none;">
+            <h3 style="margin-top: 32px; border-top: 2px solid var(--border-color); padding-top: 24px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    style="width: 20px; height: 20px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Korrektur & Feedback
+            </h3>
+
+            <div class="setting-section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    style="width:16px;height:16px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Vorderseite
+            </div>
+
+            <div class="setting-group-title">Strich-Genauigkeit</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="opt-strictness" value="loose"
+                        onchange="updateFeatureSetting('strictness', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12c2-2 4 2 6 0s4 2 6 0 4 2 6 0" />
+                        </svg>
+                        <span>Locker</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-strictness" value="normal"
+                        onchange="updateFeatureSetting('strictness', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12h18" />
+                            <path d="M3 12c3-1 6 1 9 0s6 1 9 0" opacity="0.3" />
+                        </svg>
+                        <span>Normal</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-strictness" value="strict"
+                        onchange="updateFeatureSetting('strictness', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="8" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="12" cy="12" r="0.5" fill="currentColor" />
+                        </svg>
+                        <span>Streng</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title">Echtzeit-Prüfung</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-color-front" value="off"
+                        onchange="updateFeatureSetting('colorFront', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-color-front" value="on"
+                        onchange="updateFeatureSetting('colorFront', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title">Zeichen-Hilfe</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-autodraw" value="off"
+                        onchange="updateFeatureSetting('autodraw', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            <path d="M15 5l4 4"></path>
+                            <line x1="2" y1="2" x2="22" y2="22"></line>
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-autodraw" value="on"
+                        onchange="updateFeatureSetting('autodraw', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            <path d="M15 5l4 4"></path>
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title">Abschluss-Animation</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-celebration" value="off"
+                        onchange="updateFeatureSetting('celebration', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
+                            <line x1="4" y1="4" x2="20" y2="20" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-celebration" value="on"
+                        onchange="updateFeatureSetting('celebration', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="c2-only-setting">
+            <h3 style="margin-top: 32px; border-top: 2px solid var(--border-color); padding-top: 24px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    style="width: 20px; height: 20px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Darstellung
+            </h3>
+        </div>
+
+        <div class="setting-section-title" style="margin-top: 20px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                style="width:16px;height:16px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                <path d="M15 18l-6-6 6-6" transform="rotate(180 12 12)"></path>
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            </svg>
+            Rückseite
+        </div>
+
+        <div class="c1-only-setting" style="display:none;">
+            <div class="setting-group-title">Farb-Bewertung</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-color-back" value="off"
+                        onchange="updateFeatureSetting('colorBack', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-color-back" value="on"
+                        onchange="updateFeatureSetting('colorBack', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="c2-only-setting">
+            <div class="setting-group-title">Strich-Darstellung</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-display-style" value="standard"
+                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 16 L32 16" />
+                            <path d="M20 6 L20 34" />
+                            <path d="M20 16 Q 15 22 6 34" />
+                            <path d="M20 16 Q 25 22 34 34" />
+                        </svg>
+                        <span>Standard</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-display-style" value="colorOrder"
+                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 16 L32 16" opacity="1" />
+                            <path d="M20 6 L20 34" opacity="0.7" />
+                            <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
+                            <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                        </svg>
+                        <span>Farbig</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="setting-group-title">Strich-Nummern</div>
+        <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <label><input type="radio" name="opt-numbers" value="off"
+                    onchange="updateFeatureSetting('numbers', this.value)">
+                <div class="visual-option">
+                    <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 16 L32 16" />
+                        <path d="M20 6 L20 34" />
+                        <path d="M20 16 Q 15 22 6 34" />
+                        <path d="M20 16 Q 25 22 34 34" />
+                    </svg>
+                    <span>Aus</span>
+                </div>
+            </label>
+            <label><input type="radio" name="opt-numbers" value="on"
+                    onchange="updateFeatureSetting('numbers', this.value)">
+                <div class="visual-option">
+                    <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 16 L32 16" />
+                        <path d="M20 6 L20 34" />
+                        <path d="M20 16 Q 15 22 6 34" />
+                        <path d="M20 16 Q 25 22 34 34" />
+                        <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                            font-family="sans-serif" text-anchor="middle">1</text>
+                        <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                            font-family="sans-serif" text-anchor="middle">2</text>
+                        <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                            font-family="sans-serif" text-anchor="middle">3</text>
+                        <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                            font-family="sans-serif" text-anchor="middle">4</text>
+                    </svg>
+                    <span>An</span>
+                </div>
+            </label>
+        </div>
+
+        <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
+    </div>
+</div>
+
+<h2 class="card-title" style="visibility: hidden;">{{Bedeutung}}</h2>
+
+<div class="kanji-container">
+    <svg id="grid-bg" viewBox="0 0 109 109"></svg>
+    <svg id="svg-bg" viewBox="0 0 109 109">{{SVG-Pfade}}</svg>
+</div>
+
+<script>
+    // =======================================================================
+    // FrontTemplate-Card-2 (Recognition Card)
+    //
+    // All strokes pre-revealed on load (no drawing interaction)
+    // Settings modal shared with Card 1 (scoped to c2)
+    // Persistence + grid rendering identical to Card 1
+    // =======================================================================
+
+    // --- Anti-Flicker ---
+    // Remove back-side CSS injection when we're on the front side
+    if (!document.getElementById('is-back-side-marker')) {
+        var _af = document.getElementById('kanji-anti-flicker');
+        if (_af) _af.remove();
+    }
+
+    // Reset previous card's error data (Card 2 has no drawing,
+    // so stale stroke errors from Card 1 must not carry over)
+    (function () {
+        var empty = JSON.stringify(new Array(document.querySelectorAll('#svg-bg path').length).fill(0));
+        ['sessionStorage', 'localStorage'].forEach(function (s) {
+            try { window[s].setItem('kanjiErrors', empty); window[s].setItem('kanjiCurrentStroke', '0'); } catch (e) { }
+        });
+        window._kanjiProblemStrokes = JSON.parse(empty);
+        window._kanjiCurrentStroke = 0;
+    })();
+
+    // --- Persistence Layer ---
+
+    var _cookieCache = null, _cookieCacheRaw = null;
+    function _parseCookies() {
+        var raw = document.cookie;
+        if (raw === _cookieCacheRaw) return _cookieCache;
+        _cookieCacheRaw = raw;
+        _cookieCache = { _kObj: null, pairs: raw.split('; ') };
+        if (location.protocol !== 'file:') {
+            for (var i = 0; i < _cookieCache.pairs.length; i++) {
+                if (_cookieCache.pairs[i].indexOf('_k=') === 0) { try { _cookieCache._kObj = JSON.parse(decodeURIComponent(_cookieCache.pairs[i].substring(3))); } catch (x) { } break; }
+            }
+        }
+        return _cookieCache;
+    }
+    function safeGetItem(key, fallback) {
+        if (window._ks && window._ks[key] !== undefined) return window._ks[key];
+        try {
+            var cc = _parseCookies();
+            if (cc._kObj && cc._kObj[key] !== undefined) return cc._kObj[key];
+            for (var i = cc.pairs.length - 1; i >= 0; i--) { if (cc.pairs[i].indexOf(key + '=') === 0) return decodeURIComponent(cc.pairs[i].substring(key.length + 1)); }
+        } catch (e) { }
+        try { var v = localStorage.getItem(key); if (v) return v; } catch (e) { }
+        return fallback;
+    }
+    function safeSetItem(key, value) {
+        if (!window._ks) window._ks = {}; window._ks[key] = value;
+        _cookieCacheRaw = null;
+        try { localStorage.setItem(key, value); } catch (e) { }
+        if (location.protocol === 'file:') {
+            try { document.cookie = key + '=' + encodeURIComponent(value) + ';path=/;max-age=31536000;SameSite=Lax'; } catch (e) { }
+        } else {
+            var obj = {};
+            try { var cs = document.cookie.split('; '); for (var j = 0; j < cs.length; j++) { if (cs[j].indexOf('_k=') === 0) { obj = JSON.parse(decodeURIComponent(cs[j].substring(3))); break; } } } catch (e) { }
+            obj[key] = value;
+            document.cookie = '_k=' + encodeURIComponent(JSON.stringify(obj)) + ';path=/;max-age=31536000;SameSite=Lax';
+        }
+    }
+    // Android CookieManager only persists cookies on lifecycle events – flush proactively
+    if (location.protocol !== 'file:') {
+        var _fc = function () { if (!window._ks) return; var o = {}; try { var c = document.cookie.split('; '); for (var i = 0; i < c.length; i++) { if (c[i].indexOf('_k=') === 0) { o = JSON.parse(decodeURIComponent(c[i].substring(3))); break; } } } catch (e) { } for (var k in window._ks) o[k] = window._ks[k]; document.cookie = '_k=' + encodeURIComponent(JSON.stringify(o)) + ';path=/;max-age=31536000;SameSite=Lax'; };
+        if (window._kanjiFlushVis) document.removeEventListener('visibilitychange', window._kanjiFlushVis);
+        if (window._kanjiFlushPH) { window.removeEventListener('pagehide', window._kanjiFlushPH); window.removeEventListener('beforeunload', window._kanjiFlushPH); }
+        window._kanjiFlushVis = function () { if (document.hidden) _fc(); };
+        window._kanjiFlushPH = _fc;
+        document.addEventListener('visibilitychange', window._kanjiFlushVis);
+        window.addEventListener('pagehide', window._kanjiFlushPH);
+        window.addEventListener('beforeunload', window._kanjiFlushPH);
+    }
+
+    document.querySelectorAll('#svg-bg path').forEach(path => {
+        path.classList.add('svg-stroke');
+        path.setAttribute('pathLength', '100');
+        path.classList.add('stroke-complete');
+    });
+
+    // --- Settings UI ---
+
+    var _hostCard = 'c2', _activeTab = 'c2';
+
+    function scopedGet(baseKey, fallback) {
+        return safeGetItem(_activeTab + '_' + baseKey, safeGetItem(baseKey, fallback));
+    }
+    function hostGet(baseKey, fallback) {
+        return safeGetItem(_hostCard + '_' + baseKey, safeGetItem(baseKey, fallback));
+    }
+
+    function switchSettingsTab(tab, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        // Skip if already on this tab
+        if (_activeTab === tab) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        _activeTab = tab;
+        document.querySelectorAll('.settings-tab').forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
+        document.querySelectorAll('.c1-only-setting').forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
+        document.querySelectorAll('.c2-only-setting').forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
+        var modal = document.querySelector('.settings-modal');
+        if (modal) {
+            modal.dataset.tab = tab;
+            // Cancel any running content animations to prevent overlap
+            modal.querySelectorAll('.setting-group-title, .visual-options-grid, .setting-section-title, .c1-only-setting, .c2-only-setting, h3').forEach(function (el) {
+                el.getAnimations().forEach(function (a) { a.cancel(); });
+            });
+            modal.classList.remove('tab-switched');
+            // Use rAF to ensure the class removal is painted before re-adding
+            requestAnimationFrame(function () {
+                modal.classList.add('tab-switched');
+            });
+        }
+        refreshSettingsRadios();
+    }
+
+    function refreshSettingsRadios() {
+        const globalConf = getGlobalConfig();
+        const radioValues = {
+            'grid-type': scopedGet('kanjiGridType', globalConf.type),
+            'grid-style': scopedGet('kanjiGridStyle', globalConf.style),
+            'grid-thick': scopedGet('kanjiGridThick', globalConf.thick),
+            'grid-opac': scopedGet('kanjiGridOpac', globalConf.opac),
+            'opt-color-front': scopedGet('kanjiOptColorFront', globalConf.colorFront),
+            'opt-color-back': scopedGet('kanjiOptColorBack', globalConf.colorBack),
+            'opt-autodraw': scopedGet('kanjiOptAutodraw', globalConf.autodraw),
+            'opt-numbers': scopedGet('kanjiOptNumbers', globalConf.numbers),
+            'opt-strictness': scopedGet('kanjiOptStrictness', globalConf.strictness),
+            'opt-celebration': scopedGet('kanjiOptCelebration', globalConf.celebration),
+            'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle)
+        };
+        document.querySelectorAll('.settings-modal input[type="radio"]').forEach(r => {
+            if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
+        });
+    }
+
+    // Read CSS custom properties once and cache (avoids Anki timing/load-order issues)
+    var _cachedGlobalConf = null;
+    function getGlobalConfig() {
+        if (_cachedGlobalConf) return _cachedGlobalConf;
+        const el = document.querySelector('.card') || document.body || document.documentElement;
+        const rootStyles = getComputedStyle(el);
+        const getVar = (name, fallback) => {
+            const val = rootStyles.getPropertyValue(name).trim().replace(/['"]/g, '');
+            return val !== '' ? val : fallback;
+        };
+        _cachedGlobalConf = {
+            type: getVar('--default-grid-type', 'cross'),
+            style: getVar('--default-grid-style', 'dashed'),
+            thick: getVar('--default-grid-thick', 'medium'),
+            opac: getVar('--default-grid-opac', 'medium'),
+            colorFront: getVar('--default-opt-color-front', 'on'),
+            colorBack: getVar('--default-opt-color-back', 'on'),
+            autodraw: getVar('--default-opt-autodraw', 'on'),
+            numbers: getVar('--default-opt-numbers', 'on'),
+            strictness: getVar('--default-opt-strictness', 'normal'),
+            celebration: getVar('--default-opt-celebration', 'on'),
+            displayStyle: getVar('--default-opt-display-style', 'standard')
+        };
+        return _cachedGlobalConf;
+    }
+
+    // --- Grid Rendering ---
+
+    function updateGridDisplay() {
+        const globalConf = getGlobalConfig();
+        const type = hostGet('kanjiGridType', globalConf.type);
+        const style = hostGet('kanjiGridStyle', globalConf.style);
+        const thick = hostGet('kanjiGridThick', globalConf.thick);
+        const opac = hostGet('kanjiGridOpac', globalConf.opac);
+
+        const gridBg = document.getElementById('grid-bg');
+        if (!gridBg) return;
+
+        let dashValue = "3, 6", thickValue = "0.8", opacityValue = "0.5";
+        if (style === 'solid') dashValue = "none";
+        if (style === 'dotted') dashValue = "0.05, 5";
+        if (thick === 'thin') thickValue = "0.4";
+        if (thick === 'thick') thickValue = "1.5";
+        if (opac === 'light') opacityValue = "0.25";
+        if (opac === 'dark') opacityValue = "0.8";
+
+        gridBg.style.setProperty('--grid-dasharray', dashValue);
+        gridBg.style.setProperty('--grid-thickness', thickValue);
+        gridBg.style.setProperty('--grid-opacity', opacityValue);
+
+        // Build grid HTML as a string for jank-free single DOM write
+        let gridHTML = '';
+        const c = 54.5;
+
+        const addSegment = (pathString) => {
+            let className = "grid-line", lineCap = "butt";
+            if (style === 'dotted') { className += " dotted-linecap"; lineCap = "round"; }
+            gridHTML += `<path d="${pathString}" class="${className}" stroke-linecap="${lineCap}" fill="none" />`;
+        };
+
+        if (type === 'cross' || type === 'full') {
+            addSegment(`M ${c},${c} L ${c},0`); addSegment(`M ${c},${c} L ${c},109`);
+            addSegment(`M ${c},${c} L 0,${c}`); addSegment(`M ${c},${c} L 109,${c}`);
+        }
+        if (type === 'full') {
+            addSegment(`M ${c},${c} L 0,0`); addSegment(`M ${c},${c} L 109,0`);
+            addSegment(`M ${c},${c} L 0,109`); addSegment(`M ${c},${c} L 109,109`);
+        }
+
+        // Single DOM write to avoid layout thrashing
+        gridBg.innerHTML = gridHTML;
+
+        refreshSettingsRadios();
+    }
+
+    function updateGridSetting(category, val) {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+        safeSetItem(_activeTab + '_kanjiGrid' + category.charAt(0).toUpperCase() + category.slice(1), val);
+        if (_activeTab === _hostCard) updateGridDisplay();
+        else refreshSettingsRadios();
+    }
+
+    function updateFeatureSetting(category, val) {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+        safeSetItem(_activeTab + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
+        if (_activeTab === _hostCard) {
+            updateGridDisplay();
+            if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (e) { }
+        } else refreshSettingsRadios();
+    }
+
+    function openSettings(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        // Reset to host card's tab on open
+        if (_activeTab !== _hostCard) {
+            switchSettingsTab(_hostCard);
+        }
+        var gb = document.querySelector('.gear-btn');
+        if (gb) gb.classList.add('no-hover-fx');
+        var ol = document.getElementById('settings-overlay');
+        ol.classList.add('active');
+    }
+
+    function closeSettings(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var ol = document.getElementById('settings-overlay');
+        ol.classList.remove('active');
+        var gb = document.querySelector('.gear-btn');
+        if (gb) { gb.classList.remove('no-hover-fx'); }
+    }
+
+    // Run synchronously to prevent flicker on card load
+    updateGridDisplay();
+
+    // --- Scroll Lock & iOS Detection ---
+
+    if (window.kanjiTouchMoveModalHandlerC2) document.removeEventListener('touchmove', window.kanjiTouchMoveModalHandlerC2, { passive: false });
+    window.kanjiTouchMoveModalHandlerC2 = function (e) {
+        if (e.target.closest('.settings-modal') || e.target.closest('.info-modal') || e.target.closest('.settings-overlay') || e.target.closest('.info-overlay')) return;
+        if (document.body.classList.contains('no-scroll')) e.preventDefault();
+    };
+    document.addEventListener('touchmove', window.kanjiTouchMoveModalHandlerC2, { passive: false });
+
+    if (window.kanjiTouchStartHandlerC2) document.removeEventListener('touchstart', window.kanjiTouchStartHandlerC2, { passive: false });
+    window.kanjiTouchStartHandlerC2 = function (e) {
+        if (document.body.classList.contains('no-scroll') && e.touches.length > 1) e.preventDefault();
+    };
+    document.addEventListener('touchstart', window.kanjiTouchStartHandlerC2, { passive: false });
+
+    // Detect iOS early – must run BEFORE checkScrollability()
+    // so .is-ankimobile body.no-scroll { position:fixed } takes effect
+    if (!document.documentElement.classList.contains('is-ankimobile')) {
+        var _ua = navigator.userAgent;
+        if (/iPad|iPhone|iPod/.test(_ua) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(_ua))) {
+            document.documentElement.classList.add('is-ankimobile');
+        }
+    }
+
+    function checkScrollability() {
+        // iOS: position:fixed (no-scroll) removes body from flow –
+        // temporarily unlock to measure scrollHeight correctly
+        const wasLocked = document.body.classList.contains('no-scroll');
+        if (wasLocked) {
+            document.body.classList.remove('no-scroll');
+            document.documentElement.style.removeProperty('overflow-y');
+        }
+
+        const isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
+
+        if (isScrollable) {
+            document.body.classList.remove('no-scroll');
+            document.documentElement.style.removeProperty('overflow-y');
+        } else {
+            document.body.classList.add('no-scroll');
+            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+        }
+    }
+
+    // Run synchronously to prevent flicker on card load
+    checkScrollability();
+
+    if (window.kanjiResizeHandlerC2) window.removeEventListener('resize', window.kanjiResizeHandlerC2);
+    window.kanjiResizeHandlerC2 = checkScrollability;
+    window.addEventListener('resize', window.kanjiResizeHandlerC2);
+
+    // --- Button Feedback & Stylus Fixes ---
+
+    // Click-flash feedback for action buttons
+    (function () {
+        var ab = document.querySelector('.action-buttons');
+        if (!ab) return;
+        ab.addEventListener('click', function (e) {
+            var btn = e.target.closest('button');
+            if (!btn) return;
+            btn.classList.remove('btn-flash');
+            void btn.offsetWidth;
+            btn.classList.add('btn-flash');
+        });
+    })();
+
+    // Stylus fix: Apple Pencil / S-Pen don't reliably fire onclick
+    (function () {
+        var lastGearOpen = 0;
+        var gearBtn = document.querySelector('.gear-btn');
+        if (!gearBtn || gearBtn._ankiPenFixed) return;
+        gearBtn._ankiPenFixed = true;
+        gearBtn.addEventListener('pointerup', function (e) {
+            if (e.pointerType !== 'pen') return;
+            var now = Date.now();
+            if (now - lastGearOpen < 400) return;
+            lastGearOpen = now;
+            e.preventDefault(); e.stopPropagation();
+            var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
+            document.addEventListener('click', eatClick, true);
+            setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
+            openSettings(e);
+        });
+    })();
+
+    // --- Scroll Guards ---
+
+    // Register modal scroll guards synchronously to prevent flicker
+    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+</script>

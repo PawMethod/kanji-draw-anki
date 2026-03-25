@@ -1,0 +1,1459 @@
+/* ======================================================================
+   ⚙️ DEINE DAUERHAFTEN EINSTELLUNGEN (DEFAULTS)
+   Hier kannst du deine Präferenzen fest eintragen, damit sie für immer bleiben!
+   Egal ob PC, Linux oder Android. (Gilt nicht für AnkiMobile)
+   Trage einfach den englischen Begriff in die Variable ein.
+   ====================================================================== */
+
+:root {
+    /* --- 1. HILFSLINIEN (Grid) --- */
+
+    /* Muster: 'none' (Keine), 'cross' (Kreuz), 'full' (Voll) */
+    --default-grid-type: cross;
+
+    /* Linienstil: 'dotted' (Punkte), 'dashed' (Striche), 'solid' (Linie) */
+    --default-grid-style: dotted;
+
+    /* Dicke: 'thin' (Dünn), 'medium' (Mittel), 'thick' (Dick) */
+    --default-grid-thick: medium;
+
+    /* Sichtbarkeit: 'light' (Dezent), 'medium' (Normal), 'dark' (Stark) */
+    --default-grid-opac: dark;
+
+
+    /* --- 2. KORREKTUR & FEEDBACK --- */
+
+    /* Echtzeit-Prüfung (Vorderseite): 'on' (An), 'off' (Aus) */
+    --default-opt-color-front: on;
+
+    /* Zeichen-Hilfe (Vorderseite): 'on' (An), 'off' (Aus) */
+    --default-opt-autodraw: on;
+
+    /* Farb-Bewertung (Rückseite): 'on' (An), 'off' (Aus) */
+    --default-opt-color-back: on;
+
+    /* Strich-Nummern (Rückseite): 'on' (An), 'off' (Aus) */
+    --default-opt-numbers: on;
+
+    /* Strich-Genauigkeit: 'loose' (Locker), 'normal' (Normal), 'strict' (Streng) */
+    --default-opt-strictness: normal;
+
+    /* Abschluss-Animation (Vorderseite): 'on' (An), 'off' (Aus) */
+    --default-opt-celebration: on;
+
+    /* Strich-Darstellung (Nur Erkennen-Karte): 'standard' (Standard), 'colorOrder' (Farbig) */
+    --default-opt-display-style: standard;
+}
+
+/* ==========================================================================
+   ANKI KANJI TEMPLATE – STYLESHEET
+   Jisho-inspired design · Flicker-free rendering
+   Targets: Anki Desktop, AnkiDroid (Legacy + new), AnkiMobile (WKWebView)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS Variables & Theming
+   -------------------------------------------------------------------------- */
+:root {
+    /* Light Mode Colors */
+    --bg-main: #f7f7f5;
+    --surface: #ffffff;
+    --border-color: #e2e2df;
+    --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+    --shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+    --text-main: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --text-faint: #9a9a9a;
+
+    /* Stroke Colors */
+    --stroke-active: #1a1a1a;
+    --stroke-guide: #d4d4d0;
+    --grid-color: #b0b0a8;
+    --stroke-warn1: #e5a821;
+    --stroke-warn2: #e87c2a;
+    --stroke-err: #d4483b;
+
+    /* Tags */
+    --tag-on-bg: #f0f0ed;
+    --tag-on-text: #525250;
+    --tag-kun-bg: #eef6eb;
+    --tag-kun-text: #2d6a1e;
+
+    /* Accent */
+    --accent: #56a83a;
+    --accent-hover: #4a9432;
+    --accent-bg: #f0f7ec;
+
+    /* Tab Colors (settings modal ribbon) */
+    --tab-color-c1: #56a83a;
+    --tab-color-c2: #3a98a8;
+
+    /* Hover-Shadow */
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+
+    /* Layout Limits */
+    --dynamic-size: min(90vw, 65vh, 550px);
+    --border-rad-main: 10px;
+    --border-rad-sm: 7px;
+}
+
+/* Night Mode Colors */
+.nightMode,
+.night_mode {
+    --bg-main: #1a1a1a;
+    --surface: #252525;
+    --border-color: #363636;
+    --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.25);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2);
+    --text-main: #e8e8e4;
+    --text-muted: #9a9a96;
+    --text-faint: #666664;
+    --stroke-active: #f0f0ec;
+    --stroke-guide: #454540;
+    --grid-color: #7a7a74;
+    --stroke-warn1: #f0c040;
+    --stroke-warn2: #f09840;
+    --stroke-err: #e85450;
+    --tag-on-bg: #333330;
+    --tag-on-text: #d0d0cc;
+    --tag-kun-bg: #1e3318;
+    --tag-kun-text: #6ace54;
+    --accent: #6abe4e;
+    --accent-hover: #5cac40;
+    --accent-bg: #1e3315;
+    --tab-color-c1: #6abe4e;
+    --tab-color-c2: #4ec4b8;
+    --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* --------------------------------------------------------------------------
+   2. Global Layout & Typography
+   -------------------------------------------------------------------------- */
+html {
+    overflow-y: auto !important;
+}
+
+body {
+    margin: 0;
+}
+
+body.no-scroll {
+    touch-action: manipulation !important;
+    overscroll-behavior: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    overflow: hidden !important;
+}
+
+/* iOS/WKWebView: overflow:hidden alone is insufficient – position:fixed required */
+.is-ankimobile body.no-scroll {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+}
+
+.card {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", YuGothic, Meiryo, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start !important;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 28px 20px 36px;
+    margin: 0;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    line-height: 1.5;
+}
+
+.card-title {
+    margin: 0 0 20px 0;
+    color: var(--text-main);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.3px;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    line-height: 1.3;
+}
+
+/* --------------------------------------------------------------------------
+   3. Kanji Canvas Container & SVG Grid
+   Layer stack: #grid-bg (z:0) → #svg-guide (z:1) → #svg-bg (z:2) → #draw-layer (z:10)
+   GPU-composited: translateZ(0) + isolation:isolate (causes WKWebView filter quirks)
+   -------------------------------------------------------------------------- */
+.kanji-container {
+    position: relative;
+    width: var(--dynamic-size);
+    height: var(--dynamic-size);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-rad-main);
+    background-color: var(--surface) !important;
+    touch-action: none;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+    margin: 0 auto;
+    box-shadow: var(--shadow-elevated);
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: layout style;
+    isolation: isolate;
+}
+
+#grid-bg,
+#svg-guide,
+svg#svg-bg,
+#draw-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-rad-main);
+    fill: none;
+    background: transparent;
+}
+
+#grid-bg,
+#svg-guide,
+svg#svg-bg {
+    pointer-events: none;
+}
+
+#grid-bg {
+    z-index: 0;
+    opacity: var(--grid-opacity, 0.5);
+}
+
+#svg-guide {
+    z-index: 1;
+}
+
+svg#svg-bg {
+    z-index: 2;
+}
+
+#draw-layer {
+    cursor: crosshair;
+    touch-action: none;
+    z-index: 10;
+    transition: opacity 0.2s ease-out;
+    transform: translateZ(0);
+}
+
+#draw-layer.fade-out {
+    opacity: 0;
+}
+
+svg#svg-bg rect,
+svg#svg-guide rect,
+#grid-bg rect {
+    display: none !important;
+}
+
+svg#svg-bg path,
+svg#svg-guide path,
+#grid-bg path {
+    fill: none !important;
+}
+
+.grid-line {
+    stroke: var(--grid-color);
+    stroke-width: var(--grid-thickness, 0.8);
+    stroke-dasharray: var(--grid-dasharray, 3, 6) !important;
+    fill: none !important;
+}
+
+.grid-line.dotted-linecap {
+    stroke-linecap: round !important;
+}
+
+/* --------------------------------------------------------------------------
+   3b. Completion Celebration
+   -------------------------------------------------------------------------- */
+.kanji-container.celebration {
+    overflow: visible;
+}
+
+.completion-sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* --------------------------------------------------------------------------
+   4. UI Controls & Buttons
+   -------------------------------------------------------------------------- */
+.action-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+    width: var(--dynamic-size);
+}
+
+.action-buttons button {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--border-rad-main);
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.action-buttons button svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2;
+    pointer-events: none;
+}
+
+@keyframes btnFlash {
+    0% {
+        color: var(--accent);
+        border-color: var(--accent);
+        transform: scale(0.96) translateZ(0);
+    }
+
+    50% {
+        color: var(--accent);
+        border-color: var(--accent);
+        transform: translateZ(0);
+    }
+
+    100% {
+        color: var(--text-muted);
+        border-color: var(--border-color);
+        transform: translateZ(0);
+    }
+}
+
+.action-buttons button.btn-flash {
+    animation: btnFlash 0.35s ease-out;
+}
+
+@media (hover: hover) {
+    .action-buttons button:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px) translateZ(0);
+    }
+}
+
+.gear-btn {
+    box-sizing: border-box;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-faint);
+    cursor: pointer;
+    z-index: 50;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-soft);
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+}
+
+@media (hover: hover) {
+    .gear-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px) translateZ(0);
+    }
+
+    .gear-btn:hover svg {
+        transform: rotate(45deg);
+    }
+}
+
+/* Force-reset gear hover state when overlay is open (prevents stuck S-Pen hover) */
+.gear-btn.no-hover-fx,
+.gear-btn.no-hover-fx:hover {
+    color: var(--text-faint) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transform: translateZ(0) !important;
+    transition: none !important;
+}
+
+.gear-btn.no-hover-fx svg,
+.gear-btn.no-hover-fx:hover svg {
+    transform: none !important;
+    transition: none !important;
+}
+
+.gear-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --------------------------------------------------------------------------
+   5. Modals & Overlays
+   -------------------------------------------------------------------------- */
+.settings-overlay,
+.info-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-sizing: border-box;
+    padding: env(safe-area-inset-top, 8px) env(safe-area-inset-right, 8px) env(safe-area-inset-bottom, 8px) env(safe-area-inset-left, 8px);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-out;
+}
+
+.settings-overlay.active,
+.info-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+    will-change: opacity;
+}
+
+/* AnkiMobile: native toolbar overlays the WebView — reserve space at the bottom */
+.is-ankimobile .settings-overlay,
+.is-ankimobile .info-overlay {
+    padding-bottom: max(env(safe-area-inset-bottom, 8px), 60px);
+}
+
+.settings-modal,
+.info-modal {
+    box-sizing: border-box;
+    background: var(--surface);
+    padding: 24px;
+    border-radius: var(--border-rad-main);
+    width: 90%;
+    max-height: 85%;
+    overflow-y: auto;
+    overflow-x: clip;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+}
+
+.settings-modal {
+    max-width: 420px;
+    border: 2px solid var(--tab-color-c1);
+    --active-tab-color: var(--tab-color-c1);
+    transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-modal[data-tab="c2"] {
+    border-color: var(--tab-color-c2);
+    --active-tab-color: var(--tab-color-c2);
+}
+
+.info-modal {
+    max-width: 420px;
+    color: var(--text-main);
+    border: 2px solid var(--accent);
+}
+
+.settings-overlay.active .settings-modal,
+.info-overlay.active .info-modal {
+    transform: translateY(0) scale(1);
+    will-change: transform;
+}
+
+.settings-modal h3,
+.info-modal-header {
+    margin: 0 0 16px 0;
+    color: var(--text-main);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-modal-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    justify-content: space-between;
+}
+
+.info-modal-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.info-modal-meaning {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.setting-group-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 16px 0 8px 4px;
+    font-weight: 800;
+}
+
+.visual-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.visual-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-main);
+    border: 1.5px solid transparent;
+    border-radius: var(--border-rad-sm);
+    padding: 12px 0;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--text-muted);
+}
+
+.visual-option:active {
+    transform: scale(0.94);
+}
+
+/* SVG default (inactive) styling */
+.visual-option svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--text-muted);
+    stroke-linecap: round;
+    transition: stroke 0.15s ease, fill 0.15s ease;
+}
+
+.visual-option svg text {
+    fill: var(--text-muted);
+    transition: fill 0.15s ease;
+}
+
+.visual-option svg path[fill="currentColor"] {
+    fill: var(--text-muted);
+    transition: fill 0.15s ease;
+}
+
+.visual-option span {
+    font-size: 11px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+}
+
+.visual-options-grid label input[type="radio"] {
+    display: none;
+}
+
+/* SVG active (selected) styling */
+.visual-options-grid label input[type="radio"]:checked+.visual-option {
+    border-color: var(--active-tab-color, var(--accent));
+    background: var(--surface);
+    box-shadow: var(--shadow-soft);
+}
+
+.visual-options-grid label input[type="radio"]:checked+.visual-option svg {
+    stroke: var(--active-tab-color, var(--accent));
+}
+
+.visual-options-grid label input[type="radio"]:checked+.visual-option span {
+    color: var(--active-tab-color, var(--accent));
+}
+
+.visual-options-grid label input[type="radio"]:checked+.visual-option svg text {
+    fill: var(--active-tab-color, var(--accent));
+}
+
+.visual-options-grid label input[type="radio"]:checked+.visual-option svg path[fill="currentColor"] {
+    fill: var(--active-tab-color, var(--accent));
+}
+
+.close-settings {
+    box-sizing: border-box;
+    width: 100%;
+    height: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 24px auto 0 auto;
+    padding: 0;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: none;
+    border-radius: var(--border-rad-sm);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+    .close-settings:hover {
+        opacity: 0.85;
+    }
+}
+
+.close-settings:active {
+    opacity: 0.7;
+    transform: scale(0.98);
+}
+
+/* --------------------------------------------------------------------------
+   5b. Settings Tabs – Integrated Folder Tabs (50/50 split)
+   -------------------------------------------------------------------------- */
+.settings-tabs {
+    display: flex;
+    gap: 0;
+    margin: -24px -24px 0 -24px;
+    padding: 0;
+    position: relative;
+    background: var(--bg-main);
+    border-radius: calc(var(--border-rad-main) - 2px) calc(var(--border-rad-main) - 2px) 0 0;
+    overflow: hidden;
+    width: calc(100% + 48px);
+    box-sizing: border-box;
+}
+
+/* No ::after indicator — underline is handled by each tab's border-bottom directly */
+
+.settings-tab {
+    position: relative;
+    flex: 1 1 50%;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    background: var(--bg-main);
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, background-color 0.2s ease, border-bottom-color 0.2s ease;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    font-family: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+}
+
+/* Top-left corner radius for first tab */
+.settings-tab:first-child {
+    border-radius: 0;
+}
+
+/* Top-right corner radius for last tab */
+.settings-tab:last-child {
+    border-radius: 0;
+}
+
+/* ---- c1 active (Zeichnen) ---- */
+.settings-tab[data-tab="c1"].active {
+    color: var(--tab-color-c1);
+    background: var(--surface);
+    border-bottom-color: var(--tab-color-c1);
+}
+
+/* ---- c2 active (Erkennen) ---- */
+.settings-tab[data-tab="c2"].active {
+    color: var(--tab-color-c2);
+    background: var(--surface);
+    border-bottom-color: var(--tab-color-c2);
+}
+
+/* INACTIVE – recessed into background */
+.settings-tab:not(.active) {
+    background: var(--bg-main);
+    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* INACTIVE hover */
+@media (hover: hover) {
+    .settings-tab:not(.active):hover {
+        color: var(--text-main);
+    }
+}
+
+.settings-tab:not(.active):active {
+    opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   5b-2. Tab Content Animation (Swipe)
+   -------------------------------------------------------------------------- */
+@keyframes tabContentSwipeFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes tabContentSwipeFromRight {
+    0% {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animated elements get their own compositor layer only during animation */
+.settings-modal.tab-switched h3,
+.settings-modal.tab-switched .setting-group-title,
+.settings-modal.tab-switched .visual-options-grid,
+.settings-modal.tab-switched .setting-section-title,
+.settings-modal.tab-switched .c1-only-setting,
+.settings-modal.tab-switched .c2-only-setting {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/* Content swipes in from left when switching to c1 (Zeichnen) */
+.settings-modal[data-tab="c1"].tab-switched h3,
+.settings-modal[data-tab="c1"].tab-switched .setting-group-title,
+.settings-modal[data-tab="c1"].tab-switched .visual-options-grid,
+.settings-modal[data-tab="c1"].tab-switched .setting-section-title,
+.settings-modal[data-tab="c1"].tab-switched .c1-only-setting {
+    animation: tabContentSwipeFromLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Content swipes in from right when switching to c2 (Erkennen) */
+.settings-modal[data-tab="c2"].tab-switched h3,
+.settings-modal[data-tab="c2"].tab-switched .setting-group-title,
+.settings-modal[data-tab="c2"].tab-switched .visual-options-grid,
+.settings-modal[data-tab="c2"].tab-switched .setting-section-title,
+.settings-modal[data-tab="c2"].tab-switched .c2-only-setting {
+    animation: tabContentSwipeFromRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered animation delays for visual cascade effect */
+.settings-modal.tab-switched h3 {
+    animation-delay: 0s;
+}
+
+.settings-modal.tab-switched .setting-group-title {
+    animation-delay: 0.02s;
+}
+
+.settings-modal.tab-switched .visual-options-grid {
+    animation-delay: 0.04s;
+}
+
+.settings-modal.tab-switched .setting-section-title {
+    animation-delay: 0.06s;
+}
+
+.settings-modal.tab-switched .c1-only-setting,
+.settings-modal.tab-switched .c2-only-setting {
+    animation-delay: 0.01s;
+}
+
+/* spacing between tab bar and first settings section */
+.settings-tabs+h3,
+.settings-tabs+.setting-group-title,
+.settings-tabs+.c1-only-setting {
+    margin-top: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   5c. Setting Section Title (front / back side sub-headers)
+   -------------------------------------------------------------------------- */
+.setting-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin: 20px 0 8px 0;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Stroke Logic
+   State machine: .svg-stroke → .animate-draw / .stroke-complete / .hint-active → .rewind-anim
+   All paths use pathLength="100" with dasharray:105 / dashoffset for reveal animations.
+   -------------------------------------------------------------------------- */
+#svg-guide path,
+.svg-stroke {
+    fill: none !important;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 105 !important;
+}
+
+#svg-guide path {
+    stroke: var(--stroke-guide) !important;
+    stroke-dashoffset: 105 !important;
+    transition: stroke-dashoffset 0.7s ease-in-out !important;
+}
+
+#svg-guide.is-visible path {
+    stroke-dashoffset: 0 !important;
+}
+
+.svg-stroke {
+    stroke: transparent;
+    stroke-dashoffset: 105;
+}
+
+.stroke-complete {
+    stroke: var(--stroke-active) !important;
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+}
+
+.animate-draw {
+    stroke: var(--stroke-active) !important;
+    stroke-dashoffset: 0 !important;
+    transition: stroke-dashoffset 0.7s ease-in-out !important;
+}
+
+/* Auto-draw hint always uses the error color */
+.hint-active {
+    stroke: var(--stroke-err) !important;
+    stroke-dashoffset: 0 !important;
+    transition: stroke-dashoffset 0.7s ease-in-out !important;
+}
+
+.rewind-anim {
+    stroke-dashoffset: 105 !important;
+    transition: stroke-dashoffset 0.7s ease-in-out !important;
+}
+
+.stroke-number {
+    font-size: 6px;
+    font-weight: 800;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    pointer-events: none;
+    text-anchor: middle;
+    dominant-baseline: central;
+    paint-order: stroke fill;
+}
+
+/* Hit area extension – prevents hover jitter at element edges */
+.gear-btn::after,
+.info-btn::after,
+.action-buttons button::after,
+.link-btn::after,
+.word-example-item::after,
+.tree-node::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Backside Elements
+   -------------------------------------------------------------------------- */
+@keyframes fadeAndSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) translateZ(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) translateZ(0);
+    }
+}
+
+.info-tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.info-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--tag-on-bg);
+    color: var(--tag-on-text);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.tag-frequency {
+    background: var(--tag-kun-bg);
+    color: var(--tag-kun-text);
+}
+
+.info-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 24px 0 12px 0;
+    font-weight: 800;
+}
+
+.info-section-title svg {
+    color: var(--text-main);
+}
+
+.info-text-story {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-main);
+    font-style: italic;
+    margin-bottom: 24px;
+}
+
+.visuell-hinweis {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-main);
+    background: var(--bg-main);
+    padding: 10px 12px;
+    border-radius: var(--border-rad-sm);
+    border-left: 3px solid var(--accent);
+}
+
+.word-example-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.word-example-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-left-width: 4px;
+    border-radius: var(--border-rad-sm);
+    padding: 12px 16px 12px 12px;
+    text-align: left;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.word-example-item.show-furigana {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+}
+
+@media (hover: hover) {
+    .word-example-item:hover {
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
+    }
+}
+
+.word-example-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.word-jp {
+    font-size: 20px;
+    color: var(--text-main);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
+
+.word-de {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+ruby {
+    ruby-position: over;
+}
+
+ruby rt {
+    opacity: 0;
+    font-size: 0.55em;
+    color: var(--accent);
+    font-weight: 800;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(6px);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.word-example-item.show-furigana ruby rt {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Overrides sticky :hover on touch devices when explicitly dismissed */
+.word-example-item.furigana-dismissed {
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transform: none !important;
+}
+
+.word-example-item.furigana-dismissed ruby rt {
+    opacity: 0 !important;
+    transform: translateY(6px) !important;
+}
+
+@media (hover: hover) {
+    .word-example-item:hover ruby rt {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reading-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.reading-label {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-right: 16px;
+    width: 36px;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.readings-container--backside {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.onyomi-label {
+    background-color: var(--tag-on-bg);
+    color: var(--tag-on-text);
+}
+
+.kunyomi-label {
+    background-color: var(--tag-kun-bg);
+    color: var(--tag-kun-text);
+}
+
+.reading-value {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.info-btn {
+    box-sizing: border-box;
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 14px 24px;
+    border-radius: var(--border-rad-main);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--shadow-soft);
+    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    width: var(--dynamic-size);
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    position: relative;
+}
+
+.info-btn * {
+    pointer-events: none;
+}
+
+@media (hover: hover) {
+    .info-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px) translateZ(0);
+    }
+}
+
+.info-btn:active {
+    transform: scale(0.98) translateZ(0);
+    box-shadow: var(--shadow-soft);
+}
+
+.info-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+.link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--bg-main);
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 10px;
+    border-radius: var(--border-rad-sm);
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+@media (hover: hover) {
+    .link-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
+    }
+}
+
+.link-btn-pressed {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: scale(0.97);
+}
+
+.link-btn svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.tree-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-rad-main);
+    padding: 16px 12px;
+    margin: 16px 0 24px 0;
+    box-shadow: var(--shadow-soft);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tree-root-kanji {
+    font-size: 36px;
+    font-weight: 500;
+    color: var(--text-main);
+    text-align: center;
+    line-height: 1;
+}
+
+.tree-children {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 16px 4px 4px 4px;
+    border-top: 1px dashed var(--stroke-guide);
+}
+
+.tree-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-rad-sm);
+    width: 54px;
+    height: 54px;
+    box-sizing: border-box;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tree-node.show-tooltip {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+}
+
+.tree-node-char {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.primitive-tag-icon {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    color: var(--stroke-warn1);
+    fill: currentColor;
+    background-color: var(--surface);
+    border-radius: 50%;
+    padding: 2px;
+    z-index: 5;
+}
+
+.tree-node-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--text-main);
+    color: var(--bg-main);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--border-rad-sm);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tree-node-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text-main);
+}
+
+.tree-node.show-tooltip .tree-node-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Overrides sticky :hover on touch devices when explicitly dismissed */
+.tree-node.tooltip-dismissed {
+    border-color: var(--border-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    transform: none !important;
+}
+
+.tree-node.tooltip-dismissed .tree-node-tooltip {
+    opacity: 0 !important;
+    transform: translateX(-50%) translateY(4px) !important;
+}
+
+@media (hover: hover) {
+    .tree-node:hover {
+        border-color: var(--accent);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
+    }
+
+    .tree-node:hover .tree-node-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.no-tree-data {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 13px;
+}
+
+.answer-fallback {
+    display: none;
+    margin-top: 24px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 24px;
+}
+
+.answer-fallback h3 {
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.answer-fallback small {
+    color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   8. Scrollbar Styling (scoped to modals only – do not apply globally)
+   -------------------------------------------------------------------------- */
+.settings-modal::-webkit-scrollbar,
+.info-modal::-webkit-scrollbar,
+.card::-webkit-scrollbar {
+    width: 6px !important;
+    background-color: transparent !important;
+}
+
+.settings-modal::-webkit-scrollbar-button,
+.info-modal::-webkit-scrollbar-button,
+.card::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.settings-modal::-webkit-scrollbar-track,
+.info-modal::-webkit-scrollbar-track,
+.card::-webkit-scrollbar-track {
+    background-color: transparent !important;
+    margin: 16px 0 !important;
+    border-radius: 10px !important;
+}
+
+.settings-modal::-webkit-scrollbar-thumb,
+.info-modal::-webkit-scrollbar-thumb,
+.card::-webkit-scrollbar-thumb {
+    background-color: var(--border-color) !important;
+    border-radius: 10px !important;
+    border: 1px solid transparent !important;
+    background-clip: padding-box !important;
+}
+
+.settings-modal::-webkit-scrollbar-thumb:hover,
+.info-modal::-webkit-scrollbar-thumb:hover,
+.card::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. Custom SVG Icon Styling (Radicals)
+   -------------------------------------------------------------------------- */
+.custom-svg-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.custom-svg-icon.kanji-stroke-format {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.custom-svg-icon.font-stroke-format {
+    fill: currentColor;
+    stroke: var(--surface) !important;
+    stroke-width: 3.5% !important;
+    stroke-linejoin: round;
+    transform: scale(1, -1);
+    shape-rendering: geometricPrecision;
+}
