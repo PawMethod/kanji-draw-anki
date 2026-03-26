@@ -84,7 +84,7 @@
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
     </svg>
-    Kanji-Info & Merkhilfe
+    Info & Merkhilfe
 </button>
 
 <div class="info-overlay" id="info-overlay" onclick="closeInfoModal(event)">
@@ -201,7 +201,7 @@
         </div>
         <div class="link-grid">
             <a class="link-btn" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank">
-                Jisho (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
@@ -216,14 +216,14 @@
                 </svg>
             </a>
             <a class="link-btn" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank">
-                WaniKani (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                WaniKani <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
                 </svg>
             </a>
             <a class="link-btn" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank">
-                Koohii (EN) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                Koohii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
@@ -334,7 +334,7 @@
                     } catch (err) { }
                 });
             }, 100);
-        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Fehler beim Lesen der Bausteine.</span>`; }
+        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Radikale konnten nicht geladen werden.</span>`; }
 
         target.addEventListener('click', function (e) {
             const node = e.target.closest('.tree-node');
