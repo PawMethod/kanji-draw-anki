@@ -431,6 +431,7 @@ svg#svg-guide path,
     box-sizing: border-box;
     padding: env(safe-area-inset-top, 8px) env(safe-area-inset-right, 8px) env(safe-area-inset-bottom, 8px) env(safe-area-inset-left, 8px);
     padding-top: max(env(safe-area-inset-top, 8px), 48px);
+    padding-bottom: max(env(safe-area-inset-bottom, 8px), 48px);
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
@@ -468,7 +469,7 @@ svg#svg-guide path,
     padding: 24px;
     border-radius: var(--border-rad-main);
     width: 90%;
-    max-height: 85%;
+    max-height: calc(100dvh - 48px - 48px);
     overflow-y: auto;
     overflow-x: clip;
     overscroll-behavior: contain;
