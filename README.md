@@ -139,11 +139,11 @@ Jede Datei wird in Anki direkt als Template-Inhalt eingefügt — **keine Plugin
 1. In Anki: **Werkzeuge → Notiztypen verwalten → Hinzufügen**
 2. Notiztyp mit den oben genannten Feldern erstellen
 3. Kartenvorlagen bearbeiten:
-   - **Card 1 Vorderseite** → Inhalt von `FrontTemplate-Card-1.html`
-   - **Card 1 Rückseite** → Inhalt von `BackTemplate-Card-1.html`
-   - **Card 2 Vorderseite** → Inhalt von `FrontTemplate-Card-2.html`
-   - **Card 2 Rückseite** → Inhalt von `BackTemplate-Card-2.html`
-   - **Styling** → Inhalt von `Styling.css`
+   - **Card 1 Vorderseite** → Inhalt von `Templates/Card-1/FrontTemplate.html`
+   - **Card 1 Rückseite** → Inhalt von `Templates/Card-1/BackTemplate.html`
+   - **Card 2 Vorderseite** → Inhalt von `Templates/Card-2/FrontTemplate.html`
+   - **Card 2 Rückseite** → Inhalt von `Templates/Card-2/BackTemplate.html`
+   - **Styling** → Inhalt von `Templates/Styling.css`
 
 ---
 
