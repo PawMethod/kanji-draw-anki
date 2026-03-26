@@ -430,10 +430,11 @@ svg#svg-guide path,
     left: 0;
     box-sizing: border-box;
     padding: env(safe-area-inset-top, 8px) env(safe-area-inset-right, 8px) env(safe-area-inset-bottom, 8px) env(safe-area-inset-left, 8px);
+    padding-top: max(env(safe-area-inset-top, 8px), 48px);
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     z-index: 100;
     opacity: 0;
     pointer-events: none;
@@ -451,6 +452,13 @@ svg#svg-guide path,
 .is-ankimobile .settings-overlay,
 .is-ankimobile .info-overlay {
     padding-bottom: max(env(safe-area-inset-bottom, 8px), 60px);
+}
+
+/* max-height: 85% resolves against the viewport, not the padded content area —
+   explicitly cap modal height so it cannot extend behind the native toolbar */
+.is-ankimobile .settings-modal,
+.is-ankimobile .info-modal {
+    max-height: calc(100dvh - 48px - 60px);
 }
 
 .settings-modal,
