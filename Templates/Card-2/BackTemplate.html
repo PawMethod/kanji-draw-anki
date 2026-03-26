@@ -258,6 +258,8 @@
         if (e) { e.stopPropagation(); e.preventDefault(); }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         var ol = document.getElementById('info-overlay');
+        var im = ol.querySelector('.info-modal');
+        if (im) im.scrollTop = 0;
         ol.classList.add('active');
     }
 

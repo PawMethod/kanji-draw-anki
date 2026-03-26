@@ -647,6 +647,8 @@
         var gb = document.querySelector('.gear-btn');
         if (gb) gb.classList.add('no-hover-fx');
         var ol = document.getElementById('settings-overlay');
+        var sm = ol.querySelector('.settings-modal');
+        if (sm) sm.scrollTop = 0;
         ol.classList.add('active');
     }
 
