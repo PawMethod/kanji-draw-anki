@@ -57,7 +57,7 @@
                 var css = '';
                 for (var i = 0; i < ps.length; i++) {
                     var m = ps[i] || 0, c = 'var(--stroke-active)';
-                    if (i >= sc && sc !== 0) c = 'var(--stroke-err)';
+                    if (i >= sc && sc < ps.length) c = 'var(--stroke-err)';
                     else if (m >= 3) c = 'var(--stroke-err)';
                     else if (m === 2) c = 'var(--stroke-warn2)';
                     else if (m === 1) c = 'var(--stroke-warn1)';
@@ -387,6 +387,16 @@
 
     // Provided by FrontSide injection: getGlobalConfig()
 
+    // --- Hide "Lesungen" if no readings exist ---
+    (() => {
+        const rc = document.querySelector('.readings-container--backside');
+        if (rc && !rc.querySelector('.reading-row')) {
+            rc.style.display = 'none';
+            const prev = rc.previousElementSibling;
+            if (prev && prev.classList.contains('info-section-title')) prev.style.display = 'none';
+        }
+    })();
+
     // --- Back Side Features (stroke colors, numbers) ---
 
     (() => {
@@ -420,7 +430,7 @@
                 let mistakeCount = problemStrokes[index] || 0;
                 let pathColor = 'var(--stroke-active)';
                 if (isColorBack) {
-                    if (index >= strokesCompleted && strokesCompleted !== 0) pathColor = 'var(--stroke-err)';
+                    if (index >= strokesCompleted && strokesCompleted < paths.length) pathColor = 'var(--stroke-err)';
                     else if (mistakeCount >= 3) pathColor = 'var(--stroke-err)';
                     else if (mistakeCount === 2) pathColor = 'var(--stroke-warn2)';
                     else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
