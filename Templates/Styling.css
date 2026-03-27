@@ -97,6 +97,43 @@
     --border-rad-sm: 7px;
 }
 
+/* AnkiWeb: answer bar overlays the card content like a layer on top.
+   --dynamic-size is set via JS (window.innerHeight measurement).
+   Reduce spacing to fit everything into the visible area without scrolling. */
+
+html.is-ankiweb .card {
+    padding: 8px 20px 8px;
+    min-height: auto !important;
+}
+
+html.is-ankiweb .card-title {
+    margin-bottom: 4px;
+    font-size: 22px;
+}
+
+html.is-ankiweb .action-buttons {
+    margin-top: 8px;
+}
+
+html.is-ankiweb .info-btn {
+    margin-top: 10px;
+}
+
+html.is-ankiweb .answer-fallback {
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+html.is-ankiweb .settings-overlay,
+html.is-ankiweb .info-overlay {
+    padding-top: 64px;
+}
+
+html.is-ankiweb .settings-modal,
+html.is-ankiweb .info-modal {
+    max-height: var(--ankiweb-modal-max-h, 70vh) !important;
+}
+
 /* Night Mode Colors */
 .nightMode,
 .night_mode {
@@ -135,6 +172,7 @@ html {
 
 body {
     margin: 0;
+    background-color: var(--bg-main);
 }
 
 body.no-scroll {
@@ -146,7 +184,9 @@ body.no-scroll {
 }
 
 /* iOS/WKWebView: overflow:hidden alone is insufficient – position:fixed required */
-.is-ankimobile body.no-scroll {
+.is-ankimobile body.no-scroll,
+html.iphone body.no-scroll,
+html.ipad body.no-scroll {
     position: fixed !important;
     inset: 0 !important;
     width: 100% !important;
@@ -452,14 +492,22 @@ svg#svg-guide path,
 
 /* AnkiMobile: native toolbar overlays the WebView — reserve space at the bottom */
 .is-ankimobile .settings-overlay,
-.is-ankimobile .info-overlay {
+.is-ankimobile .info-overlay,
+html.iphone .settings-overlay,
+html.iphone .info-overlay,
+html.ipad .settings-overlay,
+html.ipad .info-overlay {
     padding-bottom: max(env(safe-area-inset-bottom, 8px), 60px);
 }
 
 /* max-height: 85% resolves against the viewport, not the padded content area —
    explicitly cap modal height so it cannot extend behind the native toolbar */
 .is-ankimobile .settings-modal,
-.is-ankimobile .info-modal {
+.is-ankimobile .info-modal,
+html.iphone .settings-modal,
+html.iphone .info-modal,
+html.ipad .settings-modal,
+html.ipad .info-modal {
     max-height: calc(100dvh - 48px - 60px);
 }
 
@@ -1111,9 +1159,10 @@ ruby rt {
     padding: 4px 10px;
     border-radius: 20px;
     margin-right: 16px;
-    width: 36px;
+    min-width: 36px;
     text-align: center;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .readings-container--backside {

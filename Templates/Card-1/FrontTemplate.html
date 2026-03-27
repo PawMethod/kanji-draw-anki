@@ -1,3 +1,4 @@
+<script>qFade = 0; if (typeof anki !== "undefined") anki.qFade = 0;</script>
 <button class="gear-btn" onclick="openSettings(event)" title="Einstellungen">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"></circle>
@@ -424,6 +425,26 @@
     // Platforms:   Anki Desktop, AnkiDroid, AnkiMobile (WKWebView)
     // =======================================================================
 
+    // --- AnkiWeb / Browser Detection ---
+    // AnkiWeb wraps cards in its own chrome (header ~50px + answer bar ~80px)
+    // that reduces usable viewport height; flag it for CSS overrides.
+    // Detection: HTTPS protocol + no native Anki bridge = browser review.
+    if (location.protocol === 'https:' && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
+        document.documentElement.classList.add('is-ankiweb');
+        var _awH = window.innerHeight;
+        var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
+        if (_awSize < 200) _awSize = 200;
+        var _awPx = _awSize + 'px';
+        document.documentElement.style.setProperty('--ankiweb-modal-max-h', (_awH - 200) + 'px');
+        document.documentElement.style.setProperty('--dynamic-size', _awPx);
+        var _kc = document.querySelector('.kanji-container');
+        if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
+        var _ab = document.querySelector('.action-buttons');
+        if (_ab) _ab.style.width = _awPx;
+        var _ib = document.querySelector('.info-btn');
+        if (_ib) _ib.style.width = _awPx;
+    }
+
     // --- Anti-Flicker ---
     // Remove back-side CSS injection when we're on the front side
     if (!document.getElementById('is-back-side-marker')) {
@@ -688,6 +709,12 @@
     }
 
     function checkScrollability() {
+        // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
+        if (document.documentElement.classList.contains('is-ankiweb')) {
+            document.body.classList.add('no-scroll');
+            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+            return;
+        }
         // iOS: position:fixed (no-scroll) removes body from flow –
         // temporarily unlock to measure scrollHeight correctly
         const wasLocked = document.body.classList.contains('no-scroll');
@@ -1195,4 +1222,9 @@
     // Register modal scroll guards synchronously to prevent flicker
     document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
     document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+
+    // --- userJs: Gesture / Shortcut hooks for AnkiDroid & AnkiMobile ---
+    var userJs1 = function () { var b = document.getElementById('button-reveal'); if (b && b._kanjiAction) b._kanjiAction(); };
+    var userJs2 = function () { var b = document.getElementById('button-reset'); if (b && b._kanjiAction) b._kanjiAction(); };
+    var userJs3 = function () { openSettings(new Event('userJs')); };
 </script>

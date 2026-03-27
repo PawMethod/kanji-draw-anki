@@ -98,8 +98,20 @@ Auf Android wird zusätzlich `CookieManager.flush()` über `visibilitychange`/`p
 | **Anki Desktop** (2.1+) | ✅ Vollständig | Maus + Pointer-Events |
 | **AnkiDroid** | ✅ Vollständig | S-Pen-Unterstützung, haptisches Feedback, CookieManager-Flush |
 | **AnkiMobile (iOS)** | ✅ Vollständig | Apple Pencil, WKWebView-safe, `position:fixed` Scroll-Lock, Safe-Area-Insets |
+| **AnkiWeb (Browser)** | ✅ Vollständig | Dynamische Viewport-Anpassung, JS-basierte Größenberechnung, Scroll-Lock |
 | **Dark Mode** | ✅ Automatisch | Erkennt `.nightMode` / `.night_mode` Klasse |
 | **Stylus** | ✅ Vollständig | Apple Pencil + S-Pen via `pointerup`-Fix (400 ms Debounce) |
+
+### Plattform-Optimierungen
+
+- **qFade = 0:** Ankis standardmäßige 100 ms Fade-Animation beim Kartenwechsel wird deaktiviert, um instantanes Rendering zu gewährleisten.
+- **id=answer Marker:** Ein verstecktes `<div id="answer">` auf der Rückseite sorgt dafür, dass Anki automatisch zum Antwortbereich scrollt — besonders nützlich auf kleinen Bildschirmen und AnkiWeb.
+- **userJs-Hooks für Gesten:**
+  - **Card 1:** `userJs1` (Strich aufdecken) · `userJs2` (Zurücksetzen) · `userJs3` (Einstellungen)
+  - **Card 2:** `userJs1` (Einstellungen)
+  - Konfigurierbar über AnkiDroid (*Einstellungen → Gesten → JavaScript-Funktion*) und AnkiMobile (*Einstellungen → Gesten → Custom → Execute JS*).
+- **CSS-Fallback-Selektoren:** iOS-spezifische Regeln (`position:fixed` Scroll-Lock, Modal-Padding, Safe-Area) nutzen neben `.is-ankimobile` zusätzlich Ankis eingebaute `.iphone`/`.ipad`-Klassen als Fallback, falls die JS-basierte Erkennung noch nicht ausgeführt wurde.
+- **AnkiDroid localStorage:** Ab AnkiDroid 2.21+ muss localStorage in *Einstellungen → Erweitert → localStorage* explizit aktiviert werden, damit Persistenz über Sessions hinweg funktioniert.
 
 ---
 
