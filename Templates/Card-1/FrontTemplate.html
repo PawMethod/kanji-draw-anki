@@ -126,6 +126,34 @@
                 Vorderseite
             </div>
 
+            <div class="setting-group-title">Zeichenmodus</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-draw-mode" value="guided"
+                        onchange="updateFeatureSetting('drawMode', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 19Q5 5 20 5" stroke-dasharray="3 2" opacity="0.4" />
+                            <polyline points="15 5 20 5 20 10" />
+                            <path d="M5 19Q7 13 11 10" />
+                            <circle cx="5" cy="19" r="2" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span>Geführt</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-draw-mode" value="free"
+                        onchange="updateFeatureSetting('drawMode', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 17c3-12 7 8 16-8" />
+                            <circle cx="4" cy="17" r="1.5" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span>Frei</span>
+                    </div>
+                </label>
+            </div>
+
             <div class="setting-group-title">Strich-Genauigkeit</div>
             <div class="visual-options-grid">
                 <label><input type="radio" name="opt-strictness" value="loose"
@@ -163,8 +191,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Echtzeit-Prüfung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="color-front-title">Echtzeit-Prüfung</div>
+            <div class="visual-options-grid" id="color-front-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-front" value="off"
                         onchange="updateFeatureSetting('colorFront', this.value)">
                     <div class="visual-option">
@@ -189,8 +217,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Zeichen-Hilfe</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="autodraw-title">Zeichen-Hilfe</div>
+            <div class="visual-options-grid" id="autodraw-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-autodraw" value="off"
                         onchange="updateFeatureSetting('autodraw', this.value)">
                     <div class="visual-option">
@@ -216,8 +244,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Abschluss-Animation</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="celebration-title">Abschluss-Animation</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="celebration-grid">
                 <label><input type="radio" name="opt-celebration" value="off"
                         onchange="updateFeatureSetting('celebration', this.value)">
                     <div class="visual-option">
@@ -239,6 +267,58 @@
                                 d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
                         </svg>
                         <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title" id="sbs-title">Vergleichsansicht</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid">
+                <label><input type="radio" name="opt-side-by-side" value="off"
+                        onchange="updateFeatureSetting('sideBySide', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <line x1="4" y1="4" x2="20" y2="20" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-side-by-side" value="on"
+                        onchange="updateFeatureSetting('sideBySide', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="9" height="18" rx="2" />
+                            <rect x="13" y="3" width="9" height="18" rx="2" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title" id="free-view-title">Strichansicht</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid">
+                <label><input type="radio" name="opt-free-view" value="handwriting"
+                        onchange="updateFeatureSetting('freeView', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round">
+                            <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                        </svg>
+                        <span>Handschrift</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-free-view" value="svg"
+                        onchange="updateFeatureSetting('freeView', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 17 8 8 13 14 18 6 21 10" />
+                            <circle cx="3" cy="17" r="1.5" fill="currentColor" />
+                            <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                        </svg>
+                        <span>SVG-Pfade</span>
                     </div>
                 </label>
             </div>
@@ -265,8 +345,7 @@
             Rückseite
         </div>
 
-        <div class="c1-only-setting">
-            <div class="setting-group-title">Farb-Bewertung</div>
+        <div class="setting-group-title">Farb-Bewertung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-back" value="off"
                         onchange="updateFeatureSetting('colorBack', this.value)">
@@ -298,7 +377,6 @@
                     </div>
                 </label>
             </div>
-        </div>
 
         <div class="c2-only-setting" style="display:none;">
             <div class="setting-group-title">Strich-Darstellung</div>
@@ -414,14 +492,20 @@
     //
     // Persistence: in-memory (_ks) → cookie → localStorage fallback chain
     // Settings:    shared modal with c1/c2 tabs, scoped storage per card type
+    //              changes are persisted per-radio-change, applied on close
     // Grid:        SVG paths built as HTML string, single DOM write
     // Drawing:     pointer/touch → SVG path, clamped to pad bounds
-    // Algo:        smoothing → resample to 65pts → composite score:
+    //              modes: guided (stroke-by-stroke) | free (all at once)
+    // Algo:        smoothing → resample to 64pts → composite score:
     //              Fréchet 40% | avg-dist 25% | start 17.5% | end 17.5%
     //              hard gates: length ratio, 4-sector direction, 1.4× ceiling
     //              strictness: loose ×1.35 | normal ×1.0 | strict ×0.7
+    // Free eval:   Fréchet + Hungarian assignment → per-stroke grading
+    //              views: handwriting (user strokes colored) | SVG paths
+    //              side-by-side: optional split view (user vs reference)
     // Celebration: WAAPI animations (glow, bounce, shine, sparkles)
     // Auto-flip:   pycmd / showAnswer / answer-fallback div
+    // Cleanup:     generation counter guards stale setTimeout callbacks
     // Platforms:   Anki Desktop, AnkiDroid, AnkiMobile (WKWebView)
     // =======================================================================
 
@@ -560,11 +644,48 @@
             'opt-numbers': scopedGet('kanjiOptNumbers', globalConf.numbers),
             'opt-strictness': scopedGet('kanjiOptStrictness', globalConf.strictness),
             'opt-celebration': scopedGet('kanjiOptCelebration', globalConf.celebration),
-            'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle)
+            'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle),
+            'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
+            'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
+            'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView)
         };
         document.querySelectorAll('.settings-modal input[type="radio"]').forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
         });
+        updateModeDisabledSettings();
+    }
+
+    function updateModeDisabledSettings() {
+        const globalConf = getGlobalConfig();
+        const mode = scopedGet('kanjiOptDrawMode', globalConf.drawMode);
+        const isFree = mode === 'free';
+        // Celebration: disabled in free mode
+        var celTitle = document.getElementById('celebration-title');
+        var celGrid = document.getElementById('celebration-grid');
+        if (celTitle) celTitle.classList.toggle('setting-disabled', isFree);
+        if (celGrid) celGrid.classList.toggle('setting-disabled', isFree);
+        // Echtzeit-Prüfung: disabled in free mode
+        var cfTitle = document.getElementById('color-front-title');
+        var cfGrid = document.getElementById('color-front-grid');
+        if (cfTitle) cfTitle.classList.toggle('setting-disabled', isFree);
+        if (cfGrid) cfGrid.classList.toggle('setting-disabled', isFree);
+        // Zeichen-Hilfe: disabled in free mode
+        var adTitle = document.getElementById('autodraw-title');
+        var adGrid = document.getElementById('autodraw-grid');
+        if (adTitle) adTitle.classList.toggle('setting-disabled', isFree);
+        if (adGrid) adGrid.classList.toggle('setting-disabled', isFree);
+        // Side-by-side: disabled in guided mode
+        var sbsTitle = document.getElementById('sbs-title');
+        var sbsGrid = document.getElementById('sbs-grid');
+        if (sbsTitle) sbsTitle.classList.toggle('setting-disabled', !isFree);
+        if (sbsGrid) sbsGrid.classList.toggle('setting-disabled', !isFree);
+        // Free view (Strichansicht): disabled in guided mode OR when SBS is on
+        var sbsOn = isFree && scopedGet('kanjiOptSideBySide', globalConf.sideBySide || 'on') === 'on';
+        var fvDisabled = !isFree || sbsOn;
+        var fvTitle = document.getElementById('free-view-title');
+        var fvGrid = document.getElementById('free-view-grid');
+        if (fvTitle) fvTitle.classList.toggle('setting-disabled', fvDisabled);
+        if (fvGrid) fvGrid.classList.toggle('setting-disabled', fvDisabled);
     }
 
     // Read CSS custom properties once and cache (avoids Anki timing/load-order issues)
@@ -588,7 +709,10 @@
             numbers: getVar('--default-opt-numbers', 'on'),
             strictness: getVar('--default-opt-strictness', 'normal'),
             celebration: getVar('--default-opt-celebration', 'on'),
-            displayStyle: getVar('--default-opt-display-style', 'standard')
+            displayStyle: getVar('--default-opt-display-style', 'standard'),
+            drawMode: getVar('--default-opt-draw-mode', 'guided'),
+            sideBySide: getVar('--default-opt-side-by-side', 'on'),
+            freeView: getVar('--default-opt-free-view', 'handwriting')
         };
         return _cachedGlobalConf;
     }
@@ -653,9 +777,13 @@
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
         safeSetItem(_activeTab + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
         if (_activeTab === _hostCard) {
-            updateGridDisplay();
-            if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (e) { }
-        } else refreshSettingsRadios();
+            if (category === 'drawMode') {
+                try { if (window._kanjiSwitchDrawMode) window._kanjiSwitchDrawMode(val); } catch (e) { }
+            }
+            updateModeDisabledSettings();
+        } else {
+            refreshSettingsRadios();
+        }
     }
 
     function openSettings(e) {
@@ -671,6 +799,7 @@
         var sm = ol.querySelector('.settings-modal');
         if (sm) sm.scrollTop = 0;
         ol.classList.add('active');
+        updateModeDisabledSettings();
     }
 
     function closeSettings(e) {
@@ -679,6 +808,10 @@
         ol.classList.remove('active');
         var gb = document.querySelector('.gear-btn');
         if (gb) { gb.classList.remove('no-hover-fx'); }
+        // Apply all settings on close — invalidate cache so changes take effect
+        _cachedGlobalConf = null;
+        updateGridDisplay();
+        if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
     }
 
     // Run synchronously to prevent flicker on card load
@@ -741,10 +874,32 @@
     window.kanjiResizeHandler = checkScrollability;
     window.addEventListener('resize', window.kanjiResizeHandler);
 
+    // --- Cleanup stale DOM (runs unconditionally, front + back via {{FrontSide}}) ---
+    // On back side this is a no-op: SBS/sparkles haven't been created yet.
+    // On front side this removes stale back-side artifacts from editor toggling.
+    document.querySelectorAll('.side-by-side-wrapper, .completion-sparkle, .handwriting-overlay').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.kanji-container').forEach(function (c) { c.style.removeProperty('display'); c.classList.remove('show-handwriting'); });
+    if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
+    window.kanjiSettingsGlobalHandler = null;
+    window._kanjiFreeEval = null;
+    window._kanjiRenderFreeView = null;
+    // Increment generation counter so any pending setTimeout callbacks are discarded
+    window._kanjiGeneration = (window._kanjiGeneration || 0) + 1;
+
     // --- Drawing Engine ---
 
     (() => {
         if (document.getElementById('is-back-side-marker') || document.getElementById('answer')) return;
+
+        // ···· Front-side-only cleanup ····
+        ['sessionStorage', 'localStorage'].forEach(s => {
+            try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
+        });
+        window._kanjiFreeStrokes = null;
+        var staleAF = document.getElementById('kanji-anti-flicker');
+        if (staleAF) staleAF.remove();
+        var staleCS = document.getElementById('kanji-stroke-colors');
+        if (staleCS) staleCS.remove();
 
         const drawLayer = document.getElementById('draw-layer');
         if (!drawLayer) return;
@@ -753,16 +908,6 @@
 
         const cachedGlobalConf = getGlobalConfig();
         let problemStrokes = new Array(document.querySelectorAll('.svg-stroke').length).fill(0);
-
-        window._kanjiProblemStrokes = problemStrokes;
-        window._kanjiCurrentStroke = 0;
-
-        ['sessionStorage', 'localStorage'].forEach(storage => {
-            try {
-                window[storage].setItem('kanjiErrors', JSON.stringify(problemStrokes));
-                window[storage].setItem('kanjiCurrentStroke', "0");
-            } catch (e) { }
-        });
 
         const paths = document.querySelectorAll('.svg-stroke');
         const actionButtons = document.querySelector('.action-buttons');
@@ -779,6 +924,22 @@
         let currentStroke = 0, mistakes = 0, isDrawing = false, userPoints = [];
         let currentSVGPath = null, dString = "", errorTimeout = null, fadeTimeout = null, skipTimeouts = [];
 
+        // ···· Draw Mode Detection ····
+
+        const drawMode = hostGet('kanjiOptDrawMode', cachedGlobalConf.drawMode || 'guided');
+        let isFreeMode = drawMode === 'free';
+
+        // Free canvas state
+        let freeStrokes = [];       // Array of point-arrays
+        let freeSVGPaths = [];      // Corresponding SVG path elements
+        let freeFinished = false;
+
+        const kanjiContainer = document.querySelector('.kanji-container');
+
+        if (isFreeMode) {
+            if (kanjiContainer) kanjiContainer.classList.add('free-canvas-mode');
+        }
+
         // ···· Save & Auto-Flip ····
 
         const saveState = () => {
@@ -791,6 +952,9 @@
                 } catch (e) { }
             });
         };
+
+        // Persist initial state so the back side always has data
+        saveState();
 
         const triggerAutoFlip = () => {
             if (typeof pycmd !== "undefined" && !navigator.userAgent.includes("Android")) { try { pycmd("ans"); } catch (e) { } }
@@ -811,48 +975,14 @@
             return { x, y };
         };
 
-        const startDrawing = (e) => {
-            if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
-            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
-            if (currentStroke >= paths.length) return;
-            if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
-
-            clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
-            drawLayer.classList.remove('fade-out'); clearDrawLayer();
-            isDrawing = true; userPoints = [];
-            paths[currentStroke].classList.remove('hint-active');
-
-            const pos = getMousePos(e);
-            userPoints.push(pos);
-            currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            dString = `M ${pos.x} ${pos.y}`;
-            currentSVGPath.setAttribute("d", dString);
-            currentSVGPath.setAttribute("fill", "none");
-            currentSVGPath.style.setProperty("stroke", "var(--stroke-active)");
-            currentSVGPath.setAttribute("stroke-width", "4");
-            currentSVGPath.setAttribute("stroke-linecap", "round");
-            currentSVGPath.setAttribute("stroke-linejoin", "round");
-            drawLayer.appendChild(currentSVGPath);
-        };
-
-        const draw = (e) => {
-            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
-            if (!isDrawing) return;
-            const pos = getMousePos(e);
-            userPoints.push(pos);
-            dString += ` L ${pos.x} ${pos.y}`;
-            if (currentSVGPath) currentSVGPath.setAttribute("d", dString);
-        };
-
         // ···· Completion Animation (WAAPI) ····
 
         const playCompletionAnimation = () => new Promise(resolve => {
-            if (hostGet('kanjiOptCelebration', cachedGlobalConf.celebration) !== 'on') { resolve(); return; }
+            if (isFreeMode || hostGet('kanjiOptCelebration', cachedGlobalConf.celebration) !== 'on') { resolve(); return; }
             const c = document.querySelector('.kanji-container');
             const svg = document.getElementById('svg-bg');
             if (!c) { resolve(); return; }
 
-            // Glow + Bounce via WAAPI (box-shadow instead of drop-shadow to avoid expensive SVG re-rasterization)
             c.classList.add('celebration');
             c.animate([
                 { boxShadow: '0 4px 12px rgba(0,0,0,0.06), 0 0 0px rgba(255,210,50,0)' },
@@ -867,8 +997,6 @@
                 { transform: 'scale(1)' }
             ], { duration: 700, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
 
-            // Stroke-Shine via WAAPI (unified flash on entire SVG – avoids
-            // overlap artifacts at stroke crossings and is GPU-friendly)
             if (svg) svg.animate([
                 { opacity: 1, transform: 'scale(1)' },
                 { opacity: 0.2, transform: 'scale(1.04)', offset: 0.25 },
@@ -881,7 +1009,6 @@
             const radius = rect.width * 0.5;
             const cleanup = [];
 
-            // Sparkle particles via WAAPI (CSS @keyframes with var() broken in older Safari)
             const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#00E5FF', '#B388FF', '#FFE082', '#FF4081', '#69F0AE', '#FFAB40', '#40C4FF'];
             const N = 16;
             for (let i = 0; i < N; i++) {
@@ -915,13 +1042,11 @@
                 c.classList.remove('celebration');
                 cleanup.forEach(p => { try { if (p.parentNode) p.parentNode.removeChild(p); } catch (e) { } });
             }, 950);
-            // Safety net: clean up particles on rapid card transitions
             window._kanjiSparkleCleanup = () => { cleanup.forEach(p => { try { if (p.parentNode) p.parentNode.removeChild(p); } catch (e) { } }); };
         });
 
         // ···· Scoring Algorithms ····
 
-        // Resample a polyline to N equidistant points (normalizes drawing speed)
         const resamplePoints = (pts, n) => {
             if (pts.length < 2) return pts.slice();
             const dists = [0];
@@ -941,7 +1066,6 @@
             return out;
         };
 
-        // Discrete Fréchet distance – iterative DP, O(n·m), no recursion
         const discreteFrechet = (P, Q) => {
             const n = P.length, m = Q.length;
             const dp = new Float64Array(n * m);
@@ -957,7 +1081,6 @@
             return dp[n * m - 1];
         };
 
-        // Average per-point distance (complements worst-case Fréchet)
         const avgPointDist = (P, Q) => {
             let sum = 0;
             const n = Math.min(P.length, Q.length);
@@ -965,7 +1088,6 @@
             return sum / n;
         };
 
-        // Direction angles for N equal-length segments of a polyline
         const segmentAngles = (pts, n) => {
             const step = (pts.length - 1) / n;
             const out = [];
@@ -976,7 +1098,6 @@
             return out;
         };
 
-        // Light smoothing to reduce finger jitter (preserves start/end points)
         const smoothInput = (pts) => {
             if (pts.length < 3) return pts;
             const out = [pts[0]];
@@ -987,23 +1108,134 @@
             return out;
         };
 
-        // ···· Stroke Evaluation ····
+        // ···· Hungarian Algorithm (Kuhn-Munkres) ····
+
+        const hungarianMatch = (costMatrix) => {
+            const n = costMatrix.length;
+            if (n === 0) return [];
+            const u = new Float64Array(n + 1);
+            const v = new Float64Array(n + 1);
+            const p = new Int32Array(n + 1);    // p[j] = row assigned to col j
+            const way = new Int32Array(n + 1);
+            for (let i = 1; i <= n; i++) {
+                p[0] = i;
+                let j0 = 0;
+                const minv = new Float64Array(n + 1).fill(Infinity);
+                const used = new Uint8Array(n + 1);
+                do {
+                    used[j0] = 1;
+                    let i0 = p[j0], delta = Infinity, j1 = 0;
+                    for (let j = 1; j <= n; j++) {
+                        if (used[j]) continue;
+                        const cur = costMatrix[i0 - 1][j - 1] - u[i0] - v[j];
+                        if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+                        if (minv[j] < delta) { delta = minv[j]; j1 = j; }
+                    }
+                    for (let j = 0; j <= n; j++) {
+                        if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
+                        else minv[j] -= delta;
+                    }
+                    j0 = j1;
+                } while (p[j0] !== 0);
+                do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+            }
+            const result = [];
+            for (let j = 1; j <= n; j++) {
+                if (p[j] !== 0) result.push([p[j] - 1, j - 1]);
+            }
+            return result;
+        };
+
+        // ···· Sample reference stroke to points ····
+
+        const sampleRefStroke = (path) => {
+            const len = path.getTotalLength() || 1;
+            const pts = [];
+            for (let i = 0; i <= SAMPLE_POINTS; i++) {
+                const pt = path.getPointAtLength((i / SAMPLE_POINTS) * len);
+                pts.push({ x: pt.x, y: pt.y });
+            }
+            return pts;
+        };
+
+        // ===================================================================
+        // HANDLER DEFINITIONS (both modes, always available)
+        // ===================================================================
+
+        // ---- Unified Drawing Handlers ----
+
+        const startDrawing = (e) => {
+            if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
+            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
+            if (isFreeMode ? freeFinished : currentStroke >= paths.length) return;
+            if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
+
+            if (!isFreeMode) {
+                clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
+                drawLayer.classList.remove('fade-out'); clearDrawLayer();
+                paths[currentStroke].classList.remove('hint-active');
+            }
+
+            isDrawing = true; userPoints = [];
+            const pos = getMousePos(e);
+            userPoints.push(pos);
+            currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            dString = `M ${pos.x} ${pos.y}`;
+            currentSVGPath.setAttribute("d", dString);
+            currentSVGPath.setAttribute("fill", "none");
+            currentSVGPath.style.setProperty("stroke", "var(--stroke-active)");
+            currentSVGPath.setAttribute("stroke-width", "4");
+            currentSVGPath.setAttribute("stroke-linecap", "round");
+            currentSVGPath.setAttribute("stroke-linejoin", "round");
+            drawLayer.appendChild(currentSVGPath);
+        };
+
+        const draw = (e) => {
+            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            userPoints.push(pos);
+            dString += ` L ${pos.x} ${pos.y}`;
+            if (currentSVGPath) currentSVGPath.setAttribute("d", dString);
+        };
+
+        const stopDrawing = (e) => {
+            if (!isDrawing) return;
+            if (e && e.pointerId) { try { drawLayer.releasePointerCapture(e.pointerId); } catch (err) { } }
+            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
+            isDrawing = false;
+
+            if (isFreeMode) {
+                let totalTravel = 0;
+                for (let i = 1; i < userPoints.length; i++) {
+                    totalTravel += Math.hypot(userPoints[i].x - userPoints[i - 1].x, userPoints[i].y - userPoints[i - 1].y);
+                }
+                if (totalTravel < 4) {
+                    if (currentSVGPath && currentSVGPath.parentNode) currentSVGPath.parentNode.removeChild(currentSVGPath);
+                    currentSVGPath = null; userPoints = [];
+                    return;
+                }
+                freeStrokes.push(userPoints.slice());
+                freeSVGPaths.push(currentSVGPath);
+                currentSVGPath = null; userPoints = [];
+                saveFreeStrokes();
+            } else {
+                evaluateStroke();
+            }
+        };
 
         const evaluateStroke = () => {
             if (userPoints.length === 0) { clearDrawLayer(); return; }
 
-            // Minimum travel distance: filter accidental taps
             let totalTravel = 0;
             for (let i = 1; i < userPoints.length; i++) {
                 totalTravel += Math.hypot(userPoints[i].x - userPoints[i - 1].x, userPoints[i].y - userPoints[i - 1].y);
             }
             if (totalTravel < 4) { clearDrawLayer(); return; }
 
-            // Read stroke strictness setting
             const strictness = hostGet('kanjiOptStrictness', cachedGlobalConf.strictness || 'normal');
             const mult = strictness === 'loose' ? 1.35 : strictness === 'strict' ? 0.7 : 1.0;
 
-            // Sample the ideal stroke path
             const idealPath = paths[currentStroke];
             const idealLength = idealPath.getTotalLength() || 1;
             const idealPoints = [];
@@ -1012,25 +1244,19 @@
                 idealPoints.push({ x: pt.x, y: pt.y });
             }
 
-            // Smooth user input to reduce touch jitter, then resample
             const userSmoothed = smoothInput(userPoints);
             const userResampled = resamplePoints(userSmoothed, SAMPLE_POINTS + 1);
 
-            // Length-relative tolerances: short strokes stricter, long strokes more forgiving
-            const lenFactor = Math.max(0.7, Math.min(1.4, idealLength / 45));
+            const lenFactor = Math.max(0.85, Math.min(1.4, idealLength / 45));
             const tolStartEnd = 15 * mult * lenFactor;
             const tolShape = 17 * mult * lenFactor;
             const tolAvg = tolShape * 0.6;
 
-            // --- Hard gates (instant rejection) ---
-
-            // Stroke length ratio
             const lenRatioMin = strictness === 'strict' ? 0.50 : 0.40;
             const lenRatioMax = strictness === 'strict' ? 2.00 : 2.50;
             const lengthRatio = totalTravel / idealLength;
             const lengthOk = lengthRatio >= lenRatioMin && lengthRatio <= lenRatioMax;
 
-            // Direction consistency: 4 sectors must match within angular tolerance
             const NSEC = 4;
             const idealAng = segmentAngles(idealPoints, NSEC);
             const userAng = segmentAngles(userResampled, NSEC);
@@ -1046,23 +1272,18 @@
                 if (ad > tolAngle) { directionOk = false; break; }
             }
 
-            // --- Metrics ---
-
             const startDist = Math.hypot(userResampled[0].x - idealPoints[0].x, userResampled[0].y - idealPoints[0].y);
             const endDist = Math.hypot(userResampled[userResampled.length - 1].x - idealPoints[SAMPLE_POINTS].x, userResampled[userResampled.length - 1].y - idealPoints[SAMPLE_POINTS].y);
             const shapeError = discreteFrechet(idealPoints, userResampled);
             const avgError = avgPointDist(idealPoints, userResampled);
 
-            // Normalized scores (0 = perfect, 1 = at individual threshold)
             const sStart = startDist / tolStartEnd;
             const sEnd = endDist / tolStartEnd;
             const sShape = shapeError / tolShape;
             const sAvg = avgError / tolAvg;
 
-            // Hard ceiling: no single metric may exceed 1.4x its threshold
             const ceilingOk = sStart <= 1.4 && sEnd <= 1.4 && sShape <= 1.4 && sAvg <= 1.6;
 
-            // Weighted composite: slight exceed in one area compensated by others
             const composite = sStart * 0.175 + sEnd * 0.175 + sShape * 0.4 + sAvg * 0.25;
 
             if (lengthOk && directionOk && ceilingOk && composite <= 1.0) {
@@ -1079,7 +1300,7 @@
                 if (mistakes >= 3 && isAutoDrawOn) {
                     const p = paths[currentStroke];
                     p.classList.remove('hint-active');
-                    void p.offsetWidth; // Force Reflow
+                    void p.offsetWidth;
                     p.classList.add('hint-active');
                 }
 
@@ -1099,16 +1320,21 @@
             userPoints = [];
         };
 
-        const stopDrawing = (e) => {
-            if (!isDrawing) return;
-            if (e && e.pointerId) { try { drawLayer.releasePointerCapture(e.pointerId); } catch (err) { } }
-            if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
-            isDrawing = false; evaluateStroke();
+        // ---- Free Stroke Persistence ----
+
+        const saveFreeStrokes = () => {
+            const strokeData = freeSVGPaths.map(p => ({ d: p ? p.getAttribute('d') : '' })).filter(s => s.d);
+            const json = JSON.stringify(strokeData);
+            ['sessionStorage', 'localStorage'].forEach(s => {
+                try { window[s].setItem('kanjiFreeStrokes', json); } catch (e) { }
+            });
+            window._kanjiFreeStrokes = strokeData;
         };
 
-        // ···· Event Wiring ····
+        // ===================================================================
+        // EVENT WIRING
+        // ===================================================================
 
-        const kanjiContainer = document.querySelector('.kanji-container');
         if (kanjiContainer) {
             const blockAppGestures = (e) => {
                 if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
@@ -1138,12 +1364,13 @@
             document.addEventListener('mouseup', window.kanjiStopDrawingHandler); document.addEventListener('touchend', window.kanjiStopDrawingHandler); document.addEventListener('touchcancel', window.kanjiStopDrawingHandler);
         }
 
-        // ···· Button Actions (Reveal / Reset / Skip) ····
+        // ===================================================================
+        // BUTTON ACTIONS (re-bindable per mode)
+        // ===================================================================
 
-        var _revealFn = () => { document.getElementById('svg-guide').classList.toggle('is-visible'); };
-        document.getElementById('button-reveal').addEventListener('click', _revealFn);
-        document.getElementById('button-reveal')._kanjiAction = _revealFn;
-        var _resetFn = () => {
+        const revealAction = () => { document.getElementById('svg-guide').classList.toggle('is-visible'); };
+
+        const guidedResetAction = () => {
             currentStroke = 0; mistakes = 0; userPoints = []; problemStrokes.fill(0); saveState();
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
             const preColors = [];
@@ -1167,9 +1394,8 @@
             if (actionButtons) actionButtons.style.display = 'flex';
             const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
         };
-        document.getElementById('button-reset').addEventListener('click', _resetFn);
-        document.getElementById('button-reset')._kanjiAction = _resetFn;
-        var _skipFn = () => {
+
+        const guidedSkipAction = () => {
             if (currentStroke >= paths.length) return;
             const pathToAnimate = paths[currentStroke]; problemStrokes[currentStroke] = 3;
             pathToAnimate.classList.remove('hint-active', 'rewind-anim'); pathToAnimate.classList.add('animate-draw');
@@ -1182,8 +1408,67 @@
                 const flipTimer = setTimeout(() => { playCompletionAnimation().then(() => triggerAutoFlip()); }, ANIMATION_DURATION_MS); skipTimeouts.push(flipTimer);
             }
         };
-        document.getElementById('button-skip').addEventListener('click', _skipFn);
-        document.getElementById('button-skip')._kanjiAction = _skipFn;
+
+        const freeResetAction = () => {
+            freeStrokes = []; freeSVGPaths = []; freeFinished = false;
+            userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
+            drawLayer.innerHTML = ''; currentSVGPath = null;
+            paths.forEach(p => {
+                p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
+                p.style.removeProperty('stroke');
+            });
+            document.getElementById('svg-guide').classList.remove('is-visible');
+            if (actionButtons) actionButtons.style.display = 'flex';
+            ['sessionStorage', 'localStorage'].forEach(s => {
+                try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
+            });
+            window._kanjiFreeStrokes = null;
+            const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
+        };
+
+        // Delegate click handlers (bind once, action is swappable)
+        ['button-reveal', 'button-reset', 'button-skip'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn && !btn._kanjiClickBound) {
+                btn._kanjiClickBound = true;
+                btn.addEventListener('click', function () { if (this._kanjiAction) this._kanjiAction(); });
+            }
+        });
+
+        const skipBtn = document.getElementById('button-skip');
+        const bindModeButtons = () => {
+            document.getElementById('button-reveal')._kanjiAction = revealAction;
+            document.getElementById('button-reset')._kanjiAction = isFreeMode ? freeResetAction : guidedResetAction;
+            if (isFreeMode) {
+                skipBtn.style.display = 'none';
+            } else {
+                skipBtn.style.display = '';
+                skipBtn._kanjiAction = guidedSkipAction;
+            }
+        };
+        bindModeButtons();
+
+        // ===================================================================
+        // MODE SWITCHING (called from settings)
+        // ===================================================================
+
+        window._kanjiSwitchDrawMode = (newMode) => {
+            // Reset current state
+            const resetBtn = document.getElementById('button-reset');
+            if (resetBtn._kanjiAction) resetBtn._kanjiAction();
+
+            // Update mode flag
+            isFreeMode = newMode === 'free';
+
+            // Toggle CSS class
+            if (kanjiContainer) {
+                if (isFreeMode) kanjiContainer.classList.add('free-canvas-mode');
+                else kanjiContainer.classList.remove('free-canvas-mode');
+            }
+
+            // Re-bind button actions for new mode
+            bindModeButtons();
+        };
     })();
 
     // --- Button Feedback & Stylus Fixes [SHARED with c2-front] ---

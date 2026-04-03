@@ -69,6 +69,17 @@
                     else { var s = document.createElement('style'); s.id = 'kanji-anti-flicker'; s.textContent = css; document.head.appendChild(s); }
                 }
             }
+            // Hide SVG paths in handwriting/SBS mode to prevent 1-frame flash
+            var drawMode = _ck('c1_kanjiOptDrawMode') || localStorage.getItem('c1_kanjiOptDrawMode') || _ck('kanjiOptDrawMode') || localStorage.getItem('kanjiOptDrawMode') || 'guided';
+            var freeView = _ck('c1_kanjiOptFreeView') || localStorage.getItem('c1_kanjiOptFreeView') || _ck('kanjiOptFreeView') || localStorage.getItem('kanjiOptFreeView') || 'handwriting';
+            var sbsOn = (_ck('c1_kanjiOptSideBySide') || localStorage.getItem('c1_kanjiOptSideBySide') || _ck('kanjiOptSideBySide') || localStorage.getItem('kanjiOptSideBySide') || 'on') === 'on';
+            var hasFreeStrokes = !!(sessionStorage.getItem('kanjiFreeStrokes') || localStorage.getItem('kanjiFreeStrokes'));
+            if (drawMode === 'free' && hasFreeStrokes && (freeView === 'handwriting' || sbsOn)) {
+                var hwCSS = '#svg-bg path { stroke: transparent !important; }';
+                var el2 = document.getElementById('kanji-anti-flicker');
+                if (el2) el2.textContent += hwCSS;
+                else { var s2 = document.createElement('style'); s2.id = 'kanji-anti-flicker'; s2.textContent = hwCSS; document.head.appendChild(s2); }
+            }
         } catch (e) { }
     })();
 </script>
@@ -406,6 +417,71 @@
         const paths = svgBg.querySelectorAll('path');
         const afEl = document.getElementById('kanji-anti-flicker');
 
+        // ── Shared helpers ──
+
+        // Add stroke numbers to an SVG using getPointAtLength for positioning
+        const addNumbersGPAL = (svg, colorFn, opacityFn) => {
+            const svgPaths = svg.querySelectorAll('path');
+            const placed = [];
+            const MD = 6.0;
+            svgPaths.forEach((sp, i) => {
+                const s0 = sp.getPointAtLength(0);
+                let s1;
+                try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
+                const ddx = s1.x - s0.x, ddy = s1.y - s0.y;
+                const dd = Math.hypot(ddx, ddy) || 1;
+                let fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
+                let coll = true, att = 0;
+                while (coll && att < 10) { coll = false; for (const p of placed) { const dist = Math.hypot(fx - p.x, fy - p.y); if (dist < MD) { coll = true; let px = fx - p.x, py = fy - p.y; if (px === 0 && py === 0) { px = -1; py = -1; } const pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); } } att++; }
+                placed.push({ x: fx, y: fy });
+                const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                t.setAttribute('x', fx); t.setAttribute('y', fy);
+                t.setAttribute('class', 'stroke-number');
+                t.textContent = i + 1;
+                t.style.fill = colorFn(i);
+                if (opacityFn) { const op = opacityFn(i); if (op !== undefined) t.style.opacity = op; }
+                t.style.stroke = 'var(--surface)'; t.style.strokeWidth = '1.5px';
+                t.style.strokeLinecap = 'round'; t.style.strokeLinejoin = 'round';
+                t.style.paintOrder = 'stroke fill';
+                svg.appendChild(t);
+            });
+        };
+
+        // Create an SVG stroke path element
+        const makeStrokePath = (d, width, color) => {
+            const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            p.setAttribute('d', d);
+            p.setAttribute('fill', 'none');
+            p.setAttribute('stroke-width', width);
+            p.setAttribute('stroke-linecap', 'round');
+            p.setAttribute('stroke-linejoin', 'round');
+            p.style.stroke = color;
+            return p;
+        };
+
+        // Hide reference SVG paths and remove stroke numbers
+        const hideRefPaths = () => {
+            const refPaths = svgBg.querySelectorAll('path[d]');
+            refPaths.forEach(p => p.style.setProperty('stroke', 'transparent', 'important'));
+            const colorStyle = document.getElementById('kanji-stroke-colors');
+            if (colorStyle) colorStyle.textContent = '#svg-bg path{stroke:transparent !important}';
+            svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
+        };
+
+        // Map freePS penalty → color
+        const penaltyColor = (m) => {
+            if (m >= 3) return 'var(--stroke-err)';
+            if (m === 2) return 'var(--stroke-warn2)';
+            if (m === 1) return 'var(--stroke-warn1)';
+            return 'var(--stroke-active)';
+        };
+
+        const gradeColors = {
+            good: 'var(--stroke-active)',
+            ok: 'var(--stroke-warn1)',
+            bad: 'var(--stroke-err)'
+        };
+
         const applyBackFeatures = function () {
             const globalConf = getGlobalConfig();
             const isColorBack = safeGetItem('c1_kanjiOptColorBack', safeGetItem('kanjiOptColorBack', globalConf.colorBack)) === 'on';
@@ -457,57 +533,491 @@
             svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
 
             if (isNumbers) {
-                const placedPositions = [];
-                const MIN_DISTANCE = 6.0;
-                paths.forEach((path, index) => {
-                    const startPoint = path.getPointAtLength(0);
-                    let nextPoint;
-                    try { nextPoint = path.getPointAtLength(4); } catch (e) { nextPoint = startPoint; }
-
-                    const dx = nextPoint.x - startPoint.x, dy = nextPoint.y - startPoint.y;
-                    const dist = Math.hypot(dx, dy) || 1;
-                    const OFFSET = 4.5;
-                    let finalX = startPoint.x - (dx / dist) * OFFSET, finalY = startPoint.y - (dy / dist) * OFFSET;
-
-                    let collision = true, attempts = 0;
-                    while (collision && attempts < 10) {
-                        collision = false;
-                        for (let pos of placedPositions) {
-                            const d = Math.hypot(finalX - pos.x, finalY - pos.y);
-                            if (d < MIN_DISTANCE) {
-                                collision = true;
-                                let pushDx = finalX - pos.x, pushDy = finalY - pos.y;
-                                if (pushDx === 0 && pushDy === 0) { pushDx = -1; pushDy = -1; }
-                                const pushDist = Math.hypot(pushDx, pushDy), pushPower = (MIN_DISTANCE - d + 0.5);
-                                finalX += (pushDx / pushDist) * pushPower; finalY += (pushDy / pushDist) * pushPower;
-                            }
-                        }
-                        attempts++;
-                    }
-                    placedPositions.push({ x: finalX, y: finalY });
-
-                    const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    textNode.setAttribute("x", finalX);
-                    textNode.setAttribute("y", finalY);
-                    textNode.setAttribute("class", "stroke-number");
-                    textNode.textContent = index + 1;
-                    textNode.style.fill = (pathColors[index] !== 'var(--stroke-active)') ? pathColors[index] : 'var(--text-muted)';
-
-                    textNode.style.stroke = "var(--surface)";
-                    textNode.style.strokeWidth = "1.5px";
-                    textNode.style.strokeLinecap = "round";
-                    textNode.style.strokeLinejoin = "round";
-                    textNode.style.paintOrder = "stroke fill";
-
-                    svgBg.appendChild(textNode);
+                addNumbersGPAL(svgBg, (i) => {
+                    return (pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
                 });
             }
         };
 
-        // Run synchronously to prevent flicker on card load
-        applyBackFeatures();
 
-        window.kanjiSettingsGlobalHandler = applyBackFeatures;
+        // Run synchronously to prevent flicker on card load (guided mode only).
+        // In free mode, renderFreeView() handles everything — running applyBackFeatures()
+        // here would override the anti-flicker transparent strokes and cause a 1-frame flash.
+        const _earlyDrawMode = safeGetItem('c1_kanjiOptDrawMode', safeGetItem('kanjiOptDrawMode', 'guided'));
+        if (_earlyDrawMode !== 'free') {
+            applyBackFeatures();
+        }
+
+        // --- Grid Builder for Side-by-Side ---
+
+        const buildGridSvg = () => {
+            const globalConf = getGlobalConfig();
+            const type = safeGetItem('c1_kanjiGridType', safeGetItem('kanjiGridType', globalConf.type));
+            const style = safeGetItem('c1_kanjiGridStyle', safeGetItem('kanjiGridStyle', globalConf.style));
+            const thick = safeGetItem('c1_kanjiGridThick', safeGetItem('kanjiGridThick', globalConf.thick));
+            const opac = safeGetItem('c1_kanjiGridOpac', safeGetItem('kanjiGridOpac', globalConf.opac));
+
+            if (type === 'none') return null;
+
+            let dashValue = '3, 6', thickValue = '0.5', opacityValue = '0.5';
+            if (style === 'solid') dashValue = 'none';
+            if (style === 'dotted') dashValue = '0.05, 5';
+            if (thick === 'thin') thickValue = '0.3';
+            else if (thick === 'thick') thickValue = '1.0';
+            if (opac === 'light') opacityValue = '0.25';
+            if (opac === 'dark') opacityValue = '0.8';
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 109 109');
+            svg.setAttribute('class', 'sbs-grid');
+            svg.style.opacity = opacityValue;
+
+            const c = 54.5;
+            const addSeg = (d) => {
+                const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                p.setAttribute('d', d);
+                p.setAttribute('fill', 'none');
+                p.setAttribute('stroke', 'var(--grid-color)');
+                p.setAttribute('stroke-width', thickValue);
+                if (dashValue !== 'none') p.setAttribute('stroke-dasharray', dashValue);
+                if (style === 'dotted') p.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(p);
+            };
+
+            if (type === 'cross' || type === 'full') {
+                addSeg(`M ${c},${c} L ${c},0`); addSeg(`M ${c},${c} L ${c},109`);
+                addSeg(`M ${c},${c} L 0,${c}`); addSeg(`M ${c},${c} L 109,${c}`);
+            }
+            if (type === 'full') {
+                addSeg(`M ${c},${c} L 0,0`); addSeg(`M ${c},${c} L 109,0`);
+                addSeg(`M ${c},${c} L 0,109`); addSeg(`M ${c},${c} L 109,109`);
+            }
+            return svg;
+        };
+
+        // Rebuild SBS grid lines (called on settings change)
+        const rebuildSbsGrids = () => {
+            const wrapper = document.querySelector('.side-by-side-wrapper');
+            if (!wrapper) return;
+            wrapper.querySelectorAll('.sbs-grid').forEach(el => el.remove());
+            wrapper.querySelectorAll('.sbs-kanji').forEach(box => {
+                const grid = buildGridSvg();
+                if (grid) box.insertBefore(grid, box.firstChild);
+            });
+        };
+
+        // --- Determine mode and build side-by-side if free ---
+        // drawMode: 'guided' → standard stroke-by-stroke display
+        //           'free'   → Fréchet/Hungarian evaluation → renderFreeView()
+        // freeView: 'handwriting' → user strokes colored, ref paths hidden
+        //           'svg'         → standard SVG path display + SBS option
+        // Generation counter guards against stale setTimeout callbacks.
+
+        const drawMode = safeGetItem('c1_kanjiOptDrawMode', safeGetItem('kanjiOptDrawMode', 'guided'));
+        const container = document.querySelector('.kanji-container');
+
+        if (drawMode === 'free') {
+            // ===================================================================
+            // FREE MODE: Evaluation + Side-by-Side  OR  Handwriting Overlay
+            // ===================================================================
+
+            const globalConfFree = getGlobalConfig();
+            const freeView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConfFree.freeView || 'handwriting'));
+
+            let freeStrokeData = window._kanjiFreeStrokes || null;
+            if (!freeStrokeData) {
+                try {
+                    const raw = sessionStorage.getItem('kanjiFreeStrokes') || localStorage.getItem('kanjiFreeStrokes');
+                    if (raw) freeStrokeData = JSON.parse(raw);
+                } catch (e) { }
+            }
+
+            // If no strokes were drawn, keep applyBackFeatures() coloring
+            // (all strokes red since strokesCompleted=0)
+            if (!freeStrokeData || freeStrokeData.length === 0) {
+                // No SBS — reference kanji stays visible with error coloring
+            } else if (container) {
+                // Run evaluation synchronously to prevent visual flash/jitter
+                const gen = window._kanjiGeneration || 0;
+                {
+                    // Guard: if a new card loaded, abort
+                    if ((window._kanjiGeneration || 0) !== gen) return;
+                    // ···· Evaluation Algorithms (shared by both views) ····
+
+                    const SAMPLE_N = 65;
+
+                    const parseDToPoints = (d) => {
+                        const parts = d.trim().split(/\s+/);
+                        const pts = [];
+                        for (let i = 0; i < parts.length; i++) {
+                            if (parts[i] === 'M' || parts[i] === 'L') {
+                                pts.push({ x: parseFloat(parts[i + 1]), y: parseFloat(parts[i + 2]) });
+                                i += 2;
+                            }
+                        }
+                        return pts;
+                    };
+
+                    const resamplePts = (pts, n) => {
+                        if (pts.length < 2) return pts.slice();
+                        const dists = [0];
+                        for (let i = 1; i < pts.length; i++) dists.push(dists[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+                        const totalLen = dists[dists.length - 1];
+                        if (totalLen === 0) return pts.slice(0, 1);
+                        const out = [pts[0]];
+                        let j = 1;
+                        for (let i = 1; i < n; i++) {
+                            const target = (i / (n - 1)) * totalLen;
+                            while (j < dists.length && dists[j] < target) j++;
+                            if (j >= pts.length) { out.push(pts[pts.length - 1]); continue; }
+                            const seg = dists[j] - dists[j - 1] || 1;
+                            const t = (target - dists[j - 1]) / seg;
+                            out.push({ x: pts[j - 1].x + (pts[j].x - pts[j - 1].x) * t, y: pts[j - 1].y + (pts[j].y - pts[j - 1].y) * t });
+                        }
+                        return out;
+                    };
+
+                    const frechet = (P, Q) => {
+                        const n = P.length, m = Q.length;
+                        const dp = new Float64Array(n * m);
+                        for (let i = 0; i < n; i++) {
+                            for (let j = 0; j < m; j++) {
+                                const dist = Math.hypot(P[i].x - Q[j].x, P[i].y - Q[j].y);
+                                if (i === 0 && j === 0) dp[j] = dist;
+                                else if (i === 0) dp[j] = Math.max(dp[j - 1], dist);
+                                else if (j === 0) dp[i * m] = Math.max(dp[(i - 1) * m], dist);
+                                else dp[i * m + j] = Math.max(Math.min(dp[(i - 1) * m + j], dp[(i - 1) * m + j - 1], dp[i * m + j - 1]), dist);
+                            }
+                        }
+                        return dp[n * m - 1];
+                    };
+
+                    const smooth = (pts) => {
+                        if (pts.length < 3) return pts;
+                        const out = [pts[0]];
+                        for (let i = 1; i < pts.length - 1; i++) {
+                            out.push({ x: (pts[i - 1].x + pts[i].x + pts[i + 1].x) / 3, y: (pts[i - 1].y + pts[i].y + pts[i + 1].y) / 3 });
+                        }
+                        out.push(pts[pts.length - 1]);
+                        return out;
+                    };
+
+                    const hungarian = (costMatrix) => {
+                        const n = costMatrix.length;
+                        if (n === 0) return [];
+                        const u = new Float64Array(n + 1);
+                        const v = new Float64Array(n + 1);
+                        const p = new Int32Array(n + 1);
+                        const way = new Int32Array(n + 1);
+                        for (let i = 1; i <= n; i++) {
+                            p[0] = i;
+                            let j0 = 0;
+                            const minv = new Float64Array(n + 1).fill(Infinity);
+                            const used = new Uint8Array(n + 1);
+                            do {
+                                used[j0] = 1;
+                                let i0 = p[j0], delta = Infinity, j1 = 0;
+                                for (let j = 1; j <= n; j++) {
+                                    if (used[j]) continue;
+                                    const cur = costMatrix[i0 - 1][j - 1] - u[i0] - v[j];
+                                    if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+                                    if (minv[j] < delta) { delta = minv[j]; j1 = j; }
+                                }
+                                for (let j = 0; j <= n; j++) {
+                                    if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
+                                    else minv[j] -= delta;
+                                }
+                                j0 = j1;
+                            } while (p[j0] !== 0);
+                            do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+                        }
+                        const result = [];
+                        for (let j = 1; j <= n; j++) {
+                            if (p[j] !== 0) result.push([p[j] - 1, j - 1]);
+                        }
+                        return result;
+                    };
+
+                    const sampleRef = (path) => {
+                        const len = path.getTotalLength() || 1;
+                        const pts = [];
+                        for (let i = 0; i < SAMPLE_N; i++) {
+                            const pt = path.getPointAtLength((i / (SAMPLE_N - 1)) * len);
+                            pts.push({ x: pt.x, y: pt.y });
+                        }
+                        return pts;
+                    };
+
+                    // ···· Run Evaluation ····
+
+                    const nUser = freeStrokeData.length;
+                    const nRef = paths.length;
+                    const dim = Math.max(nUser, nRef);
+
+                    const userProcessed = freeStrokeData.map(s => {
+                        const rawPts = parseDToPoints(s.d);
+                        return resamplePts(smooth(rawPts), SAMPLE_N);
+                    });
+
+                    const refProcessed = [];
+                    for (let r = 0; r < nRef; r++) refProcessed.push(sampleRef(paths[r]));
+
+                    const DUMMY_COST = 999;
+                    const costMatrix = [];
+                    for (let i = 0; i < dim; i++) {
+                        const row = [];
+                        for (let j = 0; j < dim; j++) {
+                            if (i < nUser && j < nRef) {
+                                const fwd = frechet(userProcessed[i], refProcessed[j]);
+                                const rev = frechet(userProcessed[i], refProcessed[j].slice().reverse());
+                                row.push(Math.min(fwd, rev));
+                            } else {
+                                row.push(DUMMY_COST);
+                            }
+                        }
+                        costMatrix.push(row);
+                    }
+
+                    const assignments = hungarian(costMatrix);
+
+                    const refToUser = {}, userToRef = {};
+                    for (const [ui, ri] of assignments) {
+                        if (ui < nUser && ri < nRef && costMatrix[ui][ri] < DUMMY_COST) {
+                            refToUser[ri] = { userIdx: ui, cost: costMatrix[ui][ri] };
+                            userToRef[ui] = { refIdx: ri, cost: costMatrix[ui][ri] };
+                        }
+                    }
+
+                    // Strictness affects grading thresholds (loose=lenient, strict=demanding)
+                    const strictness = safeGetItem('c1_kanjiOptStrictness', safeGetItem('kanjiOptStrictness', globalConfFree.strictness || 'normal'));
+                    const sMult = strictness === 'loose' ? 1.35 : strictness === 'strict' ? 0.7 : 1.0;
+                    const GOOD_THRESH = 12 * sMult, OK_THRESH = 22 * sMult;
+
+                    const gradedStrokes = freeStrokeData.map((s, u) => {
+                        let grade = 'bad';
+                        if (userToRef[u] !== undefined) {
+                            const cost = userToRef[u].cost;
+                            if (cost <= GOOD_THRESH) grade = 'good';
+                            else if (cost <= OK_THRESH) grade = 'ok';
+                        }
+                        return { d: s.d, grade };
+                    });
+
+                    const freePS = new Array(nRef).fill(0);
+                    for (let r = 0; r < nRef; r++) {
+                        if (refToUser[r] !== undefined) {
+                            const cost = refToUser[r].cost;
+                            if (cost <= GOOD_THRESH) freePS[r] = 0;
+                            else if (cost <= OK_THRESH) freePS[r] = 1;
+                            else freePS[r] = 2;
+                        } else {
+                            freePS[r] = 3;
+                        }
+                    }
+
+                    // Save evaluated data
+                    window._kanjiProblemStrokes = freePS;
+                    window._kanjiCurrentStroke = nRef;
+                    ['sessionStorage', 'localStorage'].forEach(st => {
+                        try {
+                            window[st].setItem('kanjiErrors', JSON.stringify(freePS));
+                            window[st].setItem('kanjiCurrentStroke', nRef.toString());
+                            window[st].setItem('kanjiFreeStrokes', JSON.stringify(gradedStrokes));
+                        } catch (e) { }
+                    });
+                    window._kanjiFreeStrokes = gradedStrokes;
+
+                    // ···· Build ordered strokes + render view ····
+
+                    // Build ordered stroke list: interleave user strokes and ghost (missing) strokes
+                    // by reference index, so numbering reflects the correct stroke order.
+                    const buildOrderedStrokes = () => {
+                        const refToUserIdx = {};
+                        for (const [ui, ri] of assignments) {
+                            if (ui < nUser && ri < nRef && costMatrix[ui][ri] < DUMMY_COST) {
+                                refToUserIdx[ri] = ui;
+                            }
+                        }
+                        const ordered = [];
+                        const usedUser = new Set();
+                        for (let r = 0; r < nRef; r++) {
+                            if (refToUserIdx[r] !== undefined) {
+                                const ui = refToUserIdx[r];
+                                ordered.push({ type: 'user', userIdx: ui, refIdx: r, stroke: gradedStrokes[ui] });
+                                usedUser.add(ui);
+                            } else {
+                                ordered.push({ type: 'ghost', refIdx: r });
+                            }
+                        }
+                        for (let u = 0; u < nUser; u++) {
+                            if (!usedUser.has(u)) {
+                                ordered.push({ type: 'extra', userIdx: u, stroke: gradedStrokes[u] });
+                            }
+                        }
+                        return ordered;
+                    };
+
+                    const orderedStrokes = buildOrderedStrokes();
+
+                    // Store evaluation data for dynamic settings rebuild (avoid stale DOM refs)
+                    const refPathData = [];
+                    for (let i = 0; i < nRef; i++) {
+                        refPathData.push(paths[i].getAttribute('d') || '');
+                    }
+                    window._kanjiFreeEval = { freePS, gradedStrokes, orderedStrokes, refPathData, nRef };
+
+                    // Render the current free-mode view (called on load and on settings change)
+                    const renderFreeView = () => {
+                        const ev = window._kanjiFreeEval;
+                        if (!ev) return;
+                        const cont = document.querySelector('.kanji-container');
+                        const bg = document.getElementById('svg-bg');
+                        if (!cont || !bg) return;
+                        const refPaths = bg.querySelectorAll('path[d]');
+
+                        // Read target view BEFORE teardown to avoid 1-frame flash
+                        const gc = getGlobalConfig();
+                        const curView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', gc.freeView || 'handwriting'));
+                        const sbsEnabled = safeGetItem('c1_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', gc.sideBySide || 'on')) === 'on';
+                        const needsTransparent = curView === 'handwriting' || sbsEnabled;
+
+                        // Tear down previous view
+                        cont.querySelectorAll('.handwriting-overlay').forEach(el => el.remove());
+                        cont.classList.remove('show-handwriting');
+                        const oldSbs = cont.parentNode ? cont.parentNode.querySelector('.side-by-side-wrapper') : null;
+                        if (oldSbs) oldSbs.remove();
+                        cont.style.removeProperty('display');
+                        if (!needsTransparent) {
+                            refPaths.forEach(p => p.style.removeProperty('stroke'));
+                            const prevColorStyle = document.getElementById('kanji-stroke-colors');
+                            if (prevColorStyle) prevColorStyle.textContent = '';
+                        }
+
+                        const isColorBack = safeGetItem('c1_kanjiOptColorBack', safeGetItem('kanjiOptColorBack', gc.colorBack)) === 'on';
+                        const isNumbers = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', gc.numbers)) === 'on';
+                        const gradeColor = (g) => isColorBack ? (gradeColors[g] || 'var(--stroke-active)') : 'var(--stroke-active)';
+
+                        if (curView === 'handwriting' && !sbsEnabled) {
+                            // ── HANDWRITING VIEW (no SBS) ──
+                            hideRefPaths();
+
+                            const overlaySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                            overlaySvg.setAttribute('viewBox', '0 0 109 109');
+                            overlaySvg.classList.add('handwriting-overlay');
+
+                            const hwMeta = [];
+                            ev.orderedStrokes.forEach(entry => {
+                                if (entry.type === 'user' || entry.type === 'extra') {
+                                    const stroke = entry.stroke;
+                                    if (!stroke.d) return;
+                                    overlaySvg.appendChild(makeStrokePath(stroke.d, '4', gradeColor(stroke.grade)));
+                                    hwMeta.push({ type: entry.type, grade: stroke.grade });
+                                } else {
+                                    const origD = ev.refPathData[entry.refIdx] || '';
+                                    if (!origD) return;
+                                    const ghost = makeStrokePath(origD, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    ghost.setAttribute('stroke-dasharray', '3 3');
+                                    ghost.style.opacity = '0.45';
+                                    ghost.classList.add('hw-ghost-stroke');
+                                    overlaySvg.appendChild(ghost);
+                                    hwMeta.push({ type: 'ghost' });
+                                }
+                            });
+
+                            cont.classList.add('show-handwriting');
+                            cont.appendChild(overlaySvg);
+
+                            if (isNumbers) {
+                                addNumbersGPAL(overlaySvg, (i) => {
+                                    const meta = hwMeta[i];
+                                    if (!meta) return 'var(--text-muted)';
+                                    if (meta.type === 'ghost') return isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)';
+                                    const grade = meta.grade || 'good';
+                                    return isColorBack && grade !== 'good' ? gradeColor(grade) : 'var(--text-muted)';
+                                }, (i) => {
+                                    const meta = hwMeta[i];
+                                    return meta && meta.type === 'ghost' ? '0.45' : undefined;
+                                });
+                            }
+                        } else if (!sbsEnabled) {
+                            // ── SVG-PFADE VIEW (no SBS) ──
+                            applyBackFeatures();
+                        } else {
+                            // ── SIDE-BY-SIDE ──
+                            hideRefPaths();
+
+                            // Left: user strokes
+                            const userSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                            userSvg.setAttribute('viewBox', '0 0 109 109');
+                            ev.gradedStrokes.forEach(stroke => {
+                                if (!stroke.d) return;
+                                userSvg.appendChild(makeStrokePath(stroke.d, '4', gradeColor(stroke.grade)));
+                            });
+
+                            // Right: reference paths
+                            const refSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                            refSvg.setAttribute('viewBox', '0 0 109 109');
+                            ev.refPathData.forEach((origD, idx) => {
+                                if (!origD) return;
+                                const color = isColorBack ? penaltyColor(ev.freePS[idx] || 0) : 'var(--stroke-active)';
+                                const p = makeStrokePath(origD, '3', color);
+                                p.style.strokeDashoffset = '0';
+                                p.style.strokeDasharray = 'none';
+                                refSvg.appendChild(p);
+                            });
+
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'side-by-side-wrapper';
+                            wrapper.innerHTML =
+                                '<div class="side-by-side-box"><div class="sbs-kanji"></div><div class="side-by-side-label">Du</div></div>' +
+                                '<div class="side-by-side-box"><div class="sbs-kanji"></div><div class="side-by-side-label">Original</div></div>';
+                            const sbsBoxes = wrapper.querySelectorAll('.sbs-kanji');
+                            const gridUser = buildGridSvg();
+                            const gridRef = buildGridSvg();
+                            if (gridUser) sbsBoxes[0].appendChild(gridUser);
+                            if (gridRef) sbsBoxes[1].appendChild(gridRef);
+                            sbsBoxes[0].appendChild(userSvg);
+                            sbsBoxes[1].appendChild(refSvg);
+
+                            cont.style.display = 'none';
+                            cont.parentNode.insertBefore(wrapper, cont.nextSibling);
+
+                            if (isNumbers) {
+                                addNumbersGPAL(userSvg, (i) => {
+                                    if (!isColorBack) return 'var(--text-muted)';
+                                    const g = ev.gradedStrokes[i] && ev.gradedStrokes[i].grade;
+                                    return g && g !== 'good' ? gradeColor(g) : 'var(--text-muted)';
+                                });
+                                addNumbersGPAL(refSvg, (i) => {
+                                    if (!isColorBack) return 'var(--text-muted)';
+                                    return penaltyColor(ev.freePS[i] || 0) !== 'var(--stroke-active)' ? penaltyColor(ev.freePS[i] || 0) : 'var(--text-muted)';
+                                });
+                            }
+
+                            requestAnimationFrame(() => {
+                                wrapper.classList.add('splitting');
+                                requestAnimationFrame(() => { wrapper.classList.add('visible'); });
+                            });
+                        }
+                    };
+
+                    // Expose render function for settings handler
+                    window._kanjiRenderFreeView = renderFreeView;
+
+                    renderFreeView();
+                }
+            }
+        }
+
+        // Settings handler: re-apply colors + rebuild SBS grids dynamically
+        window.kanjiSettingsGlobalHandler = () => {
+            if (window._kanjiRenderFreeView) {
+                window._kanjiRenderFreeView();
+            } else {
+                applyBackFeatures();
+                rebuildSbsGrids();
+            }
+        };
     })();
 
     // --- Cross-Platform Fixes [SHARED with c2-back] ---

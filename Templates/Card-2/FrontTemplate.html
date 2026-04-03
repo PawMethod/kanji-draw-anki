@@ -126,6 +126,34 @@
                 Vorderseite
             </div>
 
+            <div class="setting-group-title">Zeichenmodus</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-draw-mode" value="guided"
+                        onchange="updateFeatureSetting('drawMode', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 19Q5 5 20 5" stroke-dasharray="3 2" opacity="0.4" />
+                            <polyline points="15 5 20 5 20 10" />
+                            <path d="M5 19Q7 13 11 10" />
+                            <circle cx="5" cy="19" r="2" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span>Geführt</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-draw-mode" value="free"
+                        onchange="updateFeatureSetting('drawMode', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 17c3-12 7 8 16-8" />
+                            <circle cx="4" cy="17" r="1.5" fill="currentColor" stroke="none" />
+                        </svg>
+                        <span>Frei</span>
+                    </div>
+                </label>
+            </div>
+
             <div class="setting-group-title">Strich-Genauigkeit</div>
             <div class="visual-options-grid">
                 <label><input type="radio" name="opt-strictness" value="loose"
@@ -163,8 +191,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Echtzeit-Prüfung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="color-front-title">Echtzeit-Prüfung</div>
+            <div class="visual-options-grid" id="color-front-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-front" value="off"
                         onchange="updateFeatureSetting('colorFront', this.value)">
                     <div class="visual-option">
@@ -189,8 +217,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Zeichen-Hilfe</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="autodraw-title">Zeichen-Hilfe</div>
+            <div class="visual-options-grid" id="autodraw-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-autodraw" value="off"
                         onchange="updateFeatureSetting('autodraw', this.value)">
                     <div class="visual-option">
@@ -216,8 +244,8 @@
                 </label>
             </div>
 
-            <div class="setting-group-title">Abschluss-Animation</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="setting-group-title" id="celebration-title">Abschluss-Animation</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="celebration-grid">
                 <label><input type="radio" name="opt-celebration" value="off"
                         onchange="updateFeatureSetting('celebration', this.value)">
                     <div class="visual-option">
@@ -239,6 +267,58 @@
                                 d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
                         </svg>
                         <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title" id="sbs-title">Vergleichsansicht</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid">
+                <label><input type="radio" name="opt-side-by-side" value="off"
+                        onchange="updateFeatureSetting('sideBySide', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <line x1="4" y1="4" x2="20" y2="20" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-side-by-side" value="on"
+                        onchange="updateFeatureSetting('sideBySide', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="9" height="18" rx="2" />
+                            <rect x="13" y="3" width="9" height="18" rx="2" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="setting-group-title" id="free-view-title">Strichansicht</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid">
+                <label><input type="radio" name="opt-free-view" value="handwriting"
+                        onchange="updateFeatureSetting('freeView', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round">
+                            <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                        </svg>
+                        <span>Handschrift</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-free-view" value="svg"
+                        onchange="updateFeatureSetting('freeView', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 17 8 8 13 14 18 6 21 10" />
+                            <circle cx="3" cy="17" r="1.5" fill="currentColor" />
+                            <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                        </svg>
+                        <span>SVG-Pfade</span>
                     </div>
                 </label>
             </div>
@@ -265,8 +345,7 @@
             Rückseite
         </div>
 
-        <div class="c1-only-setting" style="display:none;">
-            <div class="setting-group-title">Farb-Bewertung</div>
+        <div class="setting-group-title">Farb-Bewertung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-back" value="off"
                         onchange="updateFeatureSetting('colorBack', this.value)">
@@ -298,7 +377,6 @@
                     </div>
                 </label>
             </div>
-        </div>
 
         <div class="c2-only-setting">
             <div class="setting-group-title">Strich-Darstellung</div>
@@ -534,11 +612,48 @@
             'opt-numbers': scopedGet('kanjiOptNumbers', globalConf.numbers),
             'opt-strictness': scopedGet('kanjiOptStrictness', globalConf.strictness),
             'opt-celebration': scopedGet('kanjiOptCelebration', globalConf.celebration),
-            'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle)
+            'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle),
+            'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
+            'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
+            'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView)
         };
         document.querySelectorAll('.settings-modal input[type="radio"]').forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
         });
+        updateModeDisabledSettings();
+    }
+
+    function updateModeDisabledSettings() {
+        const globalConf = getGlobalConfig();
+        const mode = scopedGet('kanjiOptDrawMode', globalConf.drawMode);
+        const isFree = mode === 'free';
+        // Celebration: disabled in free mode
+        var celTitle = document.getElementById('celebration-title');
+        var celGrid = document.getElementById('celebration-grid');
+        if (celTitle) celTitle.classList.toggle('setting-disabled', isFree);
+        if (celGrid) celGrid.classList.toggle('setting-disabled', isFree);
+        // Echtzeit-Prüfung: disabled in free mode
+        var cfTitle = document.getElementById('color-front-title');
+        var cfGrid = document.getElementById('color-front-grid');
+        if (cfTitle) cfTitle.classList.toggle('setting-disabled', isFree);
+        if (cfGrid) cfGrid.classList.toggle('setting-disabled', isFree);
+        // Zeichen-Hilfe: disabled in free mode
+        var adTitle = document.getElementById('autodraw-title');
+        var adGrid = document.getElementById('autodraw-grid');
+        if (adTitle) adTitle.classList.toggle('setting-disabled', isFree);
+        if (adGrid) adGrid.classList.toggle('setting-disabled', isFree);
+        // Side-by-side: disabled in guided mode
+        var sbsTitle = document.getElementById('sbs-title');
+        var sbsGrid = document.getElementById('sbs-grid');
+        if (sbsTitle) sbsTitle.classList.toggle('setting-disabled', !isFree);
+        if (sbsGrid) sbsGrid.classList.toggle('setting-disabled', !isFree);
+        // Free view (Strichansicht): disabled in guided mode OR when SBS is on
+        var sbsOn = isFree && scopedGet('kanjiOptSideBySide', globalConf.sideBySide || 'on') === 'on';
+        var fvDisabled = !isFree || sbsOn;
+        var fvTitle = document.getElementById('free-view-title');
+        var fvGrid = document.getElementById('free-view-grid');
+        if (fvTitle) fvTitle.classList.toggle('setting-disabled', fvDisabled);
+        if (fvGrid) fvGrid.classList.toggle('setting-disabled', fvDisabled);
     }
 
     // Read CSS custom properties once and cache (avoids Anki timing/load-order issues)
@@ -562,7 +677,10 @@
             numbers: getVar('--default-opt-numbers', 'on'),
             strictness: getVar('--default-opt-strictness', 'normal'),
             celebration: getVar('--default-opt-celebration', 'on'),
-            displayStyle: getVar('--default-opt-display-style', 'standard')
+            displayStyle: getVar('--default-opt-display-style', 'standard'),
+            drawMode: getVar('--default-opt-draw-mode', 'guided'),
+            sideBySide: getVar('--default-opt-side-by-side', 'on'),
+            freeView: getVar('--default-opt-free-view', 'handwriting')
         };
         return _cachedGlobalConf;
     }
@@ -627,8 +745,7 @@
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
         safeSetItem(_activeTab + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
         if (_activeTab === _hostCard) {
-            updateGridDisplay();
-            if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (e) { }
+            updateModeDisabledSettings();
         } else refreshSettingsRadios();
     }
 
@@ -645,6 +762,7 @@
         var sm = ol.querySelector('.settings-modal');
         if (sm) sm.scrollTop = 0;
         ol.classList.add('active');
+        updateModeDisabledSettings();
     }
 
     function closeSettings(e) {
@@ -653,10 +771,23 @@
         ol.classList.remove('active');
         var gb = document.querySelector('.gear-btn');
         if (gb) { gb.classList.remove('no-hover-fx'); }
+        // Apply all settings on close — invalidate cache so changes take effect
+        _cachedGlobalConf = null;
+        updateGridDisplay();
+        if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
     }
 
     // Run synchronously to prevent flicker on card load
     updateGridDisplay();
+
+    // --- Cleanup stale DOM (runs unconditionally, front + back via {{FrontSide}}) ---
+    document.querySelectorAll('.side-by-side-wrapper, .completion-sparkle, .handwriting-overlay').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.kanji-container').forEach(function (c) { c.style.removeProperty('display'); c.classList.remove('show-handwriting'); });
+    if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
+    window.kanjiSettingsGlobalHandler = null;
+    window._kanjiFreeEval = null;
+    window._kanjiRenderFreeView = null;
+    window._kanjiGeneration = (window._kanjiGeneration || 0) + 1;
 
     // --- Scroll Lock & iOS Detection [SHARED with c1-front] ---
 

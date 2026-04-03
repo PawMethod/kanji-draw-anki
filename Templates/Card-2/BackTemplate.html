@@ -471,48 +471,33 @@
             svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
 
             if (isNumbers) {
-                const placedPositions = [];
-                const MIN_DISTANCE = 6.0;
-                paths.forEach((path, index) => {
-                    const startPoint = path.getPointAtLength(0);
-                    let nextPoint;
-                    try { nextPoint = path.getPointAtLength(4); } catch (e) { nextPoint = startPoint; }
-
-                    const dx = nextPoint.x - startPoint.x, dy = nextPoint.y - startPoint.y;
-                    const dist = Math.hypot(dx, dy) || 1;
-                    const OFFSET = 4.5;
-                    let finalX = startPoint.x - (dx / dist) * OFFSET, finalY = startPoint.y - (dy / dist) * OFFSET;
-
-                    let collision = true, attempts = 0;
-                    while (collision && attempts < 10) {
-                        collision = false;
-                        for (let pos of placedPositions) {
-                            const d = Math.hypot(finalX - pos.x, finalY - pos.y);
-                            if (d < MIN_DISTANCE) {
-                                collision = true;
-                                let pushDx = finalX - pos.x, pushDy = finalY - pos.y;
-                                if (pushDx === 0 && pushDy === 0) { pushDx = -1; pushDy = -1; }
-                                const pushDist = Math.hypot(pushDx, pushDy), pushPower = (MIN_DISTANCE - d + 0.5);
-                                finalX += (pushDx / pushDist) * pushPower; finalY += (pushDy / pushDist) * pushPower;
-                            }
-                        }
-                        attempts++;
-                    }
-                    placedPositions.push({ x: finalX, y: finalY });
-
-                    const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                    textNode.setAttribute("x", finalX);
-                    textNode.setAttribute("y", finalY);
-                    textNode.setAttribute("class", "stroke-number");
-                    textNode.textContent = index + 1;
-                    textNode.style.fill = (pathColors[index] && pathColors[index] !== 'var(--stroke-active)') ? pathColors[index] : 'var(--text-muted)';
-                    textNode.style.stroke = "var(--surface)";
-                    textNode.style.strokeWidth = "1.5px";
-                    textNode.style.strokeLinecap = "round";
-                    textNode.style.strokeLinejoin = "round";
-                    textNode.style.paintOrder = "stroke fill";
-
-                    svgBg.appendChild(textNode);
+                const addNumbersGPAL = (svg, colorFn) => {
+                    const svgPaths = svg.querySelectorAll('path');
+                    const placed = [];
+                    const MD = 6.0;
+                    svgPaths.forEach((sp, i) => {
+                        const s0 = sp.getPointAtLength(0);
+                        let s1;
+                        try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
+                        const ddx = s1.x - s0.x, ddy = s1.y - s0.y;
+                        const dd = Math.hypot(ddx, ddy) || 1;
+                        let fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
+                        let coll = true, att = 0;
+                        while (coll && att < 10) { coll = false; for (const p of placed) { const dist = Math.hypot(fx - p.x, fy - p.y); if (dist < MD) { coll = true; let px = fx - p.x, py = fy - p.y; if (px === 0 && py === 0) { px = -1; py = -1; } const pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); } } att++; }
+                        placed.push({ x: fx, y: fy });
+                        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        t.setAttribute('x', fx); t.setAttribute('y', fy);
+                        t.setAttribute('class', 'stroke-number');
+                        t.textContent = i + 1;
+                        t.style.fill = colorFn(i);
+                        t.style.stroke = 'var(--surface)'; t.style.strokeWidth = '1.5px';
+                        t.style.strokeLinecap = 'round'; t.style.strokeLinejoin = 'round';
+                        t.style.paintOrder = 'stroke fill';
+                        svg.appendChild(t);
+                    });
+                };
+                addNumbersGPAL(svgBg, (i) => {
+                    return (pathColors[i] && pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
                 });
             }
         };
