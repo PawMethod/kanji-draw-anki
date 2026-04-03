@@ -542,6 +542,8 @@ html.ipad .info-modal {
     max-width: 420px;
     border: 2px solid var(--tab-color-c1);
     --active-tab-color: var(--tab-color-c1);
+    overflow-y: auto;
+    overflow-y: overlay;
     transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -636,7 +638,6 @@ html.ipad .info-modal {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
         box-shadow: var(--shadow-hover);
-        transform: translateY(-2px);
     }
 
     .visual-option:hover svg {
@@ -733,182 +734,277 @@ html.ipad .info-modal {
 @media (hover: hover) {
     .close-settings:hover {
         opacity: 0.85;
+        border: none;
     }
 }
 
 .close-settings:active {
     opacity: 0.7;
     transform: scale(0.98);
+    border: none;
 }
 
 /* --------------------------------------------------------------------------
-   5b. Settings Tabs – Integrated Folder Tabs (50/50 split)
+   5b. Settings Navigation – iOS-style category cards with sub-pages
    -------------------------------------------------------------------------- */
-.settings-tabs {
-    display: flex;
-    gap: 0;
-    margin: -24px -24px 0 -24px;
-    padding: 0;
-    position: relative;
-    background: var(--bg-main);
-    border-radius: calc(var(--border-rad-main) - 2px) calc(var(--border-rad-main) - 2px) 0 0;
-    overflow: hidden;
-    width: calc(100% + 48px);
-    box-sizing: border-box;
+
+/* --- Pages (show/hide with slide animation) --- */
+.settings-page {
+    display: none;
 }
 
-/* No ::after indicator — underline is handled by each tab's border-bottom directly */
+.settings-page.active {
+    display: block;
+}
 
-.settings-tab {
-    position: relative;
-    flex: 1 1 50%;
-    min-width: 0;
-    margin: 0;
+@keyframes pageSlideInRight {
+    from {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pageSlideInLeft {
+    from {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.settings-page.slide-in-right {
+    animation: pageSlideInRight 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.settings-page.slide-in-left {
+    animation: pageSlideInLeft 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* --- Segmented control (c1/c2 toggle) --- */
+.settings-segment {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 13px 0;
+    background: var(--bg-main);
+    border-radius: 9px;
+    padding: 3px;
+    margin-bottom: 20px;
+}
+
+.segment-btn {
+    flex: 1;
+    padding: 9px 0;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.6px;
     color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.segment-btn.active {
+    background: var(--surface);
+    color: var(--active-tab-color, var(--accent));
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.segment-btn:not(.active):active {
+    opacity: 0.6;
+    border: none;
+}
+
+@media (hover: hover) {
+    .segment-btn:not(.active):hover {
+        color: var(--text-main);
+        border: none;
+    }
+
+    .segment-btn.active:hover {
+        border: none;
+    }
+}
+
+/* --- Category cards list --- */
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.category-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 14px 14px 12px;
+    background: var(--surface);
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease;
+}
+
+.category-card:active {
     background: var(--bg-main);
     border: none;
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s ease, background-color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+@media (hover: hover) {
+    .category-card:hover {
+        background: var(--bg-main);
+        border: none;
+    }
+}
+
+.category-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.category-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke: #fff;
+}
+
+.category-icon.cat-grid {
+    background: #3478f6;
+}
+
+.category-icon.cat-front {
+    background: #34c759;
+}
+
+.category-icon.cat-back {
+    background: #ff9500;
+}
+
+.category-icon.cat-display {
+    background: #af52de;
+}
+
+.category-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.category-name {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.3;
+}
+
+.category-desc {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    line-height: 1.3;
+}
+
+.category-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+}
+
+/* --- Sub-page header with back button --- */
+.subpage-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -24px -24px 20px -24px;
+    padding: 16px 24px;
+    background: var(--bg-main);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: -24px;
+    z-index: 2;
+}
+
+.subpage-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: var(--surface);
+    border-radius: 8px;
+    color: var(--active-tab-color, var(--accent));
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    font-family: inherit;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    box-sizing: border-box;
+    transition: background 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
 }
 
-/* Top-left corner radius for first tab */
-.settings-tab:first-child {
-    border-radius: 0;
+.back-btn svg {
+    width: 18px;
+    height: 18px;
 }
 
-/* Top-right corner radius for last tab */
-.settings-tab:last-child {
-    border-radius: 0;
+.back-btn:active {
+    transform: scale(0.9);
+    border: none;
 }
 
-/* ---- c1 active (Zeichnen) ---- */
-.settings-tab[data-tab="c1"].active {
-    color: var(--tab-color-c1);
-    background: var(--surface);
-    border-bottom-color: var(--tab-color-c1);
-}
-
-/* ---- c2 active (Erkennen) ---- */
-.settings-tab[data-tab="c2"].active {
-    color: var(--tab-color-c2);
-    background: var(--surface);
-    border-bottom-color: var(--tab-color-c2);
-}
-
-/* INACTIVE – recessed into background */
-.settings-tab:not(.active) {
-    background: var(--bg-main);
-    box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.04);
-}
-
-/* INACTIVE hover */
 @media (hover: hover) {
-    .settings-tab:not(.active):hover {
-        color: var(--text-main);
+    .back-btn:hover {
+        background: var(--border-color);
+        border: none;
     }
 }
 
-.settings-tab:not(.active):active {
-    opacity: 0.7;
-}
-
-/* --------------------------------------------------------------------------
-   5b-2. Tab Content Animation (Swipe)
-   -------------------------------------------------------------------------- */
-@keyframes tabContentSwipeFromLeft {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes tabContentSwipeFromRight {
-    0% {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Animated elements get their own compositor layer only during animation */
-.settings-modal.tab-switched h3,
-.settings-modal.tab-switched .setting-group-title,
-.settings-modal.tab-switched .visual-options-grid,
-.settings-modal.tab-switched .setting-section-title,
-.settings-modal.tab-switched .c1-only-setting,
-.settings-modal.tab-switched .c2-only-setting {
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-}
-
-/* Content swipes in from left when switching to c1 (Zeichnen) */
-.settings-modal[data-tab="c1"].tab-switched h3,
-.settings-modal[data-tab="c1"].tab-switched .setting-group-title,
-.settings-modal[data-tab="c1"].tab-switched .visual-options-grid,
-.settings-modal[data-tab="c1"].tab-switched .setting-section-title,
-.settings-modal[data-tab="c1"].tab-switched .c1-only-setting {
-    animation: tabContentSwipeFromLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-/* Content swipes in from right when switching to c2 (Erkennen) */
-.settings-modal[data-tab="c2"].tab-switched h3,
-.settings-modal[data-tab="c2"].tab-switched .setting-group-title,
-.settings-modal[data-tab="c2"].tab-switched .visual-options-grid,
-.settings-modal[data-tab="c2"].tab-switched .setting-section-title,
-.settings-modal[data-tab="c2"].tab-switched .c2-only-setting {
-    animation: tabContentSwipeFromRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-/* Staggered animation delays for visual cascade effect */
-.settings-modal.tab-switched h3 {
-    animation-delay: 0s;
-}
-
-.settings-modal.tab-switched .setting-group-title {
-    animation-delay: 0.02s;
-}
-
-.settings-modal.tab-switched .visual-options-grid {
-    animation-delay: 0.04s;
-}
-
-.settings-modal.tab-switched .setting-section-title {
-    animation-delay: 0.06s;
-}
-
-.settings-modal.tab-switched .c1-only-setting,
-.settings-modal.tab-switched .c2-only-setting {
-    animation-delay: 0.01s;
-}
-
-/* spacing between tab bar and first settings section */
-.settings-tabs+h3,
-.settings-tabs+.setting-group-title,
-.settings-tabs+.c1-only-setting {
-    margin-top: 20px;
+/* --- Main page title --- */
+.settings-main-title {
+    margin: -24px -24px 20px -24px;
+    padding: 18px 24px;
+    background: var(--bg-main);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* --------------------------------------------------------------------------

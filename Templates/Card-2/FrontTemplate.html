@@ -12,120 +12,208 @@
 <div class="settings-overlay" id="settings-overlay" onclick="closeSettings(event)">
     <div class="settings-modal" data-tab="c2" onclick="event.stopPropagation()">
 
-        <div class="settings-tabs">
-            <button class="settings-tab" data-tab="c1" onclick="switchSettingsTab('c1', event)">Zeichnen</button>
-            <button class="settings-tab active" data-tab="c2" onclick="switchSettingsTab('c2', event)">Erkennen</button>
-        </div>
-
-        <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                style="width: 20px; height: 20px; stroke-width: 2;">
-                <path d="M4 6h16M4 12h16M4 18h7"></path>
-            </svg> Hilfslinien
-        </h3>
-        <div class="setting-group-title">Muster</div>
-        <div class="visual-options-grid">
-            <label><input type="radio" name="grid-type" value="none" onchange="updateGridSetting('type', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                            opacity="0.4" />
-                    </svg><span>Keine</span></div>
-            </label>
-            <label><input type="radio" name="grid-type" value="cross" onchange="updateGridSetting('type', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                            opacity="0.4" />
-                        <path d="M12 4v16M4 12h16" stroke-width="1.5" />
-                    </svg><span>Kreuz</span></div>
-            </label>
-            <label><input type="radio" name="grid-type" value="full" onchange="updateGridSetting('type', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                            opacity="0.4" />
-                        <path d="M12 4v16M4 12h16M4 4l16 16M4 20L20 4" stroke-width="1.5" />
-                    </svg><span>Voll</span></div>
-            </label>
-        </div>
-        <div class="setting-group-title">Linienstil</div>
-        <div class="visual-options-grid">
-            <label><input type="radio" name="grid-style" value="dotted"
-                    onchange="updateGridSetting('style', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4 12h0.01M8 12h0.01M12 12h0.01M16 12h0.01M20 12h0.01" stroke-width="3"
-                            stroke-linecap="round" />
-                    </svg><span>Punkte</span></div>
-            </label>
-            <label><input type="radio" name="grid-style" value="dashed"
-                    onchange="updateGridSetting('style', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" stroke-dasharray="4 4" />
-                    </svg><span>Striche</span></div>
-            </label>
-            <label><input type="radio" name="grid-style" value="solid"
-                    onchange="updateGridSetting('style', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" />
-                    </svg><span>Linie</span></div>
-            </label>
-        </div>
-        <div class="setting-group-title">Dicke</div>
-        <div class="visual-options-grid">
-            <label><input type="radio" name="grid-thick" value="thin" onchange="updateGridSetting('thick', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="1" />
-                    </svg><span>Dünn</span></div>
-            </label>
-            <label><input type="radio" name="grid-thick" value="medium"
-                    onchange="updateGridSetting('thick', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="2.5" />
-                    </svg><span>Mittel</span></div>
-            </label>
-            <label><input type="radio" name="grid-thick" value="thick"
-                    onchange="updateGridSetting('thick', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <line x1="4" y1="12" x2="20" y2="12" stroke-width="4" />
-                    </svg><span>Dick</span></div>
-            </label>
-        </div>
-        <div class="setting-group-title">Sichtbarkeit</div>
-        <div class="visual-options-grid">
-            <label><input type="radio" name="grid-opac" value="light" onchange="updateGridSetting('opac', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.3" />
-                    </svg><span>Dezent</span></div>
-            </label>
-            <label><input type="radio" name="grid-opac" value="medium" onchange="updateGridSetting('opac', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.6" />
-                    </svg><span>Normal</span></div>
-            </label>
-            <label><input type="radio" name="grid-opac" value="dark" onchange="updateGridSetting('opac', this.value)">
-                <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="6" stroke-width="2" opacity="1" />
-                    </svg><span>Stark</span></div>
-            </label>
-        </div>
-
-        <div class="c1-only-setting" style="display:none;">
-            <h3 style="margin-top: 32px; border-top: 2px solid var(--border-color); padding-top: 24px;">
+        <!-- ═══ Main Page: Category Overview ═══ -->
+        <div class="settings-page active" id="settings-main">
+            <div class="settings-main-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    style="width: 20px; height: 20px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-                Korrektur & Feedback
-            </h3>
-
-            <div class="setting-section-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    style="width:16px;height:16px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    style="width:18px;height:18px;stroke-width:2;">
                     <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
                 </svg>
-                Vorderseite
+                Einstellungen
             </div>
+            <div class="settings-segment">
+                <button class="segment-btn" data-tab="c1" onclick="switchSettingsTab('c1', event)">Zeichnen</button>
+                <button class="segment-btn active" data-tab="c2"
+                    onclick="switchSettingsTab('c2', event)">Erkennen</button>
+            </div>
+            <div class="category-list">
+                <button class="category-card" onclick="navigateToPage('page-grid')">
+                    <div class="category-icon cat-grid">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Hilfslinien</span>
+                        <span class="category-desc">Muster, Stil, Dicke, Sichtbarkeit</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+                <button class="category-card c1-only-setting" style="display:none"
+                    onclick="navigateToPage('page-front')">
+                    <div class="category-icon cat-front">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Vorderseite</span>
+                        <span class="category-desc">Modus, Genauigkeit, Prüfung, Hilfe</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+                <button class="category-card" onclick="navigateToPage('page-back')">
+                    <div class="category-icon cat-back">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <path d="M9 18l6-6-6-6" transform="rotate(180 12 12)"></path>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Rückseite</span>
+                        <span class="category-desc">Farben, Nummern, Vergleich</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+                <button class="category-card c2-only-setting" onclick="navigateToPage('page-display')">
+                    <div class="category-icon cat-display">
+                        <svg viewBox="0 0 24 24">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Darstellung</span>
+                        <span class="category-desc">Strich-Darstellung</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+            </div>
+            <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
+        </div>
 
+        <!-- ═══ Sub-Page: Hilfslinien ═══ -->
+        <div class="settings-page" id="page-grid">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Hilfslinien</h3>
+            </div>
+            <div class="setting-group-title">Muster</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="grid-type" value="none"
+                        onchange="updateGridSetting('type', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                                opacity="0.4" />
+                        </svg><span>Keine</span></div>
+                </label>
+                <label><input type="radio" name="grid-type" value="cross"
+                        onchange="updateGridSetting('type', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                                opacity="0.4" />
+                            <path d="M12 4v16M4 12h16" stroke-width="1.5" />
+                        </svg><span>Kreuz</span></div>
+                </label>
+                <label><input type="radio" name="grid-type" value="full"
+                        onchange="updateGridSetting('type', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
+                                opacity="0.4" />
+                            <path d="M12 4v16M4 12h16M4 4l16 16M4 20L20 4" stroke-width="1.5" />
+                        </svg><span>Voll</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Linienstil</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="grid-style" value="dotted"
+                        onchange="updateGridSetting('style', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 12h0.01M8 12h0.01M12 12h0.01M16 12h0.01M20 12h0.01" stroke-width="3"
+                                stroke-linecap="round" />
+                        </svg><span>Punkte</span></div>
+                </label>
+                <label><input type="radio" name="grid-style" value="dashed"
+                        onchange="updateGridSetting('style', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" stroke-dasharray="4 4" />
+                        </svg><span>Striche</span></div>
+                </label>
+                <label><input type="radio" name="grid-style" value="solid"
+                        onchange="updateGridSetting('style', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" />
+                        </svg><span>Linie</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Dicke</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="grid-thick" value="thin"
+                        onchange="updateGridSetting('thick', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <line x1="4" y1="12" x2="20" y2="12" stroke-width="1" />
+                        </svg><span>Dünn</span></div>
+                </label>
+                <label><input type="radio" name="grid-thick" value="medium"
+                        onchange="updateGridSetting('thick', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <line x1="4" y1="12" x2="20" y2="12" stroke-width="2.5" />
+                        </svg><span>Mittel</span></div>
+                </label>
+                <label><input type="radio" name="grid-thick" value="thick"
+                        onchange="updateGridSetting('thick', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <line x1="4" y1="12" x2="20" y2="12" stroke-width="4" />
+                        </svg><span>Dick</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Sichtbarkeit</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="grid-opac" value="light"
+                        onchange="updateGridSetting('opac', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.3" />
+                        </svg><span>Dezent</span></div>
+                </label>
+                <label><input type="radio" name="grid-opac" value="medium"
+                        onchange="updateGridSetting('opac', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.6" />
+                        </svg><span>Normal</span></div>
+                </label>
+                <label><input type="radio" name="grid-opac" value="dark"
+                        onchange="updateGridSetting('opac', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="6" stroke-width="2" opacity="1" />
+                        </svg><span>Stark</span></div>
+                </label>
+            </div>
+            <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
+        </div>
+
+        <!-- ═══ Sub-Page: Vorderseite (c1-only) ═══ -->
+        <div class="settings-page c1-only-setting" style="display:none" id="page-front">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Vorderseite</h3>
+            </div>
             <div class="setting-group-title">Zeichenmodus</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-draw-mode" value="guided"
@@ -153,7 +241,6 @@
                     </div>
                 </label>
             </div>
-
             <div class="setting-group-title">Strich-Genauigkeit</div>
             <div class="visual-options-grid">
                 <label><input type="radio" name="opt-strictness" value="loose"
@@ -190,7 +277,6 @@
                     </div>
                 </label>
             </div>
-
             <div class="setting-group-title" id="color-front-title">Echtzeit-Prüfung</div>
             <div class="visual-options-grid" id="color-front-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-front" value="off"
@@ -216,7 +302,6 @@
                     </div>
                 </label>
             </div>
-
             <div class="setting-group-title" id="autodraw-title">Zeichen-Hilfe</div>
             <div class="visual-options-grid" id="autodraw-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-autodraw" value="off"
@@ -243,7 +328,6 @@
                     </div>
                 </label>
             </div>
-
             <div class="setting-group-title" id="celebration-title">Abschluss-Animation</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="celebration-grid">
                 <label><input type="radio" name="opt-celebration" value="off"
@@ -270,82 +354,21 @@
                     </div>
                 </label>
             </div>
+            <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
+        </div>
 
-            <div class="setting-group-title" id="sbs-title">Vergleichsansicht</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid">
-                <label><input type="radio" name="opt-side-by-side" value="off"
-                        onchange="updateFeatureSetting('sideBySide', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" />
-                            <line x1="4" y1="4" x2="20" y2="20" />
-                        </svg>
-                        <span>Aus</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-side-by-side" value="on"
-                        onchange="updateFeatureSetting('sideBySide', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="9" height="18" rx="2" />
-                            <rect x="13" y="3" width="9" height="18" rx="2" />
-                        </svg>
-                        <span>An</span>
-                    </div>
-                </label>
+        <!-- ═══ Sub-Page: Rückseite ═══ -->
+        <div class="settings-page" id="page-back">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Rückseite</h3>
             </div>
-
-            <div class="setting-group-title" id="free-view-title">Strichansicht</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid">
-                <label><input type="radio" name="opt-free-view" value="handwriting"
-                        onchange="updateFeatureSetting('freeView', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round">
-                            <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
-                        </svg>
-                        <span>Handschrift</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-free-view" value="svg"
-                        onchange="updateFeatureSetting('freeView', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 17 8 8 13 14 18 6 21 10" />
-                            <circle cx="3" cy="17" r="1.5" fill="currentColor" />
-                            <circle cx="21" cy="10" r="1.5" fill="currentColor" />
-                        </svg>
-                        <span>SVG-Pfade</span>
-                    </div>
-                </label>
-            </div>
-        </div>
-
-        <div class="c2-only-setting">
-            <h3 style="margin-top: 32px; border-top: 2px solid var(--border-color); padding-top: 24px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    style="width: 20px; height: 20px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
-                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                    <polyline points="2 17 12 22 22 17"></polyline>
-                    <polyline points="2 12 12 17 22 12"></polyline>
-                </svg>
-                Darstellung
-            </h3>
-        </div>
-
-        <div class="setting-section-title" style="margin-top: 20px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                style="width:16px;height:16px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
-                <path d="M15 18l-6-6 6-6" transform="rotate(180 12 12)"></path>
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-            </svg>
-            Rückseite
-        </div>
-
-        <div class="setting-group-title">Farb-Bewertung</div>
+            <div class="setting-group-title">Farb-Bewertung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-color-back" value="off"
                         onchange="updateFeatureSetting('colorBack', this.value)">
@@ -377,8 +400,109 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Strich-Nummern</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-numbers" value="off"
+                        onchange="updateFeatureSetting('numbers', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 16 L32 16" />
+                            <path d="M20 6 L20 34" />
+                            <path d="M20 16 Q 15 22 6 34" />
+                            <path d="M20 16 Q 25 22 34 34" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-numbers" value="on"
+                        onchange="updateFeatureSetting('numbers', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 16 L32 16" />
+                            <path d="M20 6 L20 34" />
+                            <path d="M20 16 Q 15 22 6 34" />
+                            <path d="M20 16 Q 25 22 34 34" />
+                            <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">1</text>
+                            <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">2</text>
+                            <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">3</text>
+                            <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">4</text>
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+            <div class="c1-only-setting" style="display:none">
+                <div class="setting-group-title" id="sbs-title">Vergleichsansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid">
+                    <label><input type="radio" name="opt-side-by-side" value="off"
+                            onchange="updateFeatureSetting('sideBySide', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <line x1="4" y1="4" x2="20" y2="20" />
+                            </svg>
+                            <span>Aus</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-side-by-side" value="on"
+                            onchange="updateFeatureSetting('sideBySide', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="9" height="18" rx="2" />
+                                <rect x="13" y="3" width="9" height="18" rx="2" />
+                            </svg>
+                            <span>An</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="setting-group-title" id="free-view-title">Strichansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid">
+                    <label><input type="radio" name="opt-free-view" value="handwriting"
+                            onchange="updateFeatureSetting('freeView', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round">
+                                <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                            </svg>
+                            <span>Handschrift</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-free-view" value="svg"
+                            onchange="updateFeatureSetting('freeView', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 17 8 8 13 14 18 6 21 10" />
+                                <circle cx="3" cy="17" r="1.5" fill="currentColor" />
+                                <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                            </svg>
+                            <span>SVG-Pfade</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
+        </div>
 
-        <div class="c2-only-setting">
+        <!-- ═══ Sub-Page: Darstellung (c2-only) ═══ -->
+        <div class="settings-page c2-only-setting" id="page-display">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Darstellung</h3>
+            </div>
             <div class="setting-group-title">Strich-Darstellung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-display-style" value="standard"
@@ -408,47 +532,8 @@
                     </div>
                 </label>
             </div>
+            <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
-
-        <div class="setting-group-title">Strich-Nummern</div>
-        <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-            <label><input type="radio" name="opt-numbers" value="off"
-                    onchange="updateFeatureSetting('numbers', this.value)">
-                <div class="visual-option">
-                    <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                        stroke-linejoin="round">
-                        <path d="M8 16 L32 16" />
-                        <path d="M20 6 L20 34" />
-                        <path d="M20 16 Q 15 22 6 34" />
-                        <path d="M20 16 Q 25 22 34 34" />
-                    </svg>
-                    <span>Aus</span>
-                </div>
-            </label>
-            <label><input type="radio" name="opt-numbers" value="on"
-                    onchange="updateFeatureSetting('numbers', this.value)">
-                <div class="visual-option">
-                    <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M8 16 L32 16" />
-                        <path d="M20 6 L20 34" />
-                        <path d="M20 16 Q 15 22 6 34" />
-                        <path d="M20 16 Q 25 22 34 34" />
-                        <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                            font-family="sans-serif" text-anchor="middle">1</text>
-                        <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                            font-family="sans-serif" text-anchor="middle">2</text>
-                        <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                            font-family="sans-serif" text-anchor="middle">3</text>
-                        <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                            font-family="sans-serif" text-anchor="middle">4</text>
-                    </svg>
-                    <span>An</span>
-                </div>
-            </label>
-        </div>
-
-        <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
     </div>
 </div>
 
@@ -574,29 +659,61 @@
         return safeGetItem(_hostCard + '_' + baseKey, safeGetItem(baseKey, fallback));
     }
 
+    var _currentSettingsPage = 'settings-main';
+
     function switchSettingsTab(tab, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
-        // Skip if already on this tab
         if (_activeTab === tab) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         _activeTab = tab;
-        document.querySelectorAll('.settings-tab').forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
+        document.querySelectorAll('.segment-btn').forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
         document.querySelectorAll('.c1-only-setting').forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
         document.querySelectorAll('.c2-only-setting').forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
         var modal = document.querySelector('.settings-modal');
-        if (modal) {
-            modal.dataset.tab = tab;
-            // Cancel any running content animations to prevent overlap
-            modal.querySelectorAll('.setting-group-title, .visual-options-grid, .setting-section-title, .c1-only-setting, .c2-only-setting, h3').forEach(function (el) {
-                el.getAnimations().forEach(function (a) { a.cancel(); });
-            });
-            modal.classList.remove('tab-switched');
-            // Use rAF to ensure the class removal is painted before re-adding
-            requestAnimationFrame(function () {
-                modal.classList.add('tab-switched');
-            });
+        if (modal) modal.dataset.tab = tab;
+        // If on a sub-page that's now hidden, go back to main
+        if (_currentSettingsPage !== 'settings-main') {
+            var curPage = document.getElementById(_currentSettingsPage);
+            if (curPage && curPage.style.display === 'none') navigateBack();
         }
         refreshSettingsRadios();
+    }
+
+    function navigateToPage(pageId) {
+        var mainEl = document.getElementById(_currentSettingsPage);
+        var pageEl = document.getElementById(pageId);
+        if (!mainEl || !pageEl) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        mainEl.classList.remove('active');
+        mainEl.style.display = 'none';
+        pageEl.style.display = '';
+        pageEl.classList.add('active', 'slide-in-right');
+        var modal = document.querySelector('.settings-modal');
+        if (modal) modal.scrollTop = 0;
+        pageEl.addEventListener('animationend', function h() {
+            pageEl.classList.remove('slide-in-right');
+            pageEl.removeEventListener('animationend', h);
+        });
+        _currentSettingsPage = pageId;
+    }
+
+    function navigateBack() {
+        if (_currentSettingsPage === 'settings-main') return;
+        var pageEl = document.getElementById(_currentSettingsPage);
+        var mainEl = document.getElementById('settings-main');
+        if (!pageEl || !mainEl) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        pageEl.classList.remove('active');
+        pageEl.style.display = 'none';
+        mainEl.style.display = '';
+        mainEl.classList.add('active', 'slide-in-left');
+        var modal = document.querySelector('.settings-modal');
+        if (modal) modal.scrollTop = 0;
+        mainEl.addEventListener('animationend', function h() {
+            mainEl.classList.remove('slide-in-left');
+            mainEl.removeEventListener('animationend', h);
+        });
+        _currentSettingsPage = 'settings-main';
     }
 
     function refreshSettingsRadios() {
@@ -755,6 +872,14 @@
         // Reset to host card's tab on open
         if (_activeTab !== _hostCard) {
             switchSettingsTab(_hostCard);
+        }
+        // Reset to main page if on a sub-page
+        if (_currentSettingsPage !== 'settings-main') {
+            var curPage = document.getElementById(_currentSettingsPage);
+            var mainPage = document.getElementById('settings-main');
+            if (curPage) { curPage.classList.remove('active'); curPage.style.display = 'none'; }
+            if (mainPage) { mainPage.style.display = ''; mainPage.classList.add('active'); }
+            _currentSettingsPage = 'settings-main';
         }
         var gb = document.querySelector('.gear-btn');
         if (gb) gb.classList.add('no-hover-fx');
