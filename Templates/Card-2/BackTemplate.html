@@ -276,12 +276,61 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
-            var _cssRules = '';
-            for (var _sel in _fsMap) { _cssRules += _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }
+            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
             document.head.appendChild(_newStyle);
+        } catch (e) { }
+    })();
+
+    // Re-apply stroke style class on back side (CSS needs it on .kanji-container)
+    (function () {
+        try {
+            var ss = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
+                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            if (ss === 'soft') ss = 'gel';
+            window._kanjiStrokeStyle = ss;
+            var kc = document.querySelector('.kanji-container');
+            if (kc) {
+                kc.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
+                if (ss !== 'standard') kc.classList.add('stroke-style-' + ss);
+            }
+            // Apply per-path stroke style effects to reference SVGs
+            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
+                if (!svgEl) return;
+                svgEl.querySelectorAll('path').forEach(function (p) {
+                    switch (ss) {
+                        case 'neon':
+                            p.setAttribute('filter', dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            break;
+                        case 'gel':
+                            p.removeAttribute('filter');
+                            var c = p.style.stroke || p.getAttribute('stroke') || 'var(--stroke-active)';
+                            p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            p.setAttribute('stroke-width', '4.5');
+                            p.setAttribute('paint-order', 'stroke');
+                            break;
+                        case 'ink':
+                            p.removeAttribute('filter');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            p.style.opacity = '0.85';
+                            break;
+                        default:
+                            p.removeAttribute('filter');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            p.style.removeProperty('opacity');
+                            break;
+                    }
+                });
+            });
         } catch (e) { }
     })();
 
@@ -450,6 +499,32 @@
         const paths = svgBg.querySelectorAll('path');
         const afEl = document.getElementById('kanji-anti-flicker');
 
+        // Defined once outside applyBackFeatures to avoid re-creation on every settings change
+        const addNumbersGPAL = (svg, colorFn) => {
+            const svgPaths = svg.querySelectorAll('path');
+            const placed = [];
+            const MD = 6.0;
+            const frag = document.createDocumentFragment();
+            svgPaths.forEach((sp, i) => {
+                const s0 = sp.getPointAtLength(0);
+                let s1;
+                try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
+                const ddx = s1.x - s0.x, ddy = s1.y - s0.y;
+                const dd = Math.hypot(ddx, ddy) || 1;
+                let fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
+                let coll = true, att = 0;
+                while (coll && att < 10) { coll = false; for (const p of placed) { const dist = Math.hypot(fx - p.x, fy - p.y); if (dist < MD) { coll = true; let px = fx - p.x, py = fy - p.y; if (px === 0 && py === 0) { px = -1; py = -1; } const pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); } } att++; }
+                placed.push({ x: fx, y: fy });
+                const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                t.setAttribute('x', fx); t.setAttribute('y', fy);
+                t.setAttribute('class', 'stroke-number');
+                t.textContent = i + 1;
+                t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill';
+                frag.appendChild(t);
+            });
+            svg.appendChild(frag);
+        };
+
         const applyBackFeatures = function () {
             const globalConf = getGlobalConfig();
             const displayStyle = safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'));
@@ -468,21 +543,20 @@
             if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
             if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
 
-            // 1. Compute stroke colors
-            let colorCSS = '';
+            // 1. Compute stroke colors and apply inline styles in a single pass
+            const cssRules = [];
             const pathColors = [];
 
             if (displayStyle === 'colorOrder') {
-                // Stroke-order mode: each stroke gets a unique color (HSL rainbow)
                 const total = Math.max(paths.length - 1, 1);
                 paths.forEach((path, index) => {
                     const hue = Math.round((index / total) * 300);
                     const color = 'hsl(' + hue + ', 75%, 50%)';
                     pathColors.push(color);
-                    colorCSS += '#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + color + ' !important} ';
+                    path.style.setProperty('stroke', color, 'important');
+                    cssRules.push('#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + color + ' !important}');
                 });
             } else {
-                // Standard mode: error-based colors
                 paths.forEach((path, index) => {
                     let mistakeCount = problemStrokes[index] || 0;
                     let pathColor = 'var(--stroke-active)';
@@ -493,11 +567,13 @@
                         else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
                     }
                     pathColors.push(pathColor);
+                    path.style.setProperty('stroke', pathColor, 'important');
                     if (pathColor !== 'var(--stroke-active)') {
-                        colorCSS += '#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important} ';
+                        cssRules.push('#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important}');
                     }
                 });
             }
+            const colorCSS = cssRules.join(' ');
             // 2. Update stroke colors via a SEPARATE style element (preserves anti-flicker rules)
             let colorStyle = document.getElementById('kanji-stroke-colors');
             if (!colorStyle) {
@@ -507,39 +583,44 @@
                 else document.head.appendChild(colorStyle);
             }
             colorStyle.textContent = colorCSS;
-            // 3. Set inline styles (reliably override the stylesheet)
-            paths.forEach((path, index) => {
-                path.style.setProperty('stroke', pathColors[index], 'important');
-            });
+
+            // Apply stroke-style-specific inline effects (for colored paths the CSS glow uses currentColor, not the path color)
+            var ss = window._kanjiStrokeStyle || (typeof safeGetItem === 'function' ? safeGetItem('kanjiThemeStrokeStyle', 'standard') : 'standard');
+            if (ss === 'soft') ss = 'gel';
+            if (ss !== 'standard') {
+                var dk = document.documentElement.classList.contains('nightMode') ||
+                         document.documentElement.classList.contains('night_mode') ||
+                         document.body.classList.contains('nightMode');
+                paths.forEach((path, i) => {
+                    var c = pathColors[i] || 'var(--stroke-active)';
+                    switch (ss) {
+                        case 'neon': {
+                            var fId = dk ? 'neon-glow-dk' : 'neon-glow';
+                            path.setAttribute('filter', 'url(#' + fId + ')');
+                            path.style.removeProperty('filter');
+                            path.style.removeProperty('-webkit-filter');
+                            break;
+                        }
+                        case 'gel':
+                            path.removeAttribute('filter');
+                            path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            path.setAttribute('stroke-width', '4.5');
+                            path.setAttribute('paint-order', 'stroke');
+                            break;
+                        case 'ink':
+                            path.removeAttribute('filter');
+                            path.style.removeProperty('filter');
+                            path.style.removeProperty('-webkit-filter');
+                            path.style.opacity = '0.85';
+                            break;
+                    }
+                });
+            }
 
             svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
 
             if (isNumbers) {
-                const addNumbersGPAL = (svg, colorFn) => {
-                    const svgPaths = svg.querySelectorAll('path');
-                    const placed = [];
-                    const MD = 6.0;
-                    svgPaths.forEach((sp, i) => {
-                        const s0 = sp.getPointAtLength(0);
-                        let s1;
-                        try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
-                        const ddx = s1.x - s0.x, ddy = s1.y - s0.y;
-                        const dd = Math.hypot(ddx, ddy) || 1;
-                        let fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
-                        let coll = true, att = 0;
-                        while (coll && att < 10) { coll = false; for (const p of placed) { const dist = Math.hypot(fx - p.x, fy - p.y); if (dist < MD) { coll = true; let px = fx - p.x, py = fy - p.y; if (px === 0 && py === 0) { px = -1; py = -1; } const pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); } } att++; }
-                        placed.push({ x: fx, y: fy });
-                        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        t.setAttribute('x', fx); t.setAttribute('y', fy);
-                        t.setAttribute('class', 'stroke-number');
-                        t.textContent = i + 1;
-                        t.style.fill = colorFn(i);
-                        t.style.stroke = 'var(--surface)'; t.style.strokeWidth = '1.5px';
-                        t.style.strokeLinecap = 'round'; t.style.strokeLinejoin = 'round';
-                        t.style.paintOrder = 'stroke fill';
-                        svg.appendChild(t);
-                    });
-                };
                 addNumbersGPAL(svgBg, (i) => {
                     return (pathColors[i] && pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
                 });

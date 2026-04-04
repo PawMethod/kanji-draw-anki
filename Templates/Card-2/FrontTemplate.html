@@ -107,7 +107,7 @@
                     </div>
                     <div class="category-info">
                         <span class="category-name">Erscheinungsbild</span>
-                        <span class="category-desc">Modus, Akzentfarbe, Schrift</span>
+                        <span class="category-desc">Modus, Farben, Schrift, Striche</span>
                     </div>
                     <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -648,6 +648,51 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Primärfarbe</div>
+            <div class="accent-options-grid">
+                <label><input type="radio" name="theme-primary" value="neutral"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-neutral"></div>
+                        <span>Neutral</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="warm"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-warm"></div>
+                        <span>Warm</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="cool"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-cool"></div>
+                        <span>Kühl</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="sepia"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-sepia"></div>
+                        <span>Sepia</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="rose"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-rose"></div>
+                        <span>Rosé</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="sage"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-sage"></div>
+                        <span>Salbei</span>
+                    </div>
+                </label>
+            </div>
             <div class="setting-group-title">Schriftgröße</div>
             <div class="visual-options-grid">
                 <label><input type="radio" name="theme-font-size" value="small"
@@ -684,12 +729,117 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Strichfarbe</div>
+            <div class="accent-options-grid">
+                <label><input type="radio" name="theme-stroke-color" value="black"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-black"></div>
+                        <span>Schwarz</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="inkblue"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-inkblue"></div>
+                        <span>Tintenblau</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="violet"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-violet"></div>
+                        <span>Violett</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="brown"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-brown"></div>
+                        <span>Braun</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="teal"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-teal"></div>
+                        <span>Türkis</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="slate"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-slate"></div>
+                        <span>Schiefer</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Strichstil</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-stroke-style" value="standard"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Standard</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="gel"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
+                        </svg>
+                        <span>Gelstift</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="ink"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
+                        </svg>
+                        <span>Tusche</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="neon"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Neon</span>
+                    </div>
+                </label>
+            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
     </div>
 </div>
 
 <h2 class="card-title" style="visibility: hidden;">{{Bedeutung}}</h2>
+
+<!-- SVG filter definitions for neon glow -->
+<svg id="neon-defs" style="width:0;height:0;position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
 
 <div class="kanji-container">
     <svg id="grid-bg" viewBox="0 0 109 109"></svg>
@@ -718,8 +868,6 @@
         if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
         var _ab = document.querySelector('.action-buttons');
         if (_ab) _ab.style.width = _awPx;
-        var _ib = document.querySelector('.info-btn');
-        if (_ib) _ib.style.width = _awPx;
 
         // Force matching background on ALL ancestors up to <html>.
         // AnkiWeb may wrap the card in intermediate elements whose
@@ -822,17 +970,23 @@
     }
 
     var _currentSettingsPage = 'settings-main';
+    var _segBtns = document.querySelectorAll('.segment-btn');
+    var _c1Settings = document.querySelectorAll('.c1-only-setting');
+    var _c2Settings = document.querySelectorAll('.c2-only-setting');
+    var _settingsRadios = document.querySelectorAll('.settings-modal input[type="radio"]');
+    var _settingsModal = document.querySelector('.settings-modal');
+    var _gearBtn = document.querySelector('.gear-btn');
+    var _settingsOverlay = document.getElementById('settings-overlay');
 
     function switchSettingsTab(tab, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
         if (_activeTab === tab) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         _activeTab = tab;
-        document.querySelectorAll('.segment-btn').forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
-        document.querySelectorAll('.c1-only-setting').forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
-        document.querySelectorAll('.c2-only-setting').forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.dataset.tab = tab;
+        _segBtns.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
+        _c1Settings.forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
+        _c2Settings.forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
+        if (_settingsModal) _settingsModal.dataset.tab = tab;
         // If on a sub-page that's now hidden, go back to main
         if (_currentSettingsPage !== 'settings-main') {
             var curPage = document.getElementById(_currentSettingsPage);
@@ -853,8 +1007,7 @@
         mainEl.style.display = 'none';
         pageEl.style.display = '';
         pageEl.classList.add('active', 'slide-in-right');
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.scrollTop = 0;
+        if (_settingsModal) _settingsModal.scrollTop = 0;
         pageEl.addEventListener('animationend', function h() {
             pageEl.classList.remove('slide-in-right');
             pageEl.removeEventListener('animationend', h);
@@ -872,8 +1025,7 @@
         pageEl.style.display = 'none';
         mainEl.style.display = '';
         mainEl.classList.add('active', 'slide-in-left');
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.scrollTop = 0;
+        if (_settingsModal) _settingsModal.scrollTop = 0;
         mainEl.addEventListener('animationend', function h() {
             mainEl.classList.remove('slide-in-left');
             mainEl.removeEventListener('animationend', h);
@@ -900,9 +1052,12 @@
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
             'theme-accent': safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green'),
-            'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal')
+            'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
+            'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
+            'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
+            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard')
         };
-        document.querySelectorAll('.settings-modal input[type="radio"]').forEach(r => {
+        _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
         });
         updateModeDisabledSettings();
@@ -968,7 +1123,10 @@
             freeView: getVar('--default-opt-free-view', 'handwriting'),
             themeMode: getVar('--default-theme-mode', 'system'),
             themeAccent: getVar('--default-theme-accent', 'green'),
-            themeFontSize: getVar('--default-theme-font-size', 'normal')
+            themeFontSize: getVar('--default-theme-font-size', 'normal'),
+            themePrimary: getVar('--default-theme-primary', 'neutral'),
+            themeStrokeColor: getVar('--default-theme-stroke-color', 'black'),
+            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard')
         };
         return _cachedGlobalConf;
     }
@@ -999,6 +1157,44 @@
             accent: '#2aabb8', hover: '#2295a0', bg: '#e8f6f8', c1: '#2aabb8', c2: '#34c759',
             dark: { accent: '#4ec4b8', hover: '#3cb4a8', bg: '#102a2c', c1: '#4ec4b8', c2: '#50d070' }
         }
+    };
+
+    // --- Theme: Primary surface color definitions ---
+    var _primaryColors = {
+        neutral: {
+            bgMain: '#f7f7f5', surface: '#ffffff', borderColor: '#e2e2df',
+            dark: { bgMain: '#1a1a1a', surface: '#252525', borderColor: '#363636' }
+        },
+        warm: {
+            bgMain: '#f0e6d6', surface: '#f7f0e4', borderColor: '#d8cab0',
+            dark: { bgMain: '#1d1b17', surface: '#282520', borderColor: '#3a3630' }
+        },
+        cool: {
+            bgMain: '#e2e9f4', surface: '#eaf0fa', borderColor: '#c0c9de',
+            dark: { bgMain: '#181a1f', surface: '#22242a', borderColor: '#33363e' }
+        },
+        sepia: {
+            bgMain: '#ebe2cc', surface: '#f2ebda', borderColor: '#d0c4a4',
+            dark: { bgMain: '#1c1a14', surface: '#27251e', borderColor: '#3a3628' }
+        },
+        rose: {
+            bgMain: '#f0e2e8', surface: '#f6eaf0', borderColor: '#d6bfc8',
+            dark: { bgMain: '#1e181a', surface: '#2a2226', borderColor: '#3c3236' }
+        },
+        sage: {
+            bgMain: '#e2ede0', surface: '#eaf4e8', borderColor: '#bcd2b6',
+            dark: { bgMain: '#181d18', surface: '#222822', borderColor: '#343a30' }
+        }
+    };
+
+    // --- Theme: Stroke color definitions ---
+    var _strokeColors = {
+        black:   { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
+        inkblue: { light: '#1a3a7a', dark: '#7ab0e0', guide: { light: '#b8c8e4', dark: '#2a3a52' } },
+        violet:  { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
+        brown:   { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
+        teal:    { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
+        slate:   { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
     };
 
     var _themeApplying = false;
@@ -1062,6 +1258,45 @@
                 accentTargets[t].style.setProperty('--tab-color-c2', palette.c2);
             }
 
+            // --- 2b. Primary surface colors ---
+            var primary = safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral');
+            var pColors = _primaryColors[primary] || _primaryColors.neutral;
+            var pPalette = isDark && pColors.dark ? pColors.dark : pColors;
+            for (var t = 0; t < accentTargets.length; t++) {
+                accentTargets[t].style.setProperty('--bg-main', pPalette.bgMain);
+                accentTargets[t].style.setProperty('--surface', pPalette.surface);
+                accentTargets[t].style.setProperty('--border-color', pPalette.borderColor);
+            }
+
+            // --- 2c. Stroke color ---
+            var strokeColor = safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black');
+            var sColors = _strokeColors[strokeColor] || _strokeColors.black;
+            var sActive = isDark ? sColors.dark : sColors.light;
+            var sGuide = isDark ? sColors.guide.dark : sColors.guide.light;
+            for (var t = 0; t < accentTargets.length; t++) {
+                accentTargets[t].style.setProperty('--stroke-active', sActive);
+                accentTargets[t].style.setProperty('--stroke-guide', sGuide);
+            }
+
+            // --- 2d. Stroke style (CSS class on kanji-container) ---
+            var strokeStyle = safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard');
+            if (strokeStyle === 'soft') { strokeStyle = 'gel'; safeSetItem('kanjiThemeStrokeStyle', 'gel'); }
+            var kanjiC = document.querySelector('.kanji-container');
+            if (kanjiC) {
+                kanjiC.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
+                if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
+            }
+            // Apply SVG neon filter to reference paths (filter defs are in #neon-defs)
+            var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var _neonRef = _dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+            [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
+                if (!svgEl) return;
+                svgEl.querySelectorAll('path').forEach(function (p) {
+                    if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
+                    else p.removeAttribute('filter');
+                });
+            });
+
             // --- 3. Font size (pure CSS class toggle + dynamic style for WKWebView) ---
             root.classList.remove('font-small', 'font-large');
             if (fontSize === 'small') root.classList.add('font-small');
@@ -1087,8 +1322,7 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
-            var _cssRules = '';
-            for (var _sel in _fsMap) { _cssRules += _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }
+            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
@@ -1110,9 +1344,8 @@
             // --- 5. Background-color failsafe for AnkiDroid only.
             var isAnkiDroid = typeof AnkiDroidJS !== 'undefined' || (typeof pycmd === 'function' && navigator.userAgent.indexOf('Android') !== -1);
             if (isAnkiDroid) {
-                var bgColor = isDark ? '#1a1a1a' : '#f7f7f5';
-                root.style.backgroundColor = bgColor;
-                body.style.backgroundColor = bgColor;
+                root.style.backgroundColor = pPalette.bgMain;
+                body.style.backgroundColor = pPalette.bgMain;
             } else {
                 root.style.removeProperty('background-color');
                 body.style.removeProperty('background-color');
@@ -1126,7 +1359,7 @@
 
     function updateThemeSetting(category, val) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize' };
+        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
     }
@@ -1214,12 +1447,9 @@
             if (mainPage) { mainPage.style.display = ''; mainPage.classList.add('active'); }
             _currentSettingsPage = 'settings-main';
         }
-        var gb = document.querySelector('.gear-btn');
-        if (gb) gb.classList.add('no-hover-fx');
-        var ol = document.getElementById('settings-overlay');
-        var sm = ol.querySelector('.settings-modal');
-        if (sm) sm.scrollTop = 0;
-        ol.classList.add('active');
+        if (_gearBtn) _gearBtn.classList.add('no-hover-fx');
+        if (_settingsModal) _settingsModal.scrollTop = 0;
+        _settingsOverlay.classList.add('active');
         updateModeDisabledSettings();
     }
 
@@ -1228,16 +1458,14 @@
         // Debounce: ignore close if a page navigation just happened (S-Pen ghost click)
         if (Date.now() - _lastNavTime < 500) return;
         // For backdrop clicks, verify pointerdown was also on the overlay itself.
-        var ol = document.getElementById('settings-overlay');
-        if (e && e.target === ol && !ol._bgPointerDown) return;
-        ol._bgPointerDown = false;
+        if (e && e.target === _settingsOverlay && !_settingsOverlay._bgPointerDown) return;
+        _settingsOverlay._bgPointerDown = false;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-        ol.classList.remove('active');
+        _settingsOverlay.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
-        ol.style.pointerEvents = 'auto';
-        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
-        var gb = document.querySelector('.gear-btn');
-        if (gb) { gb.classList.remove('no-hover-fx'); }
+        _settingsOverlay.style.pointerEvents = 'auto';
+        setTimeout(function () { _settingsOverlay.style.pointerEvents = ''; }, 400);
+        if (_gearBtn) { _gearBtn.classList.remove('no-hover-fx'); }
         // Apply all settings on close — invalidate cache so changes take effect
         _cachedGlobalConf = null;
         applyThemeSettings();
@@ -1273,17 +1501,16 @@
             var themeChanged = false;
             var scrollLost = false;
             for (var i = 0; i < mutations.length; i++) {
-                var oldVal = mutations[i].oldValue || '';
                 var newVal = mutations[i].target.getAttribute('class') || '';
-                var hadNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(oldVal);
                 var hasNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(newVal);
-                if (hadNM !== hasNM) {
+                if (hasNM !== !!window._ankiNightMode) {
                     themeChanged = true;
                     if (!_tmplClassChange) {
                         window._ankiNightMode = hasNM;
                     }
                 }
-                if (!window._checkingScroll && /\bno-scroll\b/.test(oldVal) && !/\bno-scroll\b/.test(newVal)) scrollLost = true;
+                if (!window._checkingScroll && !/\bno-scroll\b/.test(newVal) && window._hadNoScroll) scrollLost = true;
+                window._hadNoScroll = /\bno-scroll\b/.test(newVal);
             }
             _tmplClassChange = false;
             if (themeChanged) {
@@ -1294,8 +1521,8 @@
                 setTimeout(checkScrollability, 20);
             }
         });
-        window._kanjiThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
-        window._kanjiThemeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+        window._kanjiThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        window._kanjiThemeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
     // Listen for OS dark-mode changes (AnkiMobile uses prefers-color-scheme)
@@ -1392,7 +1619,7 @@
     // Stylus fix: Apple Pencil / S-Pen don't reliably fire onclick
     (function () {
         var lastGearOpen = 0;
-        var gearBtn = document.querySelector('.gear-btn');
+        var gearBtn = _gearBtn;
         if (!gearBtn || gearBtn._ankiPenFixed) return;
         gearBtn._ankiPenFixed = true;
         gearBtn.addEventListener('pointerup', function (e) {

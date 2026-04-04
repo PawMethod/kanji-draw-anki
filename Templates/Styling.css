@@ -61,8 +61,17 @@
     /* Akzentfarbe: 'green' (Grün), 'blue' (Blau), 'purple' (Lila), 'orange' (Orange), 'red' (Rot), 'teal' (Türkis) */
     --default-theme-accent: green;
 
+    /* Primärfarbe: 'neutral' (Neutral), 'warm' (Warm), 'cool' (Kühl), 'sepia' (Sepia), 'rose' (Rosé), 'sage' (Salbei) */
+    --default-theme-primary: neutral;
+
     /* Schriftgröße: 'small' (Klein), 'normal' (Normal), 'large' (Groß) */
     --default-theme-font-size: normal;
+
+    /* Strichfarbe: 'black' (Schwarz), 'inkblue' (Tintenblau), 'violet' (Violett), 'brown' (Braun), 'teal' (Türkis), 'slate' (Schiefer) */
+    --default-theme-stroke-color: black;
+
+    /* Strichstil: 'standard' (Standard), 'gel' (Gelstift), 'ink' (Tusche), 'neon' (Neon) */
+    --default-theme-stroke-style: standard;
 }
 
 /* ==========================================================================
@@ -223,9 +232,7 @@ body.no-scroll {
 /* iOS/WKWebView: overflow:hidden alone is insufficient – position:fixed required.
    Modals scroll via overflow-y:auto + overscroll-behavior:contain inside the
    fixed body — no position switching needed on modern iOS (15+). */
-.is-ankimobile body.no-scroll,
-html.iphone body.no-scroll,
-html.ipad body.no-scroll {
+.is-ankimobile body.no-scroll {
     position: fixed !important;
     inset: 0 !important;
     width: 100% !important;
@@ -235,18 +242,12 @@ html.ipad body.no-scroll {
    but position:fixed bottom:0 stops at the CSS viewport boundary.
    When an overlay is active, match the html background to the overlay's
    blended appearance so the gap is invisible. */
-html.is-ankimobile,
-html.iphone,
-html.ipad {
+html.is-ankimobile {
     transition: background-color 0.2s ease-out;
 }
 
 html.is-ankimobile:has(.settings-overlay.active),
-html.is-ankimobile:has(.info-overlay.active),
-html.iphone:has(.settings-overlay.active),
-html.iphone:has(.info-overlay.active),
-html.ipad:has(.settings-overlay.active),
-html.ipad:has(.info-overlay.active) {
+html.is-ankimobile:has(.info-overlay.active) {
     background-color: color-mix(in srgb, var(--bg-main) 50%, black);
 }
 
@@ -387,6 +388,63 @@ svg#svg-guide path,
 .grid-line.dotted-linecap {
     stroke-linecap: round !important;
 }
+
+/* --------------------------------------------------------------------------
+   3a. Stroke Style Filters
+   -------------------------------------------------------------------------- */
+/* Drawn strokes: per-path via JS (applyPathStyle).
+   Reference kanji: CSS rules below (#svg-bg, #svg-guide paths). */
+
+/* Gelstift — bold, opaque, saturated gel ink: wider rounded strokes with subtle ink spread */
+.kanji-container.stroke-style-gel #svg-bg path,
+.kanji-container.stroke-style-gel #svg-guide path {
+    stroke-width: 4.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    paint-order: stroke;
+    -webkit-filter: drop-shadow(0 0 0.3px currentColor);
+    filter: drop-shadow(0 0 0.3px currentColor);
+}
+
+/* Tusche (Ink) — organic, wider, calligraphic reference strokes */
+.kanji-container.stroke-style-ink #svg-bg path,
+.kanji-container.stroke-style-ink #svg-guide path {
+    stroke-width: 4.5;
+    stroke-linecap: square;
+    opacity: 0.85;
+}
+
+/* Neon — relax stacking-context + paint isolation for WebKit drop-shadow */
+.kanji-container.stroke-style-neon {
+    contain: layout style;
+    isolation: auto;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+}
+
+/* Neon — glow is applied via SVG <filter> in JS (feGaussianBlur) for WebKit compatibility.
+   CSS drop-shadow() is not used because it fails in WKWebView stacking contexts. */
+
+/* Stroke color swatches */
+.stroke-swatch-black   { background: #1a1a1a; }
+.stroke-swatch-inkblue { background: #1a3a7a; }
+.stroke-swatch-violet  { background: #5a2080; }
+.stroke-swatch-brown   { background: #5a3018; }
+.stroke-swatch-teal    { background: #0a5858; }
+.stroke-swatch-slate   { background: #404858; }
+
+.nightMode .stroke-swatch-black,
+.night_mode .stroke-swatch-black   { background: #e8e8e4; }
+.nightMode .stroke-swatch-inkblue,
+.night_mode .stroke-swatch-inkblue { background: #7ab0e0; }
+.nightMode .stroke-swatch-violet,
+.night_mode .stroke-swatch-violet  { background: #b888d8; }
+.nightMode .stroke-swatch-brown,
+.night_mode .stroke-swatch-brown   { background: #c8a070; }
+.nightMode .stroke-swatch-teal,
+.night_mode .stroke-swatch-teal    { background: #60c0c0; }
+.nightMode .stroke-swatch-slate,
+.night_mode .stroke-swatch-slate   { background: #a8b0c0; }
 
 /* --------------------------------------------------------------------------
    3b. Completion Celebration
@@ -565,22 +623,12 @@ svg#svg-guide path,
 
 /* AnkiMobile: native toolbar overlays the WebView — reserve space at the bottom */
 .is-ankimobile .settings-overlay,
-.is-ankimobile .info-overlay,
-html.iphone .settings-overlay,
-html.iphone .info-overlay,
-html.ipad .settings-overlay,
-html.ipad .info-overlay {
+.is-ankimobile .info-overlay {
     padding-bottom: max(env(safe-area-inset-bottom, 8px), 80px);
 }
 
-/* max-height: 85% resolves against the viewport, not the padded content area —
-   explicitly cap modal height so it cannot extend behind the native toolbar */
 .is-ankimobile .settings-modal,
-.is-ankimobile .info-modal,
-html.iphone .settings-modal,
-html.iphone .info-modal,
-html.ipad .settings-modal,
-html.ipad .info-modal {
+.is-ankimobile .info-modal {
     max-height: calc(100dvh - 48px - 80px);
 }
 
@@ -670,8 +718,8 @@ html.ipad .info-modal {
 
 .visual-options-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 6px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -684,7 +732,7 @@ html.ipad .info-modal {
     background: var(--bg-main);
     border: 1.5px solid transparent;
     border-radius: var(--border-rad-sm);
-    padding: 12px 0;
+    padding: 10px 2px;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
     width: 100%;
@@ -786,12 +834,12 @@ html.ipad .info-modal {
     padding: 0;
     background: var(--accent-bg);
     color: var(--accent);
-    border: none;
+    border: 1.5px solid var(--accent);
     border-radius: var(--border-rad-sm);
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    transition: opacity 0.2s ease, transform 0.15s ease;
+    transition: opacity 0.2s ease, transform 0.15s ease, background 0.15s ease;
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
     appearance: none;
@@ -893,7 +941,7 @@ html.ipad .info-modal {
 .segment-btn.active {
     background: var(--surface);
     color: var(--active-tab-color, var(--accent));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .segment-btn:not(.active):active {
@@ -1075,14 +1123,35 @@ html.ipad .info-modal {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .nightMode .accent-swatch,
 .night_mode .accent-swatch {
     border-color: rgba(255, 255, 255, 0.12);
 }
+
+/* Primary color swatches — saturated preview colors for clear distinction */
+.primary-swatch-neutral { background: linear-gradient(135deg, #d0d0cc 50%, #e8e8e5 50%); }
+.primary-swatch-warm    { background: linear-gradient(135deg, #c8b898 50%, #ddd0b4 50%); }
+.primary-swatch-cool    { background: linear-gradient(135deg, #96a8cc 50%, #b0beda 50%); }
+.primary-swatch-sepia   { background: linear-gradient(135deg, #bca878 50%, #d0c0a0 50%); }
+.primary-swatch-rose    { background: linear-gradient(135deg, #c8a0b0 50%, #dab8c4 50%); }
+.primary-swatch-sage    { background: linear-gradient(135deg, #90b888 50%, #a8cca0 50%); }
+
+.nightMode .primary-swatch-neutral,
+.night_mode .primary-swatch-neutral { background: linear-gradient(135deg, #2a2a2a 50%, #3a3a3a 50%); }
+.nightMode .primary-swatch-warm,
+.night_mode .primary-swatch-warm    { background: linear-gradient(135deg, #3a3020 50%, #4a4030 50%); }
+.nightMode .primary-swatch-cool,
+.night_mode .primary-swatch-cool    { background: linear-gradient(135deg, #202838 50%, #303848 50%); }
+.nightMode .primary-swatch-sepia,
+.night_mode .primary-swatch-sepia   { background: linear-gradient(135deg, #38321a 50%, #48422a 50%); }
+.nightMode .primary-swatch-rose,
+.night_mode .primary-swatch-rose    { background: linear-gradient(135deg, #38202a 50%, #48303a 50%); }
+.nightMode .primary-swatch-sage,
+.night_mode .primary-swatch-sage    { background: linear-gradient(135deg, #1e3020 50%, #2e4030 50%); }
 
 .accent-option span {
     font-size: 10px;
@@ -1124,7 +1193,7 @@ html.ipad .info-modal {
     justify-content: center;
     width: 30px;
     height: 30px;
-    border: none;
+    border: 1.5px solid var(--border-color);
     background: var(--surface);
     border-radius: 8px;
     color: var(--active-tab-color, var(--accent));
@@ -1135,7 +1204,7 @@ html.ipad .info-modal {
     outline: none;
     margin: 0;
     box-sizing: border-box;
-    transition: background 0.15s ease, transform 0.15s ease;
+    transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
     flex-shrink: 0;
 }
 
@@ -1894,6 +1963,11 @@ ruby rt {
     opacity: 1;
 }
 
+.free-canvas-mode #draw-layer.free-reset-fade {
+    transition: opacity 0.35s ease-out;
+    opacity: 0;
+}
+
 /* Reference strokes hidden during free drawing, revealed after eval */
 .free-canvas-mode #svg-bg path {
     stroke: transparent !important;
@@ -1915,7 +1989,8 @@ ruby rt {
 }
 
 /* Badge for excess strokes */
-.excess-strokes-badge {
+.excess-strokes-badge,
+.missing-strokes-badge {
     text-align: center;
     margin-top: 6px;
     font-size: 11px;
@@ -1923,6 +1998,10 @@ ruby rt {
     color: var(--stroke-err);
     opacity: 0;
     animation: fadeInNumbers 0.4s ease-out 0.3s forwards;
+}
+
+.missing-strokes-badge {
+    color: var(--stroke-warn2, var(--stroke-err));
 }
 
 /* Hide guided-only settings in free mode */

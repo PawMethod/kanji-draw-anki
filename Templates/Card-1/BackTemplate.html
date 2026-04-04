@@ -285,12 +285,61 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
-            var _cssRules = '';
-            for (var _sel in _fsMap) { _cssRules += _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }
+            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
             document.head.appendChild(_newStyle);
+        } catch (e) { }
+    })();
+
+    // Re-apply stroke style class on back side (CSS needs it on .kanji-container)
+    (function () {
+        try {
+            var ss = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
+                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            if (ss === 'soft') ss = 'gel';
+            window._kanjiStrokeStyle = ss;
+            var kc = document.querySelector('.kanji-container');
+            if (kc) {
+                kc.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
+                if (ss !== 'standard') kc.classList.add('stroke-style-' + ss);
+            }
+            // Apply per-path stroke style effects to reference SVGs
+            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
+                if (!svgEl) return;
+                svgEl.querySelectorAll('path').forEach(function (p) {
+                    switch (ss) {
+                        case 'neon':
+                            p.setAttribute('filter', dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            break;
+                        case 'gel':
+                            p.removeAttribute('filter');
+                            var c = p.style.stroke || p.getAttribute('stroke') || 'var(--stroke-active)';
+                            p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            p.setAttribute('stroke-width', '4.5');
+                            p.setAttribute('paint-order', 'stroke');
+                            break;
+                        case 'ink':
+                            p.removeAttribute('filter');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            p.style.opacity = '0.85';
+                            break;
+                        default:
+                            p.removeAttribute('filter');
+                            p.style.removeProperty('filter');
+                            p.style.removeProperty('-webkit-filter');
+                            p.style.removeProperty('opacity');
+                            break;
+                    }
+                });
+            });
         } catch (e) { }
     })();
 
@@ -468,6 +517,7 @@
             const svgPaths = svg.querySelectorAll('path');
             const placed = [];
             const MD = 6.0;
+            const frag = document.createDocumentFragment();
             svgPaths.forEach((sp, i) => {
                 const s0 = sp.getPointAtLength(0);
                 let s1;
@@ -482,13 +532,11 @@
                 t.setAttribute('x', fx); t.setAttribute('y', fy);
                 t.setAttribute('class', 'stroke-number');
                 t.textContent = i + 1;
-                t.style.fill = colorFn(i);
-                if (opacityFn) { const op = opacityFn(i); if (op !== undefined) t.style.opacity = op; }
-                t.style.stroke = 'var(--surface)'; t.style.strokeWidth = '1.5px';
-                t.style.strokeLinecap = 'round'; t.style.strokeLinejoin = 'round';
-                t.style.paintOrder = 'stroke fill';
-                svg.appendChild(t);
+                const opVal = opacityFn ? opacityFn(i) : undefined;
+                t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill' + (opVal !== undefined ? ';opacity:' + opVal : '');
+                frag.appendChild(t);
             });
+            svg.appendChild(frag);
         };
 
         // Create an SVG stroke path element
@@ -496,10 +544,34 @@
             const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             p.setAttribute('d', d);
             p.setAttribute('fill', 'none');
-            p.setAttribute('stroke-width', width);
             p.setAttribute('stroke-linecap', 'round');
             p.setAttribute('stroke-linejoin', 'round');
             p.style.stroke = color;
+            const ss = window._kanjiStrokeStyle || 'standard';
+            switch (ss) {
+                case 'gel':
+                    p.setAttribute('stroke-width', Math.max(parseFloat(width), 4.5).toString());
+                    p.setAttribute('paint-order', 'stroke');
+                    p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + color + ')');
+                    p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + color + ')');
+                    break;
+                case 'ink':
+                    p.setAttribute('stroke-width', Math.max(parseFloat(width), 4.5).toString());
+                    p.setAttribute('stroke-linecap', 'square');
+                    p.style.opacity = '0.85';
+                    break;
+                case 'neon': {
+                    p.setAttribute('stroke-width', width);
+                    var dk = document.documentElement.classList.contains('nightMode') ||
+                             document.documentElement.classList.contains('night_mode') ||
+                             document.body.classList.contains('nightMode');
+                    // SVG filter attribute — refs defs in #neon-defs (works in all engines incl. WebKit)
+                    p.setAttribute('filter', 'url(#' + (dk ? 'neon-glow-dk' : 'neon-glow') + ')');
+                    break;
+                }
+                default:
+                    p.setAttribute('stroke-width', width);
+            }
             return p;
         };
 
@@ -543,8 +615,8 @@
             if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
             if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
 
-            // 1. Compute stroke colors
-            let colorCSS = '';
+            // 1. Compute stroke colors and apply inline styles in a single pass
+            const cssRules = [];
             const pathColors = [];
             paths.forEach((path, index) => {
                 let mistakeCount = problemStrokes[index] || 0;
@@ -556,10 +628,12 @@
                     else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
                 }
                 pathColors.push(pathColor);
+                path.style.setProperty('stroke', pathColor, 'important');
                 if (pathColor !== 'var(--stroke-active)') {
-                    colorCSS += '#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important} ';
+                    cssRules.push('#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important}');
                 }
             });
+            const colorCSS = cssRules.join(' ');
             // 2. Update stroke colors via a SEPARATE style element (preserves anti-flicker rules)
             let colorStyle = document.getElementById('kanji-stroke-colors');
             if (!colorStyle) {
@@ -569,10 +643,39 @@
                 else document.head.appendChild(colorStyle);
             }
             colorStyle.textContent = colorCSS;
-            // 3. Set inline styles (reliably override the stylesheet)
-            paths.forEach((path, index) => {
-                path.style.setProperty('stroke', pathColors[index], 'important');
-            });
+
+            // Apply stroke-style-specific inline effects (for colored paths the CSS glow uses currentColor, not the path color)
+            var ss = window._kanjiStrokeStyle || 'standard';
+            if (ss !== 'standard') {
+                var dk = document.documentElement.classList.contains('nightMode') ||
+                         document.documentElement.classList.contains('night_mode') ||
+                         document.body.classList.contains('nightMode');
+                paths.forEach((path, i) => {
+                    var c = pathColors[i] || 'var(--stroke-active)';
+                    switch (ss) {
+                        case 'neon': {
+                            var fId = dk ? 'neon-glow-dk' : 'neon-glow';
+                            path.setAttribute('filter', 'url(#' + fId + ')');
+                            path.style.removeProperty('filter');
+                            path.style.removeProperty('-webkit-filter');
+                            break;
+                        }
+                        case 'gel':
+                            path.removeAttribute('filter');
+                            path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                            path.setAttribute('stroke-width', '4.5');
+                            path.setAttribute('paint-order', 'stroke');
+                            break;
+                        case 'ink':
+                            path.removeAttribute('filter');
+                            path.style.removeProperty('filter');
+                            path.style.removeProperty('-webkit-filter');
+                            path.style.opacity = '0.85';
+                            break;
+                    }
+                });
+            }
 
             svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
 
@@ -617,6 +720,7 @@
             svg.style.opacity = opacityValue;
 
             const c = 54.5;
+            const frag = document.createDocumentFragment();
             const addSeg = (d) => {
                 const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 p.setAttribute('d', d);
@@ -625,7 +729,7 @@
                 p.setAttribute('stroke-width', thickValue);
                 if (dashValue !== 'none') p.setAttribute('stroke-dasharray', dashValue);
                 if (style === 'dotted') p.setAttribute('stroke-linecap', 'round');
-                svg.appendChild(p);
+                frag.appendChild(p);
             };
 
             if (type === 'cross' || type === 'full') {
@@ -636,6 +740,7 @@
                 addSeg(`M ${c},${c} L 0,0`); addSeg(`M ${c},${c} L 109,0`);
                 addSeg(`M ${c},${c} L 0,109`); addSeg(`M ${c},${c} L 109,109`);
             }
+            svg.appendChild(frag);
             return svg;
         };
 
@@ -686,7 +791,7 @@
                 {
                     // Guard: if a new card loaded, abort
                     if ((window._kanjiGeneration || 0) !== gen) return;
-                    // ···· Evaluation Algorithms (shared by both views) ····
+                    // ···· Evaluation Algorithms (reuse shared definitions from FrontSide) ····
 
                     const SAMPLE_N = 65;
 
@@ -702,85 +807,11 @@
                         return pts;
                     };
 
-                    const resamplePts = (pts, n) => {
-                        if (pts.length < 2) return pts.slice();
-                        const dists = [0];
-                        for (let i = 1; i < pts.length; i++) dists.push(dists[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
-                        const totalLen = dists[dists.length - 1];
-                        if (totalLen === 0) return pts.slice(0, 1);
-                        const out = [pts[0]];
-                        let j = 1;
-                        for (let i = 1; i < n; i++) {
-                            const target = (i / (n - 1)) * totalLen;
-                            while (j < dists.length && dists[j] < target) j++;
-                            if (j >= pts.length) { out.push(pts[pts.length - 1]); continue; }
-                            const seg = dists[j] - dists[j - 1] || 1;
-                            const t = (target - dists[j - 1]) / seg;
-                            out.push({ x: pts[j - 1].x + (pts[j].x - pts[j - 1].x) * t, y: pts[j - 1].y + (pts[j].y - pts[j - 1].y) * t });
-                        }
-                        return out;
-                    };
-
-                    const frechet = (P, Q) => {
-                        const n = P.length, m = Q.length;
-                        const dp = new Float64Array(n * m);
-                        for (let i = 0; i < n; i++) {
-                            for (let j = 0; j < m; j++) {
-                                const dist = Math.hypot(P[i].x - Q[j].x, P[i].y - Q[j].y);
-                                if (i === 0 && j === 0) dp[j] = dist;
-                                else if (i === 0) dp[j] = Math.max(dp[j - 1], dist);
-                                else if (j === 0) dp[i * m] = Math.max(dp[(i - 1) * m], dist);
-                                else dp[i * m + j] = Math.max(Math.min(dp[(i - 1) * m + j], dp[(i - 1) * m + j - 1], dp[i * m + j - 1]), dist);
-                            }
-                        }
-                        return dp[n * m - 1];
-                    };
-
-                    const smooth = (pts) => {
-                        if (pts.length < 3) return pts;
-                        const out = [pts[0]];
-                        for (let i = 1; i < pts.length - 1; i++) {
-                            out.push({ x: (pts[i - 1].x + pts[i].x + pts[i + 1].x) / 3, y: (pts[i - 1].y + pts[i].y + pts[i + 1].y) / 3 });
-                        }
-                        out.push(pts[pts.length - 1]);
-                        return out;
-                    };
-
-                    const hungarian = (costMatrix) => {
-                        const n = costMatrix.length;
-                        if (n === 0) return [];
-                        const u = new Float64Array(n + 1);
-                        const v = new Float64Array(n + 1);
-                        const p = new Int32Array(n + 1);
-                        const way = new Int32Array(n + 1);
-                        for (let i = 1; i <= n; i++) {
-                            p[0] = i;
-                            let j0 = 0;
-                            const minv = new Float64Array(n + 1).fill(Infinity);
-                            const used = new Uint8Array(n + 1);
-                            do {
-                                used[j0] = 1;
-                                let i0 = p[j0], delta = Infinity, j1 = 0;
-                                for (let j = 1; j <= n; j++) {
-                                    if (used[j]) continue;
-                                    const cur = costMatrix[i0 - 1][j - 1] - u[i0] - v[j];
-                                    if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
-                                    if (minv[j] < delta) { delta = minv[j]; j1 = j; }
-                                }
-                                for (let j = 0; j <= n; j++) {
-                                    if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
-                                    else minv[j] -= delta;
-                                }
-                                j0 = j1;
-                            } while (p[j0] !== 0);
-                            do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
-                        }
-                        const result = [];
-                        for (let j = 1; j <= n; j++) {
-                            if (p[j] !== 0) result.push([p[j] - 1, j - 1]);
-                        }
-                        return result;
-                    };
+                    const _algo = window._kanjiAlgo;
+                    const resamplePts = _algo.resamplePoints;
+                    const frechet = _algo.discreteFrechet;
+                    const smooth = _algo.smoothInput;
+                    const hungarian = _algo.hungarianMatch;
 
                     const sampleRef = (path) => {
                         const len = path.getTotalLength() || 1;
@@ -930,7 +961,7 @@
                         cont.classList.remove('show-handwriting');
                         const oldSbs = cont.parentNode ? cont.parentNode.querySelector('.side-by-side-wrapper') : null;
                         if (oldSbs) oldSbs.remove();
-                        if (cont.parentNode) cont.parentNode.querySelectorAll('.excess-strokes-badge').forEach(el => el.remove());
+                        if (cont.parentNode) cont.parentNode.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge').forEach(el => el.remove());
                         cont.style.removeProperty('display');
                         if (!needsTransparent) {
                             refPaths.forEach(p => p.style.removeProperty('stroke'));
@@ -951,12 +982,22 @@
                             overlaySvg.classList.add('handwriting-overlay');
 
                             const hwMeta = [];
+                            let hwExtraCount = 0;
                             ev.orderedStrokes.forEach(entry => {
-                                if (entry.type === 'user' || entry.type === 'extra') {
+                                if (entry.type === 'user') {
                                     const stroke = entry.stroke;
                                     if (!stroke.d) return;
                                     overlaySvg.appendChild(makeStrokePath(stroke.d, '4', gradeColor(stroke.grade)));
                                     hwMeta.push({ type: entry.type, grade: stroke.grade });
+                                } else if (entry.type === 'extra') {
+                                    const stroke = entry.stroke;
+                                    if (!stroke.d) return;
+                                    const p = makeStrokePath(stroke.d, '3', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    p.setAttribute('stroke-dasharray', '3 3');
+                                    p.style.opacity = '0.5';
+                                    overlaySvg.appendChild(p);
+                                    hwMeta.push({ type: 'extra', grade: stroke.grade });
+                                    hwExtraCount++;
                                 } else {
                                     const origD = ev.refPathData[entry.refIdx] || '';
                                     if (!origD) return;
@@ -972,16 +1013,33 @@
                             cont.classList.add('show-handwriting');
                             cont.appendChild(overlaySvg);
 
+                            if (hwExtraCount > 0) {
+                                const badge = document.createElement('div');
+                                badge.className = 'excess-strokes-badge';
+                                badge.textContent = '+' + hwExtraCount + ' Strich' + (hwExtraCount > 1 ? 'e' : '') + ' zu viel';
+                                cont.parentNode.insertBefore(badge, cont.nextSibling);
+                            }
+
+                            // Count missing (ghost) strokes
+                            const hwGhostCount = hwMeta.filter(m => m.type === 'ghost').length;
+                            if (hwGhostCount > 0) {
+                                const mbadge = document.createElement('div');
+                                mbadge.className = 'missing-strokes-badge';
+                                mbadge.textContent = '−' + hwGhostCount + ' Strich' + (hwGhostCount > 1 ? 'e' : '') + ' zu wenig';
+                                const prev = cont.parentNode.querySelector('.excess-strokes-badge');
+                                cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
+                            }
+
                             if (isNumbers) {
                                 addNumbersGPAL(overlaySvg, (i) => {
                                     const meta = hwMeta[i];
                                     if (!meta) return 'var(--text-muted)';
-                                    if (meta.type === 'ghost') return isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)';
+                                    if (meta.type === 'ghost' || meta.type === 'extra') return isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)';
                                     const grade = meta.grade || 'good';
                                     return isColorBack && grade !== 'good' ? gradeColor(grade) : 'var(--text-muted)';
                                 }, (i) => {
                                     const meta = hwMeta[i];
-                                    return meta && meta.type === 'ghost' ? '0.45' : undefined;
+                                    return meta && (meta.type === 'ghost' || meta.type === 'extra') ? '0.45' : undefined;
                                 });
                             }
                         } else if (!sbsEnabled) {
@@ -1010,6 +1068,16 @@
                                 badge.className = 'excess-strokes-badge';
                                 badge.textContent = '+' + extraStrokes.length + ' Strich' + (extraStrokes.length > 1 ? 'e' : '') + ' zu viel';
                                 cont.parentNode.insertBefore(badge, cont.nextSibling);
+                            }
+
+                            // Show missing (ghost) strokes count
+                            const ghostStrokes = ev.orderedStrokes.filter(e => e.type === 'ghost');
+                            if (ghostStrokes.length > 0) {
+                                const mbadge = document.createElement('div');
+                                mbadge.className = 'missing-strokes-badge';
+                                mbadge.textContent = '−' + ghostStrokes.length + ' Strich' + (ghostStrokes.length > 1 ? 'e' : '') + ' zu wenig';
+                                const prev = cont.parentNode.querySelector('.excess-strokes-badge');
+                                cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
                             }
                         } else {
                             // ── SIDE-BY-SIDE ──
@@ -1050,6 +1118,23 @@
 
                             cont.style.display = 'none';
                             cont.parentNode.insertBefore(wrapper, cont.nextSibling);
+
+                            // Stroke count badges for SBS view
+                            const sbsExtra = ev.orderedStrokes.filter(e => e.type === 'extra').length;
+                            const sbsGhost = ev.orderedStrokes.filter(e => e.type === 'ghost').length;
+                            if (sbsExtra > 0) {
+                                const eb = document.createElement('div');
+                                eb.className = 'excess-strokes-badge';
+                                eb.textContent = '+' + sbsExtra + ' Strich' + (sbsExtra > 1 ? 'e' : '') + ' zu viel';
+                                wrapper.parentNode.insertBefore(eb, wrapper.nextSibling);
+                            }
+                            if (sbsGhost > 0) {
+                                const mb = document.createElement('div');
+                                mb.className = 'missing-strokes-badge';
+                                mb.textContent = '−' + sbsGhost + ' Strich' + (sbsGhost > 1 ? 'e' : '') + ' zu wenig';
+                                const prev = wrapper.parentNode.querySelector('.excess-strokes-badge');
+                                wrapper.parentNode.insertBefore(mb, prev ? prev.nextSibling : wrapper.nextSibling);
+                            }
 
                             if (isNumbers) {
                                 addNumbersGPAL(userSvg, (i) => {

@@ -106,7 +106,7 @@
                     </div>
                     <div class="category-info">
                         <span class="category-name">Erscheinungsbild</span>
-                        <span class="category-desc">Modus, Akzentfarbe, Schrift</span>
+                        <span class="category-desc">Modus, Farben, Schrift, Striche</span>
                     </div>
                     <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -647,6 +647,51 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Primärfarbe</div>
+            <div class="accent-options-grid">
+                <label><input type="radio" name="theme-primary" value="neutral"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-neutral"></div>
+                        <span>Neutral</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="warm"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-warm"></div>
+                        <span>Warm</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="cool"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-cool"></div>
+                        <span>Kühl</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="sepia"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-sepia"></div>
+                        <span>Sepia</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="rose"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-rose"></div>
+                        <span>Rosé</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-primary" value="sage"
+                        onchange="updateThemeSetting('primary', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch primary-swatch-sage"></div>
+                        <span>Salbei</span>
+                    </div>
+                </label>
+            </div>
             <div class="setting-group-title">Schriftgröße</div>
             <div class="visual-options-grid">
                 <label><input type="radio" name="theme-font-size" value="small"
@@ -683,12 +728,117 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Strichfarbe</div>
+            <div class="accent-options-grid">
+                <label><input type="radio" name="theme-stroke-color" value="black"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-black"></div>
+                        <span>Schwarz</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="inkblue"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-inkblue"></div>
+                        <span>Tintenblau</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="violet"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-violet"></div>
+                        <span>Violett</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="brown"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-brown"></div>
+                        <span>Braun</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="teal"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-teal"></div>
+                        <span>Türkis</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-color" value="slate"
+                        onchange="updateThemeSetting('strokeColor', this.value)">
+                    <div class="accent-option">
+                        <div class="accent-swatch stroke-swatch-slate"></div>
+                        <span>Schiefer</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Strichstil</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-stroke-style" value="standard"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Standard</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="gel"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
+                        </svg>
+                        <span>Gelstift</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="ink"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
+                        </svg>
+                        <span>Tusche</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="neon"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Neon</span>
+                    </div>
+                </label>
+            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
     </div>
 </div>
 
 <h2 class="card-title">{{Bedeutung}}</h2>
+
+<!-- SVG filter definitions for neon glow (defined once, referenced via url(#id) from any SVG) -->
+<svg id="neon-defs" style="width:0;height:0;position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2"/>
+      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+</svg>
 
 <div class="kanji-container">
     <svg id="grid-bg" viewBox="0 0 109 109"></svg>
@@ -761,8 +911,6 @@
         if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
         var _ab = document.querySelector('.action-buttons');
         if (_ab) _ab.style.width = _awPx;
-        var _ib = document.querySelector('.info-btn');
-        if (_ib) _ib.style.width = _awPx;
 
         // Force matching background on ALL ancestors up to <html>.
         // AnkiWeb may wrap the card in intermediate elements whose
@@ -853,17 +1001,23 @@
     }
 
     var _currentSettingsPage = 'settings-main';
+    var _segBtns = document.querySelectorAll('.segment-btn');
+    var _c1Settings = document.querySelectorAll('.c1-only-setting');
+    var _c2Settings = document.querySelectorAll('.c2-only-setting');
+    var _settingsRadios = document.querySelectorAll('.settings-modal input[type="radio"]');
+    var _settingsModal = document.querySelector('.settings-modal');
+    var _gearBtn = document.querySelector('.gear-btn');
+    var _settingsOverlay = document.getElementById('settings-overlay');
 
     function switchSettingsTab(tab, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
         if (_activeTab === tab) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         _activeTab = tab;
-        document.querySelectorAll('.segment-btn').forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
-        document.querySelectorAll('.c1-only-setting').forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
-        document.querySelectorAll('.c2-only-setting').forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.dataset.tab = tab;
+        _segBtns.forEach(function (t) { t.classList.toggle('active', t.getAttribute('data-tab') === tab); });
+        _c1Settings.forEach(function (el) { el.style.display = (tab === 'c1') ? '' : 'none'; });
+        _c2Settings.forEach(function (el) { el.style.display = (tab === 'c2') ? '' : 'none'; });
+        if (_settingsModal) _settingsModal.dataset.tab = tab;
         // If on a sub-page that's now hidden, go back to main
         if (_currentSettingsPage !== 'settings-main') {
             var curPage = document.getElementById(_currentSettingsPage);
@@ -884,8 +1038,7 @@
         mainEl.style.display = 'none';
         pageEl.style.display = '';
         pageEl.classList.add('active', 'slide-in-right');
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.scrollTop = 0;
+        if (_settingsModal) _settingsModal.scrollTop = 0;
         pageEl.addEventListener('animationend', function h() {
             pageEl.classList.remove('slide-in-right');
             pageEl.removeEventListener('animationend', h);
@@ -903,8 +1056,7 @@
         pageEl.style.display = 'none';
         mainEl.style.display = '';
         mainEl.classList.add('active', 'slide-in-left');
-        var modal = document.querySelector('.settings-modal');
-        if (modal) modal.scrollTop = 0;
+        if (_settingsModal) _settingsModal.scrollTop = 0;
         mainEl.addEventListener('animationend', function h() {
             mainEl.classList.remove('slide-in-left');
             mainEl.removeEventListener('animationend', h);
@@ -931,9 +1083,12 @@
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
             'theme-accent': safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green'),
-            'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal')
+            'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
+            'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
+            'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
+            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard')
         };
-        document.querySelectorAll('.settings-modal input[type="radio"]').forEach(r => {
+        _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
         });
         updateModeDisabledSettings();
@@ -999,7 +1154,10 @@
             freeView: getVar('--default-opt-free-view', 'handwriting'),
             themeMode: getVar('--default-theme-mode', 'system'),
             themeAccent: getVar('--default-theme-accent', 'green'),
-            themeFontSize: getVar('--default-theme-font-size', 'normal')
+            themeFontSize: getVar('--default-theme-font-size', 'normal'),
+            themePrimary: getVar('--default-theme-primary', 'neutral'),
+            themeStrokeColor: getVar('--default-theme-stroke-color', 'black'),
+            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard')
         };
         return _cachedGlobalConf;
     }
@@ -1030,6 +1188,45 @@
             accent: '#2aabb8', hover: '#2295a0', bg: '#e8f6f8', c1: '#2aabb8', c2: '#34c759',
             dark: { accent: '#4ec4b8', hover: '#3cb4a8', bg: '#102a2c', c1: '#4ec4b8', c2: '#50d070' }
         }
+    };
+
+    // --- Theme: Primary surface color definitions ---
+    var _primaryColors = {
+        neutral: {
+            bgMain: '#f7f7f5', surface: '#ffffff', borderColor: '#e2e2df',
+            dark: { bgMain: '#1a1a1a', surface: '#252525', borderColor: '#363636' }
+        },
+        warm: {
+            bgMain: '#f0e6d6', surface: '#f7f0e4', borderColor: '#d8cab0',
+            dark: { bgMain: '#1d1b17', surface: '#282520', borderColor: '#3a3630' }
+        },
+        cool: {
+            bgMain: '#e2e9f4', surface: '#eaf0fa', borderColor: '#c0c9de',
+            dark: { bgMain: '#181a1f', surface: '#22242a', borderColor: '#33363e' }
+        },
+        sepia: {
+            bgMain: '#ebe2cc', surface: '#f2ebda', borderColor: '#d0c4a4',
+            dark: { bgMain: '#1c1a14', surface: '#27251e', borderColor: '#3a3628' }
+        },
+        rose: {
+            bgMain: '#f0e2e8', surface: '#f6eaf0', borderColor: '#d6bfc8',
+            dark: { bgMain: '#1e181a', surface: '#2a2226', borderColor: '#3c3236' }
+        },
+        sage: {
+            bgMain: '#e2ede0', surface: '#eaf4e8', borderColor: '#bcd2b6',
+            dark: { bgMain: '#181d18', surface: '#222822', borderColor: '#343a30' }
+        }
+    };
+
+    // --- Theme: Stroke color definitions ---
+    // Colors chosen to contrast with correction indicators (green/yellow/orange/red)
+    var _strokeColors = {
+        black:   { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
+        inkblue: { light: '#1a3a7a', dark: '#7ab0e0', guide: { light: '#b8c8e4', dark: '#2a3a52' } },
+        violet:  { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
+        brown:   { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
+        teal:    { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
+        slate:   { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
     };
 
     var _themeApplying = false;
@@ -1103,6 +1300,45 @@
                 accentTargets[t].style.setProperty('--tab-color-c2', palette.c2);
             }
 
+            // --- 2b. Primary surface colors ---
+            var primary = safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral');
+            var pColors = _primaryColors[primary] || _primaryColors.neutral;
+            var pPalette = isDark && pColors.dark ? pColors.dark : pColors;
+            for (var t = 0; t < accentTargets.length; t++) {
+                accentTargets[t].style.setProperty('--bg-main', pPalette.bgMain);
+                accentTargets[t].style.setProperty('--surface', pPalette.surface);
+                accentTargets[t].style.setProperty('--border-color', pPalette.borderColor);
+            }
+
+            // --- 2c. Stroke color ---
+            var strokeColor = safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black');
+            var sColors = _strokeColors[strokeColor] || _strokeColors.black;
+            var sActive = isDark ? sColors.dark : sColors.light;
+            var sGuide = isDark ? sColors.guide.dark : sColors.guide.light;
+            for (var t = 0; t < accentTargets.length; t++) {
+                accentTargets[t].style.setProperty('--stroke-active', sActive);
+                accentTargets[t].style.setProperty('--stroke-guide', sGuide);
+            }
+
+            // --- 2d. Stroke style (CSS class on kanji-container) ---
+            var strokeStyle = safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard');
+            if (strokeStyle === 'soft') { strokeStyle = 'gel'; safeSetItem('kanjiThemeStrokeStyle', 'gel'); }
+            var kanjiC = document.querySelector('.kanji-container');
+            if (kanjiC) {
+                kanjiC.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
+                if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
+            }
+            // Apply SVG neon filter to reference paths (filter defs are in #neon-defs)
+            var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var _neonRef = _dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+            [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
+                if (!svgEl) return;
+                svgEl.querySelectorAll('path').forEach(function (p) {
+                    if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
+                    else p.removeAttribute('filter');
+                });
+            });
+
             // --- 3. Font size (pure CSS class toggle + dynamic style for WKWebView) ---
             root.classList.remove('font-small', 'font-large');
             if (fontSize === 'small') root.classList.add('font-small');
@@ -1128,8 +1364,7 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
-            var _cssRules = '';
-            for (var _sel in _fsMap) { _cssRules += _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }
+            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
@@ -1159,9 +1394,8 @@
             //    On all other platforms, remove inline bg so CSS var(--bg-main) applies.
             var isAnkiDroid = typeof AnkiDroidJS !== 'undefined' || (typeof pycmd === 'function' && navigator.userAgent.indexOf('Android') !== -1);
             if (isAnkiDroid) {
-                var bgColor = isDark ? '#1a1a1a' : '#f7f7f5';
-                root.style.backgroundColor = bgColor;
-                body.style.backgroundColor = bgColor;
+                root.style.backgroundColor = pPalette.bgMain;
+                body.style.backgroundColor = pPalette.bgMain;
             } else {
                 root.style.removeProperty('background-color');
                 body.style.removeProperty('background-color');
@@ -1175,7 +1409,7 @@
 
     function updateThemeSetting(category, val) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize' };
+        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
     }
@@ -1270,12 +1504,9 @@
             if (mainPage) { mainPage.style.display = ''; mainPage.classList.add('active'); }
             _currentSettingsPage = 'settings-main';
         }
-        var gb = document.querySelector('.gear-btn');
-        if (gb) gb.classList.add('no-hover-fx');
-        var ol = document.getElementById('settings-overlay');
-        var sm = ol.querySelector('.settings-modal');
-        if (sm) sm.scrollTop = 0;
-        ol.classList.add('active');
+        if (_gearBtn) _gearBtn.classList.add('no-hover-fx');
+        if (_settingsModal) _settingsModal.scrollTop = 0;
+        _settingsOverlay.classList.add('active');
         updateModeDisabledSettings();
     }
 
@@ -1286,20 +1517,19 @@
         // For backdrop clicks (click on overlay background), verify pointerdown
         // was also on the overlay itself. Prevents S-Pen coordinate drift from
         // accidentally closing the modal when tapping near the modal edge.
-        var ol = document.getElementById('settings-overlay');
-        if (e && e.target === ol && !ol._bgPointerDown) return;
-        ol._bgPointerDown = false;
+        if (e && e.target === _settingsOverlay && !_settingsOverlay._bgPointerDown) return;
+        _settingsOverlay._bgPointerDown = false;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-        ol.classList.remove('active');
+        _settingsOverlay.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
-        ol.style.pointerEvents = 'auto';
-        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
-        var gb = document.querySelector('.gear-btn');
-        if (gb) { gb.classList.remove('no-hover-fx'); }
+        _settingsOverlay.style.pointerEvents = 'auto';
+        setTimeout(function () { _settingsOverlay.style.pointerEvents = ''; }, 400);
+        if (_gearBtn) { _gearBtn.classList.remove('no-hover-fx'); }
         // Apply all settings on close — invalidate cache so changes take effect
         _cachedGlobalConf = null;
         applyThemeSettings();
         updateGridDisplay();
+        if (window._kanjiRefreshDrawConfig) window._kanjiRefreshDrawConfig();
         if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
     }
 
@@ -1331,19 +1561,16 @@
             var themeChanged = false;
             var scrollLost = false;
             for (var i = 0; i < mutations.length; i++) {
-                var oldVal = mutations[i].oldValue || '';
                 var newVal = mutations[i].target.getAttribute('class') || '';
-                var hadNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(oldVal);
                 var hasNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(newVal);
-                if (hadNM !== hasNM) {
+                if (hasNM !== !!window._ankiNightMode) {
                     themeChanged = true;
-                    // Update native state only for external changes (Anki/Card Editor),
-                    // not for changes we made ourselves in applyThemeSettings.
                     if (!_tmplClassChange) {
                         window._ankiNightMode = hasNM;
                     }
                 }
-                if (!window._checkingScroll && /\bno-scroll\b/.test(oldVal) && !/\bno-scroll\b/.test(newVal)) scrollLost = true;
+                if (!window._checkingScroll && !/\bno-scroll\b/.test(newVal) && window._hadNoScroll) scrollLost = true;
+                window._hadNoScroll = /\bno-scroll\b/.test(newVal);
             }
             _tmplClassChange = false;
             if (themeChanged) {
@@ -1354,8 +1581,8 @@
                 setTimeout(checkScrollability, 20);
             }
         });
-        window._kanjiThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
-        window._kanjiThemeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+        window._kanjiThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        window._kanjiThemeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
 
     // Listen for OS dark-mode changes (AnkiMobile uses prefers-color-scheme)
@@ -1452,6 +1679,85 @@
     // Increment generation counter so any pending setTimeout callbacks are discarded
     window._kanjiGeneration = (window._kanjiGeneration || 0) + 1;
 
+    // --- Shared Scoring Algorithms ---
+    // Exposed on window so BackTemplate's free-mode evaluation can reuse them
+    // instead of duplicating ~80 lines of algorithm code.
+    window._kanjiAlgo = {
+        resamplePoints: function (pts, n) {
+            if (pts.length < 2) return pts.slice();
+            var dists = [0];
+            for (var i = 1; i < pts.length; i++) dists.push(dists[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+            var totalLen = dists[dists.length - 1];
+            if (totalLen === 0) return pts.slice(0, 1);
+            var out = [pts[0]], j = 1;
+            for (var i = 1; i < n; i++) {
+                var target = (i / (n - 1)) * totalLen;
+                while (j < dists.length && dists[j] < target) j++;
+                if (j >= pts.length) { out.push(pts[pts.length - 1]); continue; }
+                var seg = dists[j] - dists[j - 1] || 1;
+                var t = (target - dists[j - 1]) / seg;
+                out.push({ x: pts[j - 1].x + (pts[j].x - pts[j - 1].x) * t, y: pts[j - 1].y + (pts[j].y - pts[j - 1].y) * t });
+            }
+            return out;
+        },
+        discreteFrechet: function (P, Q) {
+            var n = P.length, m = Q.length;
+            var dp = new Float64Array(n * m);
+            for (var i = 0; i < n; i++) {
+                for (var j = 0; j < m; j++) {
+                    var dist = Math.hypot(P[i].x - Q[j].x, P[i].y - Q[j].y);
+                    if (i === 0 && j === 0) dp[j] = dist;
+                    else if (i === 0) dp[j] = Math.max(dp[j - 1], dist);
+                    else if (j === 0) dp[i * m] = Math.max(dp[(i - 1) * m], dist);
+                    else dp[i * m + j] = Math.max(Math.min(dp[(i - 1) * m + j], dp[(i - 1) * m + j - 1], dp[i * m + j - 1]), dist);
+                }
+            }
+            return dp[n * m - 1];
+        },
+        smoothInput: function (pts) {
+            if (pts.length < 3) return pts;
+            var out = [pts[0]];
+            for (var i = 1; i < pts.length - 1; i++) {
+                out.push({ x: (pts[i - 1].x + pts[i].x + pts[i + 1].x) / 3, y: (pts[i - 1].y + pts[i].y + pts[i + 1].y) / 3 });
+            }
+            out.push(pts[pts.length - 1]);
+            return out;
+        },
+        hungarianMatch: function (costMatrix) {
+            var n = costMatrix.length;
+            if (n === 0) return [];
+            var u = new Float64Array(n + 1), v = new Float64Array(n + 1);
+            var p = new Int32Array(n + 1), way = new Int32Array(n + 1);
+            for (var i = 1; i <= n; i++) {
+                p[0] = i;
+                var j0 = 0;
+                var minv = new Float64Array(n + 1).fill(Infinity);
+                var used = new Uint8Array(n + 1);
+                do {
+                    used[j0] = 1;
+                    var i0 = p[j0], delta = Infinity, j1 = 0;
+                    for (var j = 1; j <= n; j++) {
+                        if (used[j]) continue;
+                        var cur = costMatrix[i0 - 1][j - 1] - u[i0] - v[j];
+                        if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
+                        if (minv[j] < delta) { delta = minv[j]; j1 = j; }
+                    }
+                    for (var j = 0; j <= n; j++) {
+                        if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
+                        else minv[j] -= delta;
+                    }
+                    j0 = j1;
+                } while (p[j0] !== 0);
+                do { var j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+            }
+            var result = [];
+            for (var j = 1; j <= n; j++) {
+                if (p[j] !== 0) result.push([p[j] - 1, j - 1]);
+            }
+            return result;
+        }
+    };
+
     // --- Drawing Engine ---
 
     (() => {
@@ -1473,10 +1779,9 @@
         // ···· State & Initialization ····
 
         const cachedGlobalConf = getGlobalConfig();
-        let problemStrokes = new Array(document.querySelectorAll('.svg-stroke').length).fill(0);
-
         const paths = document.querySelectorAll('.svg-stroke');
         const actionButtons = document.querySelector('.action-buttons');
+        let problemStrokes = new Array(paths.length).fill(0);
         const svgBg = document.getElementById('svg-bg');
 
         const existingGuide = document.getElementById('svg-guide');
@@ -1488,7 +1793,16 @@
 
         const SVG_GRID_SIZE = 109, SAMPLE_POINTS = 64, ANIMATION_DURATION_MS = 700;
         let currentStroke = 0, mistakes = 0, isDrawing = false, userPoints = [];
-        let currentSVGPath = null, dString = "", errorTimeout = null, fadeTimeout = null, skipTimeouts = [];
+        let currentSVGPath = null, dSegments = [], errorTimeout = null, fadeTimeout = null, skipTimeouts = [];
+
+        // Cached config values (avoid per-stroke hostGet/cookie lookups)
+        let _cfgAutodraw = hostGet('kanjiOptAutodraw', cachedGlobalConf.autodraw) === 'on';
+        let _cfgColorFront = hostGet('kanjiOptColorFront', cachedGlobalConf.colorFront) === 'on';
+        // Refresh on settings change
+        window._kanjiRefreshDrawConfig = () => {
+            _cfgAutodraw = hostGet('kanjiOptAutodraw', cachedGlobalConf.autodraw) === 'on';
+            _cfgColorFront = hostGet('kanjiOptColorFront', cachedGlobalConf.colorFront) === 'on';
+        };
 
         // ···· Draw Mode Detection ····
 
@@ -1530,10 +1844,98 @@
 
         // ···· Draw Helpers & Pointer Handlers ····
 
-        const clearDrawLayer = () => { drawLayer.innerHTML = ''; currentSVGPath = null; };
+        const clearDrawLayer = () => { drawLayer.innerHTML = ''; currentSVGPath = null; _gelHalo = null; _inkGroup = null; if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; } };
+
+        // ···· Per-path stroke style application ····
+        // Returns the current stroke style setting
+        const getActiveStrokeStyle = () => safeGetItem('kanjiThemeStrokeStyle', cachedGlobalConf.themeStrokeStyle || 'standard');
+        const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+
+        // Neon glow: filter defs live in #neon-defs (static HTML). Just toggle the attribute.
+        const _neonFilterRef = () => isDarkMode() ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+
+        // Apply the correct style to an individual SVG path element.
+        // colorOverride: CSS color string (e.g. "var(--stroke-warn1)") — used for correction strokes
+        const applyPathStyle = (pathEl, colorOverride) => {
+            if (!pathEl) return;
+            const style = getActiveStrokeStyle();
+            switch (style) {
+                case 'gel':
+                    pathEl.setAttribute('stroke-width', '4');
+                    pathEl.setAttribute('stroke-linecap', 'round');
+                    pathEl.setAttribute('stroke-linejoin', 'round');
+                    pathEl.style.removeProperty('opacity');
+                    pathEl.style.removeProperty('filter');
+                    pathEl.style.removeProperty('-webkit-filter');
+                    pathEl.removeAttribute('filter');
+                    break;
+                case 'neon':
+                    pathEl.style.removeProperty('filter');
+                    pathEl.style.removeProperty('-webkit-filter');
+                    pathEl.setAttribute('filter', _neonFilterRef());
+                    break;
+                case 'ink':
+                    pathEl.style.removeProperty('filter');
+                    pathEl.style.removeProperty('-webkit-filter');
+                    pathEl.removeAttribute('filter');
+                    break;
+                default:
+                    pathEl.style.removeProperty('filter');
+                    pathEl.style.removeProperty('-webkit-filter');
+                    pathEl.style.removeProperty('opacity');
+                    pathEl.removeAttribute('filter');
+            }
+        };
+
+        // Gelstift: halo path (wider, translucent) underneath the main path for wet-ink bleed look.
+        let _gelHalo = null;
+
+        // Tusche (Ink): multi-segment variable-width brush.
+        // A hidden master <path> tracks the full d-attribute for evaluation/snap.
+        // A visible <g> group holds short segments with individual stroke-widths.
+        let _inkGroup = null, _inkLastTime = 0, _inkLastPos = null, _inkLastWidth = 4, _inkBleedTimer = null;
+
+        // Smooth snap animation: morph user's drawn stroke toward the reference SVG path
+        const snapToReference = (drawnPath, refPath, userPts, onDone) => {
+            const N = 24;
+            const uPts = window._kanjiAlgo.resamplePoints(userPts, N);
+            const refLen = refPath.getTotalLength();
+            if (refLen === 0) { onDone(); return; }
+            const rPts = [];
+            for (let i = 0; i < N; i++) {
+                const pt = refPath.getPointAtLength((i / (N - 1)) * refLen);
+                rPts.push({ x: pt.x, y: pt.y });
+            }
+            // Align direction: compare start-to-start vs start-to-end
+            if (Math.hypot(uPts[0].x - rPts[N - 1].x, uPts[0].y - rPts[N - 1].y) <
+                Math.hypot(uPts[0].x - rPts[0].x, uPts[0].y - rPts[0].y)) rPts.reverse();
+            const dur = 200, t0 = performance.now();
+            const tick = (now) => {
+                if (!drawnPath.parentNode) { onDone(); return; }
+                let t = Math.min(1, (now - t0) / dur);
+                t = 1 - (1 - t) * (1 - t) * (1 - t); // ease-out cubic
+                let d = 'M';
+                for (let i = 0; i < N; i++) {
+                    const x = uPts[i].x + (rPts[i].x - uPts[i].x) * t;
+                    const y = uPts[i].y + (rPts[i].y - uPts[i].y) * t;
+                    d += (i ? ' L ' : ' ') + x.toFixed(1) + ' ' + y.toFixed(1);
+                }
+                drawnPath.setAttribute('d', d);
+                if (t < 1) requestAnimationFrame(tick);
+                else onDone();
+            };
+            requestAnimationFrame(tick);
+        };
+
+        // Cached bounding rect — avoids layout thrashing on every pointermove
+        let _cachedRect = null;
+        const invalidateRect = () => { _cachedRect = null; };
+        window.addEventListener('resize', invalidateRect);
+        window.addEventListener('orientationchange', invalidateRect);
 
         const getMousePos = (evt) => {
-            const rect = drawLayer.getBoundingClientRect();
+            if (!_cachedRect) _cachedRect = drawLayer.getBoundingClientRect();
+            const rect = _cachedRect;
             const clientX = evt.clientX !== undefined ? evt.clientX : evt.touches[0].clientX;
             const clientY = evt.clientY !== undefined ? evt.clientY : evt.touches[0].clientY;
             const x = Math.max(0, Math.min(SVG_GRID_SIZE, ((clientX - rect.left) / rect.width) * SVG_GRID_SIZE));
@@ -1550,24 +1952,28 @@
             if (!c) { resolve(); return; }
 
             c.classList.add('celebration');
-            c.animate([
-                { boxShadow: '0 4px 12px rgba(0,0,0,0.06), 0 0 0px rgba(255,210,50,0)' },
-                { boxShadow: '0 0 28px rgba(255,210,50,0.9), 0 0 60px rgba(255,210,50,0.35)', offset: 0.35 },
-                { boxShadow: '0 4px 12px rgba(0,0,0,0.06), 0 0 0px rgba(255,210,50,0)' }
-            ], { duration: 850, easing: 'ease-out' });
-            c.animate([
-                { transform: 'scale(1)' },
-                { transform: 'scale(1.08)', offset: 0.2 },
-                { transform: 'scale(0.975)', offset: 0.45 },
-                { transform: 'scale(1.015)', offset: 0.7 },
-                { transform: 'scale(1)' }
-            ], { duration: 700, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' });
 
-            if (svg) svg.animate([
-                { opacity: 1, transform: 'scale(1)' },
-                { opacity: 0.2, transform: 'scale(1.04)', offset: 0.25 },
-                { opacity: 1, transform: 'scale(1)' }
-            ], { duration: 600, easing: 'ease-in-out' });
+            // Use CSS keyframe animation for WebKit compatibility (WAAPI boxShadow is unreliable in WKWebView)
+            var styleId = 'celebration-keyframes';
+            if (!document.getElementById(styleId)) {
+                var s = document.createElement('style');
+                s.id = styleId;
+                s.textContent = [
+                    '@-webkit-keyframes cel-glow{0%{box-shadow:0 4px 12px rgba(0,0,0,.06)}35%{box-shadow:0 0 28px rgba(255,210,50,.9),0 0 60px rgba(255,210,50,.35)}100%{box-shadow:0 4px 12px rgba(0,0,0,.06)}}',
+                    '@keyframes cel-glow{0%{box-shadow:0 4px 12px rgba(0,0,0,.06)}35%{box-shadow:0 0 28px rgba(255,210,50,.9),0 0 60px rgba(255,210,50,.35)}100%{box-shadow:0 4px 12px rgba(0,0,0,.06)}}',
+                    '@-webkit-keyframes cel-bounce{0%{-webkit-transform:scale(1)}20%{-webkit-transform:scale(1.08)}45%{-webkit-transform:scale(.975)}70%{-webkit-transform:scale(1.015)}100%{-webkit-transform:scale(1)}}',
+                    '@keyframes cel-bounce{0%{transform:scale(1)}20%{transform:scale(1.08)}45%{transform:scale(.975)}70%{transform:scale(1.015)}100%{transform:scale(1)}}',
+                    '@-webkit-keyframes cel-flash{0%{opacity:1;-webkit-transform:scale(1)}25%{opacity:.2;-webkit-transform:scale(1.04)}100%{opacity:1;-webkit-transform:scale(1)}}',
+                    '@keyframes cel-flash{0%{opacity:1;transform:scale(1)}25%{opacity:.2;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}'
+                ].join('\n');
+                document.head.appendChild(s);
+            }
+            c.style.setProperty('-webkit-animation', 'cel-glow 850ms ease-out, cel-bounce 700ms cubic-bezier(.34,1.56,.64,1)');
+            c.style.setProperty('animation', 'cel-glow 850ms ease-out, cel-bounce 700ms cubic-bezier(.34,1.56,.64,1)');
+            if (svg) {
+                svg.style.setProperty('-webkit-animation', 'cel-flash 600ms ease-in-out');
+                svg.style.setProperty('animation', 'cel-flash 600ms ease-in-out');
+            }
 
             const rect = c.getBoundingClientRect();
             const cx = rect.left + rect.width / 2;
@@ -1606,46 +2012,19 @@
             setTimeout(() => resolve(), 750);
             setTimeout(() => {
                 c.classList.remove('celebration');
+                c.style.removeProperty('-webkit-animation');
+                c.style.removeProperty('animation');
+                if (svg) { svg.style.removeProperty('-webkit-animation'); svg.style.removeProperty('animation'); }
                 cleanup.forEach(p => { try { if (p.parentNode) p.parentNode.removeChild(p); } catch (e) { } });
             }, 950);
             window._kanjiSparkleCleanup = () => { cleanup.forEach(p => { try { if (p.parentNode) p.parentNode.removeChild(p); } catch (e) { } }); };
         });
 
-        // ···· Scoring Algorithms ····
+        // ···· Scoring Algorithms (from shared window._kanjiAlgo) ····
 
-        const resamplePoints = (pts, n) => {
-            if (pts.length < 2) return pts.slice();
-            const dists = [0];
-            for (let i = 1; i < pts.length; i++) dists.push(dists[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
-            const totalLen = dists[dists.length - 1];
-            if (totalLen === 0) return pts.slice(0, 1);
-            const out = [pts[0]];
-            let j = 1;
-            for (let i = 1; i < n; i++) {
-                const target = (i / (n - 1)) * totalLen;
-                while (j < dists.length && dists[j] < target) j++;
-                if (j >= pts.length) { out.push(pts[pts.length - 1]); continue; }
-                const seg = dists[j] - dists[j - 1] || 1;
-                const t = (target - dists[j - 1]) / seg;
-                out.push({ x: pts[j - 1].x + (pts[j].x - pts[j - 1].x) * t, y: pts[j - 1].y + (pts[j].y - pts[j - 1].y) * t });
-            }
-            return out;
-        };
-
-        const discreteFrechet = (P, Q) => {
-            const n = P.length, m = Q.length;
-            const dp = new Float64Array(n * m);
-            for (let i = 0; i < n; i++) {
-                for (let j = 0; j < m; j++) {
-                    const dist = Math.hypot(P[i].x - Q[j].x, P[i].y - Q[j].y);
-                    if (i === 0 && j === 0) dp[j] = dist;
-                    else if (i === 0) dp[j] = Math.max(dp[j - 1], dist);
-                    else if (j === 0) dp[i * m] = Math.max(dp[(i - 1) * m], dist);
-                    else dp[i * m + j] = Math.max(Math.min(dp[(i - 1) * m + j], dp[(i - 1) * m + j - 1], dp[i * m + j - 1]), dist);
-                }
-            }
-            return dp[n * m - 1];
-        };
+        const resamplePoints = window._kanjiAlgo.resamplePoints;
+        const discreteFrechet = window._kanjiAlgo.discreteFrechet;
+        const smoothInput = window._kanjiAlgo.smoothInput;
 
         const avgPointDist = (P, Q) => {
             let sum = 0;
@@ -1662,54 +2041,6 @@
                 out.push(Math.atan2(pts[ei].y - pts[si].y, pts[ei].x - pts[si].x));
             }
             return out;
-        };
-
-        const smoothInput = (pts) => {
-            if (pts.length < 3) return pts;
-            const out = [pts[0]];
-            for (let i = 1; i < pts.length - 1; i++) {
-                out.push({ x: (pts[i - 1].x + pts[i].x + pts[i + 1].x) / 3, y: (pts[i - 1].y + pts[i].y + pts[i + 1].y) / 3 });
-            }
-            out.push(pts[pts.length - 1]);
-            return out;
-        };
-
-        // ···· Hungarian Algorithm (Kuhn-Munkres) ····
-
-        const hungarianMatch = (costMatrix) => {
-            const n = costMatrix.length;
-            if (n === 0) return [];
-            const u = new Float64Array(n + 1);
-            const v = new Float64Array(n + 1);
-            const p = new Int32Array(n + 1);    // p[j] = row assigned to col j
-            const way = new Int32Array(n + 1);
-            for (let i = 1; i <= n; i++) {
-                p[0] = i;
-                let j0 = 0;
-                const minv = new Float64Array(n + 1).fill(Infinity);
-                const used = new Uint8Array(n + 1);
-                do {
-                    used[j0] = 1;
-                    let i0 = p[j0], delta = Infinity, j1 = 0;
-                    for (let j = 1; j <= n; j++) {
-                        if (used[j]) continue;
-                        const cur = costMatrix[i0 - 1][j - 1] - u[i0] - v[j];
-                        if (cur < minv[j]) { minv[j] = cur; way[j] = j0; }
-                        if (minv[j] < delta) { delta = minv[j]; j1 = j; }
-                    }
-                    for (let j = 0; j <= n; j++) {
-                        if (used[j]) { u[p[j]] += delta; v[j] -= delta; }
-                        else minv[j] -= delta;
-                    }
-                    j0 = j1;
-                } while (p[j0] !== 0);
-                do { const j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
-            }
-            const result = [];
-            for (let j = 1; j <= n; j++) {
-                if (p[j] !== 0) result.push([p[j] - 1, j - 1]);
-            }
-            return result;
         };
 
         // ···· Sample reference stroke to points ····
@@ -1736,6 +2067,8 @@
             if (isFreeMode ? freeFinished : currentStroke >= paths.length) return;
             if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
 
+            _cachedRect = null; // Force fresh rect measurement on new stroke
+
             if (!isFreeMode) {
                 clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
                 drawLayer.classList.remove('fade-out'); clearDrawLayer();
@@ -1745,14 +2078,61 @@
             isDrawing = true; userPoints = [];
             const pos = getMousePos(e);
             userPoints.push(pos);
+            const isInk = getActiveStrokeStyle() === 'ink';
+            const isGel = getActiveStrokeStyle() === 'gel';
             currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            dString = `M ${pos.x} ${pos.y}`;
-            currentSVGPath.setAttribute("d", dString);
+            dSegments = ['M ', pos.x, ' ', pos.y];
+            currentSVGPath.setAttribute("d", dSegments.join(''));
             currentSVGPath.setAttribute("fill", "none");
             currentSVGPath.style.setProperty("stroke", "var(--stroke-active)");
             currentSVGPath.setAttribute("stroke-width", "4");
             currentSVGPath.setAttribute("stroke-linecap", "round");
             currentSVGPath.setAttribute("stroke-linejoin", "round");
+            applyPathStyle(currentSVGPath);
+            // Gelstift: create halo path underneath for wet-ink bleed effect
+            if (isGel) {
+                _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                _gelHalo.setAttribute("d", dSegments.join(''));
+                _gelHalo.setAttribute("fill", "none");
+                _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
+                _gelHalo.setAttribute("stroke-width", "8");
+                _gelHalo.setAttribute("stroke-linecap", "round");
+                _gelHalo.setAttribute("stroke-linejoin", "round");
+                _gelHalo.style.setProperty("opacity", "0.12");
+                drawLayer.appendChild(_gelHalo);
+            } else {
+                _gelHalo = null;
+            }
+            if (isInk) {
+                currentSVGPath.style.setProperty('opacity', '0');
+                _inkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                _inkGroup.setAttribute("fill", "var(--stroke-active)");
+                _inkGroup.setAttribute("stroke", "var(--stroke-active)");
+                _inkGroup.setAttribute("stroke-linecap", "square");
+                _inkGroup.setAttribute("stroke-linejoin", "round");
+                _inkGroup.style.setProperty("opacity", "0.85");
+                drawLayer.appendChild(_inkGroup);
+                _inkLastPos = pos; _inkLastTime = performance.now(); _inkLastWidth = 3.5;
+                // Ink pool dot at touch-down
+                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                dot.setAttribute("cx", pos.x); dot.setAttribute("cy", pos.y);
+                dot.setAttribute("r", "2"); dot.setAttribute("stroke", "none");
+                _inkGroup.appendChild(dot);
+                // Clear any stale bleed timer before creating a new one
+                if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
+                _inkBleedTimer = setInterval(() => {
+                    if (!_inkGroup || !_inkLastPos || !isDrawing) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; return; }
+                    _inkLastWidth = Math.min(7, _inkLastWidth + 0.25);
+                    const bl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    bl.setAttribute("cx", _inkLastPos.x); bl.setAttribute("cy", _inkLastPos.y);
+                    bl.setAttribute("r", (_inkLastWidth * 0.45).toFixed(1));
+                    bl.setAttribute("stroke", "none");
+                    bl.style.setProperty("opacity", "0.35");
+                    _inkGroup.appendChild(bl);
+                }, 60);
+            } else {
+                _inkGroup = null;
+            }
             drawLayer.appendChild(currentSVGPath);
         };
 
@@ -1761,8 +2141,39 @@
             if (!isDrawing) return;
             const pos = getMousePos(e);
             userPoints.push(pos);
-            dString += ` L ${pos.x} ${pos.y}`;
-            if (currentSVGPath) currentSVGPath.setAttribute("d", dString);
+            dSegments.push(' L ', pos.x, ' ', pos.y);
+            if (currentSVGPath) {
+                const d = dSegments.join('');
+                currentSVGPath.setAttribute("d", d);
+                // Gelstift: keep halo path in sync (reuse joined string)
+                if (_gelHalo) _gelHalo.setAttribute("d", d);
+            }
+            // Tusche: smooth flowing ink with variable width
+            if (_inkGroup && _inkLastPos) {
+                const now = performance.now();
+                const dt = Math.max(1, now - _inkLastTime);
+                const dist = Math.hypot(pos.x - _inkLastPos.x, pos.y - _inkLastPos.y);
+                if (dist > 1.5) {
+                    const speed = dist / dt;
+                    const targetW = Math.max(2, Math.min(5.5, 5.5 - speed * 8));
+                    _inkLastWidth = _inkLastWidth * 0.8 + targetW * 0.2;
+                    const mx = (_inkLastPos.x + pos.x) / 2;
+                    const my = (_inkLastPos.y + pos.y) / 2;
+                    const frag = document.createDocumentFragment();
+                    const seg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    seg.setAttribute("d", 'M ' + _inkLastPos.x + ' ' + _inkLastPos.y + ' Q ' + mx + ' ' + my + ' ' + pos.x + ' ' + pos.y);
+                    seg.setAttribute("stroke-width", _inkLastWidth.toFixed(1));
+                    seg.setAttribute("fill", "none");
+                    frag.appendChild(seg);
+                    const jd = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    jd.setAttribute("cx", pos.x); jd.setAttribute("cy", pos.y);
+                    jd.setAttribute("r", (_inkLastWidth * 0.44).toFixed(1));
+                    jd.setAttribute("stroke", "none");
+                    frag.appendChild(jd);
+                    _inkGroup.appendChild(frag);
+                    _inkLastPos = pos; _inkLastTime = now;
+                }
+            }
         };
 
         const stopDrawing = (e) => {
@@ -1770,6 +2181,7 @@
             if (e && e.pointerId) { try { drawLayer.releasePointerCapture(e.pointerId); } catch (err) { } }
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             isDrawing = false;
+            if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
 
             if (isFreeMode) {
                 let totalTravel = 0;
@@ -1778,12 +2190,24 @@
                 }
                 if (totalTravel < 4) {
                     if (currentSVGPath && currentSVGPath.parentNode) currentSVGPath.parentNode.removeChild(currentSVGPath);
-                    currentSVGPath = null; userPoints = [];
+                    if (_gelHalo && _gelHalo.parentNode) _gelHalo.parentNode.removeChild(_gelHalo);
+                    if (_inkGroup && _inkGroup.parentNode) _inkGroup.parentNode.removeChild(_inkGroup);
+                    currentSVGPath = null; _gelHalo = null; _inkGroup = null; userPoints = [];
                     return;
+                }
+                // Ink free mode: show master path for persistence, remove segment group
+                if (_inkGroup) {
+                    if (_inkGroup.parentNode) _inkGroup.parentNode.removeChild(_inkGroup);
+                    _inkGroup = null;
+                    if (currentSVGPath) {
+                        currentSVGPath.style.setProperty('opacity', '0.85');
+                        currentSVGPath.setAttribute('stroke-width', '4.5');
+                        currentSVGPath.setAttribute('stroke-linecap', 'square');
+                    }
                 }
                 freeStrokes.push(userPoints.slice());
                 freeSVGPaths.push(currentSVGPath);
-                currentSVGPath = null; userPoints = [];
+                currentSVGPath = null; _gelHalo = null; userPoints = [];
                 saveFreeStrokes();
             } else {
                 evaluateStroke();
@@ -1853,26 +2277,48 @@
             const composite = sStart * 0.175 + sEnd * 0.175 + sShape * 0.4 + sAvg * 0.25;
 
             if (lengthOk && directionOk && ceilingOk && composite <= 1.0) {
-                mistakes = 0; paths[currentStroke].classList.remove('hint-active'); paths[currentStroke].classList.add('stroke-complete');
-                currentStroke++; saveState(); clearDrawLayer();
-                if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); }
+                mistakes = 0;
+                const si = currentStroke, dp = currentSVGPath, up = userPoints.slice();
+                const ig = _inkGroup;
+                const gh = _gelHalo;
+                paths[si].classList.remove('hint-active');
+                currentStroke++; saveState(); currentSVGPath = null; _inkGroup = null; _gelHalo = null;
+                const afterSnap = () => {
+                    paths[si].classList.add('stroke-complete');
+                    if (dp && dp.parentNode) dp.parentNode.removeChild(dp);
+                    if (ig && ig.parentNode) ig.parentNode.removeChild(ig);
+                    if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
+                    if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); }
+                };
+                if (dp && up.length >= 2) {
+                    // Ink: reveal master path for snap animation, hide segment group
+                    if (ig) { ig.style.setProperty('opacity', '0'); dp.style.setProperty('opacity', '0.85'); dp.setAttribute('stroke-width', '4.5'); dp.setAttribute('stroke-linecap', 'square'); }
+                    // Gel: hide halo during snap (clean transition)
+                    if (gh) { gh.style.setProperty('opacity', '0'); }
+                    snapToReference(dp, paths[si], up, afterSnap);
+                }
+                else { paths[si].classList.add('stroke-complete'); clearDrawLayer(); if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); } }
             } else {
                 mistakes++;
                 if (mistakes > problemStrokes[currentStroke]) { problemStrokes[currentStroke] = mistakes; saveState(); }
 
-                const isAutoDrawOn = hostGet('kanjiOptAutodraw', cachedGlobalConf.autodraw) === 'on';
-                const isColorFeedbackFrontOn = hostGet('kanjiOptColorFront', cachedGlobalConf.colorFront) === 'on';
+                const isAutoDrawOn = _cfgAutodraw;
+                const isColorFeedbackFrontOn = _cfgColorFront;
 
                 if (mistakes >= 3 && isAutoDrawOn) {
                     const p = paths[currentStroke];
                     p.classList.remove('hint-active');
-                    void p.offsetWidth;
-                    p.classList.add('hint-active');
+                    requestAnimationFrame(function() { p.classList.add('hint-active'); });
                 }
 
                 if (isColorFeedbackFrontOn) {
                     const colorVar = mistakes === 1 ? "var(--stroke-warn1)" : mistakes === 2 ? "var(--stroke-warn2)" : "var(--stroke-err)";
-                    if (currentSVGPath) currentSVGPath.style.setProperty("stroke", colorVar);
+                    if (currentSVGPath) {
+                        currentSVGPath.style.setProperty("stroke", colorVar);
+                        applyPathStyle(currentSVGPath, colorVar);
+                    }
+                    if (_inkGroup) _inkGroup.setAttribute("stroke", colorVar);
+                    if (_gelHalo) _gelHalo.style.setProperty("stroke", colorVar);
                 }
 
                 clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.remove('fade-out');
@@ -1934,16 +2380,15 @@
         // BUTTON ACTIONS (re-bindable per mode)
         // ===================================================================
 
-        const revealAction = () => { document.getElementById('svg-guide').classList.toggle('is-visible'); };
+        const revealAction = () => { guideSvg.classList.toggle('is-visible'); };
 
         const guidedResetAction = () => {
             currentStroke = 0; mistakes = 0; userPoints = []; problemStrokes.fill(0); saveState();
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
-            const preColors = [];
-            for (let i = 0; i < paths.length; i++) preColors.push(getComputedStyle(paths[i]).stroke);
-            paths.forEach((p, i) => {
+            const strokeColor = getComputedStyle(paths[0] || document.documentElement).getPropertyValue('--stroke-active').trim() || '';
+            paths.forEach((p) => {
                 if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
-                    p.style.setProperty('stroke', preColors[i], 'important');
+                    if (strokeColor) p.style.setProperty('stroke', strokeColor, 'important');
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                     p.classList.add('rewind-anim');
                     setTimeout(() => {
@@ -1956,13 +2401,16 @@
                 }
             });
             clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.remove('fade-out'); clearDrawLayer();
-            document.getElementById('svg-guide').classList.remove('is-visible');
+            guideSvg.classList.remove('is-visible');
             if (actionButtons) actionButtons.style.display = 'flex';
             const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
         };
 
         const guidedSkipAction = () => {
             if (currentStroke >= paths.length) return;
+            // Resolve any pending skip animations immediately before clearing timers
+            skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
+            paths.forEach(p => { if (p.classList.contains('animate-draw')) { p.classList.remove('animate-draw'); p.classList.add('stroke-complete'); } });
             const pathToAnimate = paths[currentStroke]; problemStrokes[currentStroke] = 3;
             pathToAnimate.classList.remove('hint-active', 'rewind-anim'); pathToAnimate.classList.add('animate-draw');
             const animTimer = setTimeout(() => { pathToAnimate.classList.remove('animate-draw'); pathToAnimate.classList.add('stroke-complete'); }, ANIMATION_DURATION_MS);
@@ -1976,40 +2424,47 @@
         };
 
         const freeResetAction = () => {
-            freeStrokes = []; freeSVGPaths = []; freeFinished = false;
-            userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
-            drawLayer.innerHTML = ''; currentSVGPath = null;
-            paths.forEach(p => {
-                p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
-                p.style.removeProperty('stroke');
-            });
-            document.getElementById('svg-guide').classList.remove('is-visible');
-            if (actionButtons) actionButtons.style.display = 'flex';
-            ['sessionStorage', 'localStorage'].forEach(s => {
-                try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
-            });
-            window._kanjiFreeStrokes = null;
-            const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
+            // Fade out drawn strokes before clearing
+            drawLayer.classList.add('free-reset-fade');
+            setTimeout(() => {
+                freeStrokes = []; freeSVGPaths = []; freeFinished = false;
+                userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
+                drawLayer.innerHTML = ''; currentSVGPath = null;
+                _gelHalo = null; _inkGroup = null;
+                if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
+                drawLayer.classList.remove('free-reset-fade');
+                paths.forEach(p => {
+                    p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
+                    p.style.removeProperty('stroke');
+                });
+                guideSvg.classList.remove('is-visible');
+                if (actionButtons) actionButtons.style.display = 'flex';
+                ['sessionStorage', 'localStorage'].forEach(s => {
+                    try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
+                });
+                window._kanjiFreeStrokes = null;
+                const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
+            }, 350);
         };
 
         // Delegate click handlers (bind once, action is swappable)
-        ['button-reveal', 'button-reset', 'button-skip'].forEach(id => {
-            const btn = document.getElementById(id);
+        const btnReveal = document.getElementById('button-reveal');
+        const btnReset = document.getElementById('button-reset');
+        const btnSkip = document.getElementById('button-skip');
+        [btnReveal, btnReset, btnSkip].forEach(btn => {
             if (btn && !btn._kanjiClickBound) {
                 btn._kanjiClickBound = true;
                 btn.addEventListener('click', function () { if (this._kanjiAction) this._kanjiAction(); });
             }
         });
 
-        const skipBtn = document.getElementById('button-skip');
         const bindModeButtons = () => {
-            document.getElementById('button-reveal')._kanjiAction = revealAction;
-            document.getElementById('button-reset')._kanjiAction = isFreeMode ? freeResetAction : guidedResetAction;
+            if (btnReveal) btnReveal._kanjiAction = revealAction;
+            if (btnReset) btnReset._kanjiAction = isFreeMode ? freeResetAction : guidedResetAction;
             if (isFreeMode) {
-                skipBtn.style.display = 'none';
+                if (btnSkip) btnSkip.style.display = 'none';
             } else {
-                skipBtn.style.display = '';
-                skipBtn._kanjiAction = guidedSkipAction;
+                if (btnSkip) { btnSkip.style.display = ''; btnSkip._kanjiAction = guidedSkipAction; }
             }
         };
         bindModeButtons();
@@ -2019,9 +2474,7 @@
         // ===================================================================
 
         window._kanjiSwitchDrawMode = (newMode) => {
-            // Reset current state
-            const resetBtn = document.getElementById('button-reset');
-            if (resetBtn._kanjiAction) resetBtn._kanjiAction();
+            if (btnReset && btnReset._kanjiAction) btnReset._kanjiAction();
 
             // Update mode flag
             isFreeMode = newMode === 'free';
@@ -2047,8 +2500,7 @@
             var btn = e.target.closest('button');
             if (!btn) return;
             btn.classList.remove('btn-flash');
-            void btn.offsetWidth;
-            btn.classList.add('btn-flash');
+            requestAnimationFrame(function() { btn.classList.add('btn-flash'); });
             if (navigator.vibrate) navigator.vibrate(10);
         });
     })();
@@ -2074,7 +2526,7 @@
                 if (handler === 'gear') {
                     openSettings(e);
                 } else {
-                    el.classList.remove('btn-flash'); void el.offsetWidth; el.classList.add('btn-flash');
+                    el.classList.remove('btn-flash'); requestAnimationFrame(function() { el.classList.add('btn-flash'); });
                     if (navigator.vibrate) navigator.vibrate(10);
                     if (el._kanjiAction) el._kanjiAction();
                 }
@@ -2084,7 +2536,7 @@
                 window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         }
-        addPenHandler(document.querySelector('.gear-btn'), 'gear');
+        addPenHandler(_gearBtn, 'gear');
         addPenHandler(document.getElementById('button-reveal'), 'btn');
         addPenHandler(document.getElementById('button-skip'), 'btn');
         addPenHandler(document.getElementById('button-reset'), 'btn');
