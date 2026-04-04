@@ -1025,6 +1025,21 @@
         var scale = fontSize === 'small' ? 0.875 : fontSize === 'large' ? 1.125 : 1;
         root.style.setProperty('--text-scale', scale);
         body.style.setProperty('--text-scale', scale);
+
+        // --- 4. Tell Qt/Chromium that we handle theming ourselves.
+        //    Anki Desktop enables QWebEngine's ForceDarkMode when Anki is in
+        //    dark mode. By always declaring "dark" when Anki's nightMode is
+        //    active, we prevent ForceDarkMode from inverting our CSS variables.
+        var ankiIsDark = !!window._ankiNightMode;
+        var scheme = ankiIsDark ? 'dark' : 'light';
+        root.style.colorScheme = scheme;
+        var meta = document.querySelector('meta[name="color-scheme"]');
+        if (!meta) {
+            meta = document.createElement('meta');
+            meta.name = 'color-scheme';
+            document.head.appendChild(meta);
+        }
+        meta.content = scheme;
         } finally {
             // Delay reset so MutationObserver callbacks (microtasks) triggered by
             // the class changes above see the guard as true and skip re-entry.

@@ -247,6 +247,16 @@ html.ipad body.no-scroll:has(.info-overlay.active) {
     line-height: 1.5;
 }
 
+/* Reset Anki's global button styles (webview.css sets button backgrounds
+   and hover effects via --button-bg / --button-gradient-start that leak
+   into our template). We unset only the Anki variables so our own rules
+   (which use --surface, --accent-bg etc.) still apply normally. */
+.card button {
+    --button-bg: initial;
+    --button-gradient-start: initial;
+    --button-gradient-end: initial;
+}
+
 .card-title {
     margin: 0 0 20px 0;
     color: var(--text-main);
@@ -430,6 +440,7 @@ svg#svg-guide path,
 
 @media (hover: hover) {
     .action-buttons button:hover {
+        background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
         box-shadow: var(--shadow-hover);
@@ -460,6 +471,7 @@ svg#svg-guide path,
     transform: translateZ(0);
 }@media (hover: hover) {
     .gear-btn:hover {
+        background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
         box-shadow: var(--shadow-hover);
@@ -474,6 +486,7 @@ svg#svg-guide path,
 /* Force-reset gear hover state when overlay is open (prevents stuck S-Pen hover) */
 .gear-btn.no-hover-fx,
 .gear-btn.no-hover-fx:hover {
+    background: var(--surface) !important;
     color: var(--text-faint) !important;
     border-color: var(--border-color) !important;
     box-shadow: var(--shadow-soft) !important;
@@ -762,7 +775,10 @@ html.ipad .info-modal {
 
 @media (hover: hover) {
     .close-settings:hover {
-        opacity: 0.85;
+        background: var(--accent-bg);
+        filter: brightness(1.1);
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
         border: none;
     }
 }
@@ -862,11 +878,13 @@ html.ipad .info-modal {
 
 @media (hover: hover) {
     .segment-btn:not(.active):hover {
+        background: transparent;
         color: var(--text-main);
         border: none;
     }
 
     .segment-btn.active:hover {
+        background: var(--surface);
         border: none;
     }
 }
@@ -1464,6 +1482,7 @@ ruby rt {
 
 @media (hover: hover) {
     .info-btn:hover {
+        background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
         box-shadow: var(--shadow-hover);
@@ -1511,6 +1530,7 @@ ruby rt {
 
 @media (hover: hover) {
     .link-btn:hover {
+        background: var(--bg-main);
         color: var(--accent);
         border-color: var(--accent);
         box-shadow: var(--shadow-hover);
