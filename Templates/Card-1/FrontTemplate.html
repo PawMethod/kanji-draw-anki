@@ -758,6 +758,15 @@
         if (_ab) _ab.style.width = _awPx;
         var _ib = document.querySelector('.info-btn');
         if (_ib) _ib.style.width = _awPx;
+
+        // Force matching background on ALL ancestors up to <html>.
+        // AnkiWeb may wrap the card in intermediate elements whose
+        // default background bleeds through below the card content.
+        var _bgEl = document.querySelector('.card');
+        while (_bgEl) {
+            _bgEl.style.setProperty('background-color', 'var(--bg-main)', 'important');
+            _bgEl = _bgEl.parentElement;
+        }
     }
 
     // --- Anti-Flicker [SHARED with c2-front] ---
@@ -858,10 +867,13 @@
         refreshSettingsRadios();
     }
 
+    var _lastNavTime = 0;
+
     function navigateToPage(pageId) {
         var mainEl = document.getElementById(_currentSettingsPage);
         var pageEl = document.getElementById(pageId);
         if (!mainEl || !pageEl) return;
+        _lastNavTime = Date.now();
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         mainEl.classList.remove('active');
         mainEl.style.display = 'none';
@@ -1033,15 +1045,16 @@
             // _ankiNightMode is captured from body.className at script init
             // (set by Anki before our code runs) and updated by the
             // MutationObserver whenever Anki (not us) toggles nightMode.
-            root.classList.remove('nightMode', 'night_mode');
             var ankiDark = window._ankiNightMode;
             // Fallback: if _ankiNightMode was never set, try matchMedia
             if (ankiDark === undefined) {
                 ankiDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             }
             if (ankiDark) {
+                root.classList.add('nightMode', 'night_mode');
                 body.classList.add('nightMode', 'night_mode');
             } else {
+                root.classList.remove('nightMode', 'night_mode');
                 body.classList.remove('nightMode', 'night_mode');
             }
         }
@@ -1200,9 +1213,19 @@
 
     function closeSettings(e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
-        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        // Debounce: ignore close if a page navigation just happened (S-Pen ghost click)
+        if (Date.now() - _lastNavTime < 500) return;
+        // For backdrop clicks (click on overlay background), verify pointerdown
+        // was also on the overlay itself. Prevents S-Pen coordinate drift from
+        // accidentally closing the modal when tapping near the modal edge.
         var ol = document.getElementById('settings-overlay');
+        if (e && e.target === ol && !ol._bgPointerDown) return;
+        ol._bgPointerDown = false;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         ol.classList.remove('active');
+        // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
+        ol.style.pointerEvents = 'auto';
+        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
         var gb = document.querySelector('.gear-btn');
         if (gb) { gb.classList.remove('no-hover-fx'); }
         // Apply all settings on close — invalidate cache so changes take effect
@@ -1215,8 +1238,13 @@
     // Capture Anki's native nightMode state BEFORE applyThemeSettings modifies
     // body classes. Anki sets body.className on card show; this is the ground
     // truth for "system" mode and the Card Editor preview toggle.
+    // Check both <html> and <body> — AnkiMobile / Card Editor may set on either.
     window._ankiNightMode = document.body.classList.contains('nightMode')
-                         || document.body.classList.contains('night_mode');
+                         || document.body.classList.contains('night_mode')
+                         || document.documentElement.classList.contains('nightMode')
+                         || document.documentElement.classList.contains('night_mode')
+                         || document.documentElement.classList.contains('night-mode')
+                         || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     applyThemeSettings();
     // Run synchronously to prevent flicker on card load
@@ -1237,19 +1265,17 @@
             for (var i = 0; i < mutations.length; i++) {
                 var oldVal = mutations[i].oldValue || '';
                 var newVal = mutations[i].target.getAttribute('class') || '';
-                var hadNM = /\bnightMode\b|\bnight_mode\b/.test(oldVal);
-                var hasNM = /\bnightMode\b|\bnight_mode\b/.test(newVal);
+                var hadNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(oldVal);
+                var hasNM = /\bnightMode\b|\bnight_mode\b|\bnight-mode\b/.test(newVal);
                 if (hadNM !== hasNM) {
                     themeChanged = true;
                     // Update native state only for external changes (Anki/Card Editor),
                     // not for changes we made ourselves in applyThemeSettings.
-                    // _tmplClassChange is set synchronously before our classList edits
-                    // and is still true when this microtask fires.
-                    if (!_tmplClassChange && mutations[i].target === document.body) {
+                    if (!_tmplClassChange) {
                         window._ankiNightMode = hasNM;
                     }
                 }
-                if (/\bno-scroll\b/.test(oldVal) && !/\bno-scroll\b/.test(newVal)) scrollLost = true;
+                if (!window._checkingScroll && /\bno-scroll\b/.test(oldVal) && !/\bno-scroll\b/.test(newVal)) scrollLost = true;
             }
             _tmplClassChange = false;
             if (themeChanged) {
@@ -1262,6 +1288,23 @@
         });
         window._kanjiThemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
         window._kanjiThemeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
+    }
+
+    // Listen for OS dark-mode changes (AnkiMobile uses prefers-color-scheme)
+    if (window.matchMedia) {
+        var darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+        var mqHandler = function(e) {
+            var mode = safeGetItem('kanjiThemeMode', 'system');
+            if (mode === 'system') {
+                window._ankiNightMode = e.matches;
+                applyThemeSettings();
+            }
+        };
+        if (window._kanjiMQHandler && darkMQ.removeEventListener) {
+            try { darkMQ.removeEventListener('change', window._kanjiMQHandler); } catch(ex){}
+        }
+        window._kanjiMQHandler = mqHandler;
+        darkMQ.addEventListener('change', mqHandler);
     }
 
     // --- Scroll Lock & iOS Detection [SHARED with c2-front] ---
@@ -1295,22 +1338,30 @@
             document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
             return;
         }
-        // iOS: position:fixed (no-scroll) removes body from flow –
-        // temporarily unlock to measure scrollHeight correctly
-        const wasLocked = document.body.classList.contains('no-scroll');
-        if (wasLocked) {
-            document.body.classList.remove('no-scroll');
-            document.documentElement.style.removeProperty('overflow-y');
-        }
+        // Guard: prevent MutationObserver re-trigger loop.
+        // Temporarily removing no-scroll to measure fires the observer,
+        // which would schedule another checkScrollability call.
+        window._checkingScroll = true;
+        try {
+            // iOS: position:fixed (no-scroll) removes body from flow –
+            // temporarily unlock to measure scrollHeight correctly
+            var wasLocked = document.body.classList.contains('no-scroll');
+            if (wasLocked) {
+                document.body.classList.remove('no-scroll');
+                document.documentElement.style.removeProperty('overflow-y');
+            }
 
-        const isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
+            var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
 
-        if (isScrollable) {
-            document.body.classList.remove('no-scroll');
-            document.documentElement.style.removeProperty('overflow-y');
-        } else {
-            document.body.classList.add('no-scroll');
-            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+            if (isScrollable) {
+                document.body.classList.remove('no-scroll');
+                document.documentElement.style.removeProperty('overflow-y');
+            } else {
+                document.body.classList.add('no-scroll');
+                document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+            }
+        } finally {
+            setTimeout(function() { window._checkingScroll = false; }, 0);
         }
     }
 
@@ -1983,9 +2034,51 @@
                 var target = e.target.closest('input, button, label, select, a, .settings-link, [onclick]');
                 if (!target) return;
                 e.preventDefault();
+                e.stopPropagation();
                 target.click();
+                // Eat the browser's delayed click to prevent ghost-click on elements behind
+                var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
+                document.addEventListener('click', eatClick, true);
+                setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
             });
         });
+    }
+
+    // --- S-Pen / Stylus: backdrop-close verification [SHARED with c2-front] ---
+    // Track pointerdown on overlays so closeSettings/closeInfoModal can verify
+    // that a backdrop click actually started on the overlay background (not drifted
+    // from a modal child due to S-Pen coordinate imprecision).
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
+        if (ol._kanjiPointerDown) return;
+        ol._kanjiPointerDown = true;
+        ol.addEventListener('pointerdown', function (e) {
+            this._bgPointerDown = (e.target === this);
+        });
+    });
+
+    // --- Global S-Pen defense [SHARED with c2-front] ---
+    // When any overlay is active, intercept ALL pen pointer/click events that target
+    // elements OUTSIDE the active overlay. This prevents the S-Pen from triggering
+    // buttons behind the modal regardless of event timing or coordinate drift.
+    if (typeof PointerEvent !== 'undefined') {
+        ['pointerdown', 'pointerup', 'click'].forEach(function (evtName) {
+            document.addEventListener(evtName, function (e) {
+                if (e.pointerType !== undefined && e.pointerType !== 'pen') return;
+                if (evtName === 'click' && !e._penOrigin) return; // only block pen-originated clicks
+                var active = document.querySelector('.settings-overlay.active, .info-overlay.active');
+                if (!active) return;
+                if (active.contains(e.target)) return; // event is inside overlay → allow
+                e.stopImmediatePropagation();
+                e.preventDefault();
+            }, true);
+        });
+        // Mark click events that originate from pen so the filter above can identify them
+        document.addEventListener('pointerup', function (e) {
+            if (e.pointerType !== 'pen') return;
+            var mark = function (ev) { ev._penOrigin = true; document.removeEventListener('click', mark, true); };
+            document.addEventListener('click', mark, true);
+            setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
+        }, true);
     }
 
     // --- userJs: Gesture / Shortcut hooks for AnkiDroid & AnkiMobile ---

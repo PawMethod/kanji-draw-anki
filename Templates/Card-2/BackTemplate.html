@@ -267,7 +267,13 @@
     function closeInfoModal(e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
         var ol = document.getElementById('info-overlay');
+        // For backdrop clicks, verify pointerdown was also on the overlay itself.
+        if (e && e.target === ol && !ol._bgPointerDown) return;
+        ol._bgPointerDown = false;
         ol.classList.remove('active');
+        // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
+        ol.style.pointerEvents = 'auto';
+        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
     }
 
     // --- Radical Tree Renderer [SHARED with c1-back] ---
@@ -530,7 +536,12 @@
                 var target = e.target.closest('input, button, label, select, a, .settings-link, [onclick]');
                 if (!target) return;
                 e.preventDefault();
+                e.stopPropagation();
                 target.click();
+                // Eat the browser's delayed click to prevent ghost-click on elements behind
+                var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
+                document.addEventListener('click', eatClick, true);
+                setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
             });
         });
     }
@@ -561,6 +572,36 @@
         addPenHandler('.info-btn', 'info');
         addPenHandler('.gear-btn', 'gear');
     })();
+
+    // --- S-Pen / Stylus: backdrop-close verification ---
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
+        if (ol._kanjiPointerDown) return;
+        ol._kanjiPointerDown = true;
+        ol.addEventListener('pointerdown', function (e) {
+            this._bgPointerDown = (e.target === this);
+        });
+    });
+
+    // --- Global S-Pen defense ---
+    if (typeof PointerEvent !== 'undefined') {
+        ['pointerdown', 'pointerup', 'click'].forEach(function (evtName) {
+            document.addEventListener(evtName, function (e) {
+                if (e.pointerType !== undefined && e.pointerType !== 'pen') return;
+                if (evtName === 'click' && !e._penOrigin) return;
+                var active = document.querySelector('.settings-overlay.active, .info-overlay.active');
+                if (!active) return;
+                if (active.contains(e.target)) return;
+                e.stopImmediatePropagation();
+                e.preventDefault();
+            }, true);
+        });
+        document.addEventListener('pointerup', function (e) {
+            if (e.pointerType !== 'pen') return;
+            var mark = function (ev) { ev._penOrigin = true; document.removeEventListener('click', mark, true); };
+            document.addEventListener('click', mark, true);
+            setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
+        }, true);
+    }
 
     // Link fix: force 1-tap activation on iOS/AnkiDroid (Apple Pencil + finger)
     document.querySelectorAll('.link-btn[href]').forEach(function (link) {

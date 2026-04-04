@@ -111,7 +111,7 @@
     --tab-color-c2: #3a98a8;
 
     /* Hover-Shadow */
-    --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+    --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
 
     /* Layout Limits */
     --dynamic-size: min(90vw, 65vh, 550px);
@@ -122,6 +122,21 @@
 /* AnkiWeb: answer bar overlays the card content like a layer on top.
    --dynamic-size is set via JS (window.innerHeight measurement).
    Reduce spacing to fit everything into the visible area without scrolling. */
+
+html.is-ankiweb,
+html.is-ankiweb body {
+    background-color: var(--bg-main) !important;
+}
+
+/* AnkiWeb: the .card / #qa wrapper may create a containing block for
+   position:fixed overlays (transform, will-change, etc).  Expand the card
+   to full viewport height while an overlay is open so the backdrop covers
+   the entire visible area – prevents the grey bar beneath the card. */
+html.is-ankiweb:has(.settings-overlay.active) .card,
+html.is-ankiweb:has(.info-overlay.active) .card {
+    min-height: 100vh !important;
+    overflow: hidden;
+}
 
 html.is-ankiweb .card {
     padding: 8px 20px 8px;
@@ -206,8 +221,8 @@ body.no-scroll {
 }
 
 /* iOS/WKWebView: overflow:hidden alone is insufficient – position:fixed required.
-   But position:fixed on body breaks overflow-y:auto scrolling inside child modals,
-   so we disable fixed positioning whenever a modal overlay is active. */
+   Modals scroll via overflow-y:auto + overscroll-behavior:contain inside the
+   fixed body — no position switching needed on modern iOS (15+). */
 .is-ankimobile body.no-scroll,
 html.iphone body.no-scroll,
 html.ipad body.no-scroll {
@@ -216,13 +231,23 @@ html.ipad body.no-scroll {
     width: 100% !important;
 }
 
-.is-ankimobile body.no-scroll:has(.settings-overlay.active),
-.is-ankimobile body.no-scroll:has(.info-overlay.active),
-html.iphone body.no-scroll:has(.settings-overlay.active),
-html.iphone body.no-scroll:has(.info-overlay.active),
-html.ipad body.no-scroll:has(.settings-overlay.active),
-html.ipad body.no-scroll:has(.info-overlay.active) {
-    position: static !important;
+/* AnkiMobile: the WebView renders slightly behind the native toolbar,
+   but position:fixed bottom:0 stops at the CSS viewport boundary.
+   When an overlay is active, match the html background to the overlay's
+   blended appearance so the gap is invisible. */
+html.is-ankimobile,
+html.iphone,
+html.ipad {
+    transition: background-color 0.2s ease-out;
+}
+
+html.is-ankimobile:has(.settings-overlay.active),
+html.is-ankimobile:has(.info-overlay.active),
+html.iphone:has(.settings-overlay.active),
+html.iphone:has(.info-overlay.active),
+html.ipad:has(.settings-overlay.active),
+html.ipad:has(.info-overlay.active) {
+    background-color: color-mix(in srgb, var(--bg-main) 50%, black);
 }
 
 .card {
