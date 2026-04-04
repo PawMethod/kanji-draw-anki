@@ -1041,14 +1041,21 @@
             root.classList.add('nightMode', 'night_mode');
             body.classList.add('nightMode', 'night_mode');
         } else {
-            // 'system' → follow Anki's native dark mode preference.
-            // _ankiNightMode is captured from body.className at script init
-            // (set by Anki before our code runs) and updated by the
-            // MutationObserver whenever Anki (not us) toggles nightMode.
-            var ankiDark = window._ankiNightMode;
-            // Fallback: if _ankiNightMode was never set, try matchMedia
-            if (ankiDark === undefined) {
-                ankiDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // 'system' → follow the OS/device dark mode preference.
+            // On AnkiDroid, Anki's own theme setting (body classes / _ankiNightMode)
+            // may differ from the device's OS dark mode. Prefer prefers-color-scheme
+            // when available since "System" means "follow the OS".
+            var ankiDark;
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').media !== 'not all') {
+                ankiDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } else {
+                // Fallback: read Anki's native dark mode state from DOM
+                ankiDark = window._ankiNightMode
+                    || body.classList.contains('nightMode')
+                    || body.classList.contains('night_mode')
+                    || root.classList.contains('nightMode')
+                    || root.classList.contains('night_mode')
+                    || root.classList.contains('night-mode');
             }
             if (ankiDark) {
                 root.classList.add('nightMode', 'night_mode');
@@ -1058,6 +1065,9 @@
                 body.classList.remove('nightMode', 'night_mode');
             }
         }
+        // Reset _tmplClassChange asynchronously so that if classList changes
+        // were no-ops (no mutation fired), the flag doesn't stay stuck on true.
+        setTimeout(function() { _tmplClassChange = false; }, 0);
 
         // --- 2. Accent colors ---
         var isDark = root.classList.contains('nightMode') || root.classList.contains('night_mode')
@@ -1076,10 +1086,37 @@
             accentTargets[t].style.setProperty('--tab-color-c2', palette.c2);
         }
 
-        // --- 3. Font size (via --text-scale CSS variable) ---
-        var scale = fontSize === 'small' ? 0.875 : fontSize === 'large' ? 1.125 : 1;
-        root.style.setProperty('--text-scale', scale);
-        body.style.setProperty('--text-scale', scale);
+        // --- 3. Font size (pure CSS class toggle + dynamic style for WKWebView) ---
+        root.classList.remove('font-small', 'font-large');
+        if (fontSize === 'small') root.classList.add('font-small');
+        else if (fontSize === 'large') root.classList.add('font-large');
+        // WKWebView (AnkiMobile) ignores CSS recalc on html class changes.
+        // Always remove+recreate a <style> element with !important rules.
+        var _dynFontId = 'dyn-font-size';
+        var _dynEl = document.getElementById(_dynFontId);
+        if (_dynEl) _dynEl.parentNode.removeChild(_dynEl);
+        var _fsMap = {
+            '.card':[16,14,18],'.card-title':[26,23,29],'.info-modal-header':[18,16,20],
+            '.info-modal-title':[13,11,15],'.info-modal-meaning':[14,12,16],
+            '.info-section-title':[13,11,15],'.info-text-story':[15,13,17],
+            '.visuell-hinweis':[14,12,16],'.word-jp':[20,18,22],'.word-de':[13,11,15],
+            '.reading-row':[16,14,18],'.reading-label':[11,10,12],'.info-btn':[15,13,17],
+            '.info-tag':[12,10,14],'.link-btn':[14,12,16],'.tree-root-kanji':[36,32,40],
+            '.tree-node-char':[28,24,32],'.tree-node-tooltip':[13,11,15],
+            '.no-tree-data':[13,11,15],'.side-by-side-label':[11,10,12],
+            '.setting-group-title':[11,10,12],'.segment-btn':[12,10,14],
+            '.category-name':[15,13,17],'.category-desc':[11,10,12],
+            '.subpage-header h3':[16,14,18],'.settings-main-title':[16,14,18],
+            '.setting-section-title':[13,11,15],'.visual-option span':[11,10,12],
+            '.accent-option span':[10,9,11],'.close-settings':[14,12,16]
+        };
+        var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
+        var _cssRules = '';
+        for (var _sel in _fsMap) { _cssRules += _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }
+        var _newStyle = document.createElement('style');
+        _newStyle.id = _dynFontId;
+        _newStyle.textContent = _cssRules;
+        document.head.appendChild(_newStyle);
 
         // --- 4. Tell Qt/Chromium that we handle theming ourselves.
         //    Anki Desktop enables QWebEngine's ForceDarkMode when Anki is in
@@ -1088,8 +1125,9 @@
         //    Anki's own nightMode is active (regardless of the template's theme
         //    override), we prevent ForceDarkMode from mangling our CSS variables.
         //    When Anki is in light mode, ForceDarkMode is off, so "light" is safe.
-        var ankiIsDark = !!window._ankiNightMode;
-        var scheme = ankiIsDark ? 'dark' : 'light';
+        //    Use isDark (the RESOLVED theme) rather than _ankiNightMode to ensure
+        //    color-scheme matches what we actually rendered.
+        var scheme = isDark ? 'dark' : 'light';
         root.style.colorScheme = scheme;
         var meta = document.querySelector('meta[name="color-scheme"]');
         if (!meta) {
@@ -1098,6 +1136,19 @@
             document.head.appendChild(meta);
         }
         meta.content = scheme;
+
+        // --- 5. Background-color failsafe for AnkiDroid only.
+        //    AnkiDroid's new reviewer may override CSS variables.
+        //    On all other platforms, remove inline bg so CSS var(--bg-main) applies.
+        var isAnkiDroid = typeof AnkiDroidJS !== 'undefined' || (typeof pycmd === 'function' && navigator.userAgent.indexOf('Android') !== -1);
+        if (isAnkiDroid) {
+            var bgColor = isDark ? '#1a1a1a' : '#f7f7f5';
+            root.style.backgroundColor = bgColor;
+            body.style.backgroundColor = bgColor;
+        } else {
+            root.style.removeProperty('background-color');
+            body.style.removeProperty('background-color');
+        }
         } finally {
             // Delay reset so MutationObserver callbacks (microtasks) triggered by
             // the class changes above see the guard as true and skip re-entry.
@@ -1997,17 +2048,23 @@
                 if (handler === 'gear' && now - lastGearOpen < 400) return;
                 if (handler === 'gear') lastGearOpen = now;
                 e.preventDefault(); e.stopPropagation();
-                var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
-                document.addEventListener('click', eatClick, true);
-                setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
+                // Remove stale eatClick before action
+                if (window._kanjiModalEatClick) {
+                    document.removeEventListener('click', window._kanjiModalEatClick, true);
+                    clearTimeout(window._kanjiModalEatTimer);
+                    window._kanjiModalEatClick = null;
+                }
                 if (handler === 'gear') {
                     openSettings(e);
                 } else {
-                    // Trigger visual + haptic feedback manually
                     el.classList.remove('btn-flash'); void el.offsetWidth; el.classList.add('btn-flash');
                     if (navigator.vibrate) navigator.vibrate(10);
                     if (el._kanjiAction) el._kanjiAction();
                 }
+                // Absorb browser's delayed click
+                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
+                document.addEventListener('click', window._kanjiModalEatClick, true);
+                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         }
         addPenHandler(document.querySelector('.gear-btn'), 'gear');
@@ -2026,6 +2083,13 @@
     // The addPenHandler() above only covers top-level buttons (gear, reveal, etc.).
     // Inside modals, radio buttons / links / close buttons need pen support too.
     if (typeof PointerEvent !== 'undefined') {
+        // Shared eatClick: using a named reference so the next pen tap can
+        // remove the previous one before calling target.click().  Without
+        // this, the stale eatClick (still active because preventDefault on
+        // pointerup suppresses the browser's delayed click) would eat the
+        // synthetic click from the next pen tap.
+        window._kanjiModalEatClick = null;
+        window._kanjiModalEatTimer = null;
         document.querySelectorAll('.settings-modal, .info-modal').forEach(function (modal) {
             if (modal._kanjiPenClick) return;
             modal._kanjiPenClick = true;
@@ -2035,11 +2099,15 @@
                 if (!target) return;
                 e.preventDefault();
                 e.stopPropagation();
+                // Remove stale eatClick from previous pen tap first
+                if (window._kanjiModalEatClick) {
+                    document.removeEventListener('click', window._kanjiModalEatClick, true);
+                    clearTimeout(window._kanjiModalEatTimer);
+                }
                 target.click();
-                // Eat the browser's delayed click to prevent ghost-click on elements behind
-                var eatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', eatClick, true); };
-                document.addEventListener('click', eatClick, true);
-                setTimeout(function () { document.removeEventListener('click', eatClick, true); }, 500);
+                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
+                document.addEventListener('click', window._kanjiModalEatClick, true);
+                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         });
     }
@@ -2060,6 +2128,8 @@
     // When any overlay is active, intercept ALL pen pointer/click events that target
     // elements OUTSIDE the active overlay. This prevents the S-Pen from triggering
     // buttons behind the modal regardless of event timing or coordinate drift.
+    if (!window._kanjiGlobalPenDefenseAdded) {
+        window._kanjiGlobalPenDefenseAdded = true;
     if (typeof PointerEvent !== 'undefined') {
         ['pointerdown', 'pointerup', 'click'].forEach(function (evtName) {
             document.addEventListener(evtName, function (e) {
@@ -2080,6 +2150,7 @@
             setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
         }, true);
     }
+    } // end guard
 
     // --- userJs: Gesture / Shortcut hooks for AnkiDroid & AnkiMobile ---
     var userJs1 = function () { var b = document.getElementById('button-reveal'); if (b && b._kanjiAction) b._kanjiAction(); };
