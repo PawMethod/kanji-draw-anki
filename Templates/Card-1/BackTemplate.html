@@ -514,14 +514,32 @@
             const MD = 6.0;
             const frag = document.createDocumentFragment();
             svgPaths.forEach((sp, i) => {
+                const spLen = sp._cachedTotalLength !== undefined ? sp._cachedTotalLength : (sp._cachedTotalLength = sp.getTotalLength());
                 const s0 = sp.getPointAtLength(0);
                 let s1;
-                try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
+                try { s1 = sp.getPointAtLength(Math.min(4, spLen)); } catch (e) { s1 = s0; }
                 const ddx = s1.x - s0.x, ddy = s1.y - s0.y;
                 const dd = Math.hypot(ddx, ddy) || 1;
                 let fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
-                let coll = true, att = 0;
-                while (coll && att < 10) { coll = false; for (const p of placed) { const dist = Math.hypot(fx - p.x, fy - p.y); if (dist < MD) { coll = true; let px = fx - p.x, py = fy - p.y; if (px === 0 && py === 0) { px = -1; py = -1; } const pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); } } att++; }
+                let att = 0;
+                // Resolve collisions: push label away from already-placed labels (max 10 iterations)
+                let moved = true;
+                while (moved && att < 10) {
+                    moved = false;
+                    for (let pi = 0; pi < placed.length; pi++) {
+                        const p = placed[pi];
+                        const dx = fx - p.x, dy = fy - p.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < MD) {
+                            moved = true;
+                            const pd = dist || 1.414; // avoid /0; diagonal fallback
+                            const nx = dist > 0 ? dx / pd : -0.707, ny = dist > 0 ? dy / pd : -0.707;
+                            fx += nx * (MD - dist + 0.5);
+                            fy += ny * (MD - dist + 0.5);
+                        }
+                    }
+                    att++;
+                }
                 placed.push({ x: fx, y: fy });
                 const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 t.setAttribute('x', fx); t.setAttribute('y', fy);
@@ -547,6 +565,7 @@
             switch (ss) {
                 case 'gel':
                     p.setAttribute('stroke-width', Math.max(parseFloat(width), 4.5).toString());
+                    p.setAttribute('stroke-linecap', 'round');
                     p.setAttribute('paint-order', 'stroke');
                     p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + color + ')');
                     p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + color + ')');
@@ -585,6 +604,7 @@
                 halo.style.setProperty('opacity', '0.12', 'important');
                 halo.style.setProperty('stroke', pathEl._gelHaloColor, 'important');
                 halo.removeAttribute('filter');
+                halo.removeAttribute('stroke-dasharray');
                 delete halo._gelHaloColor;
                 svg.appendChild(halo);
             }
@@ -862,7 +882,7 @@
                     const hungarian = _algo.hungarianMatch;
 
                     const sampleRef = (path) => {
-                        const len = path.getTotalLength() || 1;
+                        const len = (path._cachedTotalLength !== undefined ? path._cachedTotalLength : (path._cachedTotalLength = path.getTotalLength())) || 1;
                         const pts = [];
                         for (let i = 0; i < SAMPLE_N; i++) {
                             const pt = path.getPointAtLength((i / (SAMPLE_N - 1)) * len);
@@ -1054,8 +1074,11 @@
                                 } else if (entry.type === 'extra') {
                                     const stroke = entry.stroke;
                                     if (!stroke.d) return;
-                                    const p = makeStrokePath(stroke.d, '3', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                    p.setAttribute('stroke-dasharray', '3 3');
+                                    const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    delete p._gelHaloColor;
+                                    p.setAttribute('stroke-dasharray', '0 5');
+                                    p.setAttribute('stroke-linecap', 'square');
+                                    p.setAttribute('stroke-width', '2.5');
                                     p.style.opacity = '0.5';
                                     appendStrokePath(overlaySvg, p);
                                     hwMeta.push({ type: 'extra', grade: stroke.grade });
@@ -1064,7 +1087,9 @@
                                     const origD = ev.refPathData[entry.refIdx] || '';
                                     if (!origD) return;
                                     const ghost = makeStrokePath(origD, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                    ghost.setAttribute('stroke-dasharray', '3 3');
+                                    ghost.setAttribute('stroke-dasharray', '0 5');
+                                    ghost.setAttribute('stroke-linecap', 'square');
+                                    ghost.setAttribute('stroke-width', '2.5');
                                     ghost.style.opacity = '0.45';
                                     ghost.classList.add('hw-ghost-stroke');
                                     appendStrokePath(overlaySvg, ghost);
@@ -1079,7 +1104,7 @@
                                 const badge = document.createElement('div');
                                 badge.className = 'excess-strokes-badge';
                                 badge.textContent = '+' + hwExtraCount + ' Strich' + (hwExtraCount > 1 ? 'e' : '') + ' zu viel';
-                                cont.parentNode.insertBefore(badge, cont.nextSibling);
+                                cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
                             }
 
                             // Count missing (ghost) strokes
@@ -1088,7 +1113,7 @@
                                 const mbadge = document.createElement('div');
                                 mbadge.className = 'missing-strokes-badge';
                                 mbadge.textContent = '−' + hwGhostCount + ' Strich' + (hwGhostCount > 1 ? 'e' : '') + ' zu wenig';
-                                const prev = cont.parentNode.querySelector('.excess-strokes-badge');
+                                const prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
                                 cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
                             }
 
@@ -1120,8 +1145,11 @@
                                     extraStrokes.forEach(entry => {
                                         const stroke = entry.stroke;
                                         if (!stroke.d) return;
-                                        const p = makeStrokePath(stroke.d, '3', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                        p.setAttribute('stroke-dasharray', '3 3');
+                                        const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                        delete p._gelHaloColor;
+                                        p.setAttribute('stroke-dasharray', '0 5');
+                                        p.setAttribute('stroke-linecap', 'square');
+                                        p.setAttribute('stroke-width', '2.5');
                                         p.style.opacity = '0.5';
                                         appendStrokePath(overlaySvg, p);
                                     });
@@ -1129,7 +1157,7 @@
                                     const badge = document.createElement('div');
                                     badge.className = 'excess-strokes-badge';
                                     badge.textContent = '+' + extraStrokes.length + ' Strich' + (extraStrokes.length > 1 ? 'e' : '') + ' zu viel';
-                                    cont.parentNode.insertBefore(badge, cont.nextSibling);
+                                    cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
                                 }
 
                                 const ghostStrokes = ev.orderedStrokes.filter(e => e.type === 'ghost');
@@ -1137,7 +1165,7 @@
                                     const mbadge = document.createElement('div');
                                     mbadge.className = 'missing-strokes-badge';
                                     mbadge.textContent = '−' + ghostStrokes.length + ' Strich' + (ghostStrokes.length > 1 ? 'e' : '') + ' zu wenig';
-                                    const prev = cont.parentNode.querySelector('.excess-strokes-badge');
+                                    const prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
                                     cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
                                 }
                             };
@@ -1166,8 +1194,11 @@
                                     } else if (entry.type === 'extra') {
                                         const stroke = entry.stroke;
                                         if (!stroke.d) return;
-                                        const p = makeStrokePath(stroke.d, '3', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                        p.setAttribute('stroke-dasharray', '3 3');
+                                        const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                        delete p._gelHaloColor;
+                                        p.setAttribute('stroke-dasharray', '0 5');
+                                        p.setAttribute('stroke-linecap', 'square');
+                                        p.setAttribute('stroke-width', '2.5');
                                         p.style.opacity = '0.5';
                                         appendStrokePath(morphSvg, p);
                                     }
@@ -1199,8 +1230,11 @@
                                                 extraStrokes.forEach(function (entry) {
                                                     var stroke = entry.stroke;
                                                     if (!stroke.d) return;
-                                                    var ep = makeStrokePath(stroke.d, '3', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                                    ep.setAttribute('stroke-dasharray', '3 3');
+                                                    var ep = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                                    delete ep._gelHaloColor;
+                                                    ep.setAttribute('stroke-dasharray', '0 5');
+                                                    ep.setAttribute('stroke-linecap', 'square');
+                                                    ep.setAttribute('stroke-width', '2.5');
                                                     ep.style.opacity = '0.5';
                                                     appendStrokePath(overlaySvg, ep);
                                                 });
@@ -1208,14 +1242,14 @@
                                                 var badge = document.createElement('div');
                                                 badge.className = 'excess-strokes-badge';
                                                 badge.textContent = '+' + extraStrokes.length + ' Strich' + (extraStrokes.length > 1 ? 'e' : '') + ' zu viel';
-                                                cont.parentNode.insertBefore(badge, cont.nextSibling);
+                                                cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
                                             }
                                             var ghostStrokes = ev.orderedStrokes.filter(function (e) { return e.type === 'ghost'; });
                                             if (ghostStrokes.length > 0) {
                                                 var mbadge = document.createElement('div');
                                                 mbadge.className = 'missing-strokes-badge';
                                                 mbadge.textContent = '\u2212' + ghostStrokes.length + ' Strich' + (ghostStrokes.length > 1 ? 'e' : '') + ' zu wenig';
-                                                var prev = cont.parentNode.querySelector('.excess-strokes-badge');
+                                                var prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
                                                 cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
                                             }
                                         });
@@ -1345,7 +1379,7 @@
                             sbsBoxes[1].appendChild(refSvg);
 
                             cont.style.display = 'none';
-                            cont.parentNode.insertBefore(wrapper, cont.nextSibling);
+                            cont.parentNode && cont.parentNode.insertBefore(wrapper, cont.nextSibling);
 
                             // Stroke count badges for SBS view
                             const sbsExtra = ev.orderedStrokes.filter(e => e.type === 'extra').length;
@@ -1422,8 +1456,16 @@
     checkScrollability();
 
     // Scroll guards for info modal (settings modal already guarded by FrontSide)
-    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
-    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => {
+        if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
+        modal._kanjiScrollGuardFn = function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); };
+        modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
+    });
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => {
+        if (overlay._kanjiScrollGuardFn) overlay.removeEventListener('touchmove', overlay._kanjiScrollGuardFn);
+        overlay._kanjiScrollGuardFn = function (e) { if (e.target === this) e.preventDefault(); };
+        overlay.addEventListener('touchmove', overlay._kanjiScrollGuardFn, { passive: false });
+    });
 
     // Apple Pencil: pen-to-click for modal controls
     if (typeof PointerEvent !== 'undefined') {

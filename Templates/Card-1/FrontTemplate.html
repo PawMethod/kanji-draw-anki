@@ -1794,7 +1794,7 @@
     window._kanjiFreeEval = null;
     window._kanjiRenderFreeView = null;
     // Increment generation counter so any pending setTimeout callbacks are discarded
-    window._kanjiGeneration = (window._kanjiGeneration || 0) + 1;
+    window._kanjiGeneration = ((window._kanjiGeneration || 0) + 1) % 1000000;
 
     // --- Shared Scoring Algorithms ---
     // Exposed on window so BackTemplate's free-mode evaluation can reuse them
@@ -1865,7 +1865,9 @@
                     }
                     j0 = j1;
                 } while (p[j0] !== 0);
-                do { var j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0);
+                // Path reconstruction: bounded by n to guard against corrupt way[] arrays
+                var _guard = 0;
+                do { var j1 = way[j0]; p[j0] = p[j1]; j0 = j1; } while (j0 && ++_guard < n * 2);
             }
             var result = [];
             for (var j = 1; j <= n; j++) {
@@ -1918,7 +1920,7 @@
         function getCSSVar(name) {
             if (_cssCache[name] !== undefined) return _cssCache[name];
             const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-            _cssCache[name] = v;
+            if (v) _cssCache[name] = v; // only cache non-empty values; empty may mean CSS not yet loaded
             return v;
         }
         function invalidateCSSCache() { _cssCache = {}; }
@@ -2244,6 +2246,7 @@
             }
         };
         window._kanjiAddGelHaloToPath = _addGelHaloToPath;
+        window._kanjiInvalidateGelCache = (path) => { _gelColorCache.delete(path); };
 
         // Tusche (Ink): multi-segment variable-width brush.
         // A hidden master <path> tracks the full d-attribute for evaluation/snap.
@@ -2254,7 +2257,7 @@
         const snapToReference = (drawnPath, refPath, userPts, onDone, gelHalo) => {
             const N = 24;
             const uPts = window._kanjiAlgo.resamplePoints(userPts, N);
-            const refLen = refPath.getTotalLength();
+            const refLen = refPath._cachedTotalLength !== undefined ? refPath._cachedTotalLength : (refPath._cachedTotalLength = refPath.getTotalLength());
             if (refLen === 0) { onDone(); return; }
             const rPts = [];
             for (let i = 0; i < N; i++) {
@@ -2444,7 +2447,7 @@
         // ···· Sample reference stroke to points ····
 
         const sampleRefStroke = (path) => {
-            const len = path.getTotalLength() || 1;
+            const len = (path._cachedTotalLength !== undefined ? path._cachedTotalLength : (path._cachedTotalLength = path.getTotalLength())) || 1;
             const pts = [];
             for (let i = 0; i <= SAMPLE_POINTS; i++) {
                 const pt = path.getPointAtLength((i / SAMPLE_POINTS) * len);
@@ -2470,7 +2473,10 @@
             if (!isFreeMode) {
                 clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
                 drawLayer.classList.remove('fade-out'); clearDrawLayer();
-                paths[currentStroke].classList.remove('hint-active');
+                const _hintPath = paths[currentStroke];
+                _hintPath.classList.remove('hint-active');
+                const _hintPrevH = _hintPath.previousElementSibling;
+                if (_hintPrevH && _hintPrevH.classList.contains('gel-halo')) _hintPrevH.parentNode.removeChild(_hintPrevH);
             }
 
             isDrawing = true; userPoints = [];
@@ -2658,7 +2664,7 @@
             const mult = strictness === 'loose' ? 1.35 : strictness === 'strict' ? 0.7 : 1.0;
 
             const idealPath = paths[currentStroke];
-            const idealLength = idealPath.getTotalLength() || 1;
+            const idealLength = (idealPath._cachedTotalLength !== undefined ? idealPath._cachedTotalLength : (idealPath._cachedTotalLength = idealPath.getTotalLength())) || 1;
             const idealPoints = [];
             for (let i = 0; i <= SAMPLE_POINTS; i++) {
                 const pt = idealPath.getPointAtLength((i / SAMPLE_POINTS) * idealLength);
@@ -2686,7 +2692,7 @@
             let directionOk = true;
             const secStep = SAMPLE_POINTS / NSEC;
             for (let s = 0; s < NSEC; s++) {
-                const si = Math.round(s * secStep), ei = Math.round((s + 1) * secStep);
+                const si = Math.round(s * secStep), ei = Math.min(Math.round((s + 1) * secStep), SAMPLE_POINTS);
                 if (Math.hypot(idealPoints[ei].x - idealPoints[si].x, idealPoints[ei].y - idealPoints[si].y) < 3) continue;
                 let ad = Math.abs(idealAng[s] - userAng[s]);
                 if (ad > Math.PI) ad = 2 * Math.PI - ad;
@@ -2744,6 +2750,8 @@
                     if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
                     requestAnimationFrame(function () {
                         p.classList.add('hint-active');
+                        // Invalidate gel cache so hint halo gets the correct hint color, not a stale active color
+                        _gelColorCache.delete(p);
                         _addGelHaloToPath(p);
                     });
                 }
@@ -2846,18 +2854,47 @@
             currentStroke = 0; mistakes = 0; userPoints = []; problemStrokes.fill(0); saveState();
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
             const strokeColor = getCSSVar('--stroke-active') || '';
+            const hintColor = getCSSVar('--stroke-hint') || strokeColor;
             paths.forEach((p) => {
                 if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
-                    if (strokeColor) p.style.setProperty('stroke', strokeColor, 'important');
+                    // Hint strokes stay green during rewind; completed/animating use active color
+                    const col = p.classList.contains('hint-active') ? hintColor : strokeColor;
+                    if (col) p.style.setProperty('stroke', col, 'important');
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                     p.classList.add('rewind-anim');
-                    // Remove gel halo when rewinding
+                    // Rewind gel halo in sync with the stroke (dashoffset 0→105, same timing)
                     const prevH = p.previousElementSibling;
-                    if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+                    if (prevH && prevH.classList.contains('gel-halo')) {
+                        prevH.setAttribute('stroke-dasharray', '105');
+                        prevH.style.setProperty('stroke-dashoffset', '0', 'important');
+                        prevH.style.setProperty('transition', 'none', 'important');
+                        prevH.getBoundingClientRect();
+                        prevH.style.setProperty('stroke-dashoffset', '105', 'important');
+                        prevH.style.setProperty('transition', 'stroke-dashoffset ' + (ANIMATION_DURATION_MS / 1000) + 's ease-in-out', 'important');
+                        const _h = prevH;
+                        setTimeout(() => { if (_h.parentNode) _h.parentNode.removeChild(_h); }, ANIMATION_DURATION_MS);
+                    }
+                    // Clean up exactly when the CSS transition ends — avoids the 1-frame linecap dot
+                    const _p = p;
+                    const onRewindEnd = (e) => {
+                        if (e.propertyName !== 'stroke-dashoffset') return;
+                        _p.removeEventListener('transitionend', onRewindEnd);
+                        // Hide immediately before class removal to prevent any flash
+                        _p.style.setProperty('opacity', '0', 'important');
+                        _p.style.setProperty('stroke', 'none', 'important');
+                        requestAnimationFrame(() => {
+                            _p.classList.remove('rewind-anim');
+                            _p.style.removeProperty('stroke');
+                            _p.style.removeProperty('opacity');
+                        });
+                    };
+                    p.addEventListener('transitionend', onRewindEnd);
+                    // Fallback in case transitionend never fires (e.g. reduced motion / hidden tab)
                     setTimeout(() => {
-                        p.classList.remove('rewind-anim');
-                        p.style.removeProperty('stroke');
-                    }, ANIMATION_DURATION_MS);
+                        p.removeEventListener('transitionend', onRewindEnd);
+                        p.style.setProperty('opacity', '0', 'important');
+                        requestAnimationFrame(() => { p.classList.remove('rewind-anim'); p.style.removeProperty('stroke'); p.style.removeProperty('opacity'); });
+                    }, ANIMATION_DURATION_MS + 100);
                 } else {
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
                     p.style.removeProperty('stroke');
@@ -2877,9 +2914,48 @@
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
             paths.forEach(p => { if (p.classList.contains('animate-draw')) { p.classList.remove('animate-draw'); p.classList.add('stroke-complete'); _addGelHaloToPath(p); } });
             const pathToAnimate = paths[currentStroke]; problemStrokes[currentStroke] = 3;
-            pathToAnimate.classList.remove('hint-active', 'rewind-anim'); pathToAnimate.classList.add('animate-draw');
+
+            // If the hint (green stroke) was visible, clone it so it fades out while the
+            // skip animation draws the active-colored stroke on top from scratch.
+            if (pathToAnimate.classList.contains('hint-active')) {
+                // Remove gel halo BEFORE inserting the clone so previousElementSibling is still the halo
+                const prevH = pathToAnimate.previousElementSibling;
+                if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+
+                const hintClone = pathToAnimate.cloneNode(false);
+                hintClone.removeAttribute('id');
+                hintClone.classList.remove('hint-active', 'svg-stroke');
+                hintClone.style.setProperty('stroke', getCSSVar('--stroke-hint') || '#56a83a', 'important');
+                hintClone.style.setProperty('stroke-dashoffset', '0', 'important');
+                hintClone.style.setProperty('transition', 'none', 'important');
+                hintClone.style.setProperty('pointer-events', 'none');
+                pathToAnimate.parentNode.insertBefore(hintClone, pathToAnimate);
+                requestAnimationFrame(() => {
+                    hintClone.style.setProperty('transition', 'opacity ' + (ANIMATION_DURATION_MS / 1000) + 's ease-out', 'important');
+                    hintClone.style.opacity = '0';
+                });
+                const _hc = hintClone;
+                setTimeout(() => { if (_hc.parentNode) _hc.parentNode.removeChild(_hc); }, ANIMATION_DURATION_MS);
+            }
+
+            // Remove any remaining halo, invalidate cache, then animate from scratch
+            const _skipPrevH = pathToAnimate.previousElementSibling;
+            if (_skipPrevH && _skipPrevH.classList.contains('gel-halo')) _skipPrevH.parentNode.removeChild(_skipPrevH);
+            _gelColorCache.delete(pathToAnimate);
+            pathToAnimate.classList.remove('hint-active', 'rewind-anim');
+            pathToAnimate.style.setProperty('stroke-dashoffset', '105', 'important');
+            pathToAnimate.style.setProperty('transition', 'none', 'important');
+            pathToAnimate.getBoundingClientRect(); // force reflow
+            pathToAnimate.style.removeProperty('stroke-dashoffset');
+            pathToAnimate.style.removeProperty('transition');
             const skipGen = _drawGen;
-            const animTimer = setTimeout(() => { if (skipGen !== _drawGen) return; pathToAnimate.classList.remove('animate-draw'); pathToAnimate.classList.add('stroke-complete'); _addGelHaloToPath(pathToAnimate); }, ANIMATION_DURATION_MS);
+            requestAnimationFrame(() => {
+                if (skipGen !== _drawGen) return;
+                pathToAnimate.classList.add('animate-draw');
+                if (window._kanjiApplyPathStyle) window._kanjiApplyPathStyle(pathToAnimate);
+                _addGelHaloToPath(pathToAnimate);
+            });
+            const animTimer = setTimeout(() => { if (skipGen !== _drawGen) return; pathToAnimate.classList.remove('animate-draw'); pathToAnimate.classList.add('stroke-complete'); }, ANIMATION_DURATION_MS);
             skipTimeouts.push(animTimer); currentStroke++; saveState(); mistakes = 0;
             clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.add('fade-out');
             fadeTimeout = setTimeout(() => { if (skipGen !== _drawGen) return; clearDrawLayer(); drawLayer.classList.remove('fade-out'); }, 300);
@@ -2897,7 +2973,7 @@
             drawLayer.querySelectorAll('.gel-halo').forEach(h => h.parentNode.removeChild(h));
             drawLayer.querySelectorAll('g').forEach(g => { g.style.transition = 'opacity 0.25s ease-out'; g.style.opacity = '0'; });
             drawnPaths.forEach(p => {
-                const len = p.getTotalLength ? p.getTotalLength() : 200;
+                const len = p.getTotalLength ? (p._cachedTotalLength !== undefined ? p._cachedTotalLength : (p._cachedTotalLength = p.getTotalLength())) : 200;
                 p.style.strokeDasharray = len + '';
                 p.style.strokeDashoffset = '0';
                 p.style.transition = 'none';
@@ -2914,10 +2990,23 @@
                 // Also rewind visible reference strokes (from Strich einblenden)
                 paths.forEach(p => {
                     if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
+                        // Preserve hint color (green) during rewind
+                        const col = p.classList.contains('hint-active') ? (getCSSVar('--stroke-hint') || getCSSVar('--stroke-active') || '') : (getCSSVar('--stroke-active') || '');
+                        if (col) p.style.setProperty('stroke', col, 'important');
                         p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                         p.classList.add('rewind-anim');
+                        // Rewind gel halo in sync with stroke (dashoffset animation)
                         const prevH = p.previousElementSibling;
-                        if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+                        if (prevH && prevH.classList.contains('gel-halo')) {
+                            prevH.setAttribute('stroke-dasharray', '105');
+                            prevH.style.setProperty('stroke-dashoffset', '0', 'important');
+                            prevH.style.setProperty('transition', 'none', 'important');
+                            prevH.getBoundingClientRect();
+                            prevH.style.setProperty('stroke-dashoffset', '105', 'important');
+                            prevH.style.setProperty('transition', 'stroke-dashoffset 0.7s ease-in-out', 'important');
+                            const _h = prevH;
+                            setTimeout(() => { if (_h.parentNode) _h.parentNode.removeChild(_h); }, 700);
+                        }
                     }
                 });
             });
@@ -3026,10 +3115,13 @@
                     if (el._kanjiAction) el._kanjiAction();
                 }
                 // Absorb browser's delayed click
-                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                document.addEventListener('click', window._kanjiModalEatClick, true);
-                clearTimeout(window._kanjiModalEatTimer);
-                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                (function() {
+                    var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
+                    window._kanjiModalEatClick = _eatHandler;
+                    document.addEventListener('click', _eatHandler, true);
+                    clearTimeout(window._kanjiModalEatTimer);
+                    window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                })();
             });
         }
         addPenHandler(_gearBtn, 'gear');
@@ -3041,8 +3133,16 @@
     // --- Scroll Guards [SHARED with c2-front] ---
 
     // Register modal scroll guards synchronously to prevent flicker
-    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
-    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => {
+        if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
+        modal._kanjiScrollGuardFn = function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); };
+        modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
+    });
+    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => {
+        if (overlay._kanjiScrollGuardFn) overlay.removeEventListener('touchmove', overlay._kanjiScrollGuardFn);
+        overlay._kanjiScrollGuardFn = function (e) { if (e.target === this) e.preventDefault(); };
+        overlay.addEventListener('touchmove', overlay._kanjiScrollGuardFn, { passive: false });
+    });
 
     // --- Apple Pencil: pen-to-click for modal controls [SHARED with c2-front] ---
     // The addPenHandler() above only covers top-level buttons (gear, reveal, etc.).
@@ -3070,10 +3170,13 @@
                     clearTimeout(window._kanjiModalEatTimer);
                 }
                 target.click();
-                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                document.addEventListener('click', window._kanjiModalEatClick, true);
-                clearTimeout(window._kanjiModalEatTimer);
-                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                (function() {
+                    var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
+                    window._kanjiModalEatClick = _eatHandler;
+                    document.addEventListener('click', _eatHandler, true);
+                    clearTimeout(window._kanjiModalEatTimer);
+                    window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                })();
             });
         });
     }

@@ -1405,7 +1405,7 @@ svg#svg-guide path,
 }
 
 .rewind-anim {
-    stroke-dashoffset: 105 !important;
+    stroke-dashoffset: 108 !important;
     transition: stroke-dashoffset 0.7s ease-in-out !important;
 }
 
