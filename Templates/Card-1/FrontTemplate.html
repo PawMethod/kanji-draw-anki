@@ -3115,7 +3115,7 @@
                     if (el._kanjiAction) el._kanjiAction();
                 }
                 // Absorb browser's delayed click
-                (function() {
+                (function () {
                     var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
                     window._kanjiModalEatClick = _eatHandler;
                     document.addEventListener('click', _eatHandler, true);
@@ -3170,7 +3170,7 @@
                     clearTimeout(window._kanjiModalEatTimer);
                 }
                 target.click();
-                (function() {
+                (function () {
                     var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
                     window._kanjiModalEatClick = _eatHandler;
                     document.addEventListener('click', _eatHandler, true);
