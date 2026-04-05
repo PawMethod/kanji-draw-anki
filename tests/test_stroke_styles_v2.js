@@ -32,15 +32,14 @@ test('Gel CSS: targets #svg-bg path and #svg-guide path', () => {
   assert(gelRules.some(r => r.includes('#svg-guide path')), 'Gel should target #svg-guide path');
 });
 
-test('Gel CSS: bold rounded strokes with subtle ink-spread shadow', () => {
+test('Gel CSS: bold rounded strokes (halo added by JS)', () => {
   const gelBlock = css.match(/\.stroke-style-gel\s+#svg-bg\s+path[^{]*\{([^}]+)\}/);
   assert(gelBlock, 'Must find gel CSS block');
   assert(gelBlock[1].includes('stroke-width'), 'Gel CSS should set stroke-width');
   assert(gelBlock[1].includes('stroke-linecap'), 'Gel CSS should set round linecap');
   assert(gelBlock[1].includes('paint-order'), 'Gel CSS should use paint-order for bolder edges');
-  // Gel uses a very subtle 0.3px drop-shadow for ink spread (NOT a neon glow)
-  assert(gelBlock[1].includes('0.3px'), 'Gel CSS should use subtle 0.3px ink spread');
-  assert(!gelBlock[1].includes('5px'), 'Gel CSS must NOT have wide glow (that is neon)');
+  // Gel halo is added by JS — CSS no longer has drop-shadow
+  assert(!gelBlock[1].includes('drop-shadow'), 'Gel CSS should NOT have drop-shadow (halo replaces it)');
 });
 
 test('Neon: uses SVG feGaussianBlur filter instead of CSS drop-shadow', () => {
@@ -73,11 +72,12 @@ test('applyPathStyle signature: (pathEl, colorOverride)', () => {
   assert(match, 'Signature should be (pathEl, colorOverride)');
 });
 
-test('Gel case: sets stroke-width, removes filter (halo provides gel look)', () => {
+test('Gel case: sets stroke-width, paint-order, and drop-shadow', () => {
   const gelMatch = c1f.match(/case\s+'gel':[\s\S]*?break;/);
   assert(gelMatch, 'Must have gel case');
   assert(gelMatch[0].includes('stroke-width'), 'Gel should set stroke-width');
-  assert(gelMatch[0].includes("removeProperty('filter')"), 'Gel should remove filter (halo handles look)');
+  assert(gelMatch[0].includes('paint-order'), 'Gel should set paint-order');
+  assert(gelMatch[0].includes('drop-shadow'), 'Gel should apply drop-shadow filter');
 });
 
 test('Neon case: uses SVG filter attribute referencing #neon-defs', () => {
@@ -87,15 +87,29 @@ test('Neon case: uses SVG filter attribute referencing #neon-defs', () => {
   assert(neonMatch[0].includes('_neonFilterRef'), 'Neon must use _neonFilterRef helper for filter URL');
 });
 
-test('Ink case: removes filter (drawing handled by _inkGroup)', () => {
+test('Ink case: sets square linecap and opacity', () => {
   const inkMatch = c1f.match(/case\s+'ink':[\s\S]*?break;/);
   assert(inkMatch, 'Must have ink case');
-  assert(inkMatch[0].includes('removeProperty'), 'Ink should remove filter');
+  assert(inkMatch[0].includes('square') || inkMatch[0].includes('opacity'), 'Ink should set square linecap or opacity');
 });
 
-test('Default case: removes filter and opacity', () => {
-  const defaultMatch = c1f.match(/default:\s*[\s\S]*?removeProperty/);
-  assert(defaultMatch, 'Default should remove filter');
+test('applyPathStyle resets all style-specific attributes before applying', () => {
+  const fnMatch = c1f.match(/const applyPathStyle[\s\S]*?Full reset[\s\S]*?switch/);
+  assert(fnMatch, 'applyPathStyle must have full reset before switch');
+  assert(fnMatch[0].includes("removeProperty('filter')"), 'Must clear filter');
+  assert(fnMatch[0].includes("removeProperty('opacity')"), 'Must clear opacity');
+  assert(fnMatch[0].includes("removeAttribute('filter')"), 'Must clear filter attr');
+  assert(fnMatch[0].includes("removeAttribute('paint-order')"), 'Must clear paint-order');
+  // Verify drawing attributes reset to defaults before style switch
+  assert(fnMatch[0].includes("setAttribute('stroke-width', '4')"), 'Must reset stroke-width to default 4');
+  assert(fnMatch[0].includes("setAttribute('stroke-linecap', 'round')"), 'Must reset stroke-linecap to round');
+  assert(fnMatch[0].includes("setAttribute('stroke-linejoin', 'round')"), 'Must reset stroke-linejoin to round');
+});
+
+test('applyPathStyle default case is clean (no leftover attributes)', () => {
+  // After reset + no style match, path should have only default attributes
+  const defaultMatch = c1f.match(/default:\s*\n\s*break;/);
+  assert(defaultMatch, 'Default case should just break (defaults already set in reset)');
 });
 
 test('getActiveStrokeStyle reads from safeGetItem', () => {
@@ -164,9 +178,8 @@ test('startDrawing: ink group gets square linecap matching SVG reference', () =>
   assert(match, 'Ink group should have square linecap to match SVG kanji');
 });
 
-test('draw handler: creates per-segment paths in _inkGroup via fragment', () => {
-  assert(c1f.includes('frag.appendChild(seg)'), 'Should append segments to fragment');
-  assert(c1f.includes('_inkGroup.appendChild(frag)'), 'Should batch-append fragment to _inkGroup');
+test('draw handler: creates per-segment paths in _inkGroup directly', () => {
+  assert(c1f.includes('_inkGroup.appendChild(seg)'), 'Should append segments directly to _inkGroup');
 });
 
 test('draw handler: speed-based width (viscous: 2-5.5px)', () => {
@@ -203,26 +216,20 @@ test('Free mode: shows master path with ink properties when saving', () => {
   assert(match, 'Should reveal master path with 0.85 opacity for ink look');
 });
 
-test('Ink bleed timer: setInterval when holding still', () => {
-  assert(c1f.includes('_inkBleedTimer = setInterval'), 'Should start bleed timer');
-});
-
-test('Ink bleed timer: cleared on stopDrawing', () => {
-  assert(c1f.includes('clearInterval(_inkBleedTimer)'), 'Must clear bleed timer');
+test('Ink bleed removed: no bleed timer', () => {
+  assert(!c1f.includes('_inkBleedTimer'), 'Bleed timer should be completely removed');
 });
 
 test('Ink uses quadratic curves for smooth segments', () => {
   assert(c1f.includes("' Q '"), 'Segments should use Q (quadratic) curves');
 });
 
-test('Ink joint dots for seamless connections', () => {
-  const match = c1f.match(/frag\.appendChild\(jd\)/);
-  assert(match, 'Should add joint dots to fragment batch');
+test('Ink no joint dots (clean shape only)', () => {
+  assert(!c1f.includes('frag.appendChild(jd)'), 'Joint dots should be removed for clean shape');
 });
 
-test('Ink pool dot at touch-down', () => {
-  const match = c1f.match(/Ink pool dot[\s\S]{0,200}circle/);
-  assert(match, 'Should create circle at stroke start');
+test('Ink no pool dot at touch-down (clean shape only)', () => {
+  assert(!c1f.match(/Ink pool dot/), 'Pool dot should be removed for clean shape');
 });
 
 test('clearDrawLayer resets _inkGroup', () => {
@@ -244,6 +251,24 @@ test('Correction applies applyPathStyle with colorVar', () => {
 test('Correction sets inline stroke color', () => {
   const match = c1f.match(/currentSVGPath\.style\.setProperty\("stroke",\s*colorVar\)/);
   assert(match, 'Must set inline stroke color');
+});
+
+// ── 4b. Live style update for draw-layer ──
+console.log('\n── 4b. Live style update for draw-layer ──');
+
+test('applyPathStyle exposed on window', () => {
+  assert(c1f.includes('window._kanjiApplyPathStyle = applyPathStyle'), 'Must expose applyPathStyle on window');
+});
+
+test('applyThemeSettings re-styles draw-layer paths', () => {
+  assert(c1f.includes('draw-layer') && c1f.includes('_kanjiApplyPathStyle'), 'applyThemeSettings must re-apply style to draw-layer');
+});
+
+test('applyThemeSettings does NOT add gel halos on front (paths hidden until drawn)', () => {
+  // Front templates should not create gel halos — halos are only for back templates
+  const themeBlock = c1f.match(/applyThemeSettings[\s\S]*?\/\/ Re-apply stroke style/);
+  assert(themeBlock, 'applyThemeSettings block must exist');
+  assert(!themeBlock[0].includes('cloneNode'), 'Front applyThemeSettings must NOT clone halos');
 });
 
 // ── 5. feTurbulence removal ──
@@ -330,9 +355,10 @@ test('Neon SVG filter has light and dark mode variants in static HTML', () => {
   assert(c1f.includes('<svg id="neon-defs"'), 'Must have static #neon-defs SVG element');
 });
 
-test('Gel CSS has -webkit-filter prefix for ink spread', () => {
+test('Gel CSS excludes gel-halo from main path styles', () => {
   const gelBlock = css.match(/\.stroke-style-gel[^{]*\{([^}]+)\}/);
-  assert(gelBlock && gelBlock[1].includes('-webkit-filter'), 'Gel CSS must have -webkit-filter for Safari');
+  assert(gelBlock, 'Gel CSS block must exist');
+  assert(!gelBlock[0].includes('-webkit-filter'), 'Gel CSS must NOT have -webkit-filter (halo replaces it)');
 });
 
 // ── 10. Missing strokes badge ──
@@ -369,9 +395,10 @@ test('Neon CSS overrides backface-visibility to visible', () => {
 // ── 12. Back-side makeStrokePath applies stroke style ──
 console.log('\n── 12. Back-side makeStrokePath applies stroke style ──');
 
-test('C1-Back makeStrokePath handles gel style', () => {
+test('C1-Back makeStrokePath handles gel style with halo via appendStrokePath', () => {
   assert(c1b.includes("case 'gel':"), 'makeStrokePath must have gel case');
-  assert(c1b.includes('drop-shadow(0 0 0.3px'), 'gel must apply drop-shadow');
+  assert(c1b.includes('_gelHaloColor'), 'gel must mark path for halo insertion');
+  assert(c1b.includes('appendStrokePath'), 'Must have appendStrokePath helper for gel halo insertion');
 });
 
 test('C1-Back makeStrokePath handles neon style', () => {
@@ -409,10 +436,142 @@ test('C2-Back stores stroke style on window._kanjiStrokeStyle', () => {
   assert(c2b.includes('window._kanjiStrokeStyle = ss'), 'Must store stroke style globally');
 });
 
-test('C2-Back inline neon uses path-specific color', () => {
-  // Verify the glow color comes from pathColors[i], not a hardcoded value
-  const colorLoop = c2b.match(/var c = pathColors\[i\]/);
-  assert(colorLoop, 'Must use pathColors[i] for inline filter color');
+test('C2-Back gel halos use getComputedStyle for path color', () => {
+  assert(c2b.includes('getComputedStyle(path).stroke') || c2b.includes('getComputedStyle(p).stroke'),
+    'Gel halos must use getComputedStyle for accurate color');
+});
+
+// ── 7. Style-switch reliability ──
+console.log('\n── 7. Style-switch reliability ──');
+
+test('_addGelHaloToPath exposed on window for cross-scope access', () => {
+  assert(c1f.includes('window._kanjiAddGelHaloToPath = _addGelHaloToPath'),
+    '_addGelHaloToPath must be exposed on window (IIFE scope vs applyThemeSettings scope)');
+});
+
+test('applyThemeSettings uses window._kanjiAddGelHaloToPath (not local ref)', () => {
+  const themeSection = c1f.match(/function applyThemeSettings[\s\S]*?finally/);
+  assert(themeSection, 'Must have applyThemeSettings');
+  assert(!themeSection[0].includes('typeof _addGelHaloToPath'),
+    'Must NOT use local _addGelHaloToPath (inaccessible from outer scope)');
+  assert(themeSection[0].includes('window._kanjiAddGelHaloToPath'),
+    'Must use window._kanjiAddGelHaloToPath for cross-scope access');
+});
+
+test('applyThemeSettings nuclear cleanup removes ink groups from draw-layer', () => {
+  const themeSection = c1f.match(/function applyThemeSettings[\s\S]*?finally/);
+  assert(themeSection, 'Must have applyThemeSettings');
+  assert(themeSection[0].includes("querySelectorAll('g').forEach"),
+    'Must remove <g> ink groups from draw-layer during style switch');
+});
+
+test('applyThemeSettings resets opacity on svg-bg/svg-guide paths', () => {
+  const themeSection = c1f.match(/function applyThemeSettings[\s\S]*?finally/);
+  assert(themeSection, 'Must have applyThemeSettings');
+  const svgBgReset = themeSection[0].match(/svg-bg.*svg-guide[\s\S]*?removeProperty\('opacity'\)/);
+  assert(svgBgReset, 'Must clear inline opacity on svg-bg/svg-guide paths');
+});
+
+test('_addGelHaloToPath uses getComputedStyle first (not fallback)', () => {
+  const fn = c1f.match(/const _addGelHaloToPath[\s\S]*?insertBefore/);
+  assert(fn, 'Must have _addGelHaloToPath');
+  const csIdx = fn[0].indexOf('getComputedStyle');
+  const styleIdx = fn[0].indexOf('refPath.style.stroke');
+  assert(csIdx < styleIdx, 'getComputedStyle must be tried BEFORE inline style fallback');
+});
+
+test('applyPathStyle resets stroke-width to 4 before gel sets 4.5', () => {
+  const fn = c1f.match(/const applyPathStyle[\s\S]*?window\._kanjiApplyPathStyle/);
+  assert(fn, 'Must have applyPathStyle');
+  const resetIdx = fn[0].indexOf("setAttribute('stroke-width', '4')");
+  const gelIdx = fn[0].indexOf("setAttribute('stroke-width', '4.5')");
+  assert(resetIdx > -1 && gelIdx > -1 && resetIdx < gelIdx,
+    'stroke-width:4 reset must come before gel stroke-width:4.5');
+});
+
+// ── 8. Back-side style reliability ──
+console.log('\n── 8. Back-side style reliability ──');
+
+test('C1-Back IIFE does NOT create gel halos (deferred to applyBackFeatures)', () => {
+  const iife = c1b.match(/Re-apply stroke style class on back side[\s\S]*?\}\s*\}\)\(\);/);
+  assert(iife, 'Must have stroke style IIFE');
+  assert(!iife[0].includes("cloneNode"), 'IIFE must NOT create halo clones (halos deferred to applyBackFeatures)');
+});
+
+test('C2-Back IIFE does NOT create gel halos (deferred to applyBackFeatures)', () => {
+  const iife = c2b.match(/Re-apply stroke style class on back side[\s\S]*?\}\s*\}\)\(\);/);
+  assert(iife, 'Must have stroke style IIFE');
+  assert(!iife[0].includes("cloneNode"), 'IIFE must NOT create halo clones (halos deferred to applyBackFeatures)');
+});
+
+test('C1-Back applyBackFeatures adds drop-shadow for gel paths', () => {
+  const fn = c1b.match(/const applyBackFeatures[\s\S]*?addNumbersGPAL/);
+  assert(fn, 'Must have applyBackFeatures');
+  assert(fn[0].includes("drop-shadow(0 0 0.3px"), 'Gel paths must get drop-shadow filter on back side');
+});
+
+test('C2-Back applyBackFeatures adds drop-shadow for gel paths', () => {
+  const fn = c2b.match(/const applyBackFeatures[\s\S]*?addNumbersGPAL/);
+  assert(fn, 'Must have applyBackFeatures');
+  assert(fn[0].includes("drop-shadow(0 0 0.3px"), 'Gel paths must get drop-shadow filter on back side');
+});
+
+test('C1-Back hideRefPaths cleans gel halos', () => {
+  const fn = c1b.match(/const hideRefPaths[\s\S]*?\};/);
+  assert(fn, 'Must have hideRefPaths');
+  assert(fn[0].includes(".gel-halo"), 'hideRefPaths must remove gel halos');
+});
+
+test('C1-Back makeStrokePath adds drop-shadow for gel', () => {
+  const fn = c1b.match(/const makeStrokePath[\s\S]*?return p;\s*\};/);
+  assert(fn, 'Must have makeStrokePath');
+  assert(fn[0].includes("drop-shadow"), 'makeStrokePath gel must include drop-shadow');
+});
+
+test('C1-Back appendStrokePath creates gel halo on append', () => {
+  const fn = c1b.match(/const appendStrokePath[\s\S]*?\};/);
+  assert(fn, 'Must have appendStrokePath');
+  assert(fn[0].includes('gel-halo'), 'appendStrokePath must create gel-halo element');
+  assert(fn[0].includes('_gelHaloColor'), 'appendStrokePath must check _gelHaloColor flag');
+});
+
+test('C1-Back applyBackFeatures uses pathColors for halo color fallback', () => {
+  const fn = c1b.match(/Second pass: add gel halos[\s\S]*?insertBefore/);
+  assert(fn, 'Must have gel halo second pass');
+  assert(fn[0].includes('pathColors[i]'), 'Halo color fallback must use pathColors[i]');
+});
+
+test('updateThemeSetting calls kanjiSettingsGlobalHandler immediately (C1)', () => {
+  const fn = c1f.match(/function updateThemeSetting[\s\S]*?\n    \}/);
+  assert(fn, 'Must have updateThemeSetting');
+  assert(fn[0].includes('kanjiSettingsGlobalHandler'), 'Must call kanjiSettingsGlobalHandler on every setting change');
+});
+
+test('updateThemeSetting calls kanjiSettingsGlobalHandlerC2 immediately (C2)', () => {
+  const fn = c2f.match(/function updateThemeSetting[\s\S]*?\n    \}/);
+  assert(fn, 'Must have updateThemeSetting');
+  assert(fn[0].includes('kanjiSettingsGlobalHandlerC2'), 'Must call kanjiSettingsGlobalHandlerC2 on every setting change');
+});
+
+test('C1-Back applyBackFeatures re-reads stroke style from storage', () => {
+  const fn = c1b.match(/const applyBackFeatures[\s\S]*?addNumbersGPAL/);
+  assert(fn, 'Must have applyBackFeatures');
+  assert(fn[0].includes("safeGetItem('kanjiThemeStrokeStyle'"), 'Must re-read stroke style from storage, not stale window variable');
+  assert(fn[0].includes("window._kanjiStrokeStyle = ss"), 'Must update window._kanjiStrokeStyle cache');
+});
+
+test('C2-Back applyBackFeatures re-reads stroke style from storage', () => {
+  const fn = c2b.match(/const applyBackFeatures[\s\S]*?addNumbersGPAL/);
+  assert(fn, 'Must have applyBackFeatures');
+  assert(fn[0].includes("safeGetItem('kanjiThemeStrokeStyle'"), 'Must re-read stroke style from storage');
+  assert(fn[0].includes("window._kanjiStrokeStyle = ss"), 'Must update window._kanjiStrokeStyle cache');
+});
+
+test('C1-Back IIFE does NOT create gel halos inline (avoids nth-child shift)', () => {
+  const iife = c1b.match(/Re-apply stroke style class on back side[\s\S]*?\}\s*\}\)\(\);/);
+  assert(iife, 'Must have stroke style IIFE');
+  assert(!iife[0].includes("cloneNode"), 'IIFE must NOT create halo clones inline');
+  assert(iife[0].includes("halos added later"), 'IIFE should document that halos are deferred');
 });
 
 // ── Summary ──

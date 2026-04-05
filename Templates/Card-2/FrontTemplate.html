@@ -603,6 +603,42 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Schriftgröße</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-font-size" value="small"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="26" text-anchor="middle" fill="currentColor" stroke="none" font-size="14"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Klein</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-font-size" value="normal"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="27" text-anchor="middle" fill="currentColor" stroke="none" font-size="18"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Normal</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-font-size" value="large"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="28" text-anchor="middle" fill="currentColor" stroke="none" font-size="22"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Groß</span>
+                    </div>
+                </label>
+            </div>
             <div class="setting-group-title">Akzentfarbe</div>
             <div class="accent-options-grid">
                 <label><input type="radio" name="theme-accent" value="green"
@@ -693,39 +729,48 @@
                     </div>
                 </label>
             </div>
-            <div class="setting-group-title">Schriftgröße</div>
+            <div class="setting-group-title">Strichstil</div>
             <div class="visual-options-grid">
-                <label><input type="radio" name="theme-font-size" value="small"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="standard"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="26" text-anchor="middle" fill="currentColor" stroke="none" font-size="14"
-                                font-weight="700">Aa</text>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
                         </svg>
-                        <span>Klein</span>
+                        <span>Standard</span>
                     </div>
                 </label>
-                <label><input type="radio" name="theme-font-size" value="normal"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="gel"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="27" text-anchor="middle" fill="currentColor" stroke="none" font-size="18"
-                                font-weight="700">Aa</text>
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
                         </svg>
-                        <span>Normal</span>
+                        <span>Gelstift</span>
                     </div>
                 </label>
-                <label><input type="radio" name="theme-font-size" value="large"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="ink"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="28" text-anchor="middle" fill="currentColor" stroke="none" font-size="22"
-                                font-weight="700">Aa</text>
+                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
                         </svg>
-                        <span>Groß</span>
+                        <span>Tusche</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="neon"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Neon</span>
                     </div>
                 </label>
             </div>
@@ -774,50 +819,6 @@
                     </div>
                 </label>
             </div>
-            <div class="setting-group-title">Strichstil</div>
-            <div class="visual-options-grid">
-                <label><input type="radio" name="theme-stroke-style" value="standard"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
-                        </svg>
-                        <span>Standard</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="gel"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
-                        </svg>
-                        <span>Gelstift</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="ink"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
-                        </svg>
-                        <span>Tusche</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="neon"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
-                        </svg>
-                        <span>Neon</span>
-                    </div>
-                </label>
-            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
     </div>
@@ -827,18 +828,40 @@
 
 <!-- SVG filter definitions for neon glow -->
 <svg id="neon-defs" style="width:0;height:0;position:absolute;overflow:hidden" aria-hidden="true">
-  <defs>
-    <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
-      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2"/>
-      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
+    <defs>
+        <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2" />
+            <feMerge>
+                <feMergeNode in="b2" />
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2" />
+            <feMerge>
+                <feMergeNode in="b2" />
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1" />
+            <feMerge>
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b1" />
+            <feMerge>
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
 </svg>
 
 <div class="kanji-container">
@@ -1189,12 +1212,12 @@
 
     // --- Theme: Stroke color definitions ---
     var _strokeColors = {
-        black:   { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
+        black: { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
         inkblue: { light: '#1a3a7a', dark: '#7ab0e0', guide: { light: '#b8c8e4', dark: '#2a3a52' } },
-        violet:  { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
-        brown:   { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
-        teal:    { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
-        slate:   { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
+        violet: { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
+        brown: { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
+        teal: { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
+        slate: { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
     };
 
     var _themeApplying = false;
@@ -1286,14 +1309,26 @@
                 kanjiC.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
                 if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
             }
-            // Apply SVG neon filter to reference paths (filter defs are in #neon-defs)
+            // Apply SVG filters to reference paths (no gel halos on front — paths are hidden until drawn/revealed)
             var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
-            var _neonRef = _dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+            var _wk = document.documentElement.classList.contains('is-ankimobile');
+            var _neonRef = _wk
+                ? (_dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)')
+                : (_dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
-                svgEl.querySelectorAll('path').forEach(function (p) {
+                svgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+                svgEl.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
+                    // Full reset first
+                    p.style.removeProperty('filter');
+                    p.style.removeProperty('-webkit-filter');
+                    p.style.removeProperty('opacity');
+                    p.removeAttribute('filter');
+                    p.removeAttribute('paint-order');
+                    // Apply new style
                     if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
-                    else p.removeAttribute('filter');
+                    if (strokeStyle === 'gel') p.setAttribute('paint-order', 'stroke');
+                    if (strokeStyle === 'ink') p.style.opacity = '0.85';
                 });
             });
 
@@ -1322,7 +1357,7 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
-            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
+            var _cssRules = Object.keys(_fsMap).map(function (_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
@@ -1362,6 +1397,8 @@
         var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
+        // Immediately refresh back-side features (stroke colors, gel halos, etc.)
+        if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
     }
 
     // --- Grid Rendering [SHARED with c1-front] ---
@@ -1498,6 +1535,7 @@
         }
         var _themeMODebounce = null;
         window._kanjiThemeObserver = new MutationObserver(function (mutations) {
+            if (!document.getElementById('svg-bg')) return;
             var themeChanged = false;
             var scrollLost = false;
             for (var i = 0; i < mutations.length; i++) {
@@ -1575,36 +1613,41 @@
         }
     }
 
+    var _checkScrollRAF = null;
     function checkScrollability() {
-        // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
-        if (document.documentElement.classList.contains('is-ankiweb')) {
-            document.body.classList.add('no-scroll');
-            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
-            return;
-        }
-        // Guard: prevent MutationObserver re-trigger loop.
-        window._checkingScroll = true;
-        try {
-            // iOS: position:fixed (no-scroll) removes body from flow –
-            // temporarily unlock to measure scrollHeight correctly
-            var wasLocked = document.body.classList.contains('no-scroll');
-            if (wasLocked) {
-                document.body.classList.remove('no-scroll');
-                document.documentElement.style.removeProperty('overflow-y');
-            }
-
-            var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
-
-            if (isScrollable) {
-                document.body.classList.remove('no-scroll');
-                document.documentElement.style.removeProperty('overflow-y');
-            } else {
+        if (_checkScrollRAF) return; // debounce: already scheduled
+        _checkScrollRAF = requestAnimationFrame(function () {
+            _checkScrollRAF = null;
+            // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
+            if (document.documentElement.classList.contains('is-ankiweb')) {
                 document.body.classList.add('no-scroll');
                 document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                return;
             }
-        } finally {
-            setTimeout(function () { window._checkingScroll = false; }, 0);
-        }
+            // Guard: prevent MutationObserver re-trigger loop.
+            window._checkingScroll = true;
+            try {
+                // iOS: position:fixed (no-scroll) removes body from flow –
+                // temporarily unlock to measure scrollHeight correctly
+                var wasLocked = document.body.classList.contains('no-scroll');
+                if (wasLocked) {
+                    document.body.classList.remove('no-scroll');
+                    document.documentElement.style.removeProperty('overflow-y');
+                }
+
+                var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
+
+                if (isScrollable) {
+                    document.body.classList.remove('no-scroll');
+                    document.documentElement.style.removeProperty('overflow-y');
+                } else {
+                    document.body.classList.add('no-scroll');
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                }
+            } finally {
+                setTimeout(function () { window._checkingScroll = false; }, 0);
+            }
+        });
     }
 
     // Run synchronously to prevent flicker on card load
@@ -1636,6 +1679,7 @@
             openSettings(e);
             window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
             document.addEventListener('click', window._kanjiModalEatClick, true);
+            clearTimeout(window._kanjiModalEatTimer);
             window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
         });
     })();
@@ -1666,6 +1710,7 @@
                 target.click();
                 window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
                 document.addEventListener('click', window._kanjiModalEatClick, true);
+                clearTimeout(window._kanjiModalEatTimer);
                 window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         });

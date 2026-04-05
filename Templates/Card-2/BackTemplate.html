@@ -276,7 +276,7 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
-            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
+            var _cssRules = Object.keys(_fsMap).map(function (_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
@@ -298,35 +298,30 @@
                 if (ss !== 'standard') kc.classList.add('stroke-style-' + ss);
             }
             // Apply per-path stroke style effects to reference SVGs
+            // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
             var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
-                svgEl.querySelectorAll('path').forEach(function (p) {
+                svgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+                svgEl.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
+                    // Full reset
+                    p.style.removeProperty('filter');
+                    p.style.removeProperty('-webkit-filter');
+                    p.style.removeProperty('opacity');
+                    p.removeAttribute('filter');
+                    p.removeAttribute('paint-order');
+                    // Apply basic style properties (halos added later by applyBackFeatures)
                     switch (ss) {
                         case 'neon':
-                            p.setAttribute('filter', dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
-                            p.style.removeProperty('filter');
-                            p.style.removeProperty('-webkit-filter');
+                            p.setAttribute('filter', _wk ? (dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)') : (dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)'));
                             break;
                         case 'gel':
-                            p.removeAttribute('filter');
-                            var c = p.style.stroke || p.getAttribute('stroke') || 'var(--stroke-active)';
-                            p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
-                            p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
                             p.setAttribute('stroke-width', '4.5');
                             p.setAttribute('paint-order', 'stroke');
                             break;
                         case 'ink':
-                            p.removeAttribute('filter');
-                            p.style.removeProperty('filter');
-                            p.style.removeProperty('-webkit-filter');
                             p.style.opacity = '0.85';
-                            break;
-                        default:
-                            p.removeAttribute('filter');
-                            p.style.removeProperty('filter');
-                            p.style.removeProperty('-webkit-filter');
-                            p.style.removeProperty('opacity');
                             break;
                     }
                 });
@@ -496,12 +491,12 @@
         if (!document.getElementById('is-back-side-marker')) return;
         const svgBg = document.getElementById('svg-bg');
         if (!svgBg) return;
-        const paths = svgBg.querySelectorAll('path');
+        const paths = svgBg.querySelectorAll('path:not(.gel-halo)');
         const afEl = document.getElementById('kanji-anti-flicker');
 
         // Defined once outside applyBackFeatures to avoid re-creation on every settings change
         const addNumbersGPAL = (svg, colorFn) => {
-            const svgPaths = svg.querySelectorAll('path');
+            const svgPaths = svg.querySelectorAll('path:not(.gel-halo)');
             const placed = [];
             const MD = 6.0;
             const frag = document.createDocumentFragment();
@@ -584,37 +579,67 @@
             }
             colorStyle.textContent = colorCSS;
 
-            // Apply stroke-style-specific inline effects (for colored paths the CSS glow uses currentColor, not the path color)
-            var ss = window._kanjiStrokeStyle || (typeof safeGetItem === 'function' ? safeGetItem('kanjiThemeStrokeStyle', 'standard') : 'standard');
+            // Apply stroke-style-specific inline effects
+            // Re-read from storage (not stale window._kanjiStrokeStyle from page load)
+            var ss = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
+                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
             if (ss === 'soft') ss = 'gel';
-            if (ss !== 'standard') {
+            window._kanjiStrokeStyle = ss;
+            // Clean old gel halos before re-applying any style
+            var svgBgEl = document.getElementById('svg-bg');
+            if (svgBgEl) svgBgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+            // First pass: reset all paths + apply basic style properties
+            paths.forEach((path, i) => {
+                // Full reset
+                path.style.removeProperty('filter');
+                path.style.removeProperty('-webkit-filter');
+                path.style.removeProperty('opacity');
+                path.removeAttribute('filter');
+                path.removeAttribute('paint-order');
+                // Apply new style
                 var dk = document.documentElement.classList.contains('nightMode') ||
-                         document.documentElement.classList.contains('night_mode') ||
-                         document.body.classList.contains('nightMode');
-                paths.forEach((path, i) => {
-                    var c = pathColors[i] || 'var(--stroke-active)';
-                    switch (ss) {
-                        case 'neon': {
-                            var fId = dk ? 'neon-glow-dk' : 'neon-glow';
-                            path.setAttribute('filter', 'url(#' + fId + ')');
-                            path.style.removeProperty('filter');
-                            path.style.removeProperty('-webkit-filter');
-                            break;
-                        }
-                        case 'gel':
-                            path.removeAttribute('filter');
-                            path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
-                            path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
-                            path.setAttribute('stroke-width', '4.5');
-                            path.setAttribute('paint-order', 'stroke');
-                            break;
-                        case 'ink':
-                            path.removeAttribute('filter');
-                            path.style.removeProperty('filter');
-                            path.style.removeProperty('-webkit-filter');
-                            path.style.opacity = '0.85';
-                            break;
+                    document.documentElement.classList.contains('night_mode') ||
+                    document.body.classList.contains('nightMode');
+                switch (ss) {
+                    case 'neon': {
+                        var wk = document.documentElement.classList.contains('is-ankimobile');
+                        var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
+                        path.setAttribute('filter', 'url(#' + fId + ')');
+                        break;
                     }
+                    case 'gel': {
+                        path.setAttribute('stroke-width', '4.5');
+                        path.setAttribute('paint-order', 'stroke');
+                        // Resolve actual color for drop-shadow
+                        var resolvedC;
+                        try { resolvedC = getComputedStyle(path).stroke; } catch (e) { resolvedC = ''; }
+                        if (!resolvedC || resolvedC === 'none') resolvedC = pathColors[i] || 'var(--stroke-active)';
+                        path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + resolvedC + ')');
+                        path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + resolvedC + ')');
+                        break;
+                    }
+                    case 'ink':
+                        path.style.opacity = '0.85';
+                        break;
+                }
+            });
+            // Second pass: add gel halos AFTER all paths styled (avoids nth-child shift)
+            if (ss === 'gel') {
+                paths.forEach(function (path, i) {
+                    var haloC;
+                    try { haloC = getComputedStyle(path).stroke; } catch (e) { haloC = ''; }
+                    if (!haloC || haloC === 'none') haloC = pathColors[i] || 'var(--stroke-active)';
+                    var h2 = path.cloneNode(false);
+                    h2.setAttribute('class', 'gel-halo');
+                    h2.setAttribute('stroke-width', '8');
+                    h2.setAttribute('stroke-linecap', 'round');
+                    h2.setAttribute('stroke-linejoin', 'round');
+                    h2.style.cssText = '';
+                    h2.style.setProperty('opacity', '0.12', 'important');
+                    h2.style.setProperty('stroke', haloC, 'important');
+                    h2.removeAttribute('filter');
+                    path.parentNode.insertBefore(h2, path);
                 });
             }
 
@@ -630,7 +655,20 @@
         // Run synchronously to prevent flicker on card load
         applyBackFeatures();
 
-        window.kanjiSettingsGlobalHandlerC2 = applyBackFeatures;
+        window.kanjiSettingsGlobalHandlerC2 = () => {
+            // Re-read and apply stroke style class (may have changed)
+            var _ss = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
+                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            if (_ss === 'soft') _ss = 'gel';
+            window._kanjiStrokeStyle = _ss;
+            var _kc = document.querySelector('.kanji-container');
+            if (_kc) {
+                _kc.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
+                if (_ss !== 'standard') _kc.classList.add('stroke-style-' + _ss);
+            }
+            applyBackFeatures();
+        };
     })();
 
     // --- Cross-Platform Fixes [SHARED with c1-back] ---

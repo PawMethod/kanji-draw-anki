@@ -602,6 +602,42 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Schriftgröße</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-font-size" value="small"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="26" text-anchor="middle" fill="currentColor" stroke="none" font-size="14"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Klein</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-font-size" value="normal"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="27" text-anchor="middle" fill="currentColor" stroke="none" font-size="18"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Normal</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-font-size" value="large"
+                        onchange="updateThemeSetting('fontSize', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <text x="20" y="28" text-anchor="middle" fill="currentColor" stroke="none" font-size="22"
+                                font-weight="700">Aa</text>
+                        </svg>
+                        <span>Groß</span>
+                    </div>
+                </label>
+            </div>
             <div class="setting-group-title">Akzentfarbe</div>
             <div class="accent-options-grid">
                 <label><input type="radio" name="theme-accent" value="green"
@@ -692,39 +728,48 @@
                     </div>
                 </label>
             </div>
-            <div class="setting-group-title">Schriftgröße</div>
+            <div class="setting-group-title">Strichstil</div>
             <div class="visual-options-grid">
-                <label><input type="radio" name="theme-font-size" value="small"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="standard"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="26" text-anchor="middle" fill="currentColor" stroke="none" font-size="14"
-                                font-weight="700">Aa</text>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
                         </svg>
-                        <span>Klein</span>
+                        <span>Standard</span>
                     </div>
                 </label>
-                <label><input type="radio" name="theme-font-size" value="normal"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="gel"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="27" text-anchor="middle" fill="currentColor" stroke="none" font-size="18"
-                                font-weight="700">Aa</text>
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
                         </svg>
-                        <span>Normal</span>
+                        <span>Gelstift</span>
                     </div>
                 </label>
-                <label><input type="radio" name="theme-font-size" value="large"
-                        onchange="updateThemeSetting('fontSize', this.value)">
+                <label><input type="radio" name="theme-stroke-style" value="ink"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="28" text-anchor="middle" fill="currentColor" stroke="none" font-size="22"
-                                font-weight="700">Aa</text>
+                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
                         </svg>
-                        <span>Groß</span>
+                        <span>Tusche</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="theme-stroke-style" value="neon"
+                        onchange="updateThemeSetting('strokeStyle', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
+                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        </svg>
+                        <span>Neon</span>
                     </div>
                 </label>
             </div>
@@ -773,50 +818,6 @@
                     </div>
                 </label>
             </div>
-            <div class="setting-group-title">Strichstil</div>
-            <div class="visual-options-grid">
-                <label><input type="radio" name="theme-stroke-style" value="standard"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
-                        </svg>
-                        <span>Standard</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="gel"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
-                        </svg>
-                        <span>Gelstift</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="ink"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
-                        </svg>
-                        <span>Tusche</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="theme-stroke-style" value="neon"
-                        onchange="updateThemeSetting('strokeStyle', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
-                        </svg>
-                        <span>Neon</span>
-                    </div>
-                </label>
-            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
     </div>
@@ -826,18 +827,42 @@
 
 <!-- SVG filter definitions for neon glow (defined once, referenced via url(#id) from any SVG) -->
 <svg id="neon-defs" style="width:0;height:0;position:absolute;overflow:hidden" aria-hidden="true">
-  <defs>
-    <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2"/>
-      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2"/>
-      <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
+    <defs>
+        <!-- Full neon: Desktop/Android (two blur passes) -->
+        <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2" />
+            <feMerge>
+                <feMergeNode in="b2" />
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="neon-glow-dk" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2" />
+            <feMerge>
+                <feMergeNode in="b2" />
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <!-- Lite neon: WebKit/AnkiMobile (single blur, less GPU load) -->
+        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1" />
+            <feMerge>
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b1" />
+            <feMerge>
+                <feMergeNode in="b1" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
 </svg>
 
 <div class="kanji-container">
@@ -1221,12 +1246,12 @@
     // --- Theme: Stroke color definitions ---
     // Colors chosen to contrast with correction indicators (green/yellow/orange/red)
     var _strokeColors = {
-        black:   { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
+        black: { light: '#1a1a1a', dark: '#e8e8e4', guide: { light: '#d4d4d0', dark: '#454540' } },
         inkblue: { light: '#1a3a7a', dark: '#7ab0e0', guide: { light: '#b8c8e4', dark: '#2a3a52' } },
-        violet:  { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
-        brown:   { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
-        teal:    { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
-        slate:   { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
+        violet: { light: '#5a2080', dark: '#b888d8', guide: { light: '#d4c0e4', dark: '#382850' } },
+        brown: { light: '#5a3018', dark: '#c8a070', guide: { light: '#d8c8b4', dark: '#3a3028' } },
+        teal: { light: '#0a5858', dark: '#60c0c0', guide: { light: '#b4d8d8', dark: '#1a3a3a' } },
+        slate: { light: '#404858', dark: '#a8b0c0', guide: { light: '#c4c8d0', dark: '#2e343e' } }
     };
 
     var _themeApplying = false;
@@ -1328,16 +1353,59 @@
                 kanjiC.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
                 if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
             }
-            // Apply SVG neon filter to reference paths (filter defs are in #neon-defs)
+            // Apply SVG filters to reference paths (no gel halos on front — paths are hidden until drawn/revealed)
             var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
-            var _neonRef = _dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+            var _wk = document.documentElement.classList.contains('is-ankimobile');
+            var _neonRef = _wk
+                ? (_dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)')
+                : (_dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
-                svgEl.querySelectorAll('path').forEach(function (p) {
+                // Nuclear cleanup: remove ALL effect artifacts first
+                svgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+                svgEl.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
+                    // Full reset — clear every style-specific property/attribute
+                    p.style.removeProperty('filter');
+                    p.style.removeProperty('-webkit-filter');
+                    p.style.removeProperty('opacity');
+                    p.removeAttribute('filter');
+                    p.removeAttribute('paint-order');
+                    // Apply new style
                     if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
-                    else p.removeAttribute('filter');
+                    if (strokeStyle === 'gel') p.setAttribute('paint-order', 'stroke');
+                    if (strokeStyle === 'ink') p.style.opacity = '0.85';
                 });
             });
+            // Re-apply stroke style to already-drawn paths on draw-layer
+            var drawLay = document.getElementById('draw-layer');
+            if (drawLay) {
+                // Nuclear cleanup: remove gel halos AND ink groups
+                drawLay.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+                drawLay.querySelectorAll('g').forEach(function (g) { g.parentNode.removeChild(g); });
+                // Re-apply style to remaining master paths
+                if (window._kanjiApplyPathStyle) {
+                    drawLay.querySelectorAll('path').forEach(function (p) { window._kanjiApplyPathStyle(p); });
+                }
+                // Re-create gel halos for visible draw-layer paths
+                if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
+                    drawLay.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
+                        try { if (parseFloat(getComputedStyle(p).opacity) === 0) return; } catch (e) { }
+                        window._kanjiAddGelHaloToPath(p);
+                    });
+                }
+            }
+            // Re-add gel halos to already-visible strokes in svg-bg (completed or hint-active)
+            if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
+                var svgBgForHalo = document.getElementById('svg-bg');
+                if (svgBgForHalo) {
+                    svgBgForHalo.querySelectorAll('path.stroke-complete:not(.gel-halo), path.hint-active:not(.gel-halo), path.animate-draw:not(.gel-halo)').forEach(function (p) {
+                        window._kanjiAddGelHaloToPath(p);
+                    });
+                }
+            } else {
+                var svgBgForClean = document.getElementById('svg-bg');
+                if (svgBgForClean) svgBgForClean.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+            }
 
             // --- 3. Font size (pure CSS class toggle + dynamic style for WKWebView) ---
             root.classList.remove('font-small', 'font-large');
@@ -1364,7 +1432,7 @@
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
-            var _cssRules = Object.keys(_fsMap).map(function(_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
+            var _cssRules = Object.keys(_fsMap).map(function (_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
             var _newStyle = document.createElement('style');
             _newStyle.id = _dynFontId;
             _newStyle.textContent = _cssRules;
@@ -1400,6 +1468,7 @@
                 root.style.removeProperty('background-color');
                 body.style.removeProperty('background-color');
             }
+            if (window._kanjiInvalidateCSSCache) window._kanjiInvalidateCSSCache();
         } finally {
             // Delay reset so MutationObserver callbacks (microtasks) triggered by
             // the class changes above see the guard as true and skip re-entry.
@@ -1412,6 +1481,8 @@
         var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
+        // Immediately refresh back-side features (stroke colors, gel halos, etc.)
+        if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
     }
 
     // --- Grid Rendering [SHARED with c2-front] ---
@@ -1529,6 +1600,7 @@
         _cachedGlobalConf = null;
         applyThemeSettings();
         updateGridDisplay();
+        if (window._kanjiInvalidateCSSCache) window._kanjiInvalidateCSSCache();
         if (window._kanjiRefreshDrawConfig) window._kanjiRefreshDrawConfig();
         if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
     }
@@ -1558,6 +1630,7 @@
         }
         var _themeMODebounce = null;
         window._kanjiThemeObserver = new MutationObserver(function (mutations) {
+            if (!document.getElementById('svg-bg')) return;
             var themeChanged = false;
             var scrollLost = false;
             for (var i = 0; i < mutations.length; i++) {
@@ -1626,38 +1699,43 @@
         }
     }
 
+    var _checkScrollRAF = null;
     function checkScrollability() {
-        // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
-        if (document.documentElement.classList.contains('is-ankiweb')) {
-            document.body.classList.add('no-scroll');
-            document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
-            return;
-        }
-        // Guard: prevent MutationObserver re-trigger loop.
-        // Temporarily removing no-scroll to measure fires the observer,
-        // which would schedule another checkScrollability call.
-        window._checkingScroll = true;
-        try {
-            // iOS: position:fixed (no-scroll) removes body from flow –
-            // temporarily unlock to measure scrollHeight correctly
-            var wasLocked = document.body.classList.contains('no-scroll');
-            if (wasLocked) {
-                document.body.classList.remove('no-scroll');
-                document.documentElement.style.removeProperty('overflow-y');
-            }
-
-            var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
-
-            if (isScrollable) {
-                document.body.classList.remove('no-scroll');
-                document.documentElement.style.removeProperty('overflow-y');
-            } else {
+        if (_checkScrollRAF) return; // debounce: already scheduled
+        _checkScrollRAF = requestAnimationFrame(function () {
+            _checkScrollRAF = null;
+            // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
+            if (document.documentElement.classList.contains('is-ankiweb')) {
                 document.body.classList.add('no-scroll');
                 document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                return;
             }
-        } finally {
-            setTimeout(function () { window._checkingScroll = false; }, 0);
-        }
+            // Guard: prevent MutationObserver re-trigger loop.
+            // Temporarily removing no-scroll to measure fires the observer,
+            // which would schedule another checkScrollability call.
+            window._checkingScroll = true;
+            try {
+                // iOS: position:fixed (no-scroll) removes body from flow –
+                // temporarily unlock to measure scrollHeight correctly
+                var wasLocked = document.body.classList.contains('no-scroll');
+                if (wasLocked) {
+                    document.body.classList.remove('no-scroll');
+                    document.documentElement.style.removeProperty('overflow-y');
+                }
+
+                var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
+
+                if (isScrollable) {
+                    document.body.classList.remove('no-scroll');
+                    document.documentElement.style.removeProperty('overflow-y');
+                } else {
+                    document.body.classList.add('no-scroll');
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                }
+            } finally {
+                setTimeout(function () { window._checkingScroll = false; }, 0);
+            }
+        });
     }
 
     // Run synchronously to prevent flicker on card load
@@ -1794,6 +1872,18 @@
         const SVG_GRID_SIZE = 109, SAMPLE_POINTS = 64, ANIMATION_DURATION_MS = 700;
         let currentStroke = 0, mistakes = 0, isDrawing = false, userPoints = [];
         let currentSVGPath = null, dSegments = [], errorTimeout = null, fadeTimeout = null, skipTimeouts = [];
+        let _drawGen = 0;
+
+        // CSS custom-property cache (avoid repeated getComputedStyle in hot paths)
+        let _cssCache = {};
+        function getCSSVar(name) {
+            if (_cssCache[name] !== undefined) return _cssCache[name];
+            const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+            _cssCache[name] = v;
+            return v;
+        }
+        function invalidateCSSCache() { _cssCache = {}; }
+        window._kanjiInvalidateCSSCache = invalidateCSSCache;
 
         // Cached config values (avoid per-stroke hostGet/cookie lookups)
         let _cfgAutodraw = hostGet('kanjiOptAutodraw', cachedGlobalConf.autodraw) === 'on';
@@ -1844,7 +1934,7 @@
 
         // ···· Draw Helpers & Pointer Handlers ····
 
-        const clearDrawLayer = () => { drawLayer.innerHTML = ''; currentSVGPath = null; _gelHalo = null; _inkGroup = null; if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; } };
+        const clearDrawLayer = () => { _drawGen++; drawLayer.innerHTML = ''; currentSVGPath = null; _gelHalo = null; _inkGroup = null; };
 
         // ···· Per-path stroke style application ····
         // Returns the current stroke style setting
@@ -1852,51 +1942,101 @@
         const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
 
         // Neon glow: filter defs live in #neon-defs (static HTML). Just toggle the attribute.
-        const _neonFilterRef = () => isDarkMode() ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+        // WebKit/AnkiMobile uses lighter single-blur filter to avoid GPU jank with many paths.
+        const _isWK = document.documentElement.classList.contains('is-ankimobile');
+        const _neonFilterRef = () => {
+            var dk = isDarkMode();
+            if (_isWK) return dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)';
+            return dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)';
+        };
 
         // Apply the correct style to an individual SVG path element.
         // colorOverride: CSS color string (e.g. "var(--stroke-warn1)") — used for correction strokes
         const applyPathStyle = (pathEl, colorOverride) => {
             if (!pathEl) return;
             const style = getActiveStrokeStyle();
+            var c = colorOverride || pathEl.style.stroke || 'var(--stroke-active)';
+            // Full reset — clear ALL style-specific attributes and properties
+            pathEl.style.removeProperty('filter');
+            pathEl.style.removeProperty('-webkit-filter');
+            pathEl.style.removeProperty('opacity');
+            pathEl.removeAttribute('filter');
+            pathEl.removeAttribute('paint-order');
+            // Reset drawing attributes to defaults before applying new style
+            pathEl.setAttribute('stroke-width', '4');
+            pathEl.setAttribute('stroke-linecap', 'round');
+            pathEl.setAttribute('stroke-linejoin', 'round');
             switch (style) {
                 case 'gel':
-                    pathEl.setAttribute('stroke-width', '4');
-                    pathEl.setAttribute('stroke-linecap', 'round');
-                    pathEl.setAttribute('stroke-linejoin', 'round');
-                    pathEl.style.removeProperty('opacity');
-                    pathEl.style.removeProperty('filter');
-                    pathEl.style.removeProperty('-webkit-filter');
-                    pathEl.removeAttribute('filter');
+                    pathEl.setAttribute('stroke-width', '4.5');
+                    pathEl.setAttribute('paint-order', 'stroke');
+                    pathEl.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
+                    pathEl.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
                     break;
                 case 'neon':
-                    pathEl.style.removeProperty('filter');
-                    pathEl.style.removeProperty('-webkit-filter');
                     pathEl.setAttribute('filter', _neonFilterRef());
                     break;
                 case 'ink':
-                    pathEl.style.removeProperty('filter');
-                    pathEl.style.removeProperty('-webkit-filter');
-                    pathEl.removeAttribute('filter');
+                    pathEl.setAttribute('stroke-linecap', 'square');
+                    pathEl.style.opacity = '0.85';
                     break;
                 default:
-                    pathEl.style.removeProperty('filter');
-                    pathEl.style.removeProperty('-webkit-filter');
-                    pathEl.style.removeProperty('opacity');
-                    pathEl.removeAttribute('filter');
+                    break;
             }
         };
+        window._kanjiApplyPathStyle = applyPathStyle;
 
         // Gelstift: halo path (wider, translucent) underneath the main path for wet-ink bleed look.
         let _gelHalo = null;
+        const _gelColorCache = new WeakMap();
+        function _invalidateGelColorCache() { /* WeakMap auto-GCs; explicit clear not needed */ }
+
+        // Add gel halo to a completed SVG reference path
+        const _addGelHaloToPath = (refPath) => {
+            const ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
+            if (ss !== 'gel') return;
+            // Remove existing halo for this path if any
+            const prev = refPath.previousElementSibling;
+            if (prev && prev.classList.contains('gel-halo')) prev.parentNode.removeChild(prev);
+            // Use cached color or resolve via getComputedStyle
+            var strokeColor = _gelColorCache.get(refPath);
+            if (!strokeColor) {
+                try { strokeColor = getComputedStyle(refPath).stroke; } catch (e) { strokeColor = ''; }
+                if (!strokeColor || strokeColor === 'none') {
+                    strokeColor = refPath.style.stroke || refPath.getAttribute('stroke') || 'var(--stroke-active)';
+                }
+                _gelColorCache.set(refPath, strokeColor);
+            }
+            const halo = refPath.cloneNode(false);
+            halo.setAttribute('class', 'gel-halo');
+            halo.setAttribute('stroke-width', '8');
+            halo.setAttribute('stroke-linecap', 'round');
+            halo.setAttribute('stroke-linejoin', 'round');
+            halo.style.cssText = '';
+            halo.style.setProperty('opacity', '0.12', 'important');
+            halo.style.setProperty('stroke', strokeColor, 'important');
+            halo.removeAttribute('filter');
+            // Sync dashoffset animation for hint-active / animate-draw paths
+            const isAnimating = refPath.classList.contains('hint-active') || refPath.classList.contains('animate-draw');
+            if (isAnimating) {
+                halo.setAttribute('stroke-dasharray', '105');
+                halo.style.setProperty('stroke-dashoffset', '105');
+                halo.style.setProperty('transition', 'stroke-dashoffset 0.7s ease-in-out', 'important');
+                refPath.parentNode.insertBefore(halo, refPath);
+                requestAnimationFrame(() => { halo.style.setProperty('stroke-dashoffset', '0'); });
+            } else {
+                refPath.parentNode.insertBefore(halo, refPath);
+            }
+        };
+        window._kanjiAddGelHaloToPath = _addGelHaloToPath;
 
         // Tusche (Ink): multi-segment variable-width brush.
         // A hidden master <path> tracks the full d-attribute for evaluation/snap.
         // A visible <g> group holds short segments with individual stroke-widths.
-        let _inkGroup = null, _inkLastTime = 0, _inkLastPos = null, _inkLastWidth = 4, _inkBleedTimer = null;
+        let _inkGroup = null, _inkLastTime = 0, _inkLastPos = null, _inkLastWidth = 4;
 
         // Smooth snap animation: morph user's drawn stroke toward the reference SVG path
-        const snapToReference = (drawnPath, refPath, userPts, onDone) => {
+        const snapToReference = (drawnPath, refPath, userPts, onDone, gelHalo) => {
             const N = 24;
             const uPts = window._kanjiAlgo.resamplePoints(userPts, N);
             const refLen = refPath.getTotalLength();
@@ -1921,6 +2061,7 @@
                     d += (i ? ' L ' : ' ') + x.toFixed(1) + ' ' + y.toFixed(1);
                 }
                 drawnPath.setAttribute('d', d);
+                if (gelHalo) gelHalo.setAttribute('d', d);
                 if (t < 1) requestAnimationFrame(tick);
                 else onDone();
             };
@@ -1952,6 +2093,7 @@
             if (!c) { resolve(); return; }
 
             c.classList.add('celebration');
+            const isNeon = (safeGetItem('kanjiThemeStrokeStyle', 'standard') === 'neon');
 
             // Use CSS keyframe animation for WebKit compatibility (WAAPI boxShadow is unreliable in WKWebView)
             var styleId = 'celebration-keyframes';
@@ -1964,15 +2106,18 @@
                     '@-webkit-keyframes cel-bounce{0%{-webkit-transform:scale(1)}20%{-webkit-transform:scale(1.08)}45%{-webkit-transform:scale(.975)}70%{-webkit-transform:scale(1.015)}100%{-webkit-transform:scale(1)}}',
                     '@keyframes cel-bounce{0%{transform:scale(1)}20%{transform:scale(1.08)}45%{transform:scale(.975)}70%{transform:scale(1.015)}100%{transform:scale(1)}}',
                     '@-webkit-keyframes cel-flash{0%{opacity:1;-webkit-transform:scale(1)}25%{opacity:.2;-webkit-transform:scale(1.04)}100%{opacity:1;-webkit-transform:scale(1)}}',
-                    '@keyframes cel-flash{0%{opacity:1;transform:scale(1)}25%{opacity:.2;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}'
+                    '@keyframes cel-flash{0%{opacity:1;transform:scale(1)}25%{opacity:.2;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}',
+                    '@-webkit-keyframes cel-neon-pulse{0%{opacity:1;-webkit-transform:scale(1)}30%{opacity:.85;-webkit-transform:scale(1.03)}100%{opacity:1;-webkit-transform:scale(1)}}',
+                    '@keyframes cel-neon-pulse{0%{opacity:1;transform:scale(1)}30%{opacity:.85;transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}'
                 ].join('\n');
                 document.head.appendChild(s);
             }
             c.style.setProperty('-webkit-animation', 'cel-glow 850ms ease-out, cel-bounce 700ms cubic-bezier(.34,1.56,.64,1)');
             c.style.setProperty('animation', 'cel-glow 850ms ease-out, cel-bounce 700ms cubic-bezier(.34,1.56,.64,1)');
             if (svg) {
-                svg.style.setProperty('-webkit-animation', 'cel-flash 600ms ease-in-out');
-                svg.style.setProperty('animation', 'cel-flash 600ms ease-in-out');
+                var flashAnim = isNeon ? 'cel-neon-pulse 600ms ease-in-out' : 'cel-flash 600ms ease-in-out';
+                svg.style.setProperty('-webkit-animation', flashAnim);
+                svg.style.setProperty('animation', flashAnim);
             }
 
             const rect = c.getBoundingClientRect();
@@ -1983,6 +2128,16 @@
 
             const colors = ['#FFD700', '#FFA500', '#FF6B6B', '#00E5FF', '#B388FF', '#FFE082', '#FF4081', '#69F0AE', '#FFAB40', '#40C4FF'];
             const N = 16;
+            // Ensure sparkle keyframes exist (CSS-based for AnkiMobile/WKWebView compat)
+            if (!document.getElementById('sparkle-keyframes')) {
+                var sk = document.createElement('style');
+                sk.id = 'sparkle-keyframes';
+                sk.textContent = [
+                    '@-webkit-keyframes sparkle-fly{0%{-webkit-transform:scale(0) rotate(0deg);opacity:1}20%{-webkit-transform:translate(var(--sp-tx35),var(--sp-ty35)) scale(1) rotate(90deg);opacity:1}100%{-webkit-transform:translate(var(--sp-tx),var(--sp-ty)) scale(0) rotate(200deg);opacity:0}}',
+                    '@keyframes sparkle-fly{0%{transform:scale(0) rotate(0deg);opacity:1}20%{transform:translate(var(--sp-tx35),var(--sp-ty35)) scale(1) rotate(90deg);opacity:1}100%{transform:translate(var(--sp-tx),var(--sp-ty)) scale(0) rotate(200deg);opacity:0}}'
+                ].join('\n');
+                document.head.appendChild(sk);
+            }
             for (let i = 0; i < N; i++) {
                 const el = document.createElement('div');
                 el.className = 'completion-sparkle';
@@ -2000,13 +2155,14 @@
                     background: colors[i % colors.length],
                     borderRadius: Math.random() > 0.5 ? '3px' : '50%'
                 });
+                el.style.setProperty('--sp-tx', tx + 'px');
+                el.style.setProperty('--sp-ty', ty + 'px');
+                el.style.setProperty('--sp-tx35', (tx * 0.35) + 'px');
+                el.style.setProperty('--sp-ty35', (ty * 0.35) + 'px');
+                el.style.setProperty('-webkit-animation', 'sparkle-fly ' + dur + 'ms ease-out ' + dl + 'ms forwards');
+                el.style.setProperty('animation', 'sparkle-fly ' + dur + 'ms ease-out ' + dl + 'ms forwards');
                 document.body.appendChild(el);
                 cleanup.push(el);
-                el.animate([
-                    { transform: 'scale(0) rotate(0deg)', opacity: 1 },
-                    { transform: `translate(${tx * 0.35}px, ${ty * 0.35}px) scale(1) rotate(90deg)`, opacity: 1, offset: 0.2 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(0) rotate(200deg)`, opacity: 0 }
-                ], { duration: dur, delay: dl, easing: 'ease-out', fill: 'forwards' });
             }
 
             setTimeout(() => resolve(), 750);
@@ -2106,30 +2262,13 @@
             if (isInk) {
                 currentSVGPath.style.setProperty('opacity', '0');
                 _inkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                _inkGroup.setAttribute("fill", "var(--stroke-active)");
+                _inkGroup.setAttribute("fill", "none");
                 _inkGroup.setAttribute("stroke", "var(--stroke-active)");
                 _inkGroup.setAttribute("stroke-linecap", "square");
                 _inkGroup.setAttribute("stroke-linejoin", "round");
                 _inkGroup.style.setProperty("opacity", "0.85");
                 drawLayer.appendChild(_inkGroup);
                 _inkLastPos = pos; _inkLastTime = performance.now(); _inkLastWidth = 3.5;
-                // Ink pool dot at touch-down
-                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                dot.setAttribute("cx", pos.x); dot.setAttribute("cy", pos.y);
-                dot.setAttribute("r", "2"); dot.setAttribute("stroke", "none");
-                _inkGroup.appendChild(dot);
-                // Clear any stale bleed timer before creating a new one
-                if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
-                _inkBleedTimer = setInterval(() => {
-                    if (!_inkGroup || !_inkLastPos || !isDrawing) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; return; }
-                    _inkLastWidth = Math.min(7, _inkLastWidth + 0.25);
-                    const bl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    bl.setAttribute("cx", _inkLastPos.x); bl.setAttribute("cy", _inkLastPos.y);
-                    bl.setAttribute("r", (_inkLastWidth * 0.45).toFixed(1));
-                    bl.setAttribute("stroke", "none");
-                    bl.style.setProperty("opacity", "0.35");
-                    _inkGroup.appendChild(bl);
-                }, 60);
             } else {
                 _inkGroup = null;
             }
@@ -2159,18 +2298,11 @@
                     _inkLastWidth = _inkLastWidth * 0.8 + targetW * 0.2;
                     const mx = (_inkLastPos.x + pos.x) / 2;
                     const my = (_inkLastPos.y + pos.y) / 2;
-                    const frag = document.createDocumentFragment();
                     const seg = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     seg.setAttribute("d", 'M ' + _inkLastPos.x + ' ' + _inkLastPos.y + ' Q ' + mx + ' ' + my + ' ' + pos.x + ' ' + pos.y);
                     seg.setAttribute("stroke-width", _inkLastWidth.toFixed(1));
                     seg.setAttribute("fill", "none");
-                    frag.appendChild(seg);
-                    const jd = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    jd.setAttribute("cx", pos.x); jd.setAttribute("cy", pos.y);
-                    jd.setAttribute("r", (_inkLastWidth * 0.44).toFixed(1));
-                    jd.setAttribute("stroke", "none");
-                    frag.appendChild(jd);
-                    _inkGroup.appendChild(frag);
+                    _inkGroup.appendChild(seg);
                     _inkLastPos = pos; _inkLastTime = now;
                 }
             }
@@ -2181,7 +2313,6 @@
             if (e && e.pointerId) { try { drawLayer.releasePointerCapture(e.pointerId); } catch (err) { } }
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             isDrawing = false;
-            if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
 
             if (isFreeMode) {
                 let totalTravel = 0;
@@ -2285,6 +2416,7 @@
                 currentStroke++; saveState(); currentSVGPath = null; _inkGroup = null; _gelHalo = null;
                 const afterSnap = () => {
                     paths[si].classList.add('stroke-complete');
+                    _addGelHaloToPath(paths[si]);
                     if (dp && dp.parentNode) dp.parentNode.removeChild(dp);
                     if (ig && ig.parentNode) ig.parentNode.removeChild(ig);
                     if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
@@ -2293,11 +2425,10 @@
                 if (dp && up.length >= 2) {
                     // Ink: reveal master path for snap animation, hide segment group
                     if (ig) { ig.style.setProperty('opacity', '0'); dp.style.setProperty('opacity', '0.85'); dp.setAttribute('stroke-width', '4.5'); dp.setAttribute('stroke-linecap', 'square'); }
-                    // Gel: hide halo during snap (clean transition)
-                    if (gh) { gh.style.setProperty('opacity', '0'); }
-                    snapToReference(dp, paths[si], up, afterSnap);
+                    // Gel: pass halo to snap so it morphs in sync
+                    snapToReference(dp, paths[si], up, afterSnap, gh);
                 }
-                else { paths[si].classList.add('stroke-complete'); clearDrawLayer(); if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); } }
+                else { paths[si].classList.add('stroke-complete'); _addGelHaloToPath(paths[si]); clearDrawLayer(); if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); } }
             } else {
                 mistakes++;
                 if (mistakes > problemStrokes[currentStroke]) { problemStrokes[currentStroke] = mistakes; saveState(); }
@@ -2308,7 +2439,13 @@
                 if (mistakes >= 3 && isAutoDrawOn) {
                     const p = paths[currentStroke];
                     p.classList.remove('hint-active');
-                    requestAnimationFrame(function() { p.classList.add('hint-active'); });
+                    // Remove old gel halo before re-animating
+                    const prevH = p.previousElementSibling;
+                    if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+                    requestAnimationFrame(function () {
+                        p.classList.add('hint-active');
+                        _addGelHaloToPath(p);
+                    });
                 }
 
                 if (isColorFeedbackFrontOn) {
@@ -2322,10 +2459,12 @@
                 }
 
                 clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.remove('fade-out');
+                const errGen = _drawGen;
                 errorTimeout = setTimeout(() => {
+                    if (errGen !== _drawGen) return;
                     if (!isDrawing) {
                         drawLayer.classList.add('fade-out');
-                        fadeTimeout = setTimeout(() => { if (!isDrawing) { clearDrawLayer(); drawLayer.classList.remove('fade-out'); } }, 200);
+                        fadeTimeout = setTimeout(() => { if (errGen !== _drawGen) return; if (!isDrawing) { clearDrawLayer(); drawLayer.classList.remove('fade-out'); } }, 200);
                     }
                 }, 250);
             }
@@ -2355,6 +2494,11 @@
             ['touchstart', 'touchmove', 'touchend'].forEach(evt => { kanjiContainer.addEventListener(evt, blockAppGestures, { passive: false }); });
         }
 
+        // Clean up previous drawLayer listeners & timers
+        if (window._kanjiDrawCleanup) {
+            try { window._kanjiDrawCleanup(); } catch (e) { }
+        }
+
         if (window.kanjiStopDrawingHandler) {
             document.removeEventListener('pointerup', window.kanjiStopDrawingHandler);
             document.removeEventListener('pointercancel', window.kanjiStopDrawingHandler);
@@ -2364,17 +2508,32 @@
         }
         window.kanjiStopDrawingHandler = stopDrawing;
 
+        const stopDrawingOnLeave = (e) => { if (isDrawing) stopDrawing(e); };
+        const touchPreventDefault = (e) => { if (e.cancelable) e.preventDefault(); };
+
         if (window.PointerEvent) {
             drawLayer.addEventListener('pointerdown', startDrawing); drawLayer.addEventListener('pointermove', draw);
-            drawLayer.addEventListener('pointerleave', (e) => { if (isDrawing) stopDrawing(e); });
+            drawLayer.addEventListener('pointerleave', stopDrawingOnLeave);
             document.addEventListener('pointerup', window.kanjiStopDrawingHandler); document.addEventListener('pointercancel', window.kanjiStopDrawingHandler);
-            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.addEventListener(evt, (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false }); });
+            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.addEventListener(evt, touchPreventDefault, { passive: false }); });
         } else {
             drawLayer.addEventListener('mousedown', startDrawing); drawLayer.addEventListener('mousemove', draw);
             drawLayer.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); startDrawing(e); }, { passive: false });
             drawLayer.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); draw(e); }, { passive: false });
             document.addEventListener('mouseup', window.kanjiStopDrawingHandler); document.addEventListener('touchend', window.kanjiStopDrawingHandler); document.addEventListener('touchcancel', window.kanjiStopDrawingHandler);
         }
+
+        window._kanjiDrawCleanup = () => {
+            clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
+            skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
+            _drawGen++;
+            drawLayer.removeEventListener('pointerdown', startDrawing);
+            drawLayer.removeEventListener('pointermove', draw);
+            drawLayer.removeEventListener('pointerleave', stopDrawingOnLeave);
+            drawLayer.removeEventListener('mousedown', startDrawing);
+            drawLayer.removeEventListener('mousemove', draw);
+            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.removeEventListener(evt, touchPreventDefault); });
+        };
 
         // ===================================================================
         // BUTTON ACTIONS (re-bindable per mode)
@@ -2383,14 +2542,18 @@
         const revealAction = () => { guideSvg.classList.toggle('is-visible'); };
 
         const guidedResetAction = () => {
+            _drawGen++;
             currentStroke = 0; mistakes = 0; userPoints = []; problemStrokes.fill(0); saveState();
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
-            const strokeColor = getComputedStyle(paths[0] || document.documentElement).getPropertyValue('--stroke-active').trim() || '';
+            const strokeColor = getCSSVar('--stroke-active') || '';
             paths.forEach((p) => {
                 if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
                     if (strokeColor) p.style.setProperty('stroke', strokeColor, 'important');
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                     p.classList.add('rewind-anim');
+                    // Remove gel halo when rewinding
+                    const prevH = p.previousElementSibling;
+                    if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
                     setTimeout(() => {
                         p.classList.remove('rewind-anim');
                         p.style.removeProperty('stroke');
@@ -2398,6 +2561,8 @@
                 } else {
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
                     p.style.removeProperty('stroke');
+                    const prevH = p.previousElementSibling;
+                    if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
                 }
             });
             clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.remove('fade-out'); clearDrawLayer();
@@ -2410,41 +2575,70 @@
             if (currentStroke >= paths.length) return;
             // Resolve any pending skip animations immediately before clearing timers
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
-            paths.forEach(p => { if (p.classList.contains('animate-draw')) { p.classList.remove('animate-draw'); p.classList.add('stroke-complete'); } });
+            paths.forEach(p => { if (p.classList.contains('animate-draw')) { p.classList.remove('animate-draw'); p.classList.add('stroke-complete'); _addGelHaloToPath(p); } });
             const pathToAnimate = paths[currentStroke]; problemStrokes[currentStroke] = 3;
             pathToAnimate.classList.remove('hint-active', 'rewind-anim'); pathToAnimate.classList.add('animate-draw');
-            const animTimer = setTimeout(() => { pathToAnimate.classList.remove('animate-draw'); pathToAnimate.classList.add('stroke-complete'); }, ANIMATION_DURATION_MS);
+            const skipGen = _drawGen;
+            const animTimer = setTimeout(() => { if (skipGen !== _drawGen) return; pathToAnimate.classList.remove('animate-draw'); pathToAnimate.classList.add('stroke-complete'); _addGelHaloToPath(pathToAnimate); }, ANIMATION_DURATION_MS);
             skipTimeouts.push(animTimer); currentStroke++; saveState(); mistakes = 0;
             clearTimeout(errorTimeout); clearTimeout(fadeTimeout); drawLayer.classList.add('fade-out');
-            fadeTimeout = setTimeout(() => { clearDrawLayer(); drawLayer.classList.remove('fade-out'); }, 300);
+            fadeTimeout = setTimeout(() => { if (skipGen !== _drawGen) return; clearDrawLayer(); drawLayer.classList.remove('fade-out'); }, 300);
             if (currentStroke >= paths.length) {
                 if (actionButtons) actionButtons.style.display = 'none';
-                const flipTimer = setTimeout(() => { playCompletionAnimation().then(() => triggerAutoFlip()); }, ANIMATION_DURATION_MS); skipTimeouts.push(flipTimer);
+                const flipTimer = setTimeout(() => { if (skipGen !== _drawGen) return; playCompletionAnimation().then(() => triggerAutoFlip()); }, ANIMATION_DURATION_MS); skipTimeouts.push(flipTimer);
             }
         };
 
         const freeResetAction = () => {
-            // Fade out drawn strokes before clearing
-            drawLayer.classList.add('free-reset-fade');
+            _drawGen++;
+            // Reverse animation: rewind ALL drawn strokes simultaneously
+            const drawnPaths = Array.from(drawLayer.querySelectorAll('path:not(.gel-halo)'));
+            // Remove gel halos and fade ink groups immediately
+            drawLayer.querySelectorAll('.gel-halo').forEach(h => h.parentNode.removeChild(h));
+            drawLayer.querySelectorAll('g').forEach(g => { g.style.transition = 'opacity 0.25s ease-out'; g.style.opacity = '0'; });
+            drawnPaths.forEach(p => {
+                const len = p.getTotalLength ? p.getTotalLength() : 200;
+                p.style.strokeDasharray = len + '';
+                p.style.strokeDashoffset = '0';
+                p.style.transition = 'none';
+            });
+            // Also rewind the guide SVG if visible
+            guideSvg.classList.remove('is-visible');
+            // Simultaneously rewind all paths + reference strokes
+            requestAnimationFrame(() => {
+                drawnPaths.forEach(p => {
+                    const len = parseFloat(p.style.strokeDasharray) || 200;
+                    p.style.transition = 'stroke-dashoffset 0.35s ease-in';
+                    p.style.strokeDashoffset = len + '';
+                });
+                // Also rewind visible reference strokes (from Strich einblenden)
+                paths.forEach(p => {
+                    if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
+                        p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
+                        p.classList.add('rewind-anim');
+                        const prevH = p.previousElementSibling;
+                        if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+                    }
+                });
+            });
             setTimeout(() => {
                 freeStrokes = []; freeSVGPaths = []; freeFinished = false;
                 userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
                 drawLayer.innerHTML = ''; currentSVGPath = null;
                 _gelHalo = null; _inkGroup = null;
-                if (_inkBleedTimer) { clearInterval(_inkBleedTimer); _inkBleedTimer = null; }
-                drawLayer.classList.remove('free-reset-fade');
                 paths.forEach(p => {
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
                     p.style.removeProperty('stroke');
+                    const prevH = p.previousElementSibling;
+                    if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
                 });
-                guideSvg.classList.remove('is-visible');
                 if (actionButtons) actionButtons.style.display = 'flex';
                 ['sessionStorage', 'localStorage'].forEach(s => {
                     try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
                 });
                 window._kanjiFreeStrokes = null;
                 const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "none";
-            }, 350);
+            }, 400);
         };
 
         // Delegate click handlers (bind once, action is swappable)
@@ -2500,7 +2694,7 @@
             var btn = e.target.closest('button');
             if (!btn) return;
             btn.classList.remove('btn-flash');
-            requestAnimationFrame(function() { btn.classList.add('btn-flash'); });
+            requestAnimationFrame(function () { btn.classList.add('btn-flash'); });
             if (navigator.vibrate) navigator.vibrate(10);
         });
     })();
@@ -2526,13 +2720,14 @@
                 if (handler === 'gear') {
                     openSettings(e);
                 } else {
-                    el.classList.remove('btn-flash'); requestAnimationFrame(function() { el.classList.add('btn-flash'); });
+                    el.classList.remove('btn-flash'); requestAnimationFrame(function () { el.classList.add('btn-flash'); });
                     if (navigator.vibrate) navigator.vibrate(10);
                     if (el._kanjiAction) el._kanjiAction();
                 }
                 // Absorb browser's delayed click
                 window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
                 document.addEventListener('click', window._kanjiModalEatClick, true);
+                clearTimeout(window._kanjiModalEatTimer);
                 window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         }
@@ -2576,6 +2771,7 @@
                 target.click();
                 window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
                 document.addEventListener('click', window._kanjiModalEatClick, true);
+                clearTimeout(window._kanjiModalEatTimer);
                 window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
             });
         });

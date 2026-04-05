@@ -121,6 +121,10 @@
     /* Hover-Shadow */
     --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
 
+    /* GPU-composited shadow filters (transition-safe on WKWebView) */
+    --filter-soft: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.04)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.02));
+    --filter-hover: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.12)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+
     /* Layout Limits */
     --dynamic-size: min(90vw, 65vh, 550px);
     --border-rad-main: 10px;
@@ -207,6 +211,8 @@ html.is-ankiweb .info-modal {
     --tab-color-c1: #6abe4e;
     --tab-color-c2: #4ec4b8;
     --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.4);
+    --filter-soft: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
+    --filter-hover: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4));
 }
 
 /* --------------------------------------------------------------------------
@@ -396,14 +402,12 @@ svg#svg-guide path,
    Reference kanji: CSS rules below (#svg-bg, #svg-guide paths). */
 
 /* Gelstift — bold, opaque, saturated gel ink: wider rounded strokes with subtle ink spread */
-.kanji-container.stroke-style-gel #svg-bg path,
-.kanji-container.stroke-style-gel #svg-guide path {
+.kanji-container.stroke-style-gel #svg-bg path:not(.gel-halo),
+.kanji-container.stroke-style-gel #svg-guide path:not(.gel-halo) {
     stroke-width: 4.5;
     stroke-linecap: round;
     stroke-linejoin: round;
     paint-order: stroke;
-    -webkit-filter: drop-shadow(0 0 0.3px currentColor);
-    filter: drop-shadow(0 0 0.3px currentColor);
 }
 
 /* Tusche (Ink) — organic, wider, calligraphic reference strokes */
@@ -426,25 +430,59 @@ svg#svg-guide path,
    CSS drop-shadow() is not used because it fails in WKWebView stacking contexts. */
 
 /* Stroke color swatches */
-.stroke-swatch-black   { background: #1a1a1a; }
-.stroke-swatch-inkblue { background: #1a3a7a; }
-.stroke-swatch-violet  { background: #5a2080; }
-.stroke-swatch-brown   { background: #5a3018; }
-.stroke-swatch-teal    { background: #0a5858; }
-.stroke-swatch-slate   { background: #404858; }
+.stroke-swatch-black {
+    background: #1a1a1a;
+}
+
+.stroke-swatch-inkblue {
+    background: #1a3a7a;
+}
+
+.stroke-swatch-violet {
+    background: #5a2080;
+}
+
+.stroke-swatch-brown {
+    background: #5a3018;
+}
+
+.stroke-swatch-teal {
+    background: #0a5858;
+}
+
+.stroke-swatch-slate {
+    background: #404858;
+}
 
 .nightMode .stroke-swatch-black,
-.night_mode .stroke-swatch-black   { background: #e8e8e4; }
+.night_mode .stroke-swatch-black {
+    background: #e8e8e4;
+}
+
 .nightMode .stroke-swatch-inkblue,
-.night_mode .stroke-swatch-inkblue { background: #7ab0e0; }
+.night_mode .stroke-swatch-inkblue {
+    background: #7ab0e0;
+}
+
 .nightMode .stroke-swatch-violet,
-.night_mode .stroke-swatch-violet  { background: #b888d8; }
+.night_mode .stroke-swatch-violet {
+    background: #b888d8;
+}
+
 .nightMode .stroke-swatch-brown,
-.night_mode .stroke-swatch-brown   { background: #c8a070; }
+.night_mode .stroke-swatch-brown {
+    background: #c8a070;
+}
+
 .nightMode .stroke-swatch-teal,
-.night_mode .stroke-swatch-teal    { background: #60c0c0; }
+.night_mode .stroke-swatch-teal {
+    background: #60c0c0;
+}
+
 .nightMode .stroke-swatch-slate,
-.night_mode .stroke-swatch-slate   { background: #a8b0c0; }
+.night_mode .stroke-swatch-slate {
+    background: #a8b0c0;
+}
 
 /* --------------------------------------------------------------------------
    3b. Completion Celebration
@@ -477,8 +515,8 @@ svg#svg-guide path,
     border: 1px solid var(--border-color);
     color: var(--text-muted);
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
-    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    filter: var(--filter-soft);
+    transition: color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, transform 0.2s ease;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -525,7 +563,7 @@ svg#svg-guide path,
         background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px) translateZ(0);
     }
 }
@@ -545,8 +583,8 @@ svg#svg-guide path,
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-soft);
+    transition: color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: var(--filter-soft);
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
     appearance: none;
@@ -558,7 +596,7 @@ svg#svg-guide path,
         background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px) translateZ(0);
     }
 
@@ -573,7 +611,7 @@ svg#svg-guide path,
     background: var(--surface) !important;
     color: var(--text-faint) !important;
     border-color: var(--border-color) !important;
-    box-shadow: var(--shadow-soft) !important;
+    filter: var(--filter-soft) !important;
     transform: translateZ(0) !important;
     transition: none !important;
 }
@@ -734,7 +772,7 @@ svg#svg-guide path,
     border-radius: var(--border-rad-sm);
     padding: 10px 2px;
     cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, filter 0.2s ease, transform 0.15s ease;
     width: 100%;
     box-sizing: border-box;
     color: var(--text-muted);
@@ -748,7 +786,7 @@ svg#svg-guide path,
     .visual-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
     }
 
     .visual-option:hover svg {
@@ -804,7 +842,7 @@ svg#svg-guide path,
 .visual-options-grid label input[type="radio"]:checked+.visual-option {
     border-color: var(--active-tab-color, var(--accent));
     background: var(--surface);
-    box-shadow: var(--shadow-soft);
+    filter: var(--filter-soft);
 }
 
 .visual-options-grid label input[type="radio"]:checked+.visual-option svg {
@@ -1093,7 +1131,7 @@ svg#svg-guide path,
     padding: 10px 0;
     border-radius: var(--border-rad-sm);
     border: 1.5px solid transparent;
-    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, filter 0.2s ease;
     background: var(--bg-main);
 }
 
@@ -1104,14 +1142,14 @@ svg#svg-guide path,
 .accent-options-grid label input[type="radio"]:checked+.accent-option {
     border-color: var(--active-tab-color, var(--accent));
     background: var(--surface);
-    box-shadow: var(--shadow-soft);
+    filter: var(--filter-soft);
 }
 
 @media (hover: hover) {
     .accent-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
     }
 }
 
@@ -1133,25 +1171,59 @@ svg#svg-guide path,
 }
 
 /* Primary color swatches — saturated preview colors for clear distinction */
-.primary-swatch-neutral { background: linear-gradient(135deg, #d0d0cc 50%, #e8e8e5 50%); }
-.primary-swatch-warm    { background: linear-gradient(135deg, #c8b898 50%, #ddd0b4 50%); }
-.primary-swatch-cool    { background: linear-gradient(135deg, #96a8cc 50%, #b0beda 50%); }
-.primary-swatch-sepia   { background: linear-gradient(135deg, #bca878 50%, #d0c0a0 50%); }
-.primary-swatch-rose    { background: linear-gradient(135deg, #c8a0b0 50%, #dab8c4 50%); }
-.primary-swatch-sage    { background: linear-gradient(135deg, #90b888 50%, #a8cca0 50%); }
+.primary-swatch-neutral {
+    background: linear-gradient(135deg, #d0d0cc 50%, #e8e8e5 50%);
+}
+
+.primary-swatch-warm {
+    background: linear-gradient(135deg, #c8b898 50%, #ddd0b4 50%);
+}
+
+.primary-swatch-cool {
+    background: linear-gradient(135deg, #96a8cc 50%, #b0beda 50%);
+}
+
+.primary-swatch-sepia {
+    background: linear-gradient(135deg, #bca878 50%, #d0c0a0 50%);
+}
+
+.primary-swatch-rose {
+    background: linear-gradient(135deg, #c8a0b0 50%, #dab8c4 50%);
+}
+
+.primary-swatch-sage {
+    background: linear-gradient(135deg, #90b888 50%, #a8cca0 50%);
+}
 
 .nightMode .primary-swatch-neutral,
-.night_mode .primary-swatch-neutral { background: linear-gradient(135deg, #2a2a2a 50%, #3a3a3a 50%); }
+.night_mode .primary-swatch-neutral {
+    background: linear-gradient(135deg, #2a2a2a 50%, #3a3a3a 50%);
+}
+
 .nightMode .primary-swatch-warm,
-.night_mode .primary-swatch-warm    { background: linear-gradient(135deg, #3a3020 50%, #4a4030 50%); }
+.night_mode .primary-swatch-warm {
+    background: linear-gradient(135deg, #3a3020 50%, #4a4030 50%);
+}
+
 .nightMode .primary-swatch-cool,
-.night_mode .primary-swatch-cool    { background: linear-gradient(135deg, #202838 50%, #303848 50%); }
+.night_mode .primary-swatch-cool {
+    background: linear-gradient(135deg, #202838 50%, #303848 50%);
+}
+
 .nightMode .primary-swatch-sepia,
-.night_mode .primary-swatch-sepia   { background: linear-gradient(135deg, #38321a 50%, #48422a 50%); }
+.night_mode .primary-swatch-sepia {
+    background: linear-gradient(135deg, #38321a 50%, #48422a 50%);
+}
+
 .nightMode .primary-swatch-rose,
-.night_mode .primary-swatch-rose    { background: linear-gradient(135deg, #38202a 50%, #48303a 50%); }
+.night_mode .primary-swatch-rose {
+    background: linear-gradient(135deg, #38202a 50%, #48303a 50%);
+}
+
 .nightMode .primary-swatch-sage,
-.night_mode .primary-swatch-sage    { background: linear-gradient(135deg, #1e3020 50%, #2e4030 50%); }
+.night_mode .primary-swatch-sage {
+    background: linear-gradient(135deg, #1e3020 50%, #2e4030 50%);
+}
 
 .accent-option span {
     font-size: 10px;
@@ -1426,23 +1498,23 @@ svg#svg-guide path,
     border-radius: var(--border-rad-sm);
     padding: 12px 16px 12px 12px;
     text-align: left;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, filter 0.2s ease, transform 0.2s ease;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
+    filter: var(--filter-soft);
     position: relative;
     -webkit-tap-highlight-color: transparent;
 }
 
 .word-example-item.show-furigana {
     border-color: var(--accent);
-    box-shadow: var(--shadow-hover);
+    filter: var(--filter-hover);
     transform: translateY(-1px);
 }
 
 @media (hover: hover) {
     .word-example-item:hover {
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px);
     }
 }
@@ -1492,7 +1564,7 @@ ruby rt {
 /* Overrides sticky :hover on touch devices when explicitly dismissed */
 .word-example-item.furigana-dismissed {
     border-color: var(--border-color) !important;
-    box-shadow: var(--shadow-soft) !important;
+    filter: var(--filter-soft) !important;
     transform: none !important;
 }
 
@@ -1562,8 +1634,8 @@ ruby rt {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: var(--shadow-soft);
-    transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    filter: var(--filter-soft);
+    transition: color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, transform 0.2s ease;
     width: var(--dynamic-size);
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
@@ -1582,14 +1654,14 @@ ruby rt {
         background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px) translateZ(0);
     }
 }
 
 .info-btn:active {
     transform: scale(0.98) translateZ(0);
-    box-shadow: var(--shadow-soft);
+    filter: var(--filter-soft);
 }
 
 .info-btn svg {
@@ -1618,7 +1690,7 @@ ruby rt {
     font-size: 14px;
     font-weight: 600;
     border: 1px solid var(--border-color);
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
     appearance: none;
@@ -1630,7 +1702,7 @@ ruby rt {
         background: var(--bg-main);
         color: var(--accent);
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px);
     }
 }
@@ -1639,7 +1711,7 @@ ruby rt {
     background: var(--accent-bg);
     color: var(--accent);
     border-color: var(--accent);
-    box-shadow: var(--shadow-hover);
+    filter: var(--filter-hover);
     transform: scale(0.97);
 }
 
@@ -1697,16 +1769,16 @@ ruby rt {
     width: 54px;
     height: 54px;
     box-sizing: border-box;
-    box-shadow: var(--shadow-soft);
+    filter: var(--filter-soft);
     position: relative;
     cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, filter 0.2s ease, transform 0.2s ease;
     -webkit-tap-highlight-color: transparent;
 }
 
 .tree-node.show-tooltip {
     border-color: var(--accent);
-    box-shadow: var(--shadow-hover);
+    filter: var(--filter-hover);
     transform: translateY(-1px);
 }
 
@@ -1772,7 +1844,7 @@ ruby rt {
 /* Overrides sticky :hover on touch devices when explicitly dismissed */
 .tree-node.tooltip-dismissed {
     border-color: var(--border-color) !important;
-    box-shadow: var(--shadow-soft) !important;
+    filter: var(--filter-soft) !important;
     transform: none !important;
 }
 
@@ -1784,7 +1856,7 @@ ruby rt {
 @media (hover: hover) {
     .tree-node:hover {
         border-color: var(--accent);
-        box-shadow: var(--shadow-hover);
+        filter: var(--filter-hover);
         transform: translateY(-1px);
     }
 
@@ -2325,4 +2397,58 @@ html.font-small.is-ankiweb .card-title {
 
 html.font-large.is-ankiweb .card-title {
     font-size: 25px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WKWebView (AnkiMobile) GPU-safety overrides
+   Strip non-composited transitions (color, background, border-color,
+   stroke, fill, filter) — only keep opacity + transform which are
+   GPU-composited. Prevents jank on iPad/iPhone WKWebView.
+   ══════════════════════════════════════════════════════════════ */
+html.is-ankimobile .card-display {
+    transition: none;
+}
+html.is-ankimobile .kanji-btn,
+html.is-ankimobile .gear-btn,
+html.is-ankimobile .info-btn,
+html.is-ankimobile .back-btn,
+html.is-ankimobile .link-btn,
+html.is-ankimobile .close-settings {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+html.is-ankimobile .visual-option,
+html.is-ankimobile .accent-option,
+html.is-ankimobile .category-card,
+html.is-ankimobile .word-example-item,
+html.is-ankimobile .tree-node {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+html.is-ankimobile .visual-option svg,
+html.is-ankimobile .visual-option svg text,
+html.is-ankimobile .visual-option svg path[fill="currentColor"],
+html.is-ankimobile .visual-option span,
+html.is-ankimobile .accent-option span {
+    transition: none;
+}
+html.is-ankimobile .settings-modal {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.is-ankimobile .segment-btn {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+html.is-ankimobile .side-by-side-box .sbs-kanji {
+    transition: none;
+}
+/* Faster stroke-dashoffset animation (shorter GPU repaint window) */
+html.is-ankimobile #svg-guide path {
+    transition: stroke-dashoffset 0.4s ease-in-out !important;
+}
+html.is-ankimobile .animate-draw {
+    transition: stroke-dashoffset 0.4s ease-in-out !important;
+}
+html.is-ankimobile .hint-active {
+    transition: stroke-dashoffset 0.4s ease-in-out !important;
+}
+html.is-ankimobile .rewind-anim {
+    transition: stroke-dashoffset 0.4s ease-in-out !important;
 }
