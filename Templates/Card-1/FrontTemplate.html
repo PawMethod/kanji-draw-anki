@@ -1953,6 +1953,7 @@
         // SVG elements are built on pointerup for grading, snap animation, and persistence.
         const _useCanvas = _isWK;
         let _ctx = null, _canvasEl = null, _canvasPath = null, _canvasInkSegs = null;
+        let _lastCanvasX = 0, _lastCanvasY = 0;
 
         const _initCanvas = () => {
             _canvasEl = document.getElementById('draw-canvas');
@@ -1979,14 +1980,64 @@
             var dpr = window.devicePixelRatio || 1;
             _ctx.clearRect(0, 0, _canvasEl.width / dpr, _canvasEl.height / dpr);
         };
-        const _drawCanvasStroke = (errorColor) => {
+        const _setupCanvasStyle = () => {
+            if (!_ctx) return;
+            var style = getActiveStrokeStyle();
+            var color = getCSSVar('--stroke-active') || '#333';
+            var sx = _ctx._scaleX;
+            _ctx.strokeStyle = color;
+            _ctx.lineCap = 'round';
+            _ctx.lineJoin = 'round';
+            _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
+            _ctx.shadowBlur = 0;
+            _ctx.shadowColor = 'transparent';
+            _ctx.globalAlpha = 1;
+        };
+        const _drawCanvasSegment = (x0, y0, x1, y1) => {
+            if (!_ctx) return;
+            var style = getActiveStrokeStyle();
+            var sx = _ctx._scaleX, sy = _ctx._scaleY;
+            if (style === 'gel') {
+                var color = _ctx.strokeStyle;
+                _ctx.save();
+                _ctx.lineWidth = 8 * sx;
+                _ctx.globalAlpha = 0.08;
+                _ctx.beginPath();
+                _ctx.moveTo(x0 * sx, y0 * sy);
+                _ctx.lineTo(x1 * sx, y1 * sy);
+                _ctx.stroke();
+                _ctx.restore();
+                _ctx.strokeStyle = color;
+                _ctx.lineWidth = 4.5 * sx;
+                _ctx.lineCap = 'round';
+                _ctx.lineJoin = 'round';
+            }
+            if (style === 'neon') {
+                var color = _ctx.strokeStyle;
+                _ctx.save();
+                _ctx.lineWidth = 10 * sx;
+                _ctx.globalAlpha = 0.08;
+                _ctx.beginPath();
+                _ctx.moveTo(x0 * sx, y0 * sy);
+                _ctx.lineTo(x1 * sx, y1 * sy);
+                _ctx.stroke();
+                _ctx.restore();
+                _ctx.strokeStyle = color;
+                _ctx.lineWidth = 4 * sx;
+                _ctx.lineCap = 'round';
+                _ctx.lineJoin = 'round';
+            }
+            _ctx.beginPath();
+            _ctx.moveTo(x0 * sx, y0 * sy);
+            _ctx.lineTo(x1 * sx, y1 * sy);
+            _ctx.stroke();
+        };
+        const _redrawCanvasFull = (errorColor) => {
             if (!_ctx || !_canvasEl) return;
             _clearCanvas();
             var style = getActiveStrokeStyle();
             var color = errorColor || getCSSVar('--stroke-active') || '#333';
-            var sx = _ctx._scaleX, sy = _ctx._scaleY;
-
-            // Ink: variable-width segments
+            var sx = _ctx._scaleX;
             if (style === 'ink' && _canvasInkSegs && _canvasInkSegs.length > 0) {
                 _ctx.save();
                 _ctx.globalAlpha = 0.85;
@@ -1997,17 +2048,15 @@
                     var seg = _canvasInkSegs[i];
                     _ctx.lineWidth = seg.w * sx;
                     _ctx.beginPath();
-                    _ctx.moveTo(seg.x0 * sx, seg.y0 * sy);
-                    _ctx.quadraticCurveTo(seg.cx * sx, seg.cy * sy, seg.x1 * sx, seg.y1 * sy);
+                    _ctx.moveTo(seg.x0 * sx, seg.y0 * _ctx._scaleY);
+                    _ctx.quadraticCurveTo(seg.cx * sx, seg.cy * _ctx._scaleY, seg.x1 * sx, seg.y1 * _ctx._scaleY);
                     _ctx.stroke();
                 }
                 _ctx.restore();
                 return;
             }
-
             if (!_canvasPath) return;
             _ctx.save();
-            // Gel: halo underneath
             if (style === 'gel') {
                 _ctx.lineWidth = 8 * sx;
                 _ctx.globalAlpha = 0.12;
@@ -2017,16 +2066,11 @@
                 _ctx.stroke(_canvasPath);
                 _ctx.globalAlpha = 1;
             }
-            // Neon: shadow glow
-            if (style === 'neon') {
-                var dk = isDarkMode();
-                _ctx.shadowBlur = (dk ? 5 : 3) * sx;
-                _ctx.shadowColor = color;
-            }
             _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
             _ctx.strokeStyle = color;
             _ctx.lineCap = 'round';
             _ctx.lineJoin = 'round';
+            _ctx.shadowBlur = 0;
             _ctx.stroke(_canvasPath);
             _ctx.restore();
         };
@@ -2376,9 +2420,11 @@
             applyPathStyle(currentSVGPath);
 
             if (_useCanvas && _ctx) {
-                // Canvas mode: set up Path2D / ink segments, skip SVG DOM manipulation
                 _canvasPath = new Path2D();
                 _canvasPath.moveTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
+                _lastCanvasX = pos.x;
+                _lastCanvasY = pos.y;
+                _setupCanvasStyle();
                 _gelHalo = null;
                 _inkGroup = null;
                 _canvasInkSegs = isInk ? [] : null;
@@ -2427,7 +2473,6 @@
             if (_useCanvas && _ctx) {
                 // Canvas: accumulate path / ink segments and render
                 if (_canvasInkSegs !== null) {
-                    // Ink: variable-width segments
                     if (_inkLastPos) {
                         const now = performance.now();
                         const dt = Math.max(1, now - _inkLastTime);
@@ -2439,14 +2484,27 @@
                             const mx = (_inkLastPos.x + pos.x) / 2;
                             const my = (_inkLastPos.y + pos.y) / 2;
                             _canvasInkSegs.push({ x0: _inkLastPos.x, y0: _inkLastPos.y, cx: mx, cy: my, x1: pos.x, y1: pos.y, w: _inkLastWidth });
+                            var sx = _ctx._scaleX, sy = _ctx._scaleY;
+                            _ctx.save();
+                            _ctx.globalAlpha = 0.85;
+                            _ctx.strokeStyle = getCSSVar('--stroke-active') || '#333';
+                            _ctx.lineCap = 'square';
+                            _ctx.lineJoin = 'round';
+                            _ctx.lineWidth = _inkLastWidth * sx;
+                            _ctx.beginPath();
+                            _ctx.moveTo(_inkLastPos.x * sx, _inkLastPos.y * sy);
+                            _ctx.quadraticCurveTo(mx * sx, my * sy, pos.x * sx, pos.y * sy);
+                            _ctx.stroke();
+                            _ctx.restore();
                             _inkLastPos = pos; _inkLastTime = now;
                         }
                     }
                 } else {
-                    // Standard/Gel/Neon: extend Path2D
                     _canvasPath.lineTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
+                    _drawCanvasSegment(_lastCanvasX, _lastCanvasY, pos.x, pos.y);
+                    _lastCanvasX = pos.x;
+                    _lastCanvasY = pos.y;
                 }
-                _drawCanvasStroke();
             } else {
                 // SVG: existing behavior
                 if (currentSVGPath) {

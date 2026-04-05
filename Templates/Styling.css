@@ -2144,7 +2144,7 @@ ruby rt {
 }
 
 /* --------------------------------------------------------------------------
-   9. Font Size Scaling (class-based, no JS style manipulation)
+   11. Font Size Scaling (class-based, no JS style manipulation)
    Toggle html.font-small or html.font-large. Default (normal) uses base sizes.
    -------------------------------------------------------------------------- */
 
@@ -2399,12 +2399,12 @@ html.font-large.is-ankiweb .card-title {
     font-size: 25px;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   WKWebView (AnkiMobile) GPU-safety overrides
+/* --------------------------------------------------------------------------
+   12. WKWebView (AnkiMobile) GPU-safety overrides
    Strip non-composited transitions (color, background, border-color,
    stroke, fill, filter) — only keep opacity + transform which are
    GPU-composited. Prevents jank on iPad/iPhone WKWebView.
-   ══════════════════════════════════════════════════════════════ */
+   -------------------------------------------------------------------------- */
 html.is-ankimobile .card-display {
     transition: none;
 }
