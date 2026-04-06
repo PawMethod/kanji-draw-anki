@@ -1,9 +1,9 @@
 # Kanji Draw – Anki Note Template
 
-Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen — mit **echte Strich-Erkennung**, deutschen Eselsbrücken und voller Plattform-Kompatibilität.
+Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen — mit **echter Strich-Erkennung**, deutschen Eselsbrücken und voller Plattform-Kompatibilität.
 
 ![Anki](https://img.shields.io/badge/Anki-2.1%2B-blue)
-![Plattformen](https://img.shields.io/badge/Desktop%20%7C%20Android%20%7C%20iOS-✓-green)
+![Plattformen](https://img.shields.io/badge/Desktop%20%7C%20Android%20%7C%20iOS%20%7C%20Web-✓-green)
 ![Sprache](https://img.shields.io/badge/Sprache-Deutsch-yellow)
 
 ---
@@ -12,14 +12,14 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 
 <table align="center">
   <tr>
-    <td align="center"><img src="Media/demo1.gif" width="200" alt="Kanji zeichnen – Proviant"><br><sub>Strich-Erkennung</sub></td>
-    <td align="center"><img src="Media/demo2.gif" width="200" alt="Kanji zeichnen – Liebe"><br><sub>Hilfslinien-Raster</sub></td>
-    <td align="center"><img src="Media/demo3.gif" width="200" alt="Echtzeit-Feedback – drücken"><br><sub>Echtzeit-Feedback</sub></td>
+    <td align="center"><img src="Media/demos/demo-guided.gif" width="200" alt="Geführter Modus – Strich für Strich"><br><sub>✍️ Geführter Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-freehand.gif" width="200" alt="Freihand-Modus mit Bewertung"><br><sub>🖊️ Freihand-Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-appearance.gif" width="200" alt="Erscheinungsbild-Optionen"><br><sub>🎨 Erscheinungsbild</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="Media/demo4.gif" width="200" alt="Rückseite mit Strichnummern – vier"><br><sub>Benutzeroberfläche</sub></td>
-    <td align="center"><img src="Media/demo5.gif" width="200" alt="Kanji-Ergebnis – 成"><br><sub>Ergebnis-Ansicht</sub></td>
-    <td align="center"><img src="Media/demo6.gif" width="200" alt="Kanji zeichnen – raten"><br><sub>Hilfslinien</sub></td>
+    <td align="center"><img src="Media/demos/demo-info.gif" width="200" alt="Info & Merkhilfe Modal"><br><sub>📖 Info & Merkhilfe</sub></td>
+    <td align="center"><img src="Media/demos/demo-settings.gif" width="200" alt="Einstellungen"><br><sub>⚙️ Einstellungen</sub></td>
+    <td align="center"><img src="Media/demos/demo-gallery.gif" width="200" alt="Screenshot-Galerie"><br><sub>🖼️ Galerie</sub></td>
   </tr>
 </table>
 
@@ -27,20 +27,25 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 
 ## Übersicht
 
-Das Template erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp:
+Das Template erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp — beide mit vollständiger Zeichenfläche und Strich-Erkennung:
 
 | Karte | Vorderseite | Rückseite |
 |-------|------------|-----------|
-| **Card 1 – Schreibkarte** | Interaktive Zeichenfläche mit Strich-für-Strich-Erkennung | Ergebnis mit Farbcodierung + Info-Modal |
-| **Card 2 – Erkennungskarte** | Kanji als Ganzes angezeigt (keine Eingabe) | Farbige Strichreihenfolge + Info-Modal |
+| **Card 1 – Schreibkarte** | Zeichenfläche (Geführt & Freihand) + Strich-Erkennung | Ergebnis mit Farbcodierung + Vergleichsansicht + Info-Modal |
+| **Card 2 – Erkennungskarte** | Zeichenfläche (Geführt & Freihand) + Strich-Erkennung | Farbige Strichreihenfolge + Ergebnis + Info-Modal |
 
 ---
 
 ## Features
 
-### Strich-Erkennung (Card 1)
+### Strich-Erkennung (Card 1 & 2)
 
-- **Composite-Scoring-Algorithmus** basierend auf diskreter Fréchet-Distanz (iteratives DP, O(n²))
+Zwei Zeichenmodi stehen zur Wahl:
+
+- **Geführter Modus** — Strich für Strich: Das Template zeigt den nächsten Strich an, sobald der vorherige korrekt gezeichnet wurde. Automatischer Zeichenhinweis nach 3 Fehlversuchen (abschaltbar).
+- **Freihand-Modus** — Freies Zeichnen: Das komplette Kanji wird in einem Zug gezeichnet. Der **Ungarische Algorithmus** ordnet anschließend jeden Nutzerstrich dem passenden Referenzstrich zu.
+
+Der **Composite-Scoring-Algorithmus** basiert auf diskreter Fréchet-Distanz (iteratives DP, O(n²)):
 - Jeder Nutzerstrich wird geglättet und auf **64 Abtastpunkte** resampled
 - Bewertung aus vier Komponenten:
   - **Form** (Fréchet-Distanz) — 40 %
@@ -50,11 +55,15 @@ Das Template erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp:
 - Hard-Gates: Längenverhältnis (40–250 %), 4-Sektor-Winkelprüfung, harter Deckel (1,4–1,6×)
 - Drei **Genauigkeitsstufen**: Locker (×1,35) · Normal (×1,0) · Streng (×0,7)
 - Echtzeit-Feedback mit farblicher Abstufung (Grün → Orange → Rot)
-- Automatischer Zeichenhinweis nach 3 Fehlversuchen (abschaltbar)
 
-### Zeichenfläche & Visuelles (Card 1)
+### Zeichenfläche & Visuelles (Card 1 & 2)
 
 - SVG-basierte Zeichenfläche (109×109 Einheiten) mit Pointer-Events
+- Drei **Stift-Stile** mit eigenem visuellen Charakter:
+  - **Standard** — klarer, gleichmäßiger Strich
+  - **Gelstift** — weicher Wet-Ink-Look mit leuchtendem Halo-Effekt
+  - **Tusche** — variabler Pinselstrich mit dynamischer Breite
+  - **Neon** — leuchtender Glow-Effekt (SVG-Filter)
 - Konfigurierbares **Hilfslinien-Raster**: 3 Muster × 3 Stile × 3 Stärken × 3 Deckkräfte
 - Strich-Animationen mit `stroke-dashoffset` (700 ms)
 - **Abschluss-Animation**: Glow-Effekt + Bounce + Sparkle-Partikel (Web Animations API)
@@ -62,17 +71,16 @@ Das Template erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp:
 
 ### Erkennungskarte (Card 2)
 
-- Kanji mit allen Strichen sofort sichtbar — keine Eingabe nötig
-- Optionale **Strichnummern** mit Kollisionsvermeidung
-- Zwei Darstellungsmodi:
+- Optionale **Strich-Darstellung** auf der Rückseite:
   - **Standard** — einheitliche Strichfarbe
   - **Farbig** — HSL-Regenbogenverlauf zeigt Strichreihenfolge (Hue 0°–300°)
 
 ### Rückseiten (Card 1 & 2)
 
 - **Anti-Flicker-System**: Inline-`<style>` rendert Strichfarben VOR dem FrontSide-Injection
-- **Fehler-Farbcodierung** (Card 1): Grün (0 Fehler) → Orange → Dunkelorange → Rot (3+ Fehler)
+- **Fehler-Farbcodierung**: Grün (0 Fehler) → Orange → Dunkelorange → Rot (3+ Fehler)
 - **Strichnummern** am Startpunkt jedes Strichs mit automatischer Positionierung
+- **Vergleichsansicht (Side-by-Side)**: Nutzerstrich neben Referenzstrich — fehlende Striche werden rot markiert, überzählige Striche werden gestrichelt angezeigt
 - **Info-Modal** mit:
   - JLPT-Level und Häufigkeitsrang
   - **Radikalbaum** — visuelle Kanji-Zerlegung mit antippbaren Tooltips und Primitiv-Markierungen
@@ -83,18 +91,25 @@ Das Template erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp:
 
 ### Einstellungen
 
-Alle Optionen werden **pro Kartentyp** gespeichert (c1_/c2_-Prefixes) und sind über ein Zahnrad-Menü auf der Vorderseite erreichbar:
+Alle Optionen werden **pro Kartentyp** gespeichert (c1_/c2_-Prefixes) und sind über ein Zahnrad-Menü erreichbar. Das Einstellungsfenster hat zwei Tabs: **Zeichnen** (Card 1) und **Erkennen** (Card 2).
 
 | Einstellung | Card 1 | Card 2 | Beschreibung |
 |-------------|:------:|:------:|-------------|
-| Strich-Genauigkeit | ✓ | — | Locker / Normal / Streng |
-| Echtzeit-Prüfung | ✓ | — | Strich sofort validieren |
-| Zeichen-Hilfe | ✓ | — | Auto-Hinweis nach 3 Fehlern |
-| Abschluss-Animation | ✓ | — | Sparkle/Glow bei Erfolg |
+| Zeichenmodus | ✓ | ✓ | Geführt (Strich für Strich) / Frei (alles auf einmal) |
+| Strich-Genauigkeit | ✓ | ✓ | Locker / Normal / Streng |
+| Echtzeit-Prüfung | ✓ | ✓ | Strich sofort validieren |
+| Zeichen-Hilfe | ✓ | ✓ | Auto-Hinweis nach 3 Fehlern (nur Geführt) |
+| Abschluss-Animation | ✓ | ✓ | Sparkle/Glow bei Erfolg |
+| Farb-Bewertung | ✓ | ✓ | Farbcodierung auf der Rückseite an/aus |
+| Strich-Nummern | ✓ | ✓ | Nummerierung auf der Rückseite an/aus |
+| Vergleichsansicht | ✓ | — | Side-by-Side: Nutzerstrich neben Referenz |
+| Strichansicht | ✓ | — | Rückseite: Handschrift beibehalten / SVG-Pfade einblenden |
+| Strich-Darstellung | — | ✓ | Standard / Farbig (Regenbogen-Strichreihenfolge) |
 | Hilfslinien-Raster | ✓ | ✓ | Muster, Stil, Stärke, Deckkraft |
-| Fehlerfarben (Rückseite) | ✓ | — | Farbcodierung an/aus |
-| Strich-Darstellung | — | ✓ | Standard / Farbig (Regenbogen) |
-| Strich-Nummern | — | ✓ | Nummerierung an/aus |
+| Stift-Stil | ✓ | ✓ | Standard / Gelstift / Tusche / Neon |
+| Erscheinungsmodus | ✓ | ✓ | System / Hell / Dunkel |
+| Akzentfarbe | ✓ | ✓ | 6 Farboptionen (Grün, Blau, Lila, Orange, Rot, Türkis) |
+| Schriftgröße | ✓ | ✓ | Klein / Normal / Groß |
 
 ### Persistenz
 
@@ -153,16 +168,23 @@ Auf Android wird zusätzlich `CookieManager.flush()` über `visibilitychange`/`p
 ```
 Templates/
 ├── Card-1/
-│   ├── FrontTemplate.html   ← Schreibkarte: Zeichenfläche + Erkennung + Settings
-│   └── BackTemplate.html    ← Schreibkarte Rückseite: Ergebnis + Info-Modal
+│   ├── FrontTemplate.html    ← Schreibkarte: Zeichenfläche + Erkennung + Settings
+│   └── BackTemplate.html     ← Schreibkarte Rückseite: Ergebnis + Vergleichsansicht + Info-Modal
 ├── Card-2/
-│   ├── FrontTemplate.html   ← Erkennungskarte: Anzeige + Settings
-│   └── BackTemplate.html    ← Erkennungskarte Rückseite: Farben + Info-Modal
-└── Styling.css              ← Gemeinsames Stylesheet (Dark/Light, Responsive, Animationen)
+│   ├── FrontTemplate.html    ← Erkennungskarte: Zeichenfläche + Erkennung + Settings
+│   └── BackTemplate.html     ← Erkennungskarte Rückseite: Strichreihenfolge + Ergebnis + Info-Modal
+└── Styling.css               ← Gemeinsames Stylesheet (Dark/Light, Responsive, Animationen)
 
 Addon/
-├── __init__.py              ← Desktop-Add-on: Settings über Neustarts hinweg speichern
-└── manifest.json            ← Add-on-Metadaten
+├── __init__.py               ← Desktop-Add-on: Settings über Neustarts hinweg speichern
+└── manifest.json             ← Add-on-Metadaten
+
+Tests/
+├── js/                       ← JavaScript-Tests (Node.js)
+└── anki_addon_stress_helper/ ← Anki-Add-on für Live-Stresstests
+
+Media/
+└── demos/                    ← Demo-GIFs für die README-Vorschau
 ```
 
 Jede Template-Datei wird in Anki direkt als Template-Inhalt eingefügt — **keine Plugins, keine externen Abhängigkeiten**.
@@ -198,6 +220,7 @@ Das Template funktioniert auch **ohne** das Add-on — Einstellungen werden dann
 - **Keine externen Requests** — alles offline-fähig, keine CDN-Abhängigkeiten
 - **SVG-basiert** — pixelgenaue Strichpfade ermöglichen algorithmische Auswertung
 - **Fréchet-Distanz** — mathematisch fundierte Kurvensimilarität (iteratives DP mit Float64Array)
+- **Ungarischer Algorithmus** — optimale Strich-Zuordnung im Freihand-Modus (O(n³))
 - **Web Animations API** — Celebration-Effekte ohne requestAnimationFrame-Loops
 - **Mustache-safe** — keine `{{…}}`-Syntax in JS/CSS-Kommentaren (Ankis Template-Engine)
 

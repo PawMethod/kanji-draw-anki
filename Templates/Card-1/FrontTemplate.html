@@ -1257,7 +1257,8 @@
     };
 
     var _themeApplying = false;
-    var _deferredThemeTimer = null;
+    // Use window-scoped timer so stale timers from previous card renders can be cleared
+    if (window._kanjiDeferredThemeTimer) { clearTimeout(window._kanjiDeferredThemeTimer); window._kanjiDeferredThemeTimer = null; }
     // Set true synchronously before classList modifications so the MutationObserver
     // can distinguish our own changes from Anki's external class updates.
     var _tmplClassChange = false;
@@ -1267,8 +1268,8 @@
     // Only acts when mode is forced ('dark'/'light'); 'system' mode is handled
     // by the matchMedia listener and the initial _ankiNightMode snapshot.
     function _scheduleDeferredThemeCheck() {
-        clearTimeout(_deferredThemeTimer);
-        _deferredThemeTimer = setTimeout(function () {
+        clearTimeout(window._kanjiDeferredThemeTimer);
+        window._kanjiDeferredThemeTimer = setTimeout(function () {
             var mode = safeGetItem('kanjiThemeMode', 'system');
             if (mode === 'system') return;
             var wantDark = (mode === 'dark');
@@ -1409,19 +1410,28 @@
                 if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
                     drawLay.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
                         try { if (parseFloat(getComputedStyle(p).opacity) === 0) return; } catch (e) { }
+                        if (window._kanjiInvalidateGelCache) window._kanjiInvalidateGelCache(p);
                         window._kanjiAddGelHaloToPath(p);
                     });
                 }
             }
-            // Re-add gel halos to already-visible strokes in svg-bg (completed or hint-active)
-            if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
+            // Re-add gel halos to svg-bg paths.
+            // On the back side, delegate entirely to kanjiSettingsGlobalHandler → applyBackFeatures()
+            // because back-side paths don't carry stroke-complete/hint-active classes, and
+            // applyBackFeatures also re-applies the drop-shadow filter that we cleared above.
+            if (document.getElementById('is-back-side-marker')) {
+                if (typeof window.kanjiSettingsGlobalHandler === 'function') {
+                    try { window.kanjiSettingsGlobalHandler(); } catch (e) {}
+                }
+            } else if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
                 var svgBgForHalo = document.getElementById('svg-bg');
                 if (svgBgForHalo) {
                     svgBgForHalo.querySelectorAll('path.stroke-complete:not(.gel-halo), path.hint-active:not(.gel-halo), path.animate-draw:not(.gel-halo)').forEach(function (p) {
+                        if (window._kanjiInvalidateGelCache) window._kanjiInvalidateGelCache(p);
                         window._kanjiAddGelHaloToPath(p);
                     });
                 }
-            } else {
+            } else if (!document.getElementById('is-back-side-marker')) {
                 var svgBgForClean = document.getElementById('svg-bg');
                 if (svgBgForClean) svgBgForClean.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
             }
@@ -1987,6 +1997,8 @@
         // Returns the current stroke style setting
         const getActiveStrokeStyle = () => safeGetItem('kanjiThemeStrokeStyle', cachedGlobalConf.themeStrokeStyle || 'standard');
         const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+        // Cached per-stroke style — set once in startDrawing, reused in draw() hot path
+        let _activeDrawStyle = 'standard';
 
         // Neon glow: filter defs live in #neon-defs (static HTML). Just toggle the attribute.
         // WebKit/AnkiMobile uses lighter single-blur filter to avoid GPU jank with many paths.
@@ -2027,7 +2039,7 @@
         };
         const _setupCanvasStyle = () => {
             if (!_ctx) return;
-            var style = getActiveStrokeStyle();
+            var style = _activeDrawStyle;
             var color = getCSSVar('--stroke-active') || '#333';
             var sx = _ctx._scaleX;
             _ctx.strokeStyle = color;
@@ -2040,7 +2052,7 @@
         };
         const _drawCanvasSegment = (x0, y0, x1, y1) => {
             if (!_ctx) return;
-            var style = getActiveStrokeStyle();
+            var style = _activeDrawStyle;
             var sx = _ctx._scaleX, sy = _ctx._scaleY;
             if (style === 'gel') {
                 var color = _ctx.strokeStyle;
@@ -2058,7 +2070,7 @@
                 _ctx.lineJoin = 'round';
             }
             if (style === 'neon') {
-                var color = _ctx.strokeStyle;
+                var neonColor = _ctx.strokeStyle;
                 _ctx.save();
                 _ctx.lineWidth = 10 * sx;
                 _ctx.globalAlpha = 0.08;
@@ -2067,7 +2079,7 @@
                 _ctx.lineTo(x1 * sx, y1 * sy);
                 _ctx.stroke();
                 _ctx.restore();
-                _ctx.strokeStyle = color;
+                _ctx.strokeStyle = neonColor;
                 _ctx.lineWidth = 4 * sx;
                 _ctx.lineCap = 'round';
                 _ctx.lineJoin = 'round';
@@ -2080,7 +2092,7 @@
         const _redrawCanvasFull = (errorColor) => {
             if (!_ctx || !_canvasEl) return;
             _clearCanvas();
-            var style = getActiveStrokeStyle();
+            var style = _activeDrawStyle;
             var color = errorColor || getCSSVar('--stroke-active') || '#333';
             var sx = _ctx._scaleX;
             if (style === 'ink' && _canvasInkSegs && _canvasInkSegs.length > 0) {
@@ -2124,7 +2136,7 @@
             if (!_useCanvas || !_ctx) return;
             _clearCanvas();
             if (currentSVGPath) currentSVGPath.setAttribute("d", dSegments.join(''));
-            var _fStyle = getActiveStrokeStyle();
+            var _fStyle = _activeDrawStyle;
             // Reconstruct gel halo
             if (_fStyle === 'gel' && currentSVGPath) {
                 _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2206,7 +2218,6 @@
         // Gelstift: halo path (wider, translucent) underneath the main path for wet-ink bleed look.
         let _gelHalo = null;
         const _gelColorCache = new WeakMap();
-        function _invalidateGelColorCache() { /* WeakMap auto-GCs; explicit clear not needed */ }
 
         // Add gel halo to a completed SVG reference path
         const _addGelHaloToPath = (refPath) => {
@@ -2482,8 +2493,9 @@
             isDrawing = true; userPoints = [];
             const pos = getMousePos(e);
             userPoints.push(pos);
-            const isInk = getActiveStrokeStyle() === 'ink';
-            const isGel = getActiveStrokeStyle() === 'gel';
+            _activeDrawStyle = getActiveStrokeStyle();
+            const isInk = _activeDrawStyle === 'ink';
+            const isGel = _activeDrawStyle === 'gel';
             // Always create SVG path for d-attribute accumulation and finalization
             currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
             dSegments = ['M ', pos.x, ' ', pos.y];
@@ -2818,6 +2830,8 @@
 
         const stopDrawingOnLeave = (e) => { if (isDrawing) stopDrawing(e); _cachedRect = null; };
         const touchPreventDefault = (e) => { if (e.cancelable) e.preventDefault(); };
+        // Hoisted so cleanup can remove them (anonymous functions cannot be unregistered)
+        let _touchStartFallback = null, _touchMoveFallback = null;
 
         if (window.PointerEvent) {
             drawLayer.addEventListener('pointerdown', startDrawing); drawLayer.addEventListener('pointermove', draw);
@@ -2825,9 +2839,11 @@
             document.addEventListener('pointerup', window.kanjiStopDrawingHandler); document.addEventListener('pointercancel', window.kanjiStopDrawingHandler);
             ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.addEventListener(evt, touchPreventDefault, { passive: false }); });
         } else {
+            _touchStartFallback = (e) => { if (e.cancelable) e.preventDefault(); startDrawing(e); };
+            _touchMoveFallback = (e) => { if (e.cancelable) e.preventDefault(); draw(e); };
             drawLayer.addEventListener('mousedown', startDrawing); drawLayer.addEventListener('mousemove', draw);
-            drawLayer.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); startDrawing(e); }, { passive: false });
-            drawLayer.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); draw(e); }, { passive: false });
+            drawLayer.addEventListener('touchstart', _touchStartFallback, { passive: false });
+            drawLayer.addEventListener('touchmove', _touchMoveFallback, { passive: false });
             document.addEventListener('mouseup', window.kanjiStopDrawingHandler); document.addEventListener('touchend', window.kanjiStopDrawingHandler); document.addEventListener('touchcancel', window.kanjiStopDrawingHandler);
         }
 
@@ -2841,6 +2857,8 @@
             drawLayer.removeEventListener('mousedown', startDrawing);
             drawLayer.removeEventListener('mousemove', draw);
             ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.removeEventListener(evt, touchPreventDefault); });
+            if (_touchStartFallback) { drawLayer.removeEventListener('touchstart', _touchStartFallback); _touchStartFallback = null; }
+            if (_touchMoveFallback) { drawLayer.removeEventListener('touchmove', _touchMoveFallback); _touchMoveFallback = null; }
         };
 
         // ===================================================================

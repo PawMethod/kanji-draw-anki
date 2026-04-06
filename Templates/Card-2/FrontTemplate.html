@@ -1221,12 +1221,13 @@
     };
 
     var _themeApplying = false;
-    var _deferredThemeTimer = null;
+    // Use window-scoped timer so stale timers from previous card renders can be cleared
+    if (window._kanjiDeferredThemeTimer) { clearTimeout(window._kanjiDeferredThemeTimer); window._kanjiDeferredThemeTimer = null; }
     var _tmplClassChange = false;
 
     function _scheduleDeferredThemeCheck() {
-        clearTimeout(_deferredThemeTimer);
-        _deferredThemeTimer = setTimeout(function () {
+        clearTimeout(window._kanjiDeferredThemeTimer);
+        window._kanjiDeferredThemeTimer = setTimeout(function () {
             var mode = safeGetItem('kanjiThemeMode', 'system');
             if (mode === 'system') return;
             var wantDark = (mode === 'dark');
@@ -1235,6 +1236,34 @@
                 || body.classList.contains('nightMode') || body.classList.contains('night_mode');
             if (isDark !== wantDark) applyThemeSettings();
         }, 200);
+    }
+
+    // Local gel halo implementation for Card 2.
+    // Card 2 shows all strokes at once (stroke-complete), so halos must be
+    // created here — cannot rely on window._kanjiAddGelHaloToPath being set
+    // (it's only available if Card 1 was loaded in the same WebView session).
+    var _c2GelColorCache = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    function _c2AddGelHaloToPath(refPath) {
+        var prev = refPath.previousElementSibling;
+        if (prev && prev.classList.contains('gel-halo')) prev.parentNode.removeChild(prev);
+        var strokeColor = _c2GelColorCache && _c2GelColorCache.get(refPath);
+        if (!strokeColor) {
+            try { strokeColor = getComputedStyle(refPath).stroke; } catch (e) { strokeColor = ''; }
+            if (!strokeColor || strokeColor === 'none') {
+                strokeColor = refPath.style.stroke || refPath.getAttribute('stroke') || 'var(--stroke-active)';
+            }
+            if (_c2GelColorCache) _c2GelColorCache.set(refPath, strokeColor);
+        }
+        var halo = refPath.cloneNode(false);
+        halo.setAttribute('class', 'gel-halo');
+        halo.setAttribute('stroke-width', '8');
+        halo.setAttribute('stroke-linecap', 'round');
+        halo.setAttribute('stroke-linejoin', 'round');
+        halo.style.cssText = '';
+        halo.style.setProperty('opacity', '0.12', 'important');
+        halo.style.setProperty('stroke', strokeColor, 'important');
+        halo.removeAttribute('filter');
+        refPath.parentNode.insertBefore(halo, refPath);
     }
 
     function applyThemeSettings() {
@@ -1323,7 +1352,9 @@
                 kanjiC.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
                 if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
             }
-            // Apply SVG filters to reference paths (no gel halos on front — paths are hidden until drawn/revealed)
+            // Apply SVG filters and gel halos to reference paths.
+            // In Card 2 all paths are stroke-complete from init, so halos must be
+            // managed here on every theme change (unlike C1 where they're added per revealed stroke).
             var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             var _neonRef = _wk
@@ -1332,7 +1363,9 @@
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
                 svgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
-                svgEl.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
+                var svgPaths = svgEl.querySelectorAll('path:not(.gel-halo)');
+                if (_c2GelColorCache) svgPaths.forEach(function (p) { _c2GelColorCache.delete(p); });
+                svgPaths.forEach(function (p) {
                     // Full reset first
                     p.style.removeProperty('filter');
                     p.style.removeProperty('-webkit-filter');
@@ -1341,7 +1374,10 @@
                     p.removeAttribute('paint-order');
                     // Apply new style
                     if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
-                    if (strokeStyle === 'gel') p.setAttribute('paint-order', 'stroke');
+                    if (strokeStyle === 'gel') {
+                        p.setAttribute('paint-order', 'stroke');
+                        _c2AddGelHaloToPath(p);
+                    }
                     if (strokeStyle === 'ink') p.style.opacity = '0.85';
                 });
             });
