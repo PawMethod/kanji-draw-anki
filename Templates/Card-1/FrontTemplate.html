@@ -1421,7 +1421,7 @@
             // applyBackFeatures also re-applies the drop-shadow filter that we cleared above.
             if (document.getElementById('is-back-side-marker')) {
                 if (typeof window.kanjiSettingsGlobalHandler === 'function') {
-                    try { window.kanjiSettingsGlobalHandler(); } catch (e) {}
+                    try { window.kanjiSettingsGlobalHandler(); } catch (e) { }
                 }
             } else if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
                 var svgBgForHalo = document.getElementById('svg-bg');
