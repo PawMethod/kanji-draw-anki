@@ -299,7 +299,7 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
@@ -601,7 +601,8 @@
                 // Apply new style
                 var dk = document.documentElement.classList.contains('nightMode') ||
                     document.documentElement.classList.contains('night_mode') ||
-                    document.body.classList.contains('nightMode');
+                    document.body.classList.contains('nightMode') ||
+                    document.body.classList.contains('night_mode');
                 switch (ss) {
                     case 'neon': {
                         var wk = document.documentElement.classList.contains('is-ankimobile');

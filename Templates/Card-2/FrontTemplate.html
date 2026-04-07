@@ -62,6 +62,23 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </button>
+                <button class="category-card c2-only-setting" style="display:none"
+                    onclick="navigateToPage('page-front-c2')">
+                    <div class="category-icon cat-front">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Vorderseite</span>
+                        <span class="category-desc">Farben, Nummern, Darstellung</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
                 <button class="category-card" onclick="navigateToPage('page-back')">
                     <div class="category-icon cat-back">
                         <svg viewBox="0 0 24 24">
@@ -71,24 +88,7 @@
                     </div>
                     <div class="category-info">
                         <span class="category-name">Rückseite</span>
-                        <span class="category-desc">Farben, Nummern, Vergleich</span>
-                    </div>
-                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="M9 18l6-6-6-6"></path>
-                    </svg>
-                </button>
-                <button class="category-card c2-only-setting" onclick="navigateToPage('page-display')">
-                    <div class="category-icon cat-display">
-                        <svg viewBox="0 0 24 24">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="category-info">
-                        <span class="category-name">Darstellung</span>
-                        <span class="category-desc">Strich-Darstellung</span>
+                        <span class="category-desc">Farben, Nummern, Darstellung</span>
                     </div>
                     <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -508,11 +508,42 @@
                     </label>
                 </div>
             </div>
+            <div class="c2-only-setting">
+                <div class="setting-group-title">Strich-Darstellung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-display-style" value="standard"
+                            onchange="updateFeatureSetting('displayStyle', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" />
+                                <path d="M20 6 L20 34" />
+                                <path d="M20 16 Q 15 22 6 34" />
+                                <path d="M20 16 Q 25 22 34 34" />
+                            </svg>
+                            <span>Standard</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-display-style" value="colorOrder"
+                            onchange="updateFeatureSetting('displayStyle', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" opacity="1" />
+                                <path d="M20 6 L20 34" opacity="0.7" />
+                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
+                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            </svg>
+                            <span>Farbig</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
 
-        <!-- ═══ Sub-Page: Darstellung (c2-only) ═══ -->
-        <div class="settings-page c2-only-setting" id="page-display">
+        <!-- ═══ Sub-Page: Vorderseite Erkennen (c2-only) ═══ -->
+        <div class="settings-page c2-only-setting" style="display:none" id="page-front-c2">
             <div class="subpage-header">
                 <button class="back-btn" onclick="navigateBack()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
@@ -520,12 +551,44 @@
                         <path d="M15 18l-6-6 6-6"></path>
                     </svg>
                 </button>
-                <h3>Darstellung</h3>
+                <h3>Vorderseite</h3>
             </div>
-            <div class="setting-group-title">Strich-Darstellung</div>
+            <div class="setting-group-title">Farb-Bewertung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-display-style" value="standard"
-                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                <label><input type="radio" name="opt-color-front-c2f" value="off"
+                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-color-front-c2f" value="on"
+                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Strich-Nummern</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-numbers-c2f" value="off"
+                        onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
                         <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -534,22 +597,113 @@
                             <path d="M20 16 Q 15 22 6 34" />
                             <path d="M20 16 Q 25 22 34 34" />
                         </svg>
-                        <span>Standard</span>
+                        <span>Aus</span>
                     </div>
                 </label>
-                <label><input type="radio" name="opt-display-style" value="colorOrder"
-                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                <label><input type="radio" name="opt-numbers-c2f" value="on"
+                        onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" opacity="1" />
-                            <path d="M20 6 L20 34" opacity="0.7" />
-                            <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
-                            <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            <path d="M8 16 L32 16" />
+                            <path d="M20 6 L20 34" />
+                            <path d="M20 16 Q 15 22 6 34" />
+                            <path d="M20 16 Q 25 22 34 34" />
+                            <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">1</text>
+                            <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">2</text>
+                            <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">3</text>
+                            <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">4</text>
                         </svg>
-                        <span>Farbig</span>
+                        <span>An</span>
                     </div>
                 </label>
+            </div>
+            <div class="c1-only-setting">
+                <div class="setting-group-title" id="sbs-title-c2f">Vergleichsansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid-c2f">
+                    <label><input type="radio" name="opt-side-by-side-c2f" value="off"
+                            onchange="updateFeatureSetting('sideBySide', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <line x1="4" y1="4" x2="20" y2="20" />
+                            </svg>
+                            <span>Aus</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-side-by-side-c2f" value="on"
+                            onchange="updateFeatureSetting('sideBySide', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="9" height="18" rx="2" />
+                                <rect x="13" y="3" width="9" height="18" rx="2" />
+                            </svg>
+                            <span>An</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="setting-group-title" id="free-view-title-c2f">Strichansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid-c2f">
+                    <label><input type="radio" name="opt-free-view-c2f" value="handwriting"
+                            onchange="updateFeatureSetting('freeView', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round">
+                                <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                            </svg>
+                            <span>Handschrift</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-free-view-c2f" value="svg"
+                            onchange="updateFeatureSetting('freeView', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 17 8 8 13 14 18 6 21 10" />
+                                <circle cx="3" cy="17" r="1.5" fill="currentColor" />
+                                <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                            </svg>
+                            <span>SVG-Pfade</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="c2-only-setting">
+                <div class="setting-group-title">Strich-Darstellung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-display-style-c2f" value="standard"
+                            onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" />
+                                <path d="M20 6 L20 34" />
+                                <path d="M20 16 Q 15 22 6 34" />
+                                <path d="M20 16 Q 25 22 34 34" />
+                            </svg>
+                            <span>Standard</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-display-style-c2f" value="colorOrder"
+                            onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" opacity="1" />
+                                <path d="M20 6 L20 34" opacity="0.7" />
+                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
+                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            </svg>
+                            <span>Farbig</span>
+                        </div>
+                    </label>
+                </div>
             </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
@@ -981,6 +1135,70 @@
         path.classList.add('stroke-complete');
     });
 
+    // --- Card 2 Front: apply c2f_* feature settings to SVG display ---
+    var _c2fPaths = Array.from(document.querySelectorAll('#svg-bg path:not(.gel-halo)'));
+    var _c2fSvgBg = document.getElementById('svg-bg');
+
+    var _addNumbersC2F = function (colorFn) {
+        if (!_c2fSvgBg) return;
+        var svgPaths = _c2fSvgBg.querySelectorAll('path:not(.gel-halo)');
+        var placed = [], MD = 6.0;
+        var frag = document.createDocumentFragment();
+        svgPaths.forEach(function (sp, i) {
+            var s0 = sp.getPointAtLength(0), s1;
+            try { s1 = sp.getPointAtLength(4); } catch (e) { s1 = s0; }
+            var ddx = s1.x - s0.x, ddy = s1.y - s0.y, dd = Math.hypot(ddx, ddy) || 1;
+            var fx = s0.x - (ddx / dd) * 4.5, fy = s0.y - (ddy / dd) * 4.5;
+            var coll = true, att = 0;
+            while (coll && att < 10) {
+                coll = false;
+                for (var k = 0; k < placed.length; k++) {
+                    var dist = Math.hypot(fx - placed[k].x, fy - placed[k].y);
+                    if (dist < MD) { coll = true; var px = fx - placed[k].x || -1, py = fy - placed[k].y || -1, pd = Math.hypot(px, py); fx += (px / pd) * (MD - dist + 0.5); fy += (py / pd) * (MD - dist + 0.5); }
+                } att++;
+            }
+            placed.push({ x: fx, y: fy });
+            var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            t.setAttribute('x', fx); t.setAttribute('y', fy);
+            t.setAttribute('class', 'stroke-number');
+            t.textContent = i + 1;
+            t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill';
+            frag.appendChild(t);
+        });
+        _c2fSvgBg.appendChild(frag);
+    };
+
+    var applyFrontFeaturesC2 = function () {
+        if (!_c2fSvgBg || _c2fPaths.length === 0) return;
+        var globalConf = getGlobalConfig ? getGlobalConfig() : {};
+        var displayStyle = safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', (globalConf && globalConf.displayStyle) || 'standard')));
+        var isNumbers = safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', (globalConf && globalConf.numbers) || 'on'))) === 'on';
+
+        var pathColors = [];
+        if (displayStyle === 'colorOrder') {
+            var total = Math.max(_c2fPaths.length - 1, 1);
+            _c2fPaths.forEach(function (path, index) {
+                var hue = Math.round((index / total) * 300);
+                var color = 'hsl(' + hue + ', 75%, 50%)';
+                pathColors.push(color);
+                path.style.setProperty('stroke', color, 'important');
+            });
+        } else {
+            _c2fPaths.forEach(function (path) {
+                path.style.removeProperty('stroke');
+                pathColors.push('var(--stroke-active)');
+            });
+        }
+
+        _c2fSvgBg.querySelectorAll('.stroke-number').forEach(function (el) { el.remove(); });
+        if (isNumbers) {
+            _addNumbersC2F(function (i) {
+                return (pathColors[i] && pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
+            });
+        }
+    };
+    applyFrontFeaturesC2();
+
     // --- Settings UI [SHARED with c1-front] ---
 
     var _hostCard = 'c2', _activeTab = 'c2';
@@ -1000,6 +1218,9 @@
     var _settingsModal = document.querySelector('.settings-modal');
     var _gearBtn = document.querySelector('.gear-btn');
     var _settingsOverlay = document.getElementById('settings-overlay');
+    // Apply initial visibility based on _activeTab (avoids relying on switchSettingsTab being called)
+    _c1Settings.forEach(function (el) { el.style.display = (_activeTab === 'c1') ? '' : 'none'; });
+    _c2Settings.forEach(function (el) { el.style.display = (_activeTab === 'c2') ? '' : 'none'; });
 
     function switchSettingsTab(tab, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
@@ -1073,6 +1294,11 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
+            'opt-color-front-c2f': safeGetItem('c2f_kanjiOptColorFront', safeGetItem('c2_kanjiOptColorFront', safeGetItem('kanjiOptColorFront', globalConf.colorFront || 'on'))),
+            'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
+            'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
+            'opt-side-by-side-c2f': safeGetItem('c2f_kanjiOptSideBySide', safeGetItem('c2_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', globalConf.sideBySide || 'on'))),
+            'opt-free-view-c2f': safeGetItem('c2f_kanjiOptFreeView', safeGetItem('c2_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConf.freeView || 'handwriting'))),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
             'theme-accent': safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green'),
             'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
@@ -1504,12 +1730,22 @@
         else refreshSettingsRadios();
     }
 
-    function updateFeatureSetting(category, val) {
+    function updateFeatureSetting(category, val, scopeOverride) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        safeSetItem(_activeTab + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
-        if (_activeTab === _hostCard) {
+        var _scope = scopeOverride || _activeTab;
+        safeSetItem(_scope + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
+        if (_scope === 'c2f') {
+            applyFrontFeaturesC2();
+            refreshSettingsRadios();
+        } else if (_scope === _hostCard) {
             updateModeDisabledSettings();
-        } else refreshSettingsRadios();
+        } else {
+            refreshSettingsRadios();
+        }
+        // Always trigger back-side re-render so live preview is consistent
+        if (window.kanjiSettingsGlobalHandlerC2) {
+            try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
+        }
     }
 
     var _settingsReady = false;
@@ -1572,6 +1808,7 @@
     applyThemeSettings();
     // Run synchronously to prevent flicker on card load
     updateGridDisplay();
+    applyFrontFeaturesC2();
     // Deferred re-apply: Anki may re-set nightMode after our script runs.
     _scheduleDeferredThemeCheck();
 
@@ -1638,7 +1875,7 @@
     window.kanjiSettingsGlobalHandler = null;
     window._kanjiFreeEval = null;
     window._kanjiRenderFreeView = null;
-    window._kanjiGeneration = (window._kanjiGeneration || 0) + 1;
+    window._kanjiGeneration = ((window._kanjiGeneration || 0) + 1) % 1000000;
 
     // Re-apply theme after bfcache restore (WKWebView iOS 14+ may cache and restore
     // the page without re-running scripts, leaving theme classes out of sync).

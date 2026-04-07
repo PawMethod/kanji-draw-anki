@@ -60,6 +60,23 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </button>
+                <button class="category-card c2-only-setting" style="display:none"
+                    onclick="navigateToPage('page-front-c2')">
+                    <div class="category-icon cat-front">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Vorderseite</span>
+                        <span class="category-desc">Farben, Nummern, Darstellung</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
                 <button class="category-card" onclick="navigateToPage('page-back')">
                     <div class="category-icon cat-back">
                         <svg viewBox="0 0 24 24">
@@ -69,25 +86,7 @@
                     </div>
                     <div class="category-info">
                         <span class="category-name">Rückseite</span>
-                        <span class="category-desc">Farben, Nummern, Vergleich</span>
-                    </div>
-                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2">
-                        <path d="M9 18l6-6-6-6"></path>
-                    </svg>
-                </button>
-                <button class="category-card c2-only-setting" style="display:none"
-                    onclick="navigateToPage('page-display')">
-                    <div class="category-icon cat-display">
-                        <svg viewBox="0 0 24 24">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="category-info">
-                        <span class="category-name">Darstellung</span>
-                        <span class="category-desc">Strich-Darstellung</span>
+                        <span class="category-desc">Farben, Nummern, Darstellung</span>
                     </div>
                     <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -507,11 +506,42 @@
                     </label>
                 </div>
             </div>
+            <div class="c2-only-setting">
+                <div class="setting-group-title">Strich-Darstellung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-display-style" value="standard"
+                            onchange="updateFeatureSetting('displayStyle', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" />
+                                <path d="M20 6 L20 34" />
+                                <path d="M20 16 Q 15 22 6 34" />
+                                <path d="M20 16 Q 25 22 34 34" />
+                            </svg>
+                            <span>Standard</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-display-style" value="colorOrder"
+                            onchange="updateFeatureSetting('displayStyle', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" opacity="1" />
+                                <path d="M20 6 L20 34" opacity="0.7" />
+                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
+                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            </svg>
+                            <span>Farbig</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
 
-        <!-- ═══ Sub-Page: Darstellung (c2-only) ═══ -->
-        <div class="settings-page c2-only-setting" style="display:none" id="page-display">
+        <!-- ═══ Sub-Page: Vorderseite Erkennen (c2-only) ═══ -->
+        <div class="settings-page c2-only-setting" style="display:none" id="page-front-c2">
             <div class="subpage-header">
                 <button class="back-btn" onclick="navigateBack()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
@@ -519,12 +549,44 @@
                         <path d="M15 18l-6-6 6-6"></path>
                     </svg>
                 </button>
-                <h3>Darstellung</h3>
+                <h3>Vorderseite</h3>
             </div>
-            <div class="setting-group-title">Strich-Darstellung</div>
+            <div class="setting-group-title">Farb-Bewertung</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-display-style" value="standard"
-                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                <label><input type="radio" name="opt-color-front-c2f" value="off"
+                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-color-front-c2f" value="on"
+                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Strich-Nummern</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-numbers-c2f" value="off"
+                        onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
                         <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -533,22 +595,113 @@
                             <path d="M20 16 Q 15 22 6 34" />
                             <path d="M20 16 Q 25 22 34 34" />
                         </svg>
-                        <span>Standard</span>
+                        <span>Aus</span>
                     </div>
                 </label>
-                <label><input type="radio" name="opt-display-style" value="colorOrder"
-                        onchange="updateFeatureSetting('displayStyle', this.value)">
+                <label><input type="radio" name="opt-numbers-c2f" value="on"
+                        onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" opacity="1" />
-                            <path d="M20 6 L20 34" opacity="0.7" />
-                            <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
-                            <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            <path d="M8 16 L32 16" />
+                            <path d="M20 6 L20 34" />
+                            <path d="M20 16 Q 15 22 6 34" />
+                            <path d="M20 16 Q 25 22 34 34" />
+                            <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">1</text>
+                            <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">2</text>
+                            <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">3</text>
+                            <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
+                                font-family="sans-serif" text-anchor="middle">4</text>
                         </svg>
-                        <span>Farbig</span>
+                        <span>An</span>
                     </div>
                 </label>
+            </div>
+            <div class="c1-only-setting">
+                <div class="setting-group-title" id="sbs-title-c2f">Vergleichsansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid-c2f">
+                    <label><input type="radio" name="opt-side-by-side-c2f" value="off"
+                            onchange="updateFeatureSetting('sideBySide', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" />
+                                <line x1="4" y1="4" x2="20" y2="20" />
+                            </svg>
+                            <span>Aus</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-side-by-side-c2f" value="on"
+                            onchange="updateFeatureSetting('sideBySide', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="9" height="18" rx="2" />
+                                <rect x="13" y="3" width="9" height="18" rx="2" />
+                            </svg>
+                            <span>An</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="setting-group-title" id="free-view-title-c2f">Strichansicht</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid-c2f">
+                    <label><input type="radio" name="opt-free-view-c2f" value="handwriting"
+                            onchange="updateFeatureSetting('freeView', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round">
+                                <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                            </svg>
+                            <span>Handschrift</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-free-view-c2f" value="svg"
+                            onchange="updateFeatureSetting('freeView', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 17 8 8 13 14 18 6 21 10" />
+                                <circle cx="3" cy="17" r="1.5" fill="currentColor" />
+                                <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                            </svg>
+                            <span>SVG-Pfade</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="c2-only-setting">
+                <div class="setting-group-title">Strich-Darstellung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-display-style-c2f" value="standard"
+                            onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" />
+                                <path d="M20 6 L20 34" />
+                                <path d="M20 16 Q 15 22 6 34" />
+                                <path d="M20 16 Q 25 22 34 34" />
+                            </svg>
+                            <span>Standard</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-display-style-c2f" value="colorOrder"
+                            onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 16 L32 16" opacity="1" />
+                                <path d="M20 6 L20 34" opacity="0.7" />
+                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
+                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                            </svg>
+                            <span>Farbig</span>
+                        </div>
+                    </label>
+                </div>
             </div>
             <button class="close-settings" onclick="closeSettings(event)">Schließen</button>
         </div>
@@ -848,20 +1001,25 @@
             </feMerge>
         </filter>
         <!-- Lite neon: WebKit/AnkiMobile (single blur, less GPU load) -->
-        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1" />
+        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-12" y="-12" width="130" height="130">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2" />
             <feMerge>
+                <feMergeNode in="b2" />
                 <feMergeNode in="b1" />
                 <feMergeNode in="SourceGraphic" />
             </feMerge>
         </filter>
-        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b1" />
+        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-12" y="-12" width="130" height="130">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2" />
             <feMerge>
+                <feMergeNode in="b2" />
                 <feMergeNode in="b1" />
                 <feMergeNode in="SourceGraphic" />
             </feMerge>
         </filter>
+
     </defs>
 </svg>
 
@@ -1035,6 +1193,9 @@
     var _settingsModal = document.querySelector('.settings-modal');
     var _gearBtn = document.querySelector('.gear-btn');
     var _settingsOverlay = document.getElementById('settings-overlay');
+    // Apply initial visibility based on _activeTab (avoids relying on switchSettingsTab being called)
+    _c1Settings.forEach(function (el) { el.style.display = (_activeTab === 'c1') ? '' : 'none'; });
+    _c2Settings.forEach(function (el) { el.style.display = (_activeTab === 'c2') ? '' : 'none'; });
 
     function switchSettingsTab(tab, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
@@ -1108,6 +1269,11 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
+            'opt-color-front-c2f': safeGetItem('c2f_kanjiOptColorFront', safeGetItem('c2_kanjiOptColorFront', safeGetItem('kanjiOptColorFront', globalConf.colorFront || 'on'))),
+            'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
+            'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
+            'opt-side-by-side-c2f': safeGetItem('c2f_kanjiOptSideBySide', safeGetItem('c2_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', globalConf.sideBySide || 'on'))),
+            'opt-free-view-c2f': safeGetItem('c2f_kanjiOptFreeView', safeGetItem('c2_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConf.freeView || 'handwriting'))),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
             'theme-accent': safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green'),
             'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
@@ -1390,7 +1556,6 @@
                     p.style.removeProperty('opacity');
                     p.removeAttribute('filter');
                     p.removeAttribute('paint-order');
-                    // Apply new style
                     if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
                     if (strokeStyle === 'gel') p.setAttribute('paint-order', 'stroke');
                     if (strokeStyle === 'ink') p.style.opacity = '0.85';
@@ -1409,7 +1574,7 @@
                 // Re-create gel halos for visible draw-layer paths
                 if (strokeStyle === 'gel' && window._kanjiAddGelHaloToPath) {
                     drawLay.querySelectorAll('path:not(.gel-halo)').forEach(function (p) {
-                        try { if (parseFloat(getComputedStyle(p).opacity) === 0) return; } catch (e) { }
+                        if (p.style.opacity === '0') return;
                         if (window._kanjiInvalidateGelCache) window._kanjiInvalidateGelCache(p);
                         window._kanjiAddGelHaloToPath(p);
                     });
@@ -1567,10 +1732,11 @@
         else refreshSettingsRadios();
     }
 
-    function updateFeatureSetting(category, val) {
+    function updateFeatureSetting(category, val, scopeOverride) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        safeSetItem(_activeTab + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
-        if (_activeTab === _hostCard) {
+        var _scope = scopeOverride || _activeTab;
+        safeSetItem(_scope + '_kanjiOpt' + category.charAt(0).toUpperCase() + category.slice(1), val);
+        if (_scope === _hostCard) {
             if (category === 'drawMode') {
                 try { if (window._kanjiSwitchDrawMode) window._kanjiSwitchDrawMode(val); } catch (e) { }
             }
@@ -1991,7 +2157,7 @@
 
         // ···· Draw Helpers & Pointer Handlers ····
 
-        const clearDrawLayer = () => { _drawGen++; drawLayer.innerHTML = ''; currentSVGPath = null; _gelHalo = null; _inkGroup = null; if (_useCanvas) _clearCanvas(); };
+        const clearDrawLayer = () => { _drawGen++; drawLayer.innerHTML = ''; currentSVGPath = null; _gelHalo = null; if (_useCanvas) _clearCanvas(); };
 
         // ···· Per-path stroke style application ····
         // Returns the current stroke style setting
@@ -2009,8 +2175,9 @@
         // Canvas 2D is used for real-time rendering during the active drawing gesture;
         // SVG elements are built on pointerup for grading, snap animation, and persistence.
         const _useCanvas = _isWK;
-        let _ctx = null, _canvasEl = null, _canvasPath = null, _canvasInkSegs = null;
+        let _ctx = null, _canvasEl = null, _canvasPath = null;
         let _lastCanvasX = 0, _lastCanvasY = 0;
+        let _canvasRafId = null, _canvasDirty = false;
 
         const _initCanvas = () => {
             _canvasEl = document.getElementById('draw-canvas');
@@ -2033,6 +2200,8 @@
             _ctx._scaleY = rect.height / SVG_GRID_SIZE;
         };
         const _clearCanvas = () => {
+            if (_canvasRafId) { cancelAnimationFrame(_canvasRafId); _canvasRafId = null; }
+            _canvasDirty = false;
             if (!_ctx || !_canvasEl) return;
             var dpr = window.devicePixelRatio || 1;
             _ctx.clearRect(0, 0, _canvasEl.width / dpr, _canvasEl.height / dpr);
@@ -2052,38 +2221,7 @@
         };
         const _drawCanvasSegment = (x0, y0, x1, y1) => {
             if (!_ctx) return;
-            var style = _activeDrawStyle;
             var sx = _ctx._scaleX, sy = _ctx._scaleY;
-            if (style === 'gel') {
-                var color = _ctx.strokeStyle;
-                _ctx.save();
-                _ctx.lineWidth = 8 * sx;
-                _ctx.globalAlpha = 0.08;
-                _ctx.beginPath();
-                _ctx.moveTo(x0 * sx, y0 * sy);
-                _ctx.lineTo(x1 * sx, y1 * sy);
-                _ctx.stroke();
-                _ctx.restore();
-                _ctx.strokeStyle = color;
-                _ctx.lineWidth = 4.5 * sx;
-                _ctx.lineCap = 'round';
-                _ctx.lineJoin = 'round';
-            }
-            if (style === 'neon') {
-                var neonColor = _ctx.strokeStyle;
-                _ctx.save();
-                _ctx.lineWidth = 10 * sx;
-                _ctx.globalAlpha = 0.08;
-                _ctx.beginPath();
-                _ctx.moveTo(x0 * sx, y0 * sy);
-                _ctx.lineTo(x1 * sx, y1 * sy);
-                _ctx.stroke();
-                _ctx.restore();
-                _ctx.strokeStyle = neonColor;
-                _ctx.lineWidth = 4 * sx;
-                _ctx.lineCap = 'round';
-                _ctx.lineJoin = 'round';
-            }
             _ctx.beginPath();
             _ctx.moveTo(x0 * sx, y0 * sy);
             _ctx.lineTo(x1 * sx, y1 * sy);
@@ -2095,23 +2233,6 @@
             var style = _activeDrawStyle;
             var color = errorColor || getCSSVar('--stroke-active') || '#333';
             var sx = _ctx._scaleX;
-            if (style === 'ink' && _canvasInkSegs && _canvasInkSegs.length > 0) {
-                _ctx.save();
-                _ctx.globalAlpha = 0.85;
-                _ctx.strokeStyle = color;
-                _ctx.lineCap = 'square';
-                _ctx.lineJoin = 'round';
-                for (var i = 0; i < _canvasInkSegs.length; i++) {
-                    var seg = _canvasInkSegs[i];
-                    _ctx.lineWidth = seg.w * sx;
-                    _ctx.beginPath();
-                    _ctx.moveTo(seg.x0 * sx, seg.y0 * _ctx._scaleY);
-                    _ctx.quadraticCurveTo(seg.cx * sx, seg.cy * _ctx._scaleY, seg.x1 * sx, seg.y1 * _ctx._scaleY);
-                    _ctx.stroke();
-                }
-                _ctx.restore();
-                return;
-            }
             if (!_canvasPath) return;
             _ctx.save();
             if (style === 'gel') {
@@ -2123,21 +2244,43 @@
                 _ctx.stroke(_canvasPath);
                 _ctx.globalAlpha = 1;
             }
-            _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
-            _ctx.strokeStyle = color;
-            _ctx.lineCap = 'round';
             _ctx.lineJoin = 'round';
-            _ctx.shadowBlur = 0;
-            _ctx.stroke(_canvasPath);
+            _ctx.strokeStyle = color;
+            if (style === 'ink') {
+                _ctx.lineCap = 'square';
+                _ctx.globalAlpha = 0.85;
+                _ctx.lineWidth = 4 * sx;
+                _ctx.stroke(_canvasPath);
+                _ctx.restore();
+                return;
+            }
+            _ctx.lineCap = 'round';
+            if (style === 'neon') {
+                _ctx.lineWidth = 4 * sx;
+                _ctx.shadowColor = color;
+                // Outer halo pass (wide, soft — matches feGaussianBlur b2)
+                _ctx.shadowBlur = sx * 10;
+                _ctx.globalAlpha = 0.55;
+                _ctx.stroke(_canvasPath);
+                // Inner tight glow pass (matches feGaussianBlur b1 + SourceGraphic)
+                _ctx.shadowBlur = sx * 4;
+                _ctx.globalAlpha = 1;
+                _ctx.stroke(_canvasPath);
+            } else {
+                _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
+                _ctx.shadowBlur = 0;
+                _ctx.stroke(_canvasPath);
+            }
             _ctx.restore();
         };
         // Materialize canvas-drawn stroke into SVG elements for grading and snap animation
         const _finalizeCanvasToSVG = () => {
             if (!_useCanvas || !_ctx) return;
             _clearCanvas();
+            if (_canvasEl) _canvasEl.style.display = 'none';
             if (currentSVGPath) currentSVGPath.setAttribute("d", dSegments.join(''));
             var _fStyle = _activeDrawStyle;
-            // Reconstruct gel halo
+            // Reconstruct gel halo (inserted before main path so halo renders underneath)
             if (_fStyle === 'gel' && currentSVGPath) {
                 _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 _gelHalo.setAttribute("d", dSegments.join(''));
@@ -2149,27 +2292,8 @@
                 _gelHalo.style.setProperty("opacity", "0.12");
                 drawLayer.appendChild(_gelHalo);
             }
-            // Reconstruct ink group from accumulated segment data
-            if (_fStyle === 'ink' && _canvasInkSegs && _canvasInkSegs.length > 0) {
-                _inkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                _inkGroup.setAttribute("fill", "none");
-                _inkGroup.setAttribute("stroke", "var(--stroke-active)");
-                _inkGroup.setAttribute("stroke-linecap", "square");
-                _inkGroup.setAttribute("stroke-linejoin", "round");
-                _inkGroup.style.setProperty("opacity", "0.85");
-                for (var i = 0; i < _canvasInkSegs.length; i++) {
-                    var s = _canvasInkSegs[i];
-                    var seg = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    seg.setAttribute("d", 'M ' + s.x0 + ' ' + s.y0 + ' Q ' + s.cx + ' ' + s.cy + ' ' + s.x1 + ' ' + s.y1);
-                    seg.setAttribute("stroke-width", s.w.toFixed(1));
-                    seg.setAttribute("fill", "none");
-                    _inkGroup.appendChild(seg);
-                }
-                drawLayer.appendChild(_inkGroup);
-                if (currentSVGPath) currentSVGPath.style.setProperty('opacity', '0');
-            }
+            // Append main stroke to DOM so it is visible for color feedback and snap animation
             if (currentSVGPath) drawLayer.appendChild(currentSVGPath);
-            _canvasInkSegs = null;
         };
         if (_useCanvas) _initCanvas();
 
@@ -2216,7 +2340,7 @@
         window._kanjiApplyPathStyle = applyPathStyle;
 
         // Gelstift: halo path (wider, translucent) underneath the main path for wet-ink bleed look.
-        let _gelHalo = null;
+        let _gelHalo = null, _inkGroup = null;
         const _gelColorCache = new WeakMap();
 
         // Add gel halo to a completed SVG reference path
@@ -2262,8 +2386,7 @@
         // Tusche (Ink): multi-segment variable-width brush.
         // A hidden master <path> tracks the full d-attribute for evaluation/snap.
         // A visible <g> group holds short segments with individual stroke-widths.
-        let _inkGroup = null, _inkLastTime = 0, _inkLastPos = null, _inkLastWidth = 4;
-
+        
         // Smooth snap animation: morph user's drawn stroke toward the reference SVG path
         const snapToReference = (drawnPath, refPath, userPts, onDone, gelHalo) => {
             const N = 24;
@@ -2302,6 +2425,11 @@
         // re-entering the canvas after a scroll/zoom always gets a fresh rect.
         let _cachedRect = null;
         const invalidateRect = () => { _cachedRect = null; if (_useCanvas && _ctx && !isDrawing) _resizeCanvas(); };
+        if (window._kanjiInvalidateRect) {
+            window.removeEventListener('resize', window._kanjiInvalidateRect);
+            window.removeEventListener('orientationchange', window._kanjiInvalidateRect);
+        }
+        window._kanjiInvalidateRect = invalidateRect;
         window.addEventListener('resize', invalidateRect);
         window.addEventListener('orientationchange', invalidateRect);
 
@@ -2494,7 +2622,6 @@
             const pos = getMousePos(e);
             userPoints.push(pos);
             _activeDrawStyle = getActiveStrokeStyle();
-            const isInk = _activeDrawStyle === 'ink';
             const isGel = _activeDrawStyle === 'gel';
             // Always create SVG path for d-attribute accumulation and finalization
             currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2508,6 +2635,7 @@
             applyPathStyle(currentSVGPath);
 
             if (_useCanvas && _ctx) {
+                _canvasEl.style.display = 'block';
                 _canvasPath = new Path2D();
                 _canvasPath.moveTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
                 _lastCanvasX = pos.x;
@@ -2515,11 +2643,8 @@
                 _setupCanvasStyle();
                 _gelHalo = null;
                 _inkGroup = null;
-                _canvasInkSegs = isInk ? [] : null;
-                if (isInk) { _inkLastPos = pos; _inkLastTime = performance.now(); _inkLastWidth = 3.5; }
             } else {
                 // SVG mode: existing DOM manipulation
-                _canvasInkSegs = null;
                 // Gelstift: create halo path underneath for wet-ink bleed effect
                 if (isGel) {
                     _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2528,30 +2653,52 @@
                     _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
                     _gelHalo.setAttribute("stroke-width", "8");
                     _gelHalo.setAttribute("stroke-linecap", "round");
-                    _gelHalo.setAttribute("stroke-linejoin", "round");
                     _gelHalo.style.setProperty("opacity", "0.12");
                     drawLayer.appendChild(_gelHalo);
                 } else {
                     _gelHalo = null;
                 }
-                if (isInk) {
-                    currentSVGPath.style.setProperty('opacity', '0');
-                    _inkGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                    _inkGroup.setAttribute("fill", "none");
-                    _inkGroup.setAttribute("stroke", "var(--stroke-active)");
-                    _inkGroup.setAttribute("stroke-linecap", "square");
-                    _inkGroup.setAttribute("stroke-linejoin", "round");
-                    _inkGroup.style.setProperty("opacity", "0.85");
-                    drawLayer.appendChild(_inkGroup);
-                    _inkLastPos = pos; _inkLastTime = performance.now(); _inkLastWidth = 3.5;
-                } else {
-                    _inkGroup = null;
-                }
                 drawLayer.appendChild(currentSVGPath);
             }
         };
 
-        const draw = (e) => {
+        // Render accumulated canvas path once per animation frame (rAF throttle).
+        // Decouples pointermove accumulation from GPU draw calls — prevents O(n) shadowBlur
+        // cost on every event, capping neon/gel/ink redraws to one per vsync (≤60fps on iOS).
+        const _renderCanvasFrame = () => {
+            _canvasRafId = null;
+            if (!_canvasDirty || !_ctx || !_canvasPath) return;
+            _canvasDirty = false;
+            const style = _activeDrawStyle;
+            const color = getCSSVar('--stroke-active') || '#333';
+            const sx = _ctx._scaleX;
+            _clearCanvas();
+            _ctx.save();
+            _ctx.lineCap = 'round'; _ctx.lineJoin = 'round';
+            _ctx.strokeStyle = color;
+            if (style === 'neon') {
+                _ctx.lineWidth = 4 * sx;
+                _ctx.shadowColor = color;
+                _ctx.shadowBlur = sx * 3;
+                _ctx.stroke(_canvasPath);
+            } else if (style === 'ink') {
+                _ctx.lineCap = 'square';
+                _ctx.globalAlpha = 0.85;
+                _ctx.lineWidth = 4 * sx;
+                _ctx.stroke(_canvasPath);
+            } else {
+                // Gel: wide translucent halo + normal stroke
+                _ctx.globalAlpha = 0.08;
+                _ctx.lineWidth = 8 * sx;
+                _ctx.stroke(_canvasPath);
+                _ctx.globalAlpha = 1;
+                _ctx.lineWidth = 4.5 * sx;
+                _ctx.stroke(_canvasPath);
+            }
+            _ctx.restore();
+        };
+
+                const draw = (e) => {
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             if (!isDrawing) return;
             const pos = getMousePos(e);
@@ -2559,40 +2706,17 @@
             dSegments.push(' L ', pos.x, ' ', pos.y);
 
             if (_useCanvas && _ctx) {
-                // Canvas: accumulate path / ink segments and render
-                if (_canvasInkSegs !== null) {
-                    if (_inkLastPos) {
-                        const now = performance.now();
-                        const dt = Math.max(1, now - _inkLastTime);
-                        const dist = Math.hypot(pos.x - _inkLastPos.x, pos.y - _inkLastPos.y);
-                        if (dist > 1.5) {
-                            const speed = dist / dt;
-                            const targetW = Math.max(2, Math.min(5.5, 5.5 - speed * 8));
-                            _inkLastWidth = _inkLastWidth * 0.8 + targetW * 0.2;
-                            const mx = (_inkLastPos.x + pos.x) / 2;
-                            const my = (_inkLastPos.y + pos.y) / 2;
-                            _canvasInkSegs.push({ x0: _inkLastPos.x, y0: _inkLastPos.y, cx: mx, cy: my, x1: pos.x, y1: pos.y, w: _inkLastWidth });
-                            var sx = _ctx._scaleX, sy = _ctx._scaleY;
-                            _ctx.save();
-                            _ctx.globalAlpha = 0.85;
-                            _ctx.strokeStyle = getCSSVar('--stroke-active') || '#333';
-                            _ctx.lineCap = 'square';
-                            _ctx.lineJoin = 'round';
-                            _ctx.lineWidth = _inkLastWidth * sx;
-                            _ctx.beginPath();
-                            _ctx.moveTo(_inkLastPos.x * sx, _inkLastPos.y * sy);
-                            _ctx.quadraticCurveTo(mx * sx, my * sy, pos.x * sx, pos.y * sy);
-                            _ctx.stroke();
-                            _ctx.restore();
-                            _inkLastPos = pos; _inkLastTime = now;
-                        }
-                    }
+                // Canvas: accumulate path, schedule one render per animation frame
+                _canvasPath.lineTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
+                var _dStyle = _activeDrawStyle;
+                if (_dStyle === 'gel' || _dStyle === 'neon' || _dStyle === 'ink') {
+                    _canvasDirty = true;
+                    if (!_canvasRafId) _canvasRafId = requestAnimationFrame(_renderCanvasFrame);
                 } else {
-                    _canvasPath.lineTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
                     _drawCanvasSegment(_lastCanvasX, _lastCanvasY, pos.x, pos.y);
-                    _lastCanvasX = pos.x;
-                    _lastCanvasY = pos.y;
                 }
+                _lastCanvasX = pos.x;
+                _lastCanvasY = pos.y;
             } else {
                 // SVG: existing behavior
                 if (currentSVGPath) {
@@ -2600,25 +2724,6 @@
                     currentSVGPath.setAttribute("d", d);
                     // Gelstift: keep halo path in sync (reuse joined string)
                     if (_gelHalo) _gelHalo.setAttribute("d", d);
-                }
-                // Tusche: smooth flowing ink with variable width
-                if (_inkGroup && _inkLastPos) {
-                    const now = performance.now();
-                    const dt = Math.max(1, now - _inkLastTime);
-                    const dist = Math.hypot(pos.x - _inkLastPos.x, pos.y - _inkLastPos.y);
-                    if (dist > 1.5) {
-                        const speed = dist / dt;
-                        const targetW = Math.max(2, Math.min(5.5, 5.5 - speed * 8));
-                        _inkLastWidth = _inkLastWidth * 0.8 + targetW * 0.2;
-                        const mx = (_inkLastPos.x + pos.x) / 2;
-                        const my = (_inkLastPos.y + pos.y) / 2;
-                        const seg = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                        seg.setAttribute("d", 'M ' + _inkLastPos.x + ' ' + _inkLastPos.y + ' Q ' + mx + ' ' + my + ' ' + pos.x + ' ' + pos.y);
-                        seg.setAttribute("stroke-width", _inkLastWidth.toFixed(1));
-                        seg.setAttribute("fill", "none");
-                        _inkGroup.appendChild(seg);
-                        _inkLastPos = pos; _inkLastTime = now;
-                    }
                 }
             }
         };
@@ -2644,14 +2749,12 @@
                     currentSVGPath = null; _gelHalo = null; _inkGroup = null; userPoints = [];
                     return;
                 }
-                // Ink free mode: show master path for persistence, remove segment group
+                // Ink free mode: remove the ink group (currentSVGPath already holds the raw path for persistence)
                 if (_inkGroup) {
                     if (_inkGroup.parentNode) _inkGroup.parentNode.removeChild(_inkGroup);
                     _inkGroup = null;
                     if (currentSVGPath) {
                         currentSVGPath.style.setProperty('opacity', '0.85');
-                        currentSVGPath.setAttribute('stroke-width', '4.5');
-                        currentSVGPath.setAttribute('stroke-linecap', 'square');
                     }
                 }
                 freeStrokes.push(userPoints.slice());
@@ -2741,8 +2844,9 @@
                     if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); }
                 };
                 if (dp && up.length >= 2) {
-                    // Ink: reveal master path for snap animation, hide segment group
-                    if (ig) { ig.style.setProperty('opacity', '0'); dp.style.setProperty('opacity', '0.85'); dp.setAttribute('stroke-width', '4.5'); dp.setAttribute('stroke-linecap', 'square'); }
+                    // Ink: remove the ink group, let currentSVGPath snap to reference
+                    if (ig && ig.parentNode) ig.parentNode.removeChild(ig);
+                    dp.style.setProperty('opacity', '0.85');
                     // Gel: pass halo to snap so it morphs in sync
                     snapToReference(dp, paths[si], up, afterSnap, gh);
                 }
@@ -2770,11 +2874,11 @@
 
                 if (isColorFeedbackFrontOn) {
                     const colorVar = mistakes === 1 ? "var(--stroke-warn1)" : mistakes === 2 ? "var(--stroke-warn2)" : "var(--stroke-err)";
+                    // _finalizeCanvasToSVG() already ran — stroke is in SVG regardless of platform.
                     if (currentSVGPath) {
                         currentSVGPath.style.setProperty("stroke", colorVar);
                         applyPathStyle(currentSVGPath, colorVar);
                     }
-                    if (_inkGroup) _inkGroup.setAttribute("stroke", colorVar);
                     if (_gelHalo) _gelHalo.style.setProperty("stroke", colorVar);
                 }
 
@@ -2874,9 +2978,9 @@
             const strokeColor = getCSSVar('--stroke-active') || '';
             const hintColor = getCSSVar('--stroke-hint') || strokeColor;
             paths.forEach((p) => {
-                if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
-                    // Hint strokes stay green during rewind; completed/animating use active color
-                    const col = p.classList.contains('hint-active') ? hintColor : strokeColor;
+                const isHint = p.classList.contains('hint-active');
+                if (isHint || p.classList.contains('stroke-complete') || p.classList.contains('animate-draw')) {
+                    const col = isHint ? hintColor : strokeColor;
                     if (col) p.style.setProperty('stroke', col, 'important');
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                     p.classList.add('rewind-anim');

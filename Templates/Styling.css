@@ -418,6 +418,11 @@ svg#svg-guide path,
     opacity: 0.85;
 }
 
+/* Neon mode: no filter on svg-guide (Strich einblenden) — CSS overrides any JS-set filter attribute */
+.kanji-container.stroke-style-neon #svg-guide path {
+    filter: none !important;
+}
+
 /* Neon — relax stacking-context + paint isolation for WebKit drop-shadow */
 .kanji-container.stroke-style-neon {
     contain: layout style;
@@ -1105,10 +1110,6 @@ svg#svg-guide path,
     background: #ff9500;
 }
 
-.category-icon.cat-display {
-    background: #af52de;
-}
-
 .category-icon.cat-theme {
     background: #ff2d55;
 }
@@ -1404,6 +1405,7 @@ svg#svg-guide path,
     transition: stroke-dashoffset 0.7s ease-in-out !important;
 }
 
+/* Neon mode: no extra glow for hint strokes — the hint color itself is enough */
 .rewind-anim {
     stroke-dashoffset: 108 !important;
     transition: stroke-dashoffset 0.7s ease-in-out !important;
@@ -2044,9 +2046,11 @@ ruby rt {
     background: transparent;
 }
 
-/* Hide reference paths when handwriting overlay is active */
+/* Hide reference paths when handwriting overlay is active.
+   !important overrides inline opacity set by ink/gel styles (e.g. opacity:0.85)
+   so svg-bg paths don't bleed through during the morph animation. */
 .kanji-container.show-handwriting svg#svg-bg path {
-    opacity: 0;
+    opacity: 0 !important;
 }
 
 /* Hide default stroke numbers – handwriting overlay has its own */
@@ -2089,19 +2093,101 @@ ruby rt {
 }
 
 /* Badge for excess strokes */
+/* Stroke-count badges — positioned as overlays inside .kanji-container / .sbs-kanji */
 .excess-strokes-badge,
 .missing-strokes-badge {
-    text-align: center;
-    margin-top: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--stroke-err);
+    position: absolute;
+    bottom: 7px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px 3px 6px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none;
     opacity: 0;
     animation: fadeInNumbers 0.4s ease-out 0.3s forwards;
+    transition: opacity 0.2s, background 0.2s;
+    /* pill shadow so it floats above the kanji grid */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+}
+/* Invisible touch-target extension — keeps visual size unchanged */
+.excess-strokes-badge::after,
+.missing-strokes-badge::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
 }
 
+/* "Zu viel" (excess) — bottom-left, red */
+.excess-strokes-badge {
+    left: 7px;
+    color: #fff;
+    background: var(--stroke-err);
+}
+
+/* "Zu wenig" (missing) — bottom-right, orange */
 .missing-strokes-badge {
-    color: var(--stroke-warn2, var(--stroke-err));
+    right: 7px;
+    color: #fff;
+    background: var(--stroke-warn2, var(--stroke-err));
+}
+
+/* Badge "hidden" state — strokes toggled off */
+.excess-strokes-badge.strokes-hidden,
+.missing-strokes-badge.strokes-hidden {
+    background: var(--text-muted, #888) !important;
+    text-decoration: line-through;
+}
+
+/* Quicksettings: Handschrift ↔ SVG-Pfade toggle (session-only, no persistence) */
+.free-view-quicktoggle {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 11;
+    width: 28px;
+    height: 28px;
+    padding: 5px;
+    border: none;
+    border-radius: 8px;
+    background: var(--surface-raised, rgba(128,128,128,0.15));
+    color: var(--text-muted, #888);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, color 0.15s;
+    opacity: 0;
+    animation: fadeInNumbers 0.3s ease-out 0.5s forwards;
+}
+.free-view-quicktoggle::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+}
+.free-view-quicktoggle:active {
+    background: var(--surface-active, rgba(128,128,128,0.28));
+}
+.free-view-quicktoggle svg {
+    width: 100%;
+    height: 100%;
+}
+/* Override kanji-container pointer-events:none for this button */
+.kanji-container .free-view-quicktoggle {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
 }
 
 /* Hide guided-only settings in free mode */

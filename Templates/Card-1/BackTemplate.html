@@ -11,6 +11,16 @@
         pointer-events: none !important;
         transition: none !important;
     }
+    /* Badges inside .kanji-container must be tappable despite parent pointer-events:none */
+    .kanji-container .excess-strokes-badge,
+    .kanji-container .missing-strokes-badge,
+    .sbs-kanji .excess-strokes-badge,
+    .sbs-kanji .missing-strokes-badge {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: transparent;
+        cursor: pointer !important;
+    }
 
     #draw-layer,
     .card-title {
@@ -37,6 +47,39 @@
     .stroke-number {
         opacity: 0;
         animation: fadeInNumbers 0.3s ease-out forwards;
+    }
+
+    @keyframes stroke-pulse-extra {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.45; }
+    }
+    @keyframes stroke-pulse-ghost {
+        0%, 100% { opacity: 0.8; }
+        50%       { opacity: 0.15; }
+    }
+
+    /* Extra stroke (zu viel) — solid red, thick */
+    .stroke-extra {
+        stroke-width: 4 !important;
+        stroke-linecap: round !important;
+        stroke-linejoin: round !important;
+        stroke-dasharray: none !important;
+    }
+    /* Ghost stroke (zu wenig) — dashed orange placeholder */
+    .stroke-ghost {
+        stroke-width: 3 !important;
+        stroke-linecap: round !important;
+        stroke-dasharray: 6 5 !important;
+    }
+
+    /* Animation on the <g> wrapper — promotes to compositor layer on iOS/WebKit */
+    .stroke-extra-group {
+        will-change: opacity;
+        animation: stroke-pulse-extra 2s ease-in-out 0.3s infinite;
+    }
+    .stroke-ghost-group {
+        will-change: opacity;
+        animation: stroke-pulse-ghost 1.6s ease-in-out 0.5s infinite;
     }
 
     .info-btn {
@@ -308,7 +351,7 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
@@ -509,7 +552,7 @@
         // ── Shared helpers ──
 
         // Add stroke numbers to an SVG using getPointAtLength for positioning
-        const addNumbersGPAL = (svg, colorFn, opacityFn) => {
+        const addNumbersGPAL = (svg, colorFn, opacityFn, numberFn) => {
             const svgPaths = svg.querySelectorAll('path:not(.gel-halo)');
             const placed = [];
             const MD = 6.0;
@@ -545,7 +588,7 @@
                 const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 t.setAttribute('x', fx); t.setAttribute('y', fy);
                 t.setAttribute('class', 'stroke-number');
-                t.textContent = i + 1;
+                t.textContent = numberFn ? numberFn(i) : (i + 1);
                 const opVal = opacityFn ? opacityFn(i) : undefined;
                 t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill' + (opVal !== undefined ? ';opacity:' + opVal : '');
                 frag.appendChild(t);
@@ -582,7 +625,8 @@
                     p.setAttribute('stroke-width', width);
                     var dk = document.documentElement.classList.contains('nightMode') ||
                         document.documentElement.classList.contains('night_mode') ||
-                        document.body.classList.contains('nightMode');
+                        document.body.classList.contains('nightMode') ||
+                        document.body.classList.contains('night_mode');
                     var wk = document.documentElement.classList.contains('is-ankimobile');
                     p.setAttribute('filter', 'url(#' + (wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow')) + ')');
                     break;
@@ -610,6 +654,80 @@
                 svg.appendChild(halo);
             }
             svg.appendChild(pathEl);
+        };
+
+        // Wrap a path in an animated <g> element for compositor-promoted pulse animation.
+        // Applying animation to individual SVG <path> elements is not GPU-accelerated on iOS;
+        // animating a <g> with will-change:opacity allows WebKit to promote it to a compositor layer.
+        const wrapInPulseGroup = (svg, pathEl, groupClass) => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.classList.add(groupClass);
+            g.appendChild(pathEl);
+            svg.appendChild(g);
+            return g;
+        };
+
+        // Toggle visibility of all stroke groups matching groupClass inside container.
+        // Updates badge appearance to reflect the hidden/visible state.
+        const toggleStrokeGroup = (badge, groupClass, container) => {
+            const groups = container.querySelectorAll('.' + groupClass);
+            if (!groups.length) return;
+            // Use visibility instead of display — more reliable for SVG <g> in WebKit,
+            // especially after child nodes have been moved in post-render (adoptNumbersIntoGroups).
+            const isHidden = groups[0].style.visibility === 'hidden';
+            groups.forEach(g => {
+                g.style.visibility = isHidden ? '' : 'hidden';
+                g.style.pointerEvents = isHidden ? '' : 'none';
+            });
+            badge.classList.toggle('strokes-hidden', !isHidden);
+        };
+
+        // Create a stroke-count badge that toggles its associated stroke group on click/tap.
+        // Uses pointerup (covers Apple Pencil + touch + mouse) with touchend as fallback.
+        const makeBadge = (className, html, groupClass, container) => {
+            const badge = document.createElement('div');
+            badge.className = className;
+            badge.innerHTML = html;
+            let _handledByPointer = false;
+            // Block touchstart so AnkiMobile's card-flip gesture never begins
+            badge.addEventListener('touchstart', function (e) {
+                e.stopPropagation();
+            }, { passive: true });
+            badge.addEventListener('pointerdown', function (e) {
+                e.stopPropagation();
+            });
+            const handler = function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                _handledByPointer = (e.type === 'pointerup');
+                toggleStrokeGroup(badge, groupClass, container);
+            };
+            // pointerup fires immediately for Apple Pencil, touch, and mouse — no 300ms delay
+            badge.addEventListener('pointerup', handler);
+            // touchend as fallback for browsers without Pointer Events (older WebKit)
+            badge.addEventListener('touchend', function (e) {
+                if (_handledByPointer) { _handledByPointer = false; return; }
+                handler(e);
+            });
+            return badge;
+        };
+
+        // After addNumbersGPAL, move stroke-number <text> elements into their <g> wrappers
+        // so they toggle together with the stroke and inherit the group's pulse animation.
+        const adoptNumbersIntoGroups = (svg) => {
+            const paths = [...svg.querySelectorAll('path:not(.gel-halo)')];
+            const texts = [...svg.querySelectorAll('text.stroke-number')];
+            paths.forEach((p, i) => {
+                const g = p.parentElement;
+                if (!texts[i] || !g || g.tagName.toLowerCase() !== 'g') return;
+                const isExtra = g.classList.contains('stroke-extra-group');
+                const isGhost = g.classList.contains('stroke-ghost-group');
+                if (!isExtra && !isGhost) return;
+                g.appendChild(texts[i]);
+                // Match number color to stroke color; remove low-opacity override
+                texts[i].style.opacity = '';
+                texts[i].style.fill = isExtra ? 'var(--stroke-err)' : 'var(--stroke-warn2, var(--stroke-err))';
+            });
         };
 
         // Strip all gel-specific styling from an extra/ghost stroke path so it
@@ -712,7 +830,8 @@
                 // Apply new style
                 var dk = document.documentElement.classList.contains('nightMode') ||
                     document.documentElement.classList.contains('night_mode') ||
-                    document.body.classList.contains('nightMode');
+                    document.body.classList.contains('nightMode') ||
+                    document.body.classList.contains('night_mode');
                 switch (ss) {
                     case 'neon': {
                         var wk = document.documentElement.classList.contains('is-ankimobile');
@@ -1044,6 +1163,12 @@
                         const myRenderGen = ++_freeRenderGen;
                         const ev = window._kanjiFreeEval;
                         if (!ev) return;
+                        // Clean up any scratch SVGs left by a previous animation that was
+                        // interrupted (e.g. rapid card flip or settings change mid-morph).
+                        if (window._kanjiScratchSvgs) {
+                            window._kanjiScratchSvgs.forEach(function(s){ if (s && s.parentNode) s.parentNode.removeChild(s); });
+                            window._kanjiScratchSvgs = [];
+                        }
                         // Re-read stroke style from storage (may have changed since page load)
                         var _ss = (typeof safeGetItem === 'function')
                             ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
@@ -1057,7 +1182,9 @@
 
                         // Read target view BEFORE teardown to avoid 1-frame flash
                         const gc = getGlobalConfig();
-                        const curView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', gc.freeView || 'handwriting'));
+                        // _freeViewOverride is a session-only in-memory toggle (Quicksettings).
+                        // It never touches localStorage and is reset on card navigation.
+                        const curView = window._freeViewOverride || safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', gc.freeView || 'handwriting'));
                         const sbsEnabled = safeGetItem('c1_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', gc.sideBySide || 'on')) === 'on';
                         const needsTransparent = curView === 'handwriting' || sbsEnabled;
 
@@ -1066,12 +1193,15 @@
                         cont.classList.remove('show-handwriting');
                         const oldSbs = cont.parentNode ? cont.parentNode.querySelector('.side-by-side-wrapper') : null;
                         if (oldSbs) oldSbs.remove();
-                        if (cont.parentNode) cont.parentNode.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge').forEach(el => el.remove());
+                        cont.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge').forEach(el => el.remove());
                         cont.style.removeProperty('display');
                         // Clean gel halos from svg-bg before re-rendering
                         bg.querySelectorAll('.gel-halo').forEach(h => h.parentNode.removeChild(h));
                         if (!needsTransparent) {
-                            refPaths.forEach(p => p.style.removeProperty('stroke'));
+                            refPaths.forEach(p => {
+                                p.style.removeProperty('stroke');
+                                p.style.removeProperty('opacity'); // clear ink inline-opacity so show-handwriting CSS can hide paths
+                            });
                             const prevColorStyle = document.getElementById('kanji-stroke-colors');
                             if (prevColorStyle) prevColorStyle.textContent = '';
                             // Remove anti-flicker transparent override so svg-bg paths are visible
@@ -1104,26 +1234,19 @@
                                 } else if (entry.type === 'extra') {
                                     const stroke = entry.stroke;
                                     if (!stroke.d) return;
-                                    const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    const p = makeStrokePath(stroke.d, '3', 'var(--stroke-err)');
                                     stripGelStyle(p);
-                                    p.setAttribute('stroke-dasharray', '0 5');
-                                    p.setAttribute('stroke-linecap', 'square');
-                                    p.setAttribute('stroke-width', '2.5');
-                                    p.style.opacity = '0.5';
-                                    appendStrokePath(overlaySvg, p);
-                                    hwMeta.push({ type: 'extra', grade: stroke.grade });
+                                    p.classList.add('stroke-extra');
+                                    wrapInPulseGroup(overlaySvg, p, 'stroke-extra-group');
+                                    hwMeta.push({ type: 'extra', grade: stroke.grade, userIdx: entry.userIdx });
                                     hwExtraCount++;
                                 } else {
                                     const origD = ev.refPathData[entry.refIdx] || '';
                                     if (!origD) return;
-                                    const ghost = makeStrokePath(origD, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    const ghost = makeStrokePath(origD, '3', 'var(--stroke-warn2, var(--stroke-err))');
                                     stripGelStyle(ghost);
-                                    ghost.setAttribute('stroke-dasharray', '0 5');
-                                    ghost.setAttribute('stroke-linecap', 'square');
-                                    ghost.setAttribute('stroke-width', '2.5');
-                                    ghost.style.opacity = '0.45';
-                                    ghost.classList.add('hw-ghost-stroke');
-                                    appendStrokePath(overlaySvg, ghost);
+                                    ghost.classList.add('stroke-ghost');
+                                    wrapInPulseGroup(overlaySvg, ghost, 'stroke-ghost-group');
                                     hwMeta.push({ type: 'ghost' });
                                 }
                             });
@@ -1132,20 +1255,15 @@
                             cont.appendChild(overlaySvg);
 
                             if (hwExtraCount > 0) {
-                                const badge = document.createElement('div');
-                                badge.className = 'excess-strokes-badge';
-                                badge.textContent = '+' + hwExtraCount + ' Strich' + (hwExtraCount > 1 ? 'e' : '') + ' zu viel';
-                                cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
+                                const badge = makeBadge('excess-strokes-badge', '<span style="font-size:11px;line-height:1">✚</span>' + (+hwExtraCount === 1 ? ' 1 Strich zu viel' : ' ' + hwExtraCount + ' Striche zu viel'), 'stroke-extra-group', cont);
+                                cont.appendChild(badge);
                             }
 
                             // Count missing (ghost) strokes
                             const hwGhostCount = hwMeta.filter(m => m.type === 'ghost').length;
                             if (hwGhostCount > 0) {
-                                const mbadge = document.createElement('div');
-                                mbadge.className = 'missing-strokes-badge';
-                                mbadge.textContent = '−' + hwGhostCount + ' Strich' + (hwGhostCount > 1 ? 'e' : '') + ' zu wenig';
-                                const prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
-                                cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
+                                const mbadge = makeBadge('missing-strokes-badge', '<span style="font-size:11px;line-height:1;display:inline-block;transform:rotate(45deg)">✚</span>' + (+hwGhostCount === 1 ? ' 1 Strich zu wenig' : ' ' + hwGhostCount + ' Striche zu wenig'), 'stroke-ghost-group', cont);
+                                cont.appendChild(mbadge);
                             }
 
                             if (isNumbers) {
@@ -1158,7 +1276,13 @@
                                 }, (i) => {
                                     const meta = hwMeta[i];
                                     return meta && (meta.type === 'ghost' || meta.type === 'extra') ? '0.45' : undefined;
+                                }, (i) => {
+                                    // Extra strokes: show the user's original drawing order number (userIdx+1)
+                                    // Ghost/user strokes: sequential i+1 = refIdx+1 (reference stroke position)
+                                    const meta = hwMeta[i];
+                                    return meta && meta.type === 'extra' ? meta.userIdx + 1 : i + 1;
                                 });
+                                adoptNumbersIntoGroups(overlaySvg);
                             }
                         } else if (!sbsEnabled) {
                             // ── SVG-PFADE VIEW (no SBS) ──
@@ -1176,28 +1300,55 @@
                                     extraStrokes.forEach(entry => {
                                         const stroke = entry.stroke;
                                         if (!stroke.d) return;
-                                        const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                        const p = makeStrokePath(stroke.d, '3', 'var(--stroke-err)');
                                         stripGelStyle(p);
-                                        p.setAttribute('stroke-dasharray', '0 5');
-                                        p.setAttribute('stroke-linecap', 'square');
-                                        p.setAttribute('stroke-width', '2.5');
-                                        p.style.opacity = '0.5';
-                                        appendStrokePath(overlaySvg, p);
+                                        p.classList.add('stroke-extra');
+                                        wrapInPulseGroup(overlaySvg, p, 'stroke-extra-group');
                                     });
+                                    if (isNumbers) {
+                                        addNumbersGPAL(overlaySvg, () => 'var(--stroke-err)', undefined, (i) => extraStrokes[i] ? extraStrokes[i].userIdx + 1 : i + 1);
+                                        adoptNumbersIntoGroups(overlaySvg);
+                                    }
                                     cont.appendChild(overlaySvg);
-                                    const badge = document.createElement('div');
-                                    badge.className = 'excess-strokes-badge';
-                                    badge.textContent = '+' + extraStrokes.length + ' Strich' + (extraStrokes.length > 1 ? 'e' : '') + ' zu viel';
-                                    cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
+                                    const badge = makeBadge('excess-strokes-badge', '<span style="font-size:11px;line-height:1">✚</span>' + (extraStrokes.length === 1 ? ' 1 Strich zu viel' : ' ' + extraStrokes.length + ' Striche zu viel'), 'stroke-extra-group', cont);
+                                    cont.appendChild(badge);
                                 }
 
                                 const ghostStrokes = ev.orderedStrokes.filter(e => e.type === 'ghost');
                                 if (ghostStrokes.length > 0) {
-                                    const mbadge = document.createElement('div');
-                                    mbadge.className = 'missing-strokes-badge';
-                                    mbadge.textContent = '−' + ghostStrokes.length + ' Strich' + (ghostStrokes.length > 1 ? 'e' : '') + ' zu wenig';
-                                    const prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
-                                    cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
+                                    const ghostOverlaySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                    ghostOverlaySvg.setAttribute('viewBox', '0 0 109 109');
+                                    ghostOverlaySvg.classList.add('excess-strokes-overlay');
+                                    const refPaths = svgBg.querySelectorAll('path:not(.gel-halo)');
+                                    const svgBgNumbers = [...svgBg.querySelectorAll('text.stroke-number')];
+                                    ghostStrokes.forEach(entry => {
+                                        const origD = ev.refPathData[entry.refIdx] || '';
+                                        if (!origD) return;
+                                        // Hide the ref path AND its gel halo at this index
+                                        const refPath = refPaths[entry.refIdx];
+                                        if (refPath) {
+                                            refPath.style.setProperty('stroke', 'transparent', 'important');
+                                            const prevSibling = refPath.previousElementSibling;
+                                            if (prevSibling && prevSibling.classList.contains('gel-halo')) {
+                                                prevSibling.style.setProperty('stroke', 'transparent', 'important');
+                                            }
+                                        }
+                                        const gp = makeStrokePath(origD, '3', 'var(--stroke-warn2, var(--stroke-err))');
+                                        stripGelStyle(gp);
+                                        gp.classList.add('stroke-ghost');
+                                        const g = wrapInPulseGroup(ghostOverlaySvg, gp, 'stroke-ghost-group');
+                                        // Move the stroke-number for this refIdx into the ghost <g>
+                                        // so it pulses and toggles together with the ghost stroke.
+                                        const num = svgBgNumbers[entry.refIdx];
+                                        if (num) {
+                                            num.style.fill = 'var(--stroke-warn2, var(--stroke-err))';
+                                            num.style.opacity = '';
+                                            g.appendChild(num);
+                                        }
+                                    });
+                                    cont.appendChild(ghostOverlaySvg);
+                                    const mbadge = makeBadge('missing-strokes-badge', '<span style="font-size:11px;line-height:1;display:inline-block;transform:rotate(45deg)">✚</span>' + (ghostStrokes.length === 1 ? ' 1 Strich zu wenig' : ' ' + ghostStrokes.length + ' Striche zu wenig'), 'stroke-ghost-group', cont);
+                                    cont.appendChild(mbadge);
                                 }
                             };
 
@@ -1218,85 +1369,110 @@
                                     if (entry.type === 'user') {
                                         const stroke = entry.stroke;
                                         if (!stroke.d) return;
-                                        const p = makeStrokePath(stroke.d, '4', gradeColor(stroke.grade));
+                                        const strokeColor = gradeColor(stroke.grade);
+                                        const p = makeStrokePath(stroke.d, '4', strokeColor);
                                         appendStrokePath(morphSvg, p);
                                         const refD = ev.refPathData[entry.refIdx] || '';
-                                        if (refD) morphPairs.push({ el: p, userD: stroke.d, refD: refD });
+                                        if (refD) morphPairs.push({ el: p, userD: stroke.d, refD: refD, color: strokeColor });
                                     } else if (entry.type === 'extra') {
                                         const stroke = entry.stroke;
                                         if (!stroke.d) return;
-                                        const p = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                        const p = makeStrokePath(stroke.d, '3', 'var(--stroke-err)');
                                         stripGelStyle(p);
-                                        p.setAttribute('stroke-dasharray', '0 5');
-                                        p.setAttribute('stroke-linecap', 'square');
-                                        p.setAttribute('stroke-width', '2.5');
-                                        p.style.opacity = '0.5';
-                                        appendStrokePath(morphSvg, p);
+                                        p.classList.add('stroke-extra');
+                                        wrapInPulseGroup(morphSvg, p, 'stroke-extra-group');
                                     }
                                 });
 
                                 cont.classList.add('show-handwriting');
                                 cont.appendChild(morphSvg);
+                                // Save pairs data for reverse morph (SVG→HW quicktoggle)
+                                window._kanjiLastMorphPairs = morphPairs.map(function(p) { return { userD: p.userD, refD: p.refD, color: p.color }; });
 
                                 if (isWK) {
-                                    // ── WKWebView: GPU-friendly fade-out/fade-in ──
-                                    morphSvg.style.opacity = '1';
-                                    morphSvg.style.transition = 'opacity 300ms ease-in';
-                                    // Prepare final view underneath (hidden by .show-handwriting)
-                                    hideRefPaths();
-                                    applyBackFeatures();
-                                    // Trigger fade-out on next frame
-                                    requestAnimationFrame(function () {
-                                        morphSvg.style.opacity = '0';
+                                    // ── WKWebView: SMIL <animate> for GPU-native smooth morphing ──
+                                    // Resample both paths to identical polyline format so WebKit can
+                                    // interpolate the `d` attribute natively at 60 fps.
+                                    var WK_N = 16;
+                                    var _wkScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                    _wkScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+                                    document.body.appendChild(_wkScratch);
+                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
+                                    window._kanjiScratchSvgs.push(_wkScratch);
+                                    var _wkResamplePts = function(d) {
+                                        var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        tmp.setAttribute('d', d);
+                                        _wkScratch.appendChild(tmp);
+                                        var L = tmp.getTotalLength();
+                                        if (!L) { _wkScratch.removeChild(tmp); return null; }
+                                        var pts = [];
+                                        for (var i = 0; i < WK_N; i++) { var pt = tmp.getPointAtLength((i / (WK_N - 1)) * L); pts.push(pt.x, pt.y); }
+                                        _wkScratch.removeChild(tmp);
+                                        return pts;
+                                    };
 
-                                        var _wkAnimDone = false;
-                                        var _wkShowFinal = function () {
-                                            if (_wkAnimDone) return; // guard: run once
-                                            _wkAnimDone = true;
-                                            morphSvg.remove();
-                                            cont.classList.remove('show-handwriting');
-                                            if (_freeRenderGen !== myRenderGen) return; // stale: re-render happened during animation
-                                            // Badges (extras/missing)
-                                            var extraStrokes = ev.orderedStrokes.filter(function (e) { return e.type === 'extra'; });
-                                            if (extraStrokes.length > 0) {
-                                                var overlaySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                                overlaySvg.setAttribute('viewBox', '0 0 109 109');
-                                                overlaySvg.classList.add('excess-strokes-overlay');
-                                                extraStrokes.forEach(function (entry) {
-                                                    var stroke = entry.stroke;
-                                                    if (!stroke.d) return;
-                                                    var ep = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
-                                                    stripGelStyle(ep);
-                                                    ep.setAttribute('stroke-dasharray', '0 5');
-                                                    ep.setAttribute('stroke-linecap', 'square');
-                                                    ep.setAttribute('stroke-width', '2.5');
-                                                    ep.style.opacity = '0.5';
-                                                    appendStrokePath(overlaySvg, ep);
-                                                });
-                                                cont.appendChild(overlaySvg);
-                                                var badge = document.createElement('div');
-                                                badge.className = 'excess-strokes-badge';
-                                                badge.textContent = '+' + extraStrokes.length + ' Strich' + (extraStrokes.length > 1 ? 'e' : '') + ' zu viel';
-                                                cont.parentNode && cont.parentNode.insertBefore(badge, cont.nextSibling);
-                                            }
-                                            var ghostStrokes = ev.orderedStrokes.filter(function (e) { return e.type === 'ghost'; });
-                                            if (ghostStrokes.length > 0) {
-                                                var mbadge = document.createElement('div');
-                                                mbadge.className = 'missing-strokes-badge';
-                                                mbadge.textContent = '\u2212' + ghostStrokes.length + ' Strich' + (ghostStrokes.length > 1 ? 'e' : '') + ' zu wenig';
-                                                var prev = cont.parentNode && cont.parentNode.querySelector('.excess-strokes-badge');
-                                                cont.parentNode.insertBefore(mbadge, prev ? prev.nextSibling : cont.nextSibling);
-                                            }
-                                        };
+                                    var DUR = 0.32; // seconds
+                                    var _wkAnimDone = false;
+                                    var _wkShowFinal = function () {
+                                        if (_wkAnimDone) return;
+                                        _wkAnimDone = true;
+                                        morphSvg.remove();
+                                        cont.classList.remove('show-handwriting');
+                                        if (_wkScratch.parentNode) _wkScratch.parentNode.removeChild(_wkScratch);
+                                        if (_freeRenderGen !== myRenderGen) return;
+                                        showFinalSvgView();
+                                    };
 
-                                        morphSvg.addEventListener('transitionend', function onEnd() {
-                                            morphSvg.removeEventListener('transitionend', onEnd);
-                                            _wkShowFinal();
-                                        });
-                                        // Fallback: if transitionend doesn't fire (WKWebView edge case),
-                                        // still show the final view (badges etc.) and clean up morphSvg.
-                                        setTimeout(_wkShowFinal, 400);
+                                    // Add SMIL <animate> to each stroke path: userD → refD
+                                    // Strip neon filter before animating — re-filtering per SMIL frame
+                                    // causes severe GPU stalls on WKWebView (neon-glow is expensive).
+                                    // applyBackFeatures() restores filters on svg-bg after animation.
+                                    var _wkLastAnim = null;
+                                    morphPairs.forEach(function(pair) {
+                                        var uPts = _wkResamplePts(pair.userD);
+                                        var rPts = _wkResamplePts(pair.refD);
+                                        if (!uPts || !rPts) return;
+                                        // Match direction (same flip as desktop morph)
+                                        var last = (WK_N - 1) * 2;
+                                        if ((uPts[0]-rPts[last])*(uPts[0]-rPts[last])+(uPts[1]-rPts[last+1])*(uPts[1]-rPts[last+1]) <
+                                            (uPts[0]-rPts[0])*(uPts[0]-rPts[0])+(uPts[1]-rPts[1])*(uPts[1]-rPts[1])) {
+                                            for (var i=0,j=last;i<j;i+=2,j-=2){var tx=rPts[i],ty=rPts[i+1];rPts[i]=rPts[j];rPts[i+1]=rPts[j+1];rPts[j]=tx;rPts[j+1]=ty;}
+                                        }
+                                        var fromD = 'M'; for (var k=0;k<WK_N;k++){if(k)fromD+='L';fromD+=uPts[k*2].toFixed(1)+' '+uPts[k*2+1].toFixed(1);}
+                                        var toD   = 'M'; for (var k=0;k<WK_N;k++){if(k)toD+='L';toD+=rPts[k*2].toFixed(1)+' '+rPts[k*2+1].toFixed(1);}
+                                        pair.el.setAttribute('d', fromD);
+                                        pair.el.removeAttribute('filter'); // remove neon/gel filter — too expensive per-SMIL-frame
+                                        var anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                                        anim.setAttribute('attributeName', 'd');
+                                        anim.setAttribute('from', fromD);
+                                        anim.setAttribute('to', toD);
+                                        anim.setAttribute('dur', DUR + 's');
+                                        anim.setAttribute('fill', 'freeze');
+                                        anim.setAttribute('calcMode', 'spline');
+                                        anim.setAttribute('keyTimes', '0;1');
+                                        anim.setAttribute('keySplines', '0.42 0 0.58 1'); // ease-in-out
+                                        anim.setAttribute('begin', 'indefinite');
+                                        pair.el.appendChild(anim);
+                                        var halo = pair.el.previousElementSibling;
+                                        if (halo && halo.classList.contains('gel-halo')) {
+                                            halo.setAttribute('d', fromD);
+                                            var hAnim = anim.cloneNode(false);
+                                            halo.appendChild(hAnim);
+                                            hAnim.beginElement();
+                                        }
+                                        anim.beginElement();
+                                        _wkLastAnim = anim;
                                     });
+
+                                    if (_wkLastAnim) {
+                                        _wkLastAnim.addEventListener('endEvent', function() { _wkShowFinal(); });
+                                        setTimeout(_wkShowFinal, (DUR + 0.15) * 1000);
+                                    } else {
+                                        // No animatable pairs → just show final immediately
+                                        if (_wkScratch.parentNode) _wkScratch.parentNode.removeChild(_wkScratch);
+                                        cont.classList.remove('show-handwriting');
+                                        if (_freeRenderGen === myRenderGen) showFinalSvgView();
+                                    }
                                 } else {
                                     // ── Desktop/Android: pre-computed morph animation ──
                                     var FRAMES = 15, N = 16;
@@ -1306,6 +1482,8 @@
                                     var _scratchSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                                     _scratchSvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
                                     document.body.appendChild(_scratchSvg);
+                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
+                                    window._kanjiScratchSvgs.push(_scratchSvg);
 
                                     var resample = function (d) {
                                         var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -1360,6 +1538,11 @@
 
                                         var t0 = performance.now(), dur = 200;
                                         var tick = function (now) {
+                                            if (_freeRenderGen !== myRenderGen) {
+                                                morphSvg.remove();
+                                                if (_scratchSvg.parentNode) _scratchSvg.parentNode.removeChild(_scratchSvg);
+                                                return;
+                                            }
                                             var progress = (now - t0) / dur;
                                             if (progress > 1) progress = 1;
                                             var fi = (progress * FRAMES + 0.5) | 0;
@@ -1401,23 +1584,17 @@
                                 } else if (entry.type === 'extra') {
                                     const stroke = entry.stroke;
                                     if (!stroke.d) return;
-                                    const ep = makeStrokePath(stroke.d, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    const ep = makeStrokePath(stroke.d, '3', 'var(--stroke-err)');
                                     stripGelStyle(ep);
-                                    ep.setAttribute('stroke-dasharray', '0 5');
-                                    ep.setAttribute('stroke-linecap', 'square');
-                                    ep.setAttribute('stroke-width', '2.5');
-                                    ep.style.opacity = '0.5';
-                                    appendStrokePath(userSvg, ep);
+                                    ep.classList.add('stroke-extra');
+                                    wrapInPulseGroup(userSvg, ep, 'stroke-extra-group');
                                 } else if (entry.type === 'ghost') {
                                     const origD = ev.refPathData[entry.refIdx];
                                     if (!origD) return;
-                                    const gp = makeStrokePath(origD, '2', isColorBack ? 'var(--stroke-err)' : 'var(--text-muted)');
+                                    const gp = makeStrokePath(origD, '3', 'var(--stroke-warn2, var(--stroke-err))');
                                     stripGelStyle(gp);
-                                    gp.setAttribute('stroke-dasharray', '0 5');
-                                    gp.setAttribute('stroke-linecap', 'square');
-                                    gp.setAttribute('stroke-width', '2.5');
-                                    gp.style.opacity = '0.45';
-                                    appendStrokePath(userSvg, gp);
+                                    gp.classList.add('stroke-ghost');
+                                    wrapInPulseGroup(userSvg, gp, 'stroke-ghost-group');
                                 }
                             });
 
@@ -1453,17 +1630,12 @@
                             const sbsExtra = ev.orderedStrokes.filter(e => e.type === 'extra').length;
                             const sbsGhost = ev.orderedStrokes.filter(e => e.type === 'ghost').length;
                             if (sbsExtra > 0) {
-                                const eb = document.createElement('div');
-                                eb.className = 'excess-strokes-badge';
-                                eb.textContent = '+' + sbsExtra + ' Strich' + (sbsExtra > 1 ? 'e' : '') + ' zu viel';
-                                wrapper.parentNode.insertBefore(eb, wrapper.nextSibling);
+                                const eb = makeBadge('excess-strokes-badge', '<span style="font-size:11px;line-height:1">✚</span>' + (+sbsExtra === 1 ? ' 1 Strich zu viel' : ' ' + sbsExtra + ' Striche zu viel'), 'stroke-extra-group', sbsBoxes[0]);
+                                sbsBoxes[0].appendChild(eb);
                             }
                             if (sbsGhost > 0) {
-                                const mb = document.createElement('div');
-                                mb.className = 'missing-strokes-badge';
-                                mb.textContent = '−' + sbsGhost + ' Strich' + (sbsGhost > 1 ? 'e' : '') + ' zu wenig';
-                                const prev = wrapper.parentNode.querySelector('.excess-strokes-badge');
-                                wrapper.parentNode.insertBefore(mb, prev ? prev.nextSibling : wrapper.nextSibling);
+                                const mb = makeBadge('missing-strokes-badge', '<span style="font-size:11px;line-height:1;display:inline-block;transform:rotate(45deg)">✚</span>' + (+sbsGhost === 1 ? ' 1 Strich zu wenig' : ' ' + sbsGhost + ' Striche zu wenig'), 'stroke-ghost-group', sbsBoxes[0]);
+                                sbsBoxes[0].appendChild(mb);
                             }
 
                             if (isNumbers) {
@@ -1476,6 +1648,7 @@
                                     const g = userSvgOrder[i];
                                     return g && g !== 'good' ? gradeColor(g) : 'var(--text-muted)';
                                 });
+                                adoptNumbersIntoGroups(userSvg);
                                 addNumbersGPAL(refSvg, (i) => {
                                     if (!isColorBack) return 'var(--text-muted)';
                                     return penaltyColor(ev.freePS[i] || 0) !== 'var(--stroke-active)' ? penaltyColor(ev.freePS[i] || 0) : 'var(--text-muted)';
@@ -1492,7 +1665,314 @@
                     // Expose render function for settings handler
                     window._kanjiRenderFreeView = renderFreeView;
 
+                    window._freeViewOverride = null; // reset on each card render
+                    window._kanjiLastMorphPairs = null; // reset stale morph data from previous card
                     renderFreeView();
+
+                    // ── Quicksettings toggle button (Handschrift ↔ SVG-Pfade) ──
+                    // Session-only: does NOT persist to localStorage/settings.
+                    // Safe to call multiple times — creates only if missing, removes if SBS active.
+                    const _ensureQsButton = () => {
+                        const _sbsActive = safeGetItem('c1_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', (getGlobalConfig().sideBySide || 'on'))) === 'on';
+                        const _existing = document.querySelector('.free-view-quicktoggle');
+                        if (_sbsActive) {
+                            if (_existing) _existing.remove();
+                            return;
+                        }
+                        if (_existing) return; // already injected
+                        const _baseView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConfFree.freeView || 'handwriting'));
+                        const qs = document.createElement('button');
+                        qs.className = 'free-view-quicktoggle';
+                        qs.setAttribute('aria-label', 'Ansicht wechseln');
+                        const _updateQsIcon = () => {
+                            const active = window._freeViewOverride || _baseView;
+                            // Show icon for the OTHER mode (what clicking will switch TO)
+                            qs.innerHTML = active === 'handwriting'
+                                // Currently handwriting → clicking switches to SVG-Pfade: pen-tool / bezier path icon
+                                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>'
+                                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 Q8 7 12 12 Q16 17 21 7"/></svg>';
+                        };
+                        _updateQsIcon();
+                        qs.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+                        qs.addEventListener('pointerdown', e => e.stopPropagation());
+                        qs.addEventListener('pointerup', e => {
+                            e.stopPropagation(); e.preventDefault();
+                            const cur = window._freeViewOverride || _baseView;
+                            const next = cur === 'handwriting' ? 'svg' : 'handwriting';
+                            window._freeViewOverride = next;
+                            _updateQsIcon();
+                            const _transC = document.querySelector('.kanji-container');
+                            if (next === 'svg') {
+                                // HW → SVG: hide during DOM rebuild, then fade in while morph runs
+                                if (_transC) {
+                                    _transC.style.transition = '';
+                                    _transC.style.opacity = '0';
+                                    requestAnimationFrame(() => {
+                                        _morphAnimPlayed = false;
+                                        renderFreeView();
+                                        requestAnimationFrame(() => {
+                                            _transC.style.transition = 'opacity 150ms ease-in';
+                                            _transC.style.opacity = '1';
+                                            setTimeout(() => { _transC.style.transition = ''; _transC.style.opacity = ''; }, 170);
+                                        });
+                                    });
+                                } else {
+                                    _morphAnimPlayed = false;
+                                    renderFreeView();
+                                }
+                            } else {
+                                // SVG → HW: reverse morph (Desktop) / fade (WKWebView)
+                                const _isWKRev = document.documentElement.classList.contains('is-ankimobile');
+                                const _revPairs = window._kanjiLastMorphPairs;
+                                if (!_isWKRev && _revPairs && _revPairs.length && _transC) {
+                                    const FRAMES_R = 15, N_R = 16;
+                                    const _scratchR = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                    _scratchR.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+                                    document.body.appendChild(_scratchR);
+                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
+                                    window._kanjiScratchSvgs.push(_scratchR);
+                                    const _resampleR = function(d) {
+                                        const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        tmp.setAttribute('d', d);
+                                        _scratchR.appendChild(tmp);
+                                        const L = tmp.getTotalLength();
+                                        if (!L) { _scratchR.removeChild(tmp); return null; }
+                                        const pts = [];
+                                        for (let i = 0; i < N_R; i++) {
+                                            const pt = tmp.getPointAtLength((i / (N_R - 1)) * L);
+                                            pts.push(pt.x, pt.y);
+                                        }
+                                        _scratchR.removeChild(tmp);
+                                        return pts;
+                                    };
+                                    const revSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                    revSvg.setAttribute('viewBox', '0 0 109 109');
+                                    revSvg.classList.add('handwriting-overlay');
+                                    const animsR = [];
+                                    const _ssRev = window._kanjiStrokeStyle || 'standard';
+                                    for (const pair of _revPairs) {
+                                        const u = _resampleR(pair.userD);
+                                        const r = _resampleR(pair.refD);
+                                        if (!u || !r) continue;
+                                        const last = (N_R - 1) * 2;
+                                        // Same flip logic as forward morph for consistent travel direction
+                                        if ((u[0] - r[last]) * (u[0] - r[last]) + (u[1] - r[last + 1]) * (u[1] - r[last + 1]) <
+                                            (u[0] - r[0]) * (u[0] - r[0]) + (u[1] - r[1]) * (u[1] - r[1])) {
+                                            for (let i = 0, j = last; i < j; i += 2, j -= 2) { const tx = r[i], ty = r[i + 1]; r[i] = r[j]; r[i + 1] = r[j + 1]; r[j] = tx; r[j + 1] = ty; }
+                                        }
+                                        // frames: start at refD (r), end at userD (u)
+                                        const frames = new Array(FRAMES_R + 1);
+                                        for (let f = 0; f <= FRAMES_R; f++) {
+                                            const t = 0.5 - 0.5 * Math.cos((f / FRAMES_R) * Math.PI);
+                                            let s = 'M';
+                                            for (let k = 0; k < N_R; k++) {
+                                                const ix = k * 2;
+                                                if (k) s += 'L';
+                                                s += (r[ix] + (u[ix] - r[ix]) * t).toFixed(1) + ' ' + (r[ix + 1] + (u[ix + 1] - r[ix + 1]) * t).toFixed(1);
+                                            }
+                                            frames[f] = s;
+                                        }
+                                        const strokeColor = pair.color || 'var(--stroke-color, #23a0f0)';
+                                        // Gel: add halo that morphs in sync with main path
+                                        let haloR = null;
+                                        if (_ssRev === 'gel') {
+                                            haloR = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                            haloR.setAttribute('d', frames[0]);
+                                            haloR.setAttribute('stroke-width', '8');
+                                            haloR.setAttribute('stroke', strokeColor);
+                                            haloR.setAttribute('fill', 'none');
+                                            haloR.setAttribute('stroke-linecap', 'round');
+                                            haloR.setAttribute('stroke-linejoin', 'round');
+                                            haloR.setAttribute('class', 'gel-halo');
+                                            haloR.style.setProperty('opacity', '0.12', 'important');
+                                            revSvg.appendChild(haloR);
+                                        }
+                                        const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        el.setAttribute('d', frames[0]);
+                                        el.setAttribute('stroke-width', _ssRev === 'gel' ? '4.5' : '4');
+                                        el.setAttribute('stroke', strokeColor);
+                                        el.setAttribute('fill', 'none');
+                                        el.setAttribute('stroke-linecap', _ssRev === 'ink' ? 'square' : 'round');
+                                        el.setAttribute('stroke-linejoin', 'round');
+                                        if (_ssRev === 'ink') el.style.opacity = '0.85';
+                                        revSvg.appendChild(el);
+                                        animsR.push({ el, halo: haloR, frames });
+                                    }
+                                    if (!animsR.length) {
+                                        if (_scratchR.parentNode) _scratchR.parentNode.removeChild(_scratchR);
+                                        renderFreeView();
+                                    } else {
+                                        // Remove svg-bg gel halos BEFORE show-handwriting: they have inline
+                                        // opacity:0.12 !important which overrides the CSS opacity:0 !important,
+                                        // so they'd stay visible (static at refD) during the whole animation.
+                                        var _svgBgRev = document.getElementById('svg-bg');
+                                        if (_svgBgRev) _svgBgRev.querySelectorAll('.gel-halo').forEach(function(h){h.parentNode.removeChild(h);});
+                                        // Hide ref paths via show-handwriting, overlay our reverse morph SVG
+                                        _transC.classList.add('show-handwriting');
+                                        _transC.appendChild(revSvg);
+                                        let t0R = performance.now();
+                                        const tickR = function(now) {
+                                            if (_freeRenderGen !== myRenderGen) {
+                                                if (_scratchR.parentNode) _scratchR.parentNode.removeChild(_scratchR);
+                                                revSvg.remove();
+                                                return;
+                                            }
+                                            const progress = Math.min((now - t0R) / 200, 1);
+                                            const fi = (progress * FRAMES_R + 0.5) | 0;
+                                            for (const a of animsR) {
+                                                a.el.setAttribute('d', a.frames[fi]);
+                                                if (a.halo) a.halo.setAttribute('d', a.frames[fi]);
+                                            }
+                                            if (progress < 1) {
+                                                requestAnimationFrame(tickR);
+                                            } else {
+                                                // Cross-dissolve: temporarily remove .handwriting-overlay class so
+                                                // renderFreeView()'s teardown doesn't delete revSvg while it's still
+                                                // fading. Keep z-index inline so it stays on top during the fade.
+                                                _transC.classList.remove('show-handwriting');
+                                                if (_scratchR.parentNode) _scratchR.parentNode.removeChild(_scratchR);
+                                                revSvg.style.zIndex = '5'; // preserve stacking after class removal
+                                                revSvg.classList.remove('handwriting-overlay'); // hide from teardown
+                                                renderFreeView(); // builds HW view beneath the overlay
+                                                revSvg.style.transition = 'opacity 80ms linear';
+                                                revSvg.style.opacity = '0';
+                                                setTimeout(function() { revSvg.remove(); }, 100);
+                                            }
+                                        };
+                                        requestAnimationFrame(function() { requestAnimationFrame(tickR); });
+                                    }
+                                } else {
+                                    // WKWebView or no morph data → SMIL reverse morph if data available, else fade
+                                    const _isWKQt = document.documentElement.classList.contains('is-ankimobile');
+                                    const _qtRevPairs = window._kanjiLastMorphPairs;
+                                    if (_isWKQt && _qtRevPairs && _qtRevPairs.length && _transC) {
+                                        const QT_N = 16, QT_DUR = 0.32;
+                                        const _qtScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                        _qtScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+                                        document.body.appendChild(_qtScratch);
+                                        if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
+                                        window._kanjiScratchSvgs.push(_qtScratch);
+                                        const _qtResamplePts = function(d) {
+                                            const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                            tmp.setAttribute('d', d);
+                                            _qtScratch.appendChild(tmp);
+                                            const L = tmp.getTotalLength();
+                                            if (!L) { _qtScratch.removeChild(tmp); return null; }
+                                            const pts = [];
+                                            for (let i = 0; i < QT_N; i++) { const pt = tmp.getPointAtLength((i/(QT_N-1))*L); pts.push(pt.x, pt.y); }
+                                            _qtScratch.removeChild(tmp);
+                                            return pts;
+                                        };
+                                        const revSvgWK = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                        revSvgWK.setAttribute('viewBox', '0 0 109 109');
+                                        revSvgWK.classList.add('handwriting-overlay');
+                                        const _ssRevWK = window._kanjiStrokeStyle || 'standard';
+                                        let _qtLastAnim = null;
+                                        for (const pair of _qtRevPairs) {
+                                            const u = _qtResamplePts(pair.userD);
+                                            const r = _qtResamplePts(pair.refD);
+                                            if (!u || !r) continue;
+                                            const last = (QT_N-1)*2;
+                                            if ((u[0]-r[last])*(u[0]-r[last])+(u[1]-r[last+1])*(u[1]-r[last+1]) <
+                                                (u[0]-r[0])*(u[0]-r[0])+(u[1]-r[1])*(u[1]-r[1])) {
+                                                for (let i=0,j=last;i<j;i+=2,j-=2){const tx=r[i],ty=r[i+1];r[i]=r[j];r[i+1]=r[j+1];r[j]=tx;r[j+1]=ty;}
+                                            }
+                                            const strokeColor = pair.color || 'var(--stroke-color,#23a0f0)';
+                                            let fromD='M', toD='M';
+                                            for (let k=0;k<QT_N;k++){if(k){fromD+='L';toD+='L';}fromD+=r[k*2].toFixed(1)+' '+r[k*2+1].toFixed(1);toD+=u[k*2].toFixed(1)+' '+u[k*2+1].toFixed(1);}
+                                            // Gel: halo with SMIL too
+                                            if (_ssRevWK === 'gel') {
+                                                const haloWK = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                                haloWK.setAttribute('d', fromD);
+                                                haloWK.setAttribute('stroke-width', '8');
+                                                haloWK.setAttribute('stroke', strokeColor);
+                                                haloWK.setAttribute('fill', 'none');
+                                                haloWK.setAttribute('stroke-linecap', 'round');
+                                                haloWK.setAttribute('stroke-linejoin', 'round');
+                                                haloWK.setAttribute('class', 'gel-halo');
+                                                haloWK.style.setProperty('opacity', '0.12', 'important');
+                                                const hAnim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                                                hAnim.setAttribute('attributeName', 'd');
+                                                hAnim.setAttribute('from', fromD);
+                                                hAnim.setAttribute('to', toD);
+                                                hAnim.setAttribute('dur', QT_DUR + 's');
+                                                hAnim.setAttribute('fill', 'freeze');
+                                                hAnim.setAttribute('calcMode', 'spline');
+                                                hAnim.setAttribute('keyTimes', '0;1');
+                                                hAnim.setAttribute('keySplines', '0.42 0 0.58 1');
+                                                hAnim.setAttribute('begin', 'indefinite');
+                                                haloWK.appendChild(hAnim);
+                                                revSvgWK.appendChild(haloWK);
+                                                hAnim.beginElement();
+                                            }
+                                            const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                            el.setAttribute('d', fromD);
+                                            el.setAttribute('stroke-width', _ssRevWK === 'gel' ? '4.5' : '4');
+                                            el.setAttribute('stroke', strokeColor);
+                                            el.setAttribute('fill', 'none');
+                                            el.setAttribute('stroke-linecap', _ssRevWK === 'ink' ? 'square' : 'round');
+                                            el.setAttribute('stroke-linejoin', 'round');
+                                            if (_ssRevWK === 'ink') el.style.opacity = '0.85';
+                                            const anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+                                            anim.setAttribute('attributeName', 'd');
+                                            anim.setAttribute('from', fromD);
+                                            anim.setAttribute('to', toD);
+                                            anim.setAttribute('dur', QT_DUR + 's');
+                                            anim.setAttribute('fill', 'freeze');
+                                            anim.setAttribute('calcMode', 'spline');
+                                            anim.setAttribute('keyTimes', '0;1');
+                                            anim.setAttribute('keySplines', '0.42 0 0.58 1');
+                                            anim.setAttribute('begin', 'indefinite');
+                                            el.appendChild(anim);
+                                            revSvgWK.appendChild(el);
+                                            anim.beginElement();
+                                            _qtLastAnim = anim;
+                                        }
+                                        if (_qtScratch.parentNode) _qtScratch.parentNode.removeChild(_qtScratch);
+                                        // Remove svg-bg gel halos before show-handwriting (inline !important beats CSS)
+                                        var _svgBgWKRev = document.getElementById('svg-bg');
+                                        if (_svgBgWKRev) _svgBgWKRev.querySelectorAll('.gel-halo').forEach(function(h){h.parentNode.removeChild(h);});
+                                        _transC.classList.add('show-handwriting');
+                                        _transC.appendChild(revSvgWK);
+                                        const _qtDone = function() {
+                                            _transC.classList.remove('show-handwriting');
+                                            revSvgWK.style.zIndex = '5';
+                                            revSvgWK.classList.remove('handwriting-overlay'); // hide from renderFreeView teardown
+                                            renderFreeView();
+                                            revSvgWK.style.transition = 'opacity 80ms linear';
+                                            revSvgWK.style.opacity = '0';
+                                            setTimeout(function(){ revSvgWK.remove(); }, 100);
+                                        };
+                                        if (_qtLastAnim) {
+                                            _qtLastAnim.addEventListener('endEvent', _qtDone);
+                                            setTimeout(_qtDone, (QT_DUR + 0.15) * 1000);
+                                        } else {
+                                            renderFreeView();
+                                        }
+                                    } else if (_transC) {
+                                        // No morph data → simple fade
+                                        _transC.style.transition = 'opacity 180ms ease-out';
+                                        _transC.style.opacity = '0';
+                                        setTimeout(() => {
+                                            _transC.style.transition = '';
+                                            renderFreeView();
+                                            requestAnimationFrame(() => requestAnimationFrame(() => {
+                                                _transC.style.transition = 'opacity 220ms ease-in';
+                                                _transC.style.opacity = '1';
+                                                setTimeout(() => { _transC.style.transition = ''; _transC.style.opacity = ''; }, 240);
+                                            }));
+                                        }, 190);
+                                    } else {
+                                        renderFreeView();
+                                    }
+                                }
+                            }
+                        });
+                        const _cont = document.querySelector('.kanji-container');
+                        if (_cont) _cont.appendChild(qs);
+                    };
+                    window._kanjiEnsureQsButton = _ensureQsButton;
+                    _ensureQsButton();
                 }
             }
         }
@@ -1510,8 +1990,9 @@
                 _kc.classList.remove('stroke-style-gel', 'stroke-style-ink', 'stroke-style-neon');
                 if (_ss !== 'standard') _kc.classList.add('stroke-style-' + _ss);
             }
-            if (window._kanjiRenderFreeView) {
+            if (window._kanjiRenderFreeView && window._kanjiFreeEval) {
                 window._kanjiRenderFreeView();
+                if (window._kanjiEnsureQsButton) window._kanjiEnsureQsButton();
             } else {
                 applyBackFeatures();
                 rebuildSbsGrids();
