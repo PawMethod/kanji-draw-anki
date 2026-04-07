@@ -113,6 +113,7 @@
             var ps = JSON.parse(sessionStorage.getItem('kanjiErrors') || localStorage.getItem('kanjiErrors') || '[]');
             var sc = parseInt(sessionStorage.getItem('kanjiCurrentStroke') || localStorage.getItem('kanjiCurrentStroke') || '0', 10);
             function _ck(k) { if (window._ks && window._ks[k] !== undefined) return window._ks[k]; try { var cs = document.cookie.split('; '), i; if (location.protocol !== 'file:') { for (i = 0; i < cs.length; i++) { if (cs[i].indexOf('_k=') === 0) { var obj = JSON.parse(decodeURIComponent(cs[i].substring(3))); if (obj[k] !== undefined) return obj[k]; break } } } for (i = cs.length - 1; i >= 0; i--) { if (cs[i].indexOf(k + '=') === 0) return decodeURIComponent(cs[i].substring(k.length + 1)) } } catch (e) { } return null }
+            var drawMode = _ck('c1_kanjiOptDrawMode') || localStorage.getItem('c1_kanjiOptDrawMode') || _ck('kanjiOptDrawMode') || localStorage.getItem('kanjiOptDrawMode') || 'guided';
             var colorOn = (_ck('c1_kanjiOptColorBack') || localStorage.getItem('c1_kanjiOptColorBack') || _ck('kanjiOptColorBack') || localStorage.getItem('kanjiOptColorBack') || 'on') === 'on';
             if (colorOn && ps.length > 0) {
                 var css = '';
@@ -120,7 +121,7 @@
                     var m = ps[i] || 0, c = 'var(--stroke-active)';
                     if (i >= sc && sc < ps.length) c = 'var(--stroke-err)';
                     else if (m >= 3) c = 'var(--stroke-err)';
-                    else if (m === 2) c = 'var(--stroke-warn2)';
+                    else if (m === 2) c = drawMode === 'free' ? 'var(--stroke-err)' : 'var(--stroke-warn2)';
                     else if (m === 1) c = 'var(--stroke-warn1)';
                     if (c !== 'var(--stroke-active)') css += '#svg-bg path:nth-child(' + (i + 1) + '){stroke:' + c + ' !important} ';
                 }
@@ -131,7 +132,6 @@
                 }
             }
             // Hide SVG paths in handwriting/SBS mode to prevent 1-frame flash
-            var drawMode = _ck('c1_kanjiOptDrawMode') || localStorage.getItem('c1_kanjiOptDrawMode') || _ck('kanjiOptDrawMode') || localStorage.getItem('kanjiOptDrawMode') || 'guided';
             var freeView = _ck('c1_kanjiOptFreeView') || localStorage.getItem('c1_kanjiOptFreeView') || _ck('kanjiOptFreeView') || localStorage.getItem('kanjiOptFreeView') || 'handwriting';
             var sbsOn = (_ck('c1_kanjiOptSideBySide') || localStorage.getItem('c1_kanjiOptSideBySide') || _ck('kanjiOptSideBySide') || localStorage.getItem('kanjiOptSideBySide') || 'on') === 'on';
             var hasFreeStrokes = !!(sessionStorage.getItem('kanjiFreeStrokes') || localStorage.getItem('kanjiFreeStrokes'));
@@ -320,9 +320,7 @@
     // Re-apply font-size on back side (class toggle + dynamic style for WKWebView)
     (function () {
         try {
-            var fs = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeFontSize', 'normal')
-                : (localStorage.getItem('kanjiThemeFontSize') || 'normal');
+            var fs = safeGetItem('kanjiThemeFontSize', 'normal');
             document.documentElement.classList.remove('font-small', 'font-large');
             if (fs === 'small') document.documentElement.classList.add('font-small');
             else if (fs === 'large') document.documentElement.classList.add('font-large');
@@ -357,9 +355,7 @@
     // Re-apply stroke style class on back side (CSS needs it on .kanji-container)
     (function () {
         try {
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (ss === 'soft') ss = 'gel';
             window._kanjiStrokeStyle = ss;
             var kc = document.querySelector('.kanji-container');
@@ -565,7 +561,6 @@
         const svgBg = document.getElementById('svg-bg');
         if (!svgBg) return;
         const paths = svgBg.querySelectorAll('path:not(.gel-halo)');
-        const afEl = document.getElementById('kanji-anti-flicker');
 
         // ── Shared helpers ──
 
@@ -834,10 +829,9 @@
             svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
         };
 
-        // Map freePS penalty → color
+        // Map freePS penalty → color (0=good, 1=ok, 2=bad, 3=ghost/missing)
         const penaltyColor = (m) => {
-            if (m >= 3) return 'var(--stroke-err)';
-            if (m === 2) return 'var(--stroke-warn2)';
+            if (m >= 2) return 'var(--stroke-err)';
             if (m === 1) return 'var(--stroke-warn1)';
             return 'var(--stroke-active)';
         };
@@ -848,128 +842,122 @@
             bad: 'var(--stroke-err)'
         };
 
-        const applyBackFeatures = function () {
+        // forceFreeMode: pass true when calling from free-mode render paths (renderFreeView,
+        // showFinalSvgView) so m=2 always maps to --stroke-err regardless of storage state.
+        // Passing false (or omitting) means guided mode — m=2 → --stroke-warn2 as intended.
+        const applyBackFeatures = function (forceFreeMode) {
             if (applyBackFeatures._running) return;
             applyBackFeatures._running = true;
             try {
-            const globalConf = getGlobalConfig();
-            const isColorBack = safeGetItem('c1_kanjiOptColorBack', safeGetItem('kanjiOptColorBack', globalConf.colorBack)) === 'on';
-            const isNumbers = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers)) === 'on';
+                const globalConf = getGlobalConfig();
+                const isColorBack = safeGetItem('c1_kanjiOptColorBack', safeGetItem('kanjiOptColorBack', globalConf.colorBack)) === 'on';
+                const isNumbers = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers)) === 'on';
 
-            let problemStrokes = [];
-            let strokesCompleted = 0;
+                let problemStrokes = [];
+                let strokesCompleted = 0;
 
-            if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
-            if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
+                if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
+                if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
 
-            const errStr = safeGetState('kanjiErrors');
-            const strokeStr = safeGetState('kanjiCurrentStroke');
+                const errStr = safeGetState('kanjiErrors');
+                const strokeStr = safeGetState('kanjiCurrentStroke');
 
-            if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
-            if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
+                if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
+                if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
 
-            // 1. Compute stroke colors and apply inline styles in a single pass
-            const cssRules = [];
-            const pathColors = [];
-            paths.forEach((path, index) => {
-                let mistakeCount = problemStrokes[index] || 0;
-                let pathColor = 'var(--stroke-active)';
-                if (isColorBack) {
-                    if (index >= strokesCompleted && strokesCompleted < paths.length) pathColor = 'var(--stroke-err)';
-                    else if (mistakeCount >= 3) pathColor = 'var(--stroke-err)';
-                    else if (mistakeCount === 2) pathColor = 'var(--stroke-warn2)';
-                    else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
-                }
-                pathColors.push(pathColor);
-                path.style.setProperty('stroke', pathColor, 'important');
-                if (pathColor !== 'var(--stroke-active)') {
-                    cssRules.push('#svg-bg path:nth-child(' + (index + 1) + '){stroke:' + pathColor + ' !important}');
-                }
-            });
-            const colorCSS = cssRules.join(' ');
-            // 2. Update stroke colors via a SEPARATE style element (preserves anti-flicker rules)
-            let colorStyle = document.getElementById('kanji-stroke-colors');
-            if (!colorStyle) {
-                colorStyle = document.createElement('style');
-                colorStyle.id = 'kanji-stroke-colors';
-                if (afEl) afEl.parentNode.insertBefore(colorStyle, afEl.nextSibling);
-                else document.head.appendChild(colorStyle);
-            }
-            colorStyle.textContent = colorCSS;
+                // 1. Compute stroke colors and apply inline styles in a single pass
+                // Use forceFreeMode when called from a known free-mode context (renderFreeView /
+                // showFinalSvgView) so cookie/localStorage read failures cannot silently fall back
+                // to guided-mode coloring and make m=2 appear orange instead of red.
+                const _isFreeMode = forceFreeMode || safeGetItem('c1_kanjiOptDrawMode', safeGetItem('kanjiOptDrawMode', 'guided')) === 'free';
+                const pathColors = [];
+                paths.forEach((path, index) => {
+                    let mistakeCount = problemStrokes[index] || 0;
+                    let pathColor = 'var(--stroke-active)';
+                    if (isColorBack) {
+                        if (index >= strokesCompleted && strokesCompleted < paths.length) pathColor = 'var(--stroke-err)';
+                        else if (mistakeCount >= 3) pathColor = 'var(--stroke-err)';
+                        else if (mistakeCount === 2) pathColor = _isFreeMode ? 'var(--stroke-err)' : 'var(--stroke-warn2)';
+                        else if (mistakeCount === 1) pathColor = 'var(--stroke-warn1)';
+                    }
+                    pathColors.push(pathColor);
+                    path.style.setProperty('stroke', pathColor, 'important');
+                });
+                // 2. Clear any leftover nth-child rules from previous renders
+                let colorStyle = document.getElementById('kanji-stroke-colors');
+                if (colorStyle) colorStyle.textContent = '';
 
-            // Apply stroke-style-specific inline effects
-            // Re-read from storage (not stale window._kanjiStrokeStyle from page load)
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
-            if (ss === 'soft') ss = 'gel';
-            window._kanjiStrokeStyle = ss;
-            // Clean old gel halos before re-applying any style
-            var svgBgEl = document.getElementById('svg-bg');
-            if (svgBgEl) svgBgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
-            // First pass: reset all paths + apply basic style properties
-            paths.forEach((path, i) => {
-                // Full reset
-                path.style.removeProperty('filter');
-                path.style.removeProperty('-webkit-filter');
-                path.style.removeProperty('opacity');
-                path.removeAttribute('filter');
-                path.removeAttribute('paint-order');
-                // Apply new style
+                // Apply stroke-style-specific inline effects
+                // Re-read from storage (not stale window._kanjiStrokeStyle from page load)
+                var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
+                if (ss === 'soft') ss = 'gel';
+                window._kanjiStrokeStyle = ss;
+                // Clean old gel halos before re-applying any style
+                var svgBgEl = document.getElementById('svg-bg');
+                if (svgBgEl) svgBgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
                 var dk = document.documentElement.classList.contains('nightMode') ||
                     document.documentElement.classList.contains('night_mode') ||
                     document.body.classList.contains('nightMode') ||
                     document.body.classList.contains('night_mode');
-                switch (ss) {
-                    case 'neon': {
-                        var wk = document.documentElement.classList.contains('is-ankimobile');
-                        var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
-                        path.setAttribute('filter', 'url(#' + fId + ')');
-                        break;
+                var wk = document.documentElement.classList.contains('is-ankimobile');
+                // First pass: reset all paths + apply basic style properties
+                paths.forEach((path, i) => {
+                    // Full reset
+                    path.style.removeProperty('filter');
+                    path.style.removeProperty('-webkit-filter');
+                    path.style.removeProperty('opacity');
+                    path.removeAttribute('filter');
+                    path.removeAttribute('paint-order');
+                    // Apply new style
+                    switch (ss) {
+                        case 'neon': {
+                            var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
+                            path.setAttribute('filter', 'url(#' + fId + ')');
+                            break;
+                        }
+                        case 'gel': {
+                            path.setAttribute('stroke-width', '4.5');
+                            path.setAttribute('paint-order', 'stroke');
+                            // Use pathColors[i] directly — CSS variables work in filter values
+                            // and avoid getComputedStyle returning rgba(0,0,0,0) when the
+                            // anti-flicker transparent override is active.
+                            var dropC = pathColors[i] || 'var(--stroke-active)';
+                            path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + dropC + ')');
+                            path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + dropC + ')');
+                            break;
+                        }
+                        case 'ink':
+                            path.style.opacity = '0.85';
+                            break;
                     }
-                    case 'gel': {
-                        path.setAttribute('stroke-width', '4.5');
-                        path.setAttribute('paint-order', 'stroke');
-                        // Use pathColors[i] directly — CSS variables work in filter values
-                        // and avoid getComputedStyle returning rgba(0,0,0,0) when the
-                        // anti-flicker transparent override is active.
-                        var dropC = pathColors[i] || 'var(--stroke-active)';
-                        path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + dropC + ')');
-                        path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + dropC + ')');
-                        break;
-                    }
-                    case 'ink':
-                        path.style.opacity = '0.85';
-                        break;
+                });
+                // Second pass: add gel halos AFTER all paths styled (avoids nth-child shift)
+                if (ss === 'gel') {
+                    paths.forEach(function (path, i) {
+                        // Use pathColors[i] directly (CSS variable) rather than getComputedStyle,
+                        // which can return rgba(0,0,0,0) if the anti-flicker transparent override
+                        // is still active at call time, making the halo invisible.
+                        var haloC = pathColors[i] || 'var(--stroke-active)';
+                        var h2 = path.cloneNode(false);
+                        h2.setAttribute('class', 'gel-halo');
+                        h2.setAttribute('stroke-width', '8');
+                        h2.setAttribute('stroke-linecap', 'round');
+                        h2.setAttribute('stroke-linejoin', 'round');
+                        h2.style.cssText = '';
+                        h2.style.setProperty('opacity', '0.12', 'important');
+                        h2.style.setProperty('stroke', haloC, 'important');
+                        h2.removeAttribute('filter');
+                        path.parentNode.insertBefore(h2, path);
+                    });
                 }
-            });
-            // Second pass: add gel halos AFTER all paths styled (avoids nth-child shift)
-            if (ss === 'gel') {
-                paths.forEach(function (path, i) {
-                    // Use pathColors[i] directly (CSS variable) rather than getComputedStyle,
-                    // which can return rgba(0,0,0,0) if the anti-flicker transparent override
-                    // is still active at call time, making the halo invisible.
-                    var haloC = pathColors[i] || 'var(--stroke-active)';
-                    var h2 = path.cloneNode(false);
-                    h2.setAttribute('class', 'gel-halo');
-                    h2.setAttribute('stroke-width', '8');
-                    h2.setAttribute('stroke-linecap', 'round');
-                    h2.setAttribute('stroke-linejoin', 'round');
-                    h2.style.cssText = '';
-                    h2.style.setProperty('opacity', '0.12', 'important');
-                    h2.style.setProperty('stroke', haloC, 'important');
-                    h2.removeAttribute('filter');
-                    path.parentNode.insertBefore(h2, path);
-                });
-            }
 
-            svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
+                svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
 
-            if (isNumbers) {
-                addNumbersGPAL(svgBg, (i) => {
-                    return (pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
-                });
-            }
+                if (isNumbers) {
+                    addNumbersGPAL(svgBg, (i) => {
+                        return (pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
+                    });
+                }
             } finally {
                 applyBackFeatures._running = false;
             }
@@ -1076,7 +1064,7 @@
                 // No SBS — reference kanji stays visible with error coloring.
                 // applyBackFeatures() is skipped for free mode at init, so we
                 // must call it explicitly here to apply colors AND gel halos.
-                applyBackFeatures();
+                applyBackFeatures(true);
             } else if (container) {
                 // Run evaluation synchronously to prevent visual flash/jitter
                 const gen = window._kanjiGeneration || 0;
@@ -1132,14 +1120,25 @@
                     // Strictness affects grading thresholds (loose=lenient, strict=demanding)
                     const strictness = safeGetItem('c1_kanjiOptStrictness', safeGetItem('kanjiOptStrictness', globalConfFree.strictness || 'normal'));
                     const sMult = strictness === 'loose' ? 1.35 : strictness === 'strict' ? 0.7 : 1.0;
+
+                    // Grading thresholds — full strictness scaling (quality of matched strokes)
+                    //   loose: GOOD≤21.6  OK≤37.8
+                    //  normal: GOOD≤16.0  OK≤28.0
+                    //  strict: GOOD≤11.2  OK≤19.6
                     const GOOD_THRESH = 16 * sMult, OK_THRESH = 28 * sMult;
 
-                    // MAX_PROXIMITY: reject pair if every point in userStroke is farther than this
-                    // from every point in refStroke (canvas is 109×109 SVG units).
-                    // Uses early-exit: as soon as one pair of points is close enough, the filter passes.
-                    const MAX_PROXIMITY = 18;
+                    // Matching thresholds — gentler scaling (determines ghost/extra, not grade).
+                    // Using half the strictness adjustment: mMult = 1 + (sMult-1)*0.5
+                    // so imprecise-but-correctly-placed strokes are matched+graded rather than
+                    // mislabelled as extra/ghost. MAX_MATCH_COST base raised to 36 so there is
+                    // always a healthy "bad grade" zone above OK_THRESH in every mode.
+                    //   loose: PROXIMITY≤21  MATCH_COST≤42.3
+                    //  normal: PROXIMITY≤18  MATCH_COST≤36.0
+                    //  strict: PROXIMITY≤15  MATCH_COST≤30.6
+                    const mMult = 1 + (sMult - 1) * 0.5; // loose: 1.175 | normal: 1.0 | strict: 0.85
+                    const MAX_PROXIMITY = Math.round(18 * mMult);
                     // MAX_MATCH_COST: reject pair even if proximity passes but Fréchet is huge
-                    const MAX_MATCH_COST = 30 * sMult;
+                    const MAX_MATCH_COST = 36 * mMult;
 
                     // Fast min-distance check with early exit (O(SAMPLE_N²) worst case, but exits early)
                     const passesProximity = (uPts, rPts) => {
@@ -1153,12 +1152,54 @@
                         return false;
                     };
 
+                    // Direction check: compare start→end vector of user vs reference stroke.
+                    // Returns true if drawn in opposite direction (dot < -0.2, i.e. >~102° off).
+                    const isReversed = (uPts, rPts) => {
+                        if (uPts.length < 2 || rPts.length < 2) return false;
+                        const udx = uPts[uPts.length - 1].x - uPts[0].x;
+                        const udy = uPts[uPts.length - 1].y - uPts[0].y;
+                        const uLen = Math.sqrt(udx * udx + udy * udy) || 1;
+                        const rdx = rPts[rPts.length - 1].x - rPts[0].x;
+                        const rdy = rPts[rPts.length - 1].y - rPts[0].y;
+                        const rLen = Math.sqrt(rdx * rdx + rdy * rdy) || 1;
+                        const dot = (udx / uLen) * (rdx / rLen) + (udy / uLen) * (rdy / rLen);
+                        return dot < -0.2;
+                    };
+
+                    // Grade helpers: 0=good, 1=ok, 2=bad
+                    // Grading uses hard caps so violations are ALWAYS visible regardless of
+                    // shape quality. The matching cost matrix stays shape-only so ghost/extra
+                    // detection is unaffected by order or direction.
+                    //
+                    // Direction cap: any reversed stroke → at most "ok" (all modes)
+                    //
+                    // Order caps per strictness (orderDelta = |drawingPosition − refIndex|):
+                    //   loose:  delta 0 = no cap | delta 1 = no cap | delta 2 = ok | delta 3+ = bad
+                    //  normal:  delta 0 = no cap | delta 1 = ok     | delta 2+ = bad
+                    //  strict:  delta 0 = no cap | delta 1+ = bad
+                    const ORDER_OK_THRESH = strictness === 'loose' ? 1 : 0;  // deltas ≤ this: no cap
+                    const ORDER_BAD_THRESH = strictness === 'strict' ? 1 : strictness === 'loose' ? 3 : 2;
+
+                    const computeGrade = (shapeCost, u, ri) => {
+                        // 1. Base grade from shape
+                        let g = shapeCost <= GOOD_THRESH ? 0 : shapeCost <= OK_THRESH ? 1 : 2;
+                        // 2. Direction cap
+                        if (isReversed(userProcessed[u], refProcessed[ri])) g = Math.max(g, 1);
+                        // 3. Order cap
+                        const delta = Math.abs(u - ri);
+                        if (delta >= ORDER_BAD_THRESH) g = 2;
+                        else if (delta > ORDER_OK_THRESH) g = Math.max(g, 1);
+                        return g;
+                    };
+
                     const DUMMY_COST = 999;
                     const costMatrix = [];
                     for (let i = 0; i < dim; i++) {
                         const row = [];
                         for (let j = 0; j < dim; j++) {
                             if (i < nUser && j < nRef && passesProximity(userProcessed[i], refProcessed[j])) {
+                                // Shape-only cost — direction/order do NOT influence matching so
+                                // ghost/extra classification stays purely shape-based.
                                 const fwd = frechet(userProcessed[i], refProcessed[j]);
                                 const rev = frechet(userProcessed[i], refProcessed[j].slice().reverse());
                                 const cost = Math.min(fwd, rev);
@@ -1180,25 +1221,21 @@
                         }
                     }
 
+                    const GRADE_NAMES = ['good', 'ok', 'bad'];
                     const gradedStrokes = freeStrokeData.map((s, u) => {
-                        let grade = 'bad';
+                        let g = 2; // default: bad (unmatched)
                         if (userToRef[u] !== undefined) {
-                            const cost = userToRef[u].cost;
-                            if (cost <= GOOD_THRESH) grade = 'good';
-                            else if (cost <= OK_THRESH) grade = 'ok';
+                            g = computeGrade(userToRef[u].cost, u, userToRef[u].refIdx);
                         }
-                        return { d: s.d, grade };
+                        return { d: s.d, grade: GRADE_NAMES[g] };
                     });
 
                     const freePS = new Array(nRef).fill(0);
                     for (let r = 0; r < nRef; r++) {
                         if (refToUser[r] !== undefined) {
-                            const cost = refToUser[r].cost;
-                            if (cost <= GOOD_THRESH) freePS[r] = 0;
-                            else if (cost <= OK_THRESH) freePS[r] = 1;
-                            else freePS[r] = 2;
+                            freePS[r] = computeGrade(refToUser[r].cost, refToUser[r].userIdx, r);
                         } else {
-                            freePS[r] = 3;
+                            freePS[r] = 3; // ghost (missing)
                         }
                     }
 
@@ -1261,9 +1298,7 @@
                             window._kanjiScratchSvgs = [];
                         }
                         // Re-read stroke style from storage (may have changed since page load)
-                        var _ss = (typeof safeGetItem === 'function')
-                            ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                            : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+                        var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
                         if (_ss === 'soft') _ss = 'gel';
                         window._kanjiStrokeStyle = _ss;
                         const cont = document.querySelector('.kanji-container');
@@ -1416,7 +1451,7 @@
                             // Helper: show final SVG-Pfade view with badges (no animation)
                             const showFinalSvgView = () => {
                                 hideRefPaths();
-                                applyBackFeatures();
+                                applyBackFeatures(true);
                                 // If view switch: skip fadeIn animation on svgBg stroke numbers
                                 if (_isViewSwitch) svgBg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
                                 // Remove any placeholder badges from the morph animation
@@ -1541,12 +1576,12 @@
                                     var L = eg.p.getTotalLength();
                                     if (!L) return;
                                     var s0 = eg.p.getPointAtLength(0);
-                                    var s1; try { s1 = eg.p.getPointAtLength(Math.min(4, L)); } catch(e) { s1 = s0; }
-                                    var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx*dx+dy*dy) || 1;
+                                    var s1; try { s1 = eg.p.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
+                                    var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
                                     var nt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                     nt.setAttribute('class', 'stroke-number');
-                                    nt.setAttribute('x', (s0.x - dx/dist*4.5).toFixed(2));
-                                    nt.setAttribute('y', (s0.y - dy/dist*4.5).toFixed(2));
+                                    nt.setAttribute('x', (s0.x - dx / dist * 4.5).toFixed(2));
+                                    nt.setAttribute('y', (s0.y - dy / dist * 4.5).toFixed(2));
                                     nt.style.cssText = 'fill:var(--stroke-err);stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                     nt.textContent = eg.label;
                                     eg.g.appendChild(nt);
@@ -1556,12 +1591,12 @@
                                     var L = gg.p.getTotalLength();
                                     if (!L) return;
                                     var s0 = gg.p.getPointAtLength(0);
-                                    var s1; try { s1 = gg.p.getPointAtLength(Math.min(4, L)); } catch(e) { s1 = s0; }
-                                    var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx*dx+dy*dy) || 1;
+                                    var s1; try { s1 = gg.p.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
+                                    var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
                                     var nt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                     nt.setAttribute('class', 'stroke-number');
-                                    nt.setAttribute('x', (s0.x - dx/dist*4.5).toFixed(2));
-                                    nt.setAttribute('y', (s0.y - dy/dist*4.5).toFixed(2));
+                                    nt.setAttribute('x', (s0.x - dx / dist * 4.5).toFixed(2));
+                                    nt.setAttribute('y', (s0.y - dy / dist * 4.5).toFixed(2));
                                     nt.style.cssText = 'fill:var(--stroke-warn2,var(--stroke-err));stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                     gg.g.appendChild(nt);
                                 });
@@ -1648,59 +1683,61 @@
                                     // Must be done after the morphPairs.forEach loop so all uLP/rLP are
                                     // available for the collision pass across the full set.
                                     if (isNumbers) {
-                                        var _wkTrueLP = function(d) {
-                                            var tp = document.createElementNS('http://www.w3.org/2000/svg','path');
+                                        var _wkTrueLP = function (d) {
+                                            var tp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                                             tp.setAttribute('d', d); _wkScratch.appendChild(tp);
                                             var tL = tp.getTotalLength();
                                             if (!tL) { _wkScratch.removeChild(tp); return null; }
                                             var ts0 = tp.getPointAtLength(0);
-                                            var ts1; try { ts1 = tp.getPointAtLength(Math.min(4,tL)); } catch(e) { ts1=ts0; }
+                                            var ts1; try { ts1 = tp.getPointAtLength(Math.min(4, tL)); } catch (e) { ts1 = ts0; }
                                             _wkScratch.removeChild(tp);
-                                            var tdx=ts1.x-ts0.x, tdy=ts1.y-ts0.y, td=Math.sqrt(tdx*tdx+tdy*tdy)||1;
-                                            return { x: ts0.x-tdx/td*4.5, y: ts0.y-tdy/td*4.5 };
+                                            var tdx = ts1.x - ts0.x, tdy = ts1.y - ts0.y, td = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
+                                            return { x: ts0.x - tdx / td * 4.5, y: ts0.y - tdy / td * 4.5 };
                                         };
-                                        var _wkColAdj = function(rawArr) {
-                                            var MD=6.0, placed=[];
-                                            return rawArr.map(function(pos) {
+                                        var _wkColAdj = function (rawArr) {
+                                            var MD = 6.0, placed = [];
+                                            return rawArr.map(function (pos) {
                                                 if (!pos) { placed.push(null); return null; }
-                                                var fx=pos.x, fy=pos.y, moved=true, att=0;
-                                                while (moved && att<10) {
-                                                    moved=false;
-                                                    for (var ci=0;ci<placed.length;ci++) {
-                                                        var cp=placed[ci]; if (!cp) continue;
-                                                        var dx=fx-cp.x, dy=fy-cp.y, dist=Math.sqrt(dx*dx+dy*dy);
-                                                        if (dist<MD) { moved=true; var pd=dist||1.414;
-                                                            fx+=(dist>0?dx/pd:-0.707)*(MD-dist+0.5);
-                                                            fy+=(dist>0?dy/pd:-0.707)*(MD-dist+0.5); }
+                                                var fx = pos.x, fy = pos.y, moved = true, att = 0;
+                                                while (moved && att < 10) {
+                                                    moved = false;
+                                                    for (var ci = 0; ci < placed.length; ci++) {
+                                                        var cp = placed[ci]; if (!cp) continue;
+                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
+                                                        if (dist < MD) {
+                                                            moved = true; var pd = dist || 1.414;
+                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
+                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
+                                                        }
                                                     } att++;
                                                 }
-                                                placed.push({x:fx,y:fy}); return {x:fx,y:fy};
+                                                placed.push({ x: fx, y: fy }); return { x: fx, y: fy };
                                             });
                                         };
                                         // End: all ref paths (matches addNumbersGPAL on svgBg)
                                         var _wkRawRef = [];
-                                        for (var ri4=0; ri4<ev.nRef; ri4++) _wkRawRef.push(_wkTrueLP(ev.refPathData[ri4]));
+                                        for (var ri4 = 0; ri4 < ev.nRef; ri4++) _wkRawRef.push(_wkTrueLP(ev.refPathData[ri4]));
                                         var _wkAdjRef = _wkColAdj(_wkRawRef);
                                         // Start: matched user paths in morphPairs order
-                                        var _wkAdjUser = _wkColAdj(morphPairs.map(function(p){ return _wkTrueLP(p.userD); }));
-                                        morphPairs.forEach(function(pair, pIdx) {
+                                        var _wkAdjUser = _wkColAdj(morphPairs.map(function (p) { return _wkTrueLP(p.userD); }));
+                                        morphPairs.forEach(function (pair, pIdx) {
                                             if (!pair.numLabel) return;
                                             var uLP = _wkAdjUser[pIdx], rLP = _wkAdjRef[pair.refIdx];
                                             if (!uLP || !rLP) return;
                                             var nt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                             nt.setAttribute('class', 'stroke-number');
                                             nt.setAttribute('x', uLP.x.toFixed(2)); nt.setAttribute('y', uLP.y.toFixed(2));
-                                            nt.style.cssText = 'fill:'+(pair.numColor||'var(--text-muted)')+';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
+                                            nt.style.cssText = 'fill:' + (pair.numColor || 'var(--text-muted)') + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                             nt.textContent = pair.numLabel;
-                                            ['x','y'].forEach(function(attr) {
+                                            ['x', 'y'].forEach(function (attr) {
                                                 var an = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
                                                 an.setAttribute('attributeName', attr);
-                                                an.setAttribute('from', (attr==='x'?uLP.x:uLP.y).toFixed(2));
-                                                an.setAttribute('to',   (attr==='x'?rLP.x:rLP.y).toFixed(2));
-                                                an.setAttribute('dur', DUR+'s'); an.setAttribute('fill','freeze');
-                                                an.setAttribute('calcMode','spline'); an.setAttribute('keyTimes','0;1');
-                                                an.setAttribute('keySplines','0.42 0 0.58 1');
-                                                an.setAttribute('begin','indefinite');
+                                                an.setAttribute('from', (attr === 'x' ? uLP.x : uLP.y).toFixed(2));
+                                                an.setAttribute('to', (attr === 'x' ? rLP.x : rLP.y).toFixed(2));
+                                                an.setAttribute('dur', DUR + 's'); an.setAttribute('fill', 'freeze');
+                                                an.setAttribute('calcMode', 'spline'); an.setAttribute('keyTimes', '0;1');
+                                                an.setAttribute('keySplines', '0.42 0 0.58 1');
+                                                an.setAttribute('begin', 'indefinite');
                                                 nt.appendChild(an); an.beginElement();
                                             });
                                             morphSvg.appendChild(nt);
@@ -1778,10 +1815,10 @@
                                             var L = tmp.getTotalLength();
                                             if (!L) { scratch.removeChild(tmp); return null; }
                                             var s0 = tmp.getPointAtLength(0);
-                                            var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch(e) { s1 = s0; }
+                                            var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
                                             scratch.removeChild(tmp);
-                                            var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx*dx+dy*dy)||1;
-                                            return { x: s0.x - dx/dist*4.5, y: s0.y - dy/dist*4.5 };
+                                            var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                                            return { x: s0.x - dx / dist * 4.5, y: s0.y - dy / dist * 4.5 };
                                         };
                                         // Apply the same collision-avoidance as addNumbersGPAL to an array of
                                         // raw label positions (nulls are preserved and skipped).
@@ -1794,12 +1831,12 @@
                                                     moved = false;
                                                     for (var ci = 0; ci < placed.length; ci++) {
                                                         var cp = placed[ci]; if (!cp) continue;
-                                                        var dx = fx-cp.x, dy = fy-cp.y, dist = Math.sqrt(dx*dx+dy*dy);
+                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
                                                         if (dist < MD) {
                                                             moved = true;
                                                             var pd = dist || 1.414;
-                                                            fx += (dist > 0 ? dx/pd : -0.707) * (MD - dist + 0.5);
-                                                            fy += (dist > 0 ? dy/pd : -0.707) * (MD - dist + 0.5);
+                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
+                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
                                                         }
                                                     }
                                                     att++;
@@ -1831,7 +1868,7 @@
                                                 if (!an2) continue;
                                                 var nt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                                 nt.setAttribute('class', 'stroke-number');
-                                                nt.style.cssText = 'fill:'+pair2.numColor+';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
+                                                nt.style.cssText = 'fill:' + pair2.numColor + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                                 nt.textContent = pair2.numLabel;
                                                 nt.setAttribute('x', posU.x.toFixed(2)); nt.setAttribute('y', posU.y.toFixed(2));
                                                 morphSvg.appendChild(nt);
@@ -2127,10 +2164,10 @@
                                         var L = tmp.getTotalLength();
                                         if (!L) { _scratchR.removeChild(tmp); return null; }
                                         var s0 = tmp.getPointAtLength(0);
-                                        var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch(e) { s1 = s0; }
+                                        var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
                                         _scratchR.removeChild(tmp);
-                                        var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx*dx+dy*dy)||1;
-                                        return { x: s0.x - dx/dist*4.5, y: s0.y - dy/dist*4.5 };
+                                        var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                                        return { x: s0.x - dx / dist * 4.5, y: s0.y - dy / dist * 4.5 };
                                     };
                                     var _colAdjR = function (rawArr) {
                                         var MD = 6.0, placed = [];
@@ -2141,11 +2178,11 @@
                                                 moved = false;
                                                 for (var ci = 0; ci < placed.length; ci++) {
                                                     var cp = placed[ci]; if (!cp) continue;
-                                                    var dx = fx-cp.x, dy = fy-cp.y, dist = Math.sqrt(dx*dx+dy*dy);
+                                                    var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
                                                     if (dist < MD) {
                                                         moved = true; var pd = dist || 1.414;
-                                                        fx += (dist > 0 ? dx/pd : -0.707) * (MD - dist + 0.5);
-                                                        fy += (dist > 0 ? dy/pd : -0.707) * (MD - dist + 0.5);
+                                                        fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
+                                                        fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
                                                     }
                                                 }
                                                 att++;
@@ -2173,11 +2210,11 @@
                                             var aR = animsR[pi3];
                                             if (!aR || !aR.numLabel) continue;
                                             var posRev = _adjAllRefR[_revPairs[pi3].refIdx];
-                                            var posHW  = _adjAllUserR[pi3];
+                                            var posHW = _adjAllUserR[pi3];
                                             if (!posRev || !posHW) continue;
                                             var ntR = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                             ntR.setAttribute('class', 'stroke-number');
-                                            ntR.style.cssText = 'fill:'+(aR.numColor||'var(--text-muted)')+';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
+                                            ntR.style.cssText = 'fill:' + (aR.numColor || 'var(--text-muted)') + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                             ntR.textContent = aR.numLabel;
                                             ntR.setAttribute('x', posRev.x.toFixed(2)); ntR.setAttribute('y', posRev.y.toFixed(2));
                                             revSvg.appendChild(ntR);
@@ -2287,27 +2324,29 @@
                                             const tL = tmp.getTotalLength();
                                             if (!tL) { _qtScratch.removeChild(tmp); return null; }
                                             const ts0 = tmp.getPointAtLength(0);
-                                            let ts1; try { ts1 = tmp.getPointAtLength(Math.min(4, tL)); } catch(e) { ts1 = ts0; }
+                                            let ts1; try { ts1 = tmp.getPointAtLength(Math.min(4, tL)); } catch (e) { ts1 = ts0; }
                                             _qtScratch.removeChild(tmp);
-                                            const tdx = ts1.x - ts0.x, tdy = ts1.y - ts0.y, td = Math.sqrt(tdx*tdx + tdy*tdy) || 1;
-                                            return { x: ts0.x - tdx/td*4.5, y: ts0.y - tdy/td*4.5 };
+                                            const tdx = ts1.x - ts0.x, tdy = ts1.y - ts0.y, td = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
+                                            return { x: ts0.x - tdx / td * 4.5, y: ts0.y - tdy / td * 4.5 };
                                         };
                                         const _qtColAdj = function (rawArr) {
-                                            var MD=6.0, placed=[];
-                                            return rawArr.map(function(pos) {
+                                            var MD = 6.0, placed = [];
+                                            return rawArr.map(function (pos) {
                                                 if (!pos) { placed.push(null); return null; }
-                                                var fx=pos.x, fy=pos.y, moved=true, att=0;
-                                                while (moved && att<10) {
-                                                    moved=false;
-                                                    for (var ci=0;ci<placed.length;ci++) {
-                                                        var cp=placed[ci]; if (!cp) continue;
-                                                        var dx=fx-cp.x, dy=fy-cp.y, dist=Math.sqrt(dx*dx+dy*dy);
-                                                        if (dist<MD) { moved=true; var pd=dist||1.414;
-                                                            fx+=(dist>0?dx/pd:-0.707)*(MD-dist+0.5);
-                                                            fy+=(dist>0?dy/pd:-0.707)*(MD-dist+0.5); }
+                                                var fx = pos.x, fy = pos.y, moved = true, att = 0;
+                                                while (moved && att < 10) {
+                                                    moved = false;
+                                                    for (var ci = 0; ci < placed.length; ci++) {
+                                                        var cp = placed[ci]; if (!cp) continue;
+                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
+                                                        if (dist < MD) {
+                                                            moved = true; var pd = dist || 1.414;
+                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
+                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
+                                                        }
                                                     } att++;
                                                 }
-                                                placed.push({x:fx,y:fy}); return {x:fx,y:fy};
+                                                placed.push({ x: fx, y: fy }); return { x: fx, y: fy };
                                             });
                                         };
                                         // Pre-compute collision-adjusted positions for all pairs before the loop
@@ -2315,9 +2354,9 @@
                                         const _qtEvR = window._kanjiFreeEval;
                                         const _qtNRef = _qtEvR ? _qtEvR.nRef : 0;
                                         const _qtRefPD = _qtEvR ? _qtEvR.refPathData : [];
-                                        for (let ri5=0; ri5<_qtNRef; ri5++) _qtRawRef.push(_qtTrueLP(_qtRefPD[ri5]));
+                                        for (let ri5 = 0; ri5 < _qtNRef; ri5++) _qtRawRef.push(_qtTrueLP(_qtRefPD[ri5]));
                                         const _qtAdjRef = _qtColAdj(_qtRawRef);
-                                        const _qtAdjUser = _qtColAdj(_qtRevPairs.map(function(p){ return _qtTrueLP(p.userD); }));
+                                        const _qtAdjUser = _qtColAdj(_qtRevPairs.map(function (p) { return _qtTrueLP(p.userD); }));
                                         const revSvgWK = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                                         revSvgWK.setAttribute('viewBox', '0 0 109 109');
                                         revSvgWK.classList.add('handwriting-overlay');
@@ -2379,21 +2418,21 @@
                                             // Animate number label for this pair (SMIL x/y on text element)
                                             if (_isNumbersRevWK && pair.numLabel) {
                                                 var lpFrom = _qtAdjRef[pair.refIdx]; // start = collision-adjusted SVG-Pfade position
-                                                var lpTo   = _qtAdjUser[_qtRevPairs.indexOf(pair)]; // end = collision-adjusted HW position
+                                                var lpTo = _qtAdjUser[_qtRevPairs.indexOf(pair)]; // end = collision-adjusted HW position
                                                 if (lpFrom && lpTo) {
                                                     var ntQ = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                                     ntQ.setAttribute('class', 'stroke-number');
                                                     ntQ.setAttribute('x', lpFrom.x.toFixed(2)); ntQ.setAttribute('y', lpFrom.y.toFixed(2));
-                                                    ntQ.style.cssText = 'fill:'+(pair.numColor||'var(--text-muted)')+';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
+                                                    ntQ.style.cssText = 'fill:' + (pair.numColor || 'var(--text-muted)') + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill;animation:none;opacity:1';
                                                     ntQ.textContent = pair.numLabel;
-                                                    [['x',lpFrom.x,lpTo.x],['y',lpFrom.y,lpTo.y]].forEach(function(cfg) {
+                                                    [['x', lpFrom.x, lpTo.x], ['y', lpFrom.y, lpTo.y]].forEach(function (cfg) {
                                                         var qa = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
                                                         qa.setAttribute('attributeName', cfg[0]);
                                                         qa.setAttribute('from', cfg[1].toFixed(2)); qa.setAttribute('to', cfg[2].toFixed(2));
-                                                        qa.setAttribute('dur', QT_DUR+'s'); qa.setAttribute('fill','freeze');
-                                                        qa.setAttribute('calcMode','spline'); qa.setAttribute('keyTimes','0;1');
-                                                        qa.setAttribute('keySplines','0.42 0 0.58 1');
-                                                        qa.setAttribute('begin','indefinite');
+                                                        qa.setAttribute('dur', QT_DUR + 's'); qa.setAttribute('fill', 'freeze');
+                                                        qa.setAttribute('calcMode', 'spline'); qa.setAttribute('keyTimes', '0;1');
+                                                        qa.setAttribute('keySplines', '0.42 0 0.58 1');
+                                                        qa.setAttribute('begin', 'indefinite');
                                                         ntQ.appendChild(qa); qa.beginElement();
                                                     });
                                                     revSvgWK.appendChild(ntQ);
@@ -2406,7 +2445,10 @@
                                         if (_svgBgWKRev) _svgBgWKRev.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
                                         _transC.classList.add('show-handwriting');
                                         _transC.appendChild(revSvgWK);
+                                        var _qtDoneFired = false;
                                         const _qtDone = function () {
+                                            if (_qtDoneFired) return;
+                                            _qtDoneFired = true;
                                             // Same fix as desktop: do NOT remove show-handwriting here.
                                             // renderFreeView() handles it internally without a paint gap.
                                             revSvgWK.style.zIndex = '5';
@@ -2464,9 +2506,7 @@
         // Settings handler: re-apply colors + rebuild SBS grids dynamically
         window.kanjiSettingsGlobalHandler = () => {
             // Re-read and apply stroke style class (may have changed)
-            var _ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (_ss === 'soft') _ss = 'gel';
             window._kanjiStrokeStyle = _ss;
             var _kc = document.querySelector('.kanji-container');
@@ -2478,7 +2518,7 @@
                 window._kanjiRenderFreeView();
                 if (window._kanjiEnsureQsButton) window._kanjiEnsureQsButton();
             } else {
-                applyBackFeatures();
+                applyBackFeatures(!!window._kanjiRenderFreeView);
                 rebuildSbsGrids();
             }
         };

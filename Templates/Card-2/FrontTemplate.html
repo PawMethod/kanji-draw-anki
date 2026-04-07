@@ -387,38 +387,40 @@
                 </button>
                 <h3>Rückseite</h3>
             </div>
-            <div class="setting-group-title">Farb-Bewertung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-color-back" value="off"
-                        onchange="updateFeatureSetting('colorBack', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <line x1="3" y1="3" x2="21" y2="21" />
-                        </svg>
-                        <span>Aus</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-color-back" value="on"
-                        onchange="updateFeatureSetting('colorBack', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                        </svg>
-                        <span>An</span>
-                    </div>
-                </label>
-            </div>
+            <div class="c1-only-setting">
+                <div class="setting-group-title">Farb-Bewertung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-color-back" value="off"
+                            onchange="updateFeatureSetting('colorBack', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <line x1="3" y1="3" x2="21" y2="21" />
+                            </svg>
+                            <span>Aus</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-color-back" value="on"
+                            onchange="updateFeatureSetting('colorBack', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            </svg>
+                            <span>An</span>
+                        </div>
+                    </label>
+                </div>
+            </div><!-- end c1-only-setting: Farb-Bewertung -->
             <div class="setting-group-title">Strich-Nummern</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-numbers" value="off"
@@ -552,38 +554,6 @@
                     </svg>
                 </button>
                 <h3>Vorderseite</h3>
-            </div>
-            <div class="setting-group-title">Farb-Bewertung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-color-front-c2f" value="off"
-                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <line x1="3" y1="3" x2="21" y2="21" />
-                        </svg>
-                        <span>Aus</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-color-front-c2f" value="on"
-                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                        </svg>
-                        <span>An</span>
-                    </div>
-                </label>
             </div>
             <div class="setting-group-title">Strich-Nummern</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -1294,7 +1264,6 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
-            'opt-color-front-c2f': safeGetItem('c2f_kanjiOptColorFront', safeGetItem('c2_kanjiOptColorFront', safeGetItem('kanjiOptColorFront', globalConf.colorFront || 'on'))),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
             'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
             'opt-side-by-side-c2f': safeGetItem('c2f_kanjiOptSideBySide', safeGetItem('c2_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', globalConf.sideBySide || 'on'))),

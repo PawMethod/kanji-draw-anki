@@ -496,20 +496,6 @@ svg#svg-guide path,
     overflow: visible;
 }
 
-@-webkit-keyframes cel-glow-opacity {
-    0% {
-        opacity: 0;
-    }
-
-    35% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
 @keyframes cel-glow-opacity {
     0% {
         opacity: 0;
@@ -725,8 +711,6 @@ svg#svg-guide path,
     max-width: 420px;
     border: 2px solid var(--tab-color-c1);
     --active-tab-color: var(--tab-color-c1);
-    overflow-y: auto;
-    overflow-y: overlay;
     transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -2067,11 +2051,6 @@ ruby rt {
     opacity: 1;
 }
 
-.free-canvas-mode #draw-layer.free-reset-fade {
-    transition: opacity 0.35s ease-out;
-    opacity: 0;
-}
-
 /* Reference strokes hidden during free drawing, revealed after eval */
 .free-canvas-mode #svg-bg path {
     stroke: transparent !important;
@@ -2146,16 +2125,12 @@ ruby rt {
 .excess-strokes-badge.strokes-hidden,
 .missing-strokes-badge.strokes-hidden {
     background: var(--text-muted, #888) !important;
-    text-decoration: line-through;
 }
 
-/* SBS badge row — badges placed below the SBS wrapper, after both drawing pads */
+/* SBS badge row — badges placed below the SBS wrapper, centered in their respective half */
 .sbs-badge-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
     padding: 6px 0 2px;
 }
@@ -2168,17 +2143,16 @@ ruby rt {
     right: auto;
 }
 
-/* Static stroke-number holder during morph — same absolute layout as .handwriting-overlay
-   but higher z-index (above morphSvg) so numbers stay visible throughout the animation. */
-.stroke-number-morph-snap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 8;
-    pointer-events: none;
-    background: transparent;
+/* Excess ("zu viel") → left half, centered */
+.sbs-badge-row .excess-strokes-badge {
+    grid-column: 1;
+    justify-self: center;
+}
+
+/* Missing ("zu wenig") → right half, centered */
+.sbs-badge-row .missing-strokes-badge {
+    grid-column: 2;
+    justify-self: center;
 }
 
 /* Quicksettings: Handschrift ↔ SVG-Pfade toggle (session-only, no persistence) */
@@ -2225,11 +2199,6 @@ ruby rt {
 .kanji-container .free-view-quicktoggle {
     pointer-events: auto !important;
     touch-action: manipulation !important;
-}
-
-/* Hide guided-only settings in free mode */
-.free-mode-active .guided-only-setting {
-    display: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -2556,11 +2525,6 @@ html.font-large.is-ankiweb .card-title {
    stroke, fill, filter) — only keep opacity + transform which are
    GPU-composited. Prevents jank on iPad/iPhone WKWebView.
    -------------------------------------------------------------------------- */
-html.is-ankimobile .card-display {
-    transition: none;
-}
-
-html.is-ankimobile .kanji-btn,
 html.is-ankimobile .gear-btn,
 html.is-ankimobile .info-btn,
 html.is-ankimobile .back-btn,

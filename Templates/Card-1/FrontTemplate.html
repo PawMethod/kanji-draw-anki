@@ -385,38 +385,40 @@
                 </button>
                 <h3>Rückseite</h3>
             </div>
-            <div class="setting-group-title">Farb-Bewertung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-color-back" value="off"
-                        onchange="updateFeatureSetting('colorBack', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <line x1="3" y1="3" x2="21" y2="21" />
-                        </svg>
-                        <span>Aus</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-color-back" value="on"
-                        onchange="updateFeatureSetting('colorBack', this.value)">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                        </svg>
-                        <span>An</span>
-                    </div>
-                </label>
-            </div>
+            <div class="c1-only-setting">
+                <div class="setting-group-title">Farb-Bewertung</div>
+                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                    <label><input type="radio" name="opt-color-back" value="off"
+                            onchange="updateFeatureSetting('colorBack', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                <line x1="3" y1="3" x2="21" y2="21" />
+                            </svg>
+                            <span>Aus</span>
+                        </div>
+                    </label>
+                    <label><input type="radio" name="opt-color-back" value="on"
+                            onchange="updateFeatureSetting('colorBack', this.value)">
+                        <div class="visual-option">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
+                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                            </svg>
+                            <span>An</span>
+                        </div>
+                    </label>
+                </div>
+            </div><!-- end c1-only-setting: Farb-Bewertung -->
             <div class="setting-group-title">Strich-Nummern</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <label><input type="radio" name="opt-numbers" value="off"
@@ -550,38 +552,6 @@
                     </svg>
                 </button>
                 <h3>Vorderseite</h3>
-            </div>
-            <div class="setting-group-title">Farb-Bewertung</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="opt-color-front-c2f" value="off"
-                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                            <line x1="3" y1="3" x2="21" y2="21" />
-                        </svg>
-                        <span>Aus</span>
-                    </div>
-                </label>
-                <label><input type="radio" name="opt-color-front-c2f" value="on"
-                        onchange="updateFeatureSetting('colorFront', this.value, 'c2f')">
-                    <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                            <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                            <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                        </svg>
-                        <span>An</span>
-                    </div>
-                </label>
             </div>
             <div class="setting-group-title">Strich-Nummern</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -1038,6 +1008,13 @@
             <circle cx="12" cy="12" r="3"></circle>
         </svg>
     </button>
+    <button id="button-undo" title="Letzten Strich löschen" style="display:none">
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" />
+            <path d="M22 21H7" />
+            <path d="m5 11 9 9" />
+        </svg>
+    </button>
     <button id="button-skip" title="Überspringen">
         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"></path>
@@ -1269,7 +1246,6 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
-            'opt-color-front-c2f': safeGetItem('c2f_kanjiOptColorFront', safeGetItem('c2_kanjiOptColorFront', safeGetItem('kanjiOptColorFront', globalConf.colorFront || 'on'))),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
             'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
             'opt-side-by-side-c2f': safeGetItem('c2f_kanjiOptSideBySide', safeGetItem('c2_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', globalConf.sideBySide || 'on'))),
@@ -1844,14 +1820,15 @@
             _tmplClassChange = false;
             if (nightModeChanged) {
                 clearTimeout(_themeMODebounce);
-                _themeMODebounce = setTimeout(function () {
+                var _deferredThemeApply = function () {
                     // Don't mutate the DOM mid-stroke — defer until drawing ends
                     if (typeof isDrawing !== 'undefined' && isDrawing) {
-                        _themeMODebounce = setTimeout(arguments.callee, 100);
+                        _themeMODebounce = setTimeout(_deferredThemeApply, 100);
                         return;
                     }
                     applyThemeSettings();
-                }, 16);
+                };
+                _themeMODebounce = setTimeout(_deferredThemeApply, 16);
             }
             if (scrollLost && typeof checkScrollability === 'function') {
                 setTimeout(checkScrollability, 20);
@@ -2132,7 +2109,7 @@
         // Free canvas state
         let freeStrokes = [];       // Array of point-arrays
         let freeSVGPaths = [];      // Corresponding SVG path elements
-        let freeFinished = false;
+
 
         const kanjiContainer = document.querySelector('.kanji-container');
 
@@ -2209,10 +2186,11 @@
             const rect = drawLayer.getBoundingClientRect();
             if (rect.width === 0 || rect.height === 0) return;
             const dpr = window.devicePixelRatio || 1;
-            _canvasEl.width = rect.width * dpr;
-            _canvasEl.height = rect.height * dpr;
+            _canvasEl.width = Math.round(rect.width * dpr);
+            _canvasEl.height = Math.round(rect.height * dpr);
             _canvasEl.style.width = rect.width + 'px';
             _canvasEl.style.height = rect.height + 'px';
+            _canvasEl._dpr = dpr;
             _ctx = _canvasEl.getContext('2d');
             _ctx.scale(dpr, dpr);
             _ctx._scaleX = rect.width / SVG_GRID_SIZE;
@@ -2222,7 +2200,7 @@
             if (_canvasRafId) { cancelAnimationFrame(_canvasRafId); _canvasRafId = null; }
             _canvasDirty = false;
             if (!_ctx || !_canvasEl) return;
-            var dpr = window.devicePixelRatio || 1;
+            const dpr = _canvasEl._dpr || window.devicePixelRatio || 1;
             _ctx.clearRect(0, 0, _canvasEl.width / dpr, _canvasEl.height / dpr);
         };
         const _setupCanvasStyle = () => {
@@ -2304,6 +2282,7 @@
                 _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 _gelHalo.setAttribute("d", dSegments.join(''));
                 _gelHalo.setAttribute("fill", "none");
+                _gelHalo.setAttribute("class", "gel-halo");
                 _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
                 _gelHalo.setAttribute("stroke-width", "8");
                 _gelHalo.setAttribute("stroke-linecap", "round");
@@ -2342,7 +2321,6 @@
                 case 'gel':
                     pathEl.setAttribute('stroke-width', '4.5');
                     pathEl.setAttribute('paint-order', 'stroke');
-                    pathEl.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + c + ')');
                     pathEl.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
                     break;
                 case 'neon':
@@ -2359,7 +2337,7 @@
         window._kanjiApplyPathStyle = applyPathStyle;
 
         // Gelstift: halo path (wider, translucent) underneath the main path for wet-ink bleed look.
-        let _gelHalo = null, _inkGroup = null;
+        let _gelHalo = null;
         const _gelColorCache = new WeakMap();
 
         // Add gel halo to a completed SVG reference path
@@ -2602,18 +2580,6 @@
             return out;
         };
 
-        // ···· Sample reference stroke to points ····
-
-        const sampleRefStroke = (path) => {
-            const len = (path._cachedTotalLength !== undefined ? path._cachedTotalLength : (path._cachedTotalLength = path.getTotalLength())) || 1;
-            const pts = [];
-            for (let i = 0; i <= SAMPLE_POINTS; i++) {
-                const pt = path.getPointAtLength((i / SAMPLE_POINTS) * len);
-                pts.push({ x: pt.x, y: pt.y });
-            }
-            return pts;
-        };
-
         // ===================================================================
         // HANDLER DEFINITIONS (both modes, always available)
         // ===================================================================
@@ -2623,7 +2589,7 @@
         const startDrawing = (e) => {
             if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
-            if (isFreeMode ? freeFinished : currentStroke >= paths.length) return;
+            if (!isFreeMode && currentStroke >= paths.length) return;
             if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
 
             _cachedRect = null; // Force fresh rect measurement on new stroke
@@ -2661,7 +2627,6 @@
                 _lastCanvasY = pos.y;
                 _setupCanvasStyle();
                 _gelHalo = null;
-                _inkGroup = null;
             } else {
                 // SVG mode: existing DOM manipulation
                 // Gelstift: create halo path underneath for wet-ink bleed effect
@@ -2669,6 +2634,7 @@
                     _gelHalo = document.createElementNS("http://www.w3.org/2000/svg", "path");
                     _gelHalo.setAttribute("d", dSegments.join(''));
                     _gelHalo.setAttribute("fill", "none");
+                    _gelHalo.setAttribute("class", "gel-halo");
                     _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
                     _gelHalo.setAttribute("stroke-width", "8");
                     _gelHalo.setAttribute("stroke-linecap", "round");
@@ -2776,22 +2742,14 @@
                 if (totalTravel < 4) {
                     if (currentSVGPath && currentSVGPath.parentNode) currentSVGPath.parentNode.removeChild(currentSVGPath);
                     if (_gelHalo && _gelHalo.parentNode) _gelHalo.parentNode.removeChild(_gelHalo);
-                    if (_inkGroup && _inkGroup.parentNode) _inkGroup.parentNode.removeChild(_inkGroup);
-                    currentSVGPath = null; _gelHalo = null; _inkGroup = null; userPoints = [];
+                    currentSVGPath = null; _gelHalo = null; userPoints = [];
                     return;
-                }
-                // Ink free mode: remove the ink group (currentSVGPath already holds the raw path for persistence)
-                if (_inkGroup) {
-                    if (_inkGroup.parentNode) _inkGroup.parentNode.removeChild(_inkGroup);
-                    _inkGroup = null;
-                    if (currentSVGPath) {
-                        currentSVGPath.style.setProperty('opacity', '0.85');
-                    }
                 }
                 freeStrokes.push(userPoints.slice());
                 freeSVGPaths.push(currentSVGPath);
                 currentSVGPath = null; _gelHalo = null; userPoints = [];
                 saveFreeStrokes();
+                _updateUndoBtn();
             } else {
                 evaluateStroke();
             }
@@ -2862,22 +2820,17 @@
             if (lengthOk && directionOk && ceilingOk && composite <= 1.0) {
                 mistakes = 0;
                 const si = currentStroke, dp = currentSVGPath, up = userPoints.slice();
-                const ig = _inkGroup;
                 const gh = _gelHalo;
                 paths[si].classList.remove('hint-active');
-                currentStroke++; saveState(); currentSVGPath = null; _inkGroup = null; _gelHalo = null;
+                currentStroke++; saveState(); currentSVGPath = null; _gelHalo = null;
                 const afterSnap = () => {
                     paths[si].classList.add('stroke-complete');
                     _addGelHaloToPath(paths[si]);
                     if (dp && dp.parentNode) dp.parentNode.removeChild(dp);
-                    if (ig && ig.parentNode) ig.parentNode.removeChild(ig);
                     if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
                     if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); }
                 };
                 if (dp && up.length >= 2) {
-                    // Ink: remove the ink group, let currentSVGPath snap to reference
-                    if (ig && ig.parentNode) ig.parentNode.removeChild(ig);
-                    dp.style.setProperty('opacity', '0.85');
                     // Gel: pass halo to snap so it morphs in sync
                     snapToReference(dp, paths[si], up, afterSnap, gh);
                 }
@@ -3026,10 +2979,15 @@
                         pendingHalos.push(prevH);
                     }
                     // Clean up exactly when the CSS transition ends — avoids the 1-frame linecap dot
+                    // Remove any stale listener from a previous reset before attaching a new one.
                     const _p = p;
+                    const _capturedGen = _drawGen;
+                    if (_p._rewindEndHandler) _p.removeEventListener('transitionend', _p._rewindEndHandler);
                     const onRewindEnd = (e) => {
                         if (e.propertyName !== 'stroke-dashoffset') return;
+                        if (_capturedGen !== _drawGen) { _p.removeEventListener('transitionend', onRewindEnd); return; }
                         _p.removeEventListener('transitionend', onRewindEnd);
+                        _p._rewindEndHandler = null;
                         // Hide immediately before class removal to prevent any flash
                         _p.style.setProperty('opacity', '0', 'important');
                         _p.style.setProperty('stroke', 'none', 'important');
@@ -3039,12 +2997,14 @@
                             _p.style.removeProperty('opacity');
                         });
                     };
+                    _p._rewindEndHandler = onRewindEnd;
                     p.addEventListener('transitionend', onRewindEnd);
                     // Fallback in case transitionend never fires (e.g. reduced motion / hidden tab)
                     const _rewindFallbackGen = _drawGen;
                     setTimeout(() => {
                         if (_rewindFallbackGen !== _drawGen) return; // card navigated away
                         p.removeEventListener('transitionend', onRewindEnd);
+                        _p._rewindEndHandler = null;
                         p.style.setProperty('opacity', '0', 'important');
                         requestAnimationFrame(() => { p.classList.remove('rewind-anim'); p.style.removeProperty('stroke'); p.style.removeProperty('opacity'); });
                     }, ANIMATION_DURATION_MS + 100);
@@ -3128,6 +3088,37 @@
             }
         };
 
+        const freeUndoAction = () => {
+            if (!freeStrokes.length) return;
+            _drawGen++;
+            const lastPath = freeSVGPaths[freeSVGPaths.length - 1];
+            freeStrokes.pop();
+            freeSVGPaths.pop();
+            saveFreeStrokes();
+            _updateUndoBtn();
+            // Short rewind animation then remove
+            if (lastPath && lastPath.parentNode) {
+                // Also remove any gel halo preceding the path
+                const prevH = lastPath.previousElementSibling;
+                if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
+                const len = lastPath.getTotalLength ? lastPath.getTotalLength() : 200;
+                lastPath.style.strokeDasharray = len + '';
+                lastPath.style.strokeDashoffset = '0';
+                lastPath.style.transition = 'none';
+                requestAnimationFrame(() => {
+                    lastPath.style.transition = 'stroke-dashoffset 0.25s ease-in, opacity 0.25s ease-in';
+                    lastPath.style.strokeDashoffset = len + '';
+                    lastPath.style.opacity = '0';
+                    const capturedGen = _drawGen;
+                    setTimeout(() => {
+                        if (capturedGen !== _drawGen) return;
+                        if (lastPath.parentNode) lastPath.parentNode.removeChild(lastPath);
+                    }, 280);
+                });
+            }
+            if (_useCanvas) _clearCanvas();
+        };
+
         const freeResetAction = () => {
             _drawGen++;
             // Reverse animation: rewind ALL drawn strokes simultaneously
@@ -3174,10 +3165,9 @@
                 });
             });
             setTimeout(() => {
-                freeStrokes = []; freeSVGPaths = []; freeFinished = false;
-                userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
+                freeStrokes = []; freeSVGPaths = []; userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
                 drawLayer.innerHTML = ''; currentSVGPath = null;
-                _gelHalo = null; _inkGroup = null;
+                _gelHalo = null;
                 if (_useCanvas) _clearCanvas();
                 paths.forEach(p => {
                     p.classList.remove('stroke-complete', 'hint-active', 'animate-draw', 'rewind-anim');
@@ -3186,6 +3176,7 @@
                     if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
                 });
                 if (actionButtons) actionButtons.style.display = 'flex';
+                _updateUndoBtn();
                 ['sessionStorage', 'localStorage'].forEach(s => {
                     try { window[s].removeItem('kanjiFreeStrokes'); } catch (e) { }
                 });
@@ -3198,20 +3189,32 @@
         const btnReveal = document.getElementById('button-reveal');
         const btnReset = document.getElementById('button-reset');
         const btnSkip = document.getElementById('button-skip');
-        [btnReveal, btnReset, btnSkip].forEach(btn => {
+        const btnUndo = document.getElementById('button-undo');
+        [btnReveal, btnReset, btnSkip, btnUndo].forEach(btn => {
             if (btn && !btn._kanjiClickBound) {
                 btn._kanjiClickBound = true;
                 btn.addEventListener('click', function () { if (this._kanjiAction) this._kanjiAction(); });
             }
         });
 
+        const _updateUndoBtn = () => {
+            if (!btnUndo) return;
+            const hasStrokes = freeStrokes.length > 0;
+            btnUndo.disabled = !hasStrokes;
+            btnUndo.style.opacity = hasStrokes ? '' : '0.35';
+            btnUndo.style.pointerEvents = hasStrokes ? '' : 'none';
+        };
+
         const bindModeButtons = () => {
             if (btnReveal) btnReveal._kanjiAction = revealAction;
             if (btnReset) btnReset._kanjiAction = isFreeMode ? freeResetAction : guidedResetAction;
             if (isFreeMode) {
                 if (btnSkip) btnSkip.style.display = 'none';
+                if (btnUndo) { btnUndo.style.display = ''; btnUndo._kanjiAction = freeUndoAction; }
+                _updateUndoBtn();
             } else {
                 if (btnSkip) { btnSkip.style.display = ''; btnSkip._kanjiAction = guidedSkipAction; }
+                if (btnUndo) { btnUndo.style.display = 'none'; btnUndo._kanjiAction = null; }
             }
         };
         bindModeButtons();
@@ -3289,6 +3292,7 @@
         }
         addPenHandler(_gearBtn, 'gear');
         addPenHandler(document.getElementById('button-reveal'), 'btn');
+        addPenHandler(document.getElementById('button-undo'), 'btn');
         addPenHandler(document.getElementById('button-skip'), 'btn');
         addPenHandler(document.getElementById('button-reset'), 'btn');
     })();
