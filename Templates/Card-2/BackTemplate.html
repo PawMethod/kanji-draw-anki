@@ -324,12 +324,6 @@
         } catch (e) { }
     })();
 
-    function safeGetState(key) {
-        try { let val = window.sessionStorage.getItem(key); if (val) return val; } catch (e) { }
-        try { let val = window.localStorage.getItem(key); if (val) return val; } catch (e) { }
-        return null;
-    }
-
     // Provided by FrontSide injection: getGlobalConfig(), SVG path setup
 
     function openInfoModal(e) {
@@ -351,7 +345,8 @@
         ol.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
         ol.style.pointerEvents = 'auto';
-        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
+        clearTimeout(ol._pointerEvTimer);
+        ol._pointerEvTimer = setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
     }
 
     // --- Radical Tree Renderer [SHARED with c1-back] ---
@@ -484,6 +479,8 @@
     // --- Back Side Features (stroke colors, numbers, colorOrder) ---
 
     (() => {
+        // Null stale handler from previous card before registering a new one
+        window.kanjiSettingsGlobalHandlerC2 = null;
         if (!document.getElementById('is-back-side-marker')) return;
         const svgBg = document.getElementById('svg-bg');
         if (!svgBg) return;
@@ -528,8 +525,8 @@
             if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
             if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
 
-            const errStr = safeGetState('kanjiErrors');
-            const strokeStr = safeGetState('kanjiCurrentStroke');
+            const errStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiErrors', null) : null;
+            const strokeStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiCurrentStroke', null) : null;
 
             if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
             if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }

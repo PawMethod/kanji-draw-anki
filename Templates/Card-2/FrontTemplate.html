@@ -593,7 +593,6 @@
                     </div>
                 </label>
             </div>
-            <div class="c1-only-setting">
                 <div class="setting-group-title" id="sbs-title-c2f">Vergleichsansicht</div>
                 <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid-c2f">
                     <label><input type="radio" name="opt-side-by-side-c2f" value="off"
@@ -644,7 +643,6 @@
                         </div>
                     </label>
                 </div>
-            </div>
             <div class="c2-only-setting">
                 <div class="setting-group-title">Strich-Darstellung</div>
                 <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -992,6 +990,28 @@
 <div class="kanji-container">
     <svg id="grid-bg" viewBox="0 0 109 109"></svg>
     <svg id="svg-bg" viewBox="0 0 109 109">{{SVGPfade}}</svg>
+    <div id="legacy-gesture-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <p><strong>Hinweis: AnkiDroid&nbsp;(Legacy)</strong></p>
+        <p>Falls Wischgesten aktiv sind, könnten Zeichenstriche als Gesten erkannt werden und die Rückseite ungewollt aufdecken.</p>
+        <p class="lgw-path"><strong>Wischgesten deaktivieren</strong> unter<br>Einstellungen&nbsp;→ Steuerung<br>oder ggf. auf den <strong>Neuen Lernmodus</strong> wechseln.</p>
+        <button id="lgw-dismiss" onclick="(function(){try{localStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}document.getElementById('legacy-gesture-warning').classList.remove('lgw-visible');})()">Verstanden</button>
+    </div>
+    <div id="addon-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <p><strong>Addon fehlt – Einstellungen werden nicht gespeichert</strong></p>
+        <p>Ohne das Addon <em><a href="https://ankiweb.net/shared/info/905251277" target="_blank" rel="noopener">Kanji Draw Persistence</a></em> gehen alle Einstellungen nach dem Neustart von Anki verloren.</p>
+        <p class="addon-hint-steps"><strong>Installation:</strong><br>
+            Anki → <strong>Extras</strong> → <strong>Erweiterungen</strong><br>
+            → <em>Erweiterungen herunterladen …</em><br>
+            → Code eingeben:</p>
+        <div class="addon-hint-code-row">
+            <code id="addon-hint-code">905251277</code>
+            <button id="addon-hint-copy" onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
+        </div>
+        <p class="addon-hint-note">Danach Anki neu starten – das Addon speichert deine Einstellungen dauerhaft.</p>
+        <button id="addon-hint-dismiss" onclick="(function(){try{sessionStorage.setItem('kanji-addon-hint-dismissed','1');}catch(e){}document.getElementById('addon-hint').classList.remove('addon-hint-visible');})()">Verstanden</button>
+    </div>
 </div>
 
 <script>
@@ -1004,7 +1024,9 @@
     // =======================================================================
 
     // --- AnkiWeb / Browser Detection [SHARED with c1-front] ---
-    if (location.protocol === 'https:' && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
+    // AnkiMobile also has no pycmd/AnkiDroidJS but runs locally — exclude via UA.
+    var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    if (location.protocol === 'https:' && !_isIOS && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
         document.documentElement.classList.add('is-ankiweb');
         var _awH = window.innerHeight;
         var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
@@ -1025,6 +1047,34 @@
             _bgEl.style.setProperty('background-color', 'var(--bg-main)', 'important');
             _bgEl = _bgEl.parentElement;
         }
+    }
+
+    // --- AnkiDroid Legacy swipe-gesture warning ---
+    if (typeof AnkiDroidJS !== 'undefined') {
+        setTimeout(function () {
+            var isNewMode = typeof globalThis.ankidroid !== 'undefined' &&
+                            typeof globalThis.ankidroid.userAction === 'function';
+            if (!isNewMode) {
+                var dismissed = false;
+                try { dismissed = localStorage.getItem('kanji-lgw-dismissed') === '1'; } catch (e) {}
+                if (!dismissed) {
+                    var w = document.getElementById('legacy-gesture-warning');
+                    if (w) w.classList.add('lgw-visible');
+                }
+            }
+        }, 80);
+    }
+
+    // --- Anki Desktop: addon-missing hint ---
+    if (typeof pycmd === 'function' && !window._kanjiAddonLoaded) {
+        setTimeout(function () {
+            var dismissed = false;
+            try { dismissed = sessionStorage.getItem('kanji-addon-hint-dismissed') === '1'; } catch (e) {}
+            if (!dismissed) {
+                var h = document.getElementById('addon-hint');
+                if (h) h.classList.add('addon-hint-visible');
+            }
+        }, 80);
     }
 
     // --- Anti-Flicker [SHARED with c1-front] ---
@@ -1111,8 +1161,8 @@
     var _c2fSvgBg = document.getElementById('svg-bg');
 
     var _addNumbersC2F = function (colorFn) {
-        if (!_c2fSvgBg) return;
-        var svgPaths = _c2fSvgBg.querySelectorAll('path:not(.gel-halo)');
+        if (!_c2fSvgBg || _c2fPaths.length === 0) return;
+        var svgPaths = _c2fPaths; // reuse cached paths (already filtered, no re-query needed)
         var placed = [], MD = 6.0;
         var frag = document.createDocumentFragment();
         svgPaths.forEach(function (sp, i) {
@@ -1168,7 +1218,6 @@
             });
         }
     };
-    applyFrontFeaturesC2();
 
     // --- Settings UI [SHARED with c1-front] ---
 
@@ -1221,12 +1270,13 @@
         mainEl.classList.remove('active');
         mainEl.style.display = 'none';
         pageEl.style.display = '';
-        pageEl.classList.add('active', 'slide-in-right');
+        pageEl.classList.add('active', 'slide-in-right', 'hover-frozen');
         if (_settingsModal) _settingsModal.scrollTop = 0;
-        pageEl.addEventListener('animationend', function h() {
+        pageEl.addEventListener('animationend', function onPageSlideIn() {
             pageEl.classList.remove('slide-in-right');
-            pageEl.removeEventListener('animationend', h);
+            pageEl.removeEventListener('animationend', onPageSlideIn);
         });
+        setTimeout(function () { pageEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = pageId;
     }
 
@@ -1239,12 +1289,13 @@
         pageEl.classList.remove('active');
         pageEl.style.display = 'none';
         mainEl.style.display = '';
-        mainEl.classList.add('active', 'slide-in-left');
+        mainEl.classList.add('active', 'slide-in-left', 'hover-frozen');
         if (_settingsModal) _settingsModal.scrollTop = 0;
-        mainEl.addEventListener('animationend', function h() {
+        mainEl.addEventListener('animationend', function onMainSlideBack() {
             mainEl.classList.remove('slide-in-left');
-            mainEl.removeEventListener('animationend', h);
+            mainEl.removeEventListener('animationend', onMainSlideBack);
         });
+        setTimeout(function () { mainEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = 'settings-main';
     }
 
@@ -1709,6 +1760,7 @@
             refreshSettingsRadios();
         } else if (_scope === _hostCard) {
             updateModeDisabledSettings();
+            refreshSettingsRadios();
         } else {
             refreshSettingsRadios();
         }
@@ -1719,7 +1771,9 @@
     }
 
     var _settingsReady = false;
-    setTimeout(function () { _settingsReady = true; }, 400);
+    window._kanjiSrGenC2 = (window._kanjiSrGenC2 || 0) + 1;
+    var _srGenSnap = window._kanjiSrGenC2;
+    setTimeout(function () { if (window._kanjiSrGenC2 === _srGenSnap) _settingsReady = true; }, 400);
 
     function openSettings(e) {
         if (!_settingsReady && !(e && e.isTrusted)) return;
@@ -1822,7 +1876,8 @@
 
     // Listen for OS dark-mode changes (AnkiMobile uses prefers-color-scheme)
     if (window.matchMedia) {
-        var darkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+        if (!window._kanjiDarkMQ) window._kanjiDarkMQ = window.matchMedia('(prefers-color-scheme: dark)');
+        var darkMQ = window._kanjiDarkMQ;
         var mqHandler = function (e) {
             var mode = safeGetItem('kanjiThemeMode', 'system');
             if (mode === 'system') {
@@ -2022,6 +2077,7 @@
                 document.addEventListener('click', mark, true);
                 setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
             }, true);
+
         }
     } // end guard
 

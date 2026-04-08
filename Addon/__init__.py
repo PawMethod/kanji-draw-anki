@@ -57,21 +57,21 @@ def _on_js_message(handled, message, context):
 def _on_card_will_show(text, card, kind):
     """Inject saved settings before template scripts run."""
     settings = _load()
-    if not settings:
-        return text
-    js = json.dumps(settings, ensure_ascii=False, separators=(",", ":"))
-    # Restore into window._ks (for safeGetItem) AND localStorage (for early
-    # BackTemplate _ck() fallback chains). Only set keys that aren't already
-    # present so in-session changes take priority over persisted values.
-    inject = (
-        "<script>(function(){"
-        "var d=" + js + ";"
-        "if(!window._ks)window._ks=d;"
-        "else{for(var k in d)if(window._ks[k]===void 0)window._ks[k]=d[k]}"
-        "try{for(var k in d)if(localStorage.getItem(k)===null)"
-        "localStorage.setItem(k,d[k])}catch(e){}"
-        "})()</script>"
-    )
+    # Always inject sentinel so templates can detect that the addon is present.
+    # Also restore persisted settings into window._ks and localStorage when available.
+    inject = "<script>(function(){window._kanjiAddonLoaded=1;"
+    if settings:
+        # json.dumps can produce </script> inside string values, which would close
+        # the injected <script> tag prematurely. Replace </ with <\/ to neutralise.
+        js = json.dumps(settings, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+        inject += (
+            "var d=" + js + ";"
+            "if(!window._ks)window._ks=d;"
+            "else{for(var k in d)if(window._ks[k]===void 0)window._ks[k]=d[k]}"
+            "try{for(var k in d)if(localStorage.getItem(k)===null)"
+            "localStorage.setItem(k,d[k])}catch(e){}"
+        )
+    inject += "})()</script>"
     return inject + text
 
 

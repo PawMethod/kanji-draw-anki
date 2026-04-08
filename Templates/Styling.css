@@ -372,6 +372,198 @@ svg#svg-bg {
     opacity: 0;
 }
 
+/* --- AnkiDroid Legacy swipe-gesture warning banner --- */
+#legacy-gesture-warning {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    border-radius: var(--border-rad-main);
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 18px 14px;
+    gap: 6px;
+    pointer-events: none;
+}
+#legacy-gesture-warning.lgw-visible {
+    display: flex;
+    pointer-events: auto;
+}
+#legacy-gesture-warning svg {
+    width: 32px;
+    height: 32px;
+    stroke: #d97706;
+    flex-shrink: 0;
+    margin-bottom: 4px;
+}
+#legacy-gesture-warning p {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--text-main);
+}
+#legacy-gesture-warning strong {
+    font-size: 0.8rem;
+    color: #d97706;
+}
+#legacy-gesture-warning .lgw-path {
+    font-size: 0.68rem;
+    background: var(--accent-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin-top: 4px;
+    line-height: 1.5;
+}
+#lgw-dismiss {
+    pointer-events: auto;
+    margin-top: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+#lgw-dismiss:active {
+    opacity: 0.8;
+}
+
+/* --- Anki Desktop: addon-missing hint banner --- */
+#addon-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    border-radius: var(--border-rad-main);
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 18px 16px;
+    gap: 5px;
+    pointer-events: none;
+}
+#addon-hint.addon-hint-visible {
+    display: flex;
+    pointer-events: auto;
+}
+#addon-hint > svg {
+    width: 28px;
+    height: 28px;
+    stroke: #2563eb;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+#addon-hint p {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--text-main);
+}
+#addon-hint strong {
+    color: #2563eb;
+}
+#addon-hint em {
+    font-style: normal;
+    color: #2563eb;
+    opacity: 0.85;
+}
+#addon-hint em a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+#addon-hint em a:hover {
+    opacity: 1;
+}
+#addon-hint .addon-hint-steps {
+    font-size: 0.68rem;
+    background: var(--accent-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 4px;
+    line-height: 1.6;
+}
+#addon-hint .addon-hint-code-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: auto;
+    margin-top: 2px;
+}
+#addon-hint-code {
+    font-family: monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: var(--accent-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 3px 10px;
+    color: var(--text-main);
+    user-select: all;
+}
+#addon-hint-copy {
+    pointer-events: auto;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+#addon-hint-copy:active {
+    opacity: 0.8;
+}
+#addon-hint .addon-hint-note {
+    font-size: 0.63rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+#addon-hint-dismiss {
+    pointer-events: auto;
+    margin-top: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-size: 0.68rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+#addon-hint-dismiss:active {
+    opacity: 0.7;
+}
+
+/* In dark mode the base blue #2563eb is too dark — use a lighter blue for readability */
+.nightMode #addon-hint > svg,
+.night_mode #addon-hint > svg {
+    stroke: #60a5fa;
+}
+.nightMode #addon-hint strong,
+.nightMode #addon-hint em,
+.night_mode #addon-hint strong,
+.night_mode #addon-hint em {
+    color: #93c5fd;
+}
+
 svg#svg-bg rect,
 svg#svg-guide rect,
 #grid-bg rect {
@@ -906,14 +1098,14 @@ svg#svg-guide path,
         filter: brightness(1.1);
         box-shadow: var(--shadow-hover);
         transform: translateY(-1px);
-        border: none;
+        border-color: transparent;
     }
 }
 
 .close-settings:active {
     opacity: 0.7;
     transform: scale(0.98);
-    border: none;
+    border-color: transparent;
 }
 
 /* --------------------------------------------------------------------------
@@ -1299,13 +1491,13 @@ svg#svg-guide path,
 
 .back-btn:active {
     transform: scale(0.9);
-    border: none;
+    border-color: transparent;
 }
 
 @media (hover: hover) {
     .back-btn:hover {
         background: var(--border-color);
-        border: none;
+        border-color: transparent;
     }
 }
 
@@ -1906,31 +2098,27 @@ ruby rt {
    8. Scrollbar Styling (scoped to modals only – do not apply globally)
    -------------------------------------------------------------------------- */
 .settings-modal::-webkit-scrollbar,
-.info-modal::-webkit-scrollbar,
-.card::-webkit-scrollbar {
+.info-modal::-webkit-scrollbar {
     width: 6px !important;
     background-color: transparent !important;
 }
 
 .settings-modal::-webkit-scrollbar-button,
-.info-modal::-webkit-scrollbar-button,
-.card::-webkit-scrollbar-button {
+.info-modal::-webkit-scrollbar-button {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
 }
 
 .settings-modal::-webkit-scrollbar-track,
-.info-modal::-webkit-scrollbar-track,
-.card::-webkit-scrollbar-track {
+.info-modal::-webkit-scrollbar-track {
     background-color: transparent !important;
     margin: 16px 0 !important;
     border-radius: 10px !important;
 }
 
 .settings-modal::-webkit-scrollbar-thumb,
-.info-modal::-webkit-scrollbar-thumb,
-.card::-webkit-scrollbar-thumb {
+.info-modal::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.25) !important;
     border-radius: 10px !important;
     border: 1px solid transparent !important;
@@ -1939,10 +2127,8 @@ ruby rt {
 
 .nightMode .settings-modal::-webkit-scrollbar-thumb,
 .nightMode .info-modal::-webkit-scrollbar-thumb,
-.nightMode .card::-webkit-scrollbar-thumb,
 .night_mode .settings-modal::-webkit-scrollbar-thumb,
-.night_mode .info-modal::-webkit-scrollbar-thumb,
-.night_mode .card::-webkit-scrollbar-thumb {
+.night_mode .info-modal::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.25) !important;
 }
 
@@ -2096,6 +2282,11 @@ ruby rt {
     transition: opacity 0.2s, background 0.2s;
     /* pill shadow so it floats above the kanji grid */
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+}
+
+@keyframes fadeInNumbers {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* Invisible touch-target extension — keeps visual size unchanged */
@@ -2590,3 +2781,15 @@ html.is-ankimobile .rewind-anim {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ============================================================
+   S-Pen / Stylus hover fix
+   While navigating settings pages, each incoming page gets
+   'hover-frozen' applied. pointer-events: none prevents any
+   hover styling from firing — without touching animations.
+   JS removes the class after the animation + a safety margin.
+   ============================================================ */
+.settings-page.hover-frozen {
+    pointer-events: none;
+}
+

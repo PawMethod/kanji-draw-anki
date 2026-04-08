@@ -1,8 +1,9 @@
 {
     "package": "kanji_draw_persistence",
     "name": "Kanji Draw Persistence",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "ankiweb_id": "905251277",
     "author": "PawMethod",
-    "homepage": "https://github.com/PawMethod/kanji-draw-anki"
+    "homepage": "https://github.com/PawMethod/kanji-draw-anki",
+    "min_point_version": 231000
 }

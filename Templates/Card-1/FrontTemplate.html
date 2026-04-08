@@ -591,8 +591,7 @@
                     </div>
                 </label>
             </div>
-            <div class="c1-only-setting">
-                <div class="setting-group-title" id="sbs-title-c2f">Vergleichsansicht</div>
+            <div class="setting-group-title" id="sbs-title-c2f">Vergleichsansicht</div>
                 <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid-c2f">
                     <label><input type="radio" name="opt-side-by-side-c2f" value="off"
                             onchange="updateFeatureSetting('sideBySide', this.value, 'c2f')">
@@ -642,7 +641,6 @@
                         </div>
                     </label>
                 </div>
-            </div>
             <div class="c2-only-setting">
                 <div class="setting-group-title">Strich-Darstellung</div>
                 <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
@@ -1000,6 +998,28 @@
     <canvas id="draw-canvas"
         style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;border-radius:var(--border-rad-main);display:none"></canvas>
     <svg id="draw-layer" viewBox="0 0 109 109"></svg>
+    <div id="legacy-gesture-warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <p><strong>Hinweis: AnkiDroid&nbsp;(Legacy)</strong></p>
+        <p>Falls Wischgesten aktiv sind, könnten Zeichenstriche als Gesten erkannt werden und die Rückseite ungewollt aufdecken.</p>
+        <p class="lgw-path"><strong>Wischgesten deaktivieren</strong> unter<br>Einstellungen&nbsp;→ Steuerung<br>oder ggf. auf den <strong>Neuen Lernmodus</strong> wechseln.</p>
+        <button id="lgw-dismiss" onclick="(function(){try{localStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}document.getElementById('legacy-gesture-warning').classList.remove('lgw-visible');})()">Verstanden</button>
+    </div>
+    <div id="addon-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <p><strong>Addon fehlt – Einstellungen werden nicht gespeichert</strong></p>
+        <p>Ohne das Addon <em><a href="https://ankiweb.net/shared/info/905251277" target="_blank" rel="noopener">Kanji Draw Persistence</a></em> gehen alle Einstellungen nach dem Neustart von Anki verloren.</p>
+        <p class="addon-hint-steps"><strong>Installation:</strong><br>
+            Anki → <strong>Extras</strong> → <strong>Erweiterungen</strong><br>
+            → <em>Erweiterungen herunterladen …</em><br>
+            → Code eingeben:</p>
+        <div class="addon-hint-code-row">
+            <code id="addon-hint-code">905251277</code>
+            <button id="addon-hint-copy" onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
+        </div>
+        <p class="addon-hint-note">Danach Anki neu starten – das Addon speichert deine Einstellungen dauerhaft.</p>
+        <button id="addon-hint-dismiss" onclick="(function(){try{sessionStorage.setItem('kanji-addon-hint-dismissed','1');}catch(e){}document.getElementById('addon-hint').classList.remove('addon-hint-visible');})()">Verstanden</button>
+    </div>
 </div>
 
 <div class="action-buttons">
@@ -1062,7 +1082,9 @@
     // AnkiWeb wraps cards in its own chrome (header ~50px + answer bar ~80px)
     // that reduces usable viewport height; flag it for CSS overrides.
     // Detection: HTTPS protocol + no native Anki bridge = browser review.
-    if (location.protocol === 'https:' && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
+    // AnkiMobile also has no pycmd/AnkiDroidJS but runs locally — exclude via UA.
+    var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    if (location.protocol === 'https:' && !_isIOS && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
         document.documentElement.classList.add('is-ankiweb');
         var _awH = window.innerHeight;
         var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
@@ -1083,6 +1105,45 @@
             _bgEl.style.setProperty('background-color', 'var(--bg-main)', 'important');
             _bgEl = _bgEl.parentElement;
         }
+    }
+
+    // --- AnkiDroid Legacy swipe-gesture warning ---
+    // Detection: AnkiDroidJS is defined in ALL AnkiDroid modes.
+    // New study mode additionally injects ankidroid-reviewer.js, which sets
+    // globalThis.ankidroid.userAction. Legacy mode does not inject that script.
+    // When "Steuerung" is disabled in Legacy, AnkiDroid changes its JS environment
+    // such that globalThis.ankidroid.userAction becomes defined — so this check
+    // correctly shows/hides the banner dynamically on each card load.
+    if (typeof AnkiDroidJS !== 'undefined') {
+        setTimeout(function () {
+            var isNewMode = typeof globalThis.ankidroid !== 'undefined' &&
+                            typeof globalThis.ankidroid.userAction === 'function';
+            if (!isNewMode) {
+                var dismissed = false;
+                try { dismissed = localStorage.getItem('kanji-lgw-dismissed') === '1'; } catch (e) {}
+                if (!dismissed) {
+                    var w = document.getElementById('legacy-gesture-warning');
+                    if (w) w.classList.add('lgw-visible');
+                }
+            }
+        }, 80);
+    }
+
+    // --- Anki Desktop: addon-missing hint ---
+    // Show a banner when running on Anki Desktop (pycmd available) but the
+    // "Kanji Draw Persistence" addon is not installed. The addon always injects
+    // window._kanjiAddonLoaded = 1, so its absence means addon is missing.
+    // Dismissed per session via sessionStorage (localStorage may be wiped on restart
+    // without the addon, so the hint reappears after the next restart until installed).
+    if (typeof pycmd === 'function' && !window._kanjiAddonLoaded) {
+        setTimeout(function () {
+            var dismissed = false;
+            try { dismissed = sessionStorage.getItem('kanji-addon-hint-dismissed') === '1'; } catch (e) {}
+            if (!dismissed) {
+                var h = document.getElementById('addon-hint');
+                if (h) h.classList.add('addon-hint-visible');
+            }
+        }, 80);
     }
 
     // --- Anti-Flicker [SHARED with c2-front] ---
@@ -1133,7 +1194,7 @@
             if (encoded.length < 3800) { document.cookie = encoded; }
         }
         // Desktop add-on bridge: flush settings to persistent JSON (debounced)
-        if (typeof pycmd === 'function') { clearTimeout(window._kdpT); window._kdpT = setTimeout(function () { try { pycmd('kdp:' + JSON.stringify(window._ks)); } catch (e) { } }, 500); }
+        if (typeof pycmd === 'function') { clearTimeout(window._kdpT); var _ksSnap = JSON.stringify(window._ks); window._kdpT = setTimeout(function () { try { pycmd('kdp:' + _ksSnap); } catch (e) { } }, 500); }
     }
     // Android CookieManager only persists cookies on lifecycle events – flush proactively
     if (location.protocol !== 'file:') {
@@ -1203,12 +1264,13 @@
         mainEl.classList.remove('active');
         mainEl.style.display = 'none';
         pageEl.style.display = '';
-        pageEl.classList.add('active', 'slide-in-right');
+        pageEl.classList.add('active', 'slide-in-right', 'hover-frozen');
         if (_settingsModal) _settingsModal.scrollTop = 0;
-        pageEl.addEventListener('animationend', function h() {
+        pageEl.addEventListener('animationend', function onPageSlideIn() {
             pageEl.classList.remove('slide-in-right');
-            pageEl.removeEventListener('animationend', h);
+            pageEl.removeEventListener('animationend', onPageSlideIn);
         });
+        setTimeout(function () { pageEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = pageId;
     }
 
@@ -1221,12 +1283,13 @@
         pageEl.classList.remove('active');
         pageEl.style.display = 'none';
         mainEl.style.display = '';
-        mainEl.classList.add('active', 'slide-in-left');
+        mainEl.classList.add('active', 'slide-in-left', 'hover-frozen');
         if (_settingsModal) _settingsModal.scrollTop = 0;
-        mainEl.addEventListener('animationend', function h() {
+        mainEl.addEventListener('animationend', function onMainSlideBack() {
             mainEl.classList.remove('slide-in-left');
-            mainEl.removeEventListener('animationend', h);
+            mainEl.removeEventListener('animationend', onMainSlideBack);
         });
+        setTimeout(function () { mainEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = 'settings-main';
     }
 
@@ -1724,7 +1787,9 @@
     }
 
     var _settingsReady = false;
-    setTimeout(function () { _settingsReady = true; }, 400);
+    window._kanjiSrGenC1 = (window._kanjiSrGenC1 || 0) + 1;
+    var _srGenSnap = window._kanjiSrGenC1;
+    setTimeout(function () { if (window._kanjiSrGenC1 === _srGenSnap) _settingsReady = true; }, 400);
 
     function openSettings(e) {
         // Guard: block non-user-initiated calls during page load to prevent
@@ -1980,8 +2045,10 @@
             return out;
         },
         discreteFrechet: function (P, Q) {
-            var n = P.length, m = Q.length;
-            var dp = new Float64Array(n * m);
+            var n = P.length, m = Q.length, size = n * m;
+            if (!window._kanjiAlgo._dpBuf || window._kanjiAlgo._dpBuf.length < size)
+                window._kanjiAlgo._dpBuf = new Float64Array(Math.max(size, 128 * 128));
+            var dp = window._kanjiAlgo._dpBuf;
             for (var i = 0; i < n; i++) {
                 for (var j = 0; j < m; j++) {
                     var dist = Math.hypot(P[i].x - Q[j].x, P[i].y - Q[j].y);
@@ -2163,6 +2230,7 @@
         const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
         // Cached per-stroke style — set once in startDrawing, reused in draw() hot path
         let _activeDrawStyle = 'standard';
+        let _cachedStrokeColor = '#333'; // cached once per stroke to avoid getComputedStyle in rAF
 
         // Neon glow: filter defs live in #neon-defs (static HTML). Just toggle the attribute.
         // WebKit/AnkiMobile uses lighter single-blur filter to avoid GPU jank with many paths.
@@ -2609,6 +2677,7 @@
             const pos = getMousePos(e);
             userPoints.push(pos);
             _activeDrawStyle = getActiveStrokeStyle();
+            _cachedStrokeColor = getCSSVar('--stroke-active') || '#333'; // cache once, reused in rAF
             const isGel = _activeDrawStyle === 'gel';
             // Always create SVG path for d-attribute accumulation and finalization
             currentSVGPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -2657,7 +2726,7 @@
             if (!_canvasDirty || !_ctx || !_canvasPath) return;
             _canvasDirty = false;
             const style = _activeDrawStyle;
-            const color = getCSSVar('--stroke-active') || '#333';
+            const color = _cachedStrokeColor;
             const sx = _ctx._scaleX;
             _clearCanvas();
             _ctx.save();
@@ -3123,6 +3192,7 @@
 
         const freeResetAction = () => {
             _drawGen++;
+            const _freeResetGen = _drawGen;
             // Reverse animation: rewind ALL drawn strokes simultaneously
             const drawnPaths = Array.from(drawLayer.querySelectorAll('path:not(.gel-halo)'));
             // Remove gel halos and fade ink groups immediately
@@ -3167,6 +3237,7 @@
                 });
             });
             setTimeout(() => {
+                if (_drawGen !== _freeResetGen) return; // card navigated — abort
                 freeStrokes = []; freeSVGPaths = []; userPoints = []; problemStrokes.fill(0); currentStroke = 0; saveState();
                 drawLayer.innerHTML = ''; currentSVGPath = null;
                 _gelHalo = null;
@@ -3357,9 +3428,10 @@
     document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
         if (ol._kanjiPointerDown) return;
         ol._kanjiPointerDown = true;
-        ol.addEventListener('pointerdown', function (e) {
-            this._bgPointerDown = (e.target === this);
-        });
+        ol._bgPointerDown = false;
+        var _trackBg = function (e) { ol._bgPointerDown = (e.target === ol); };
+        ol.addEventListener('pointerdown', _trackBg);
+        ol.addEventListener('touchstart', _trackBg, { passive: true }); // fallback on non-PointerEvent
     });
 
     // --- Global S-Pen defense [SHARED with c2-front] ---
@@ -3383,9 +3455,10 @@
             // Mark click events that originate from pen so the filter above can identify them
             document.addEventListener('pointerup', function (e) {
                 if (e.pointerType !== 'pen') return;
-                var mark = function (ev) { ev._penOrigin = true; document.removeEventListener('click', mark, true); };
+                var _markTimer;
+                var mark = function (ev) { ev._penOrigin = true; clearTimeout(_markTimer); document.removeEventListener('click', mark, true); };
                 document.addEventListener('click', mark, true);
-                setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
+                _markTimer = setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
             }, true);
         }
     } // end guard
@@ -3393,5 +3466,5 @@
     // --- userJs: Gesture / Shortcut hooks for AnkiDroid & AnkiMobile ---
     var userJs1 = function () { var b = document.getElementById('button-reveal'); if (b && b._kanjiAction) b._kanjiAction(); };
     var userJs2 = function () { var b = document.getElementById('button-reset'); if (b && b._kanjiAction) b._kanjiAction(); };
-    var userJs3 = function () { openSettings(new Event('userJs')); };
+    var userJs3 = function () { if (!_settingsReady) _settingsReady = true; openSettings(new Event('userJs')); };
 </script>

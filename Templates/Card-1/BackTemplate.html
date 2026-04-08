@@ -317,6 +317,14 @@
 
     // Provided by FrontSide injection: safeGetItem(), safeSetItem(), getGlobalConfig()
 
+    // Shared dark-mode helper (avoids 3× copy-paste of the 4-clause check)
+    window._kanjiIsDark = function () {
+        return document.documentElement.classList.contains('nightMode') ||
+            document.documentElement.classList.contains('night_mode') ||
+            document.body.classList.contains('nightMode') ||
+            document.body.classList.contains('night_mode');
+    };
+
     // Re-apply font-size on back side (class toggle + dynamic style for WKWebView)
     (function () {
         try {
@@ -365,7 +373,7 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+            var dk = window._kanjiIsDark();
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
@@ -422,7 +430,8 @@
         ol.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
         ol.style.pointerEvents = 'auto';
-        setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
+        clearTimeout(ol._pointerEvTimer);
+        ol._pointerEvTimer = setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
     }
 
     // --- Radical Tree Renderer [SHARED with c2-back] ---
@@ -491,7 +500,7 @@
                         }
                     } catch (err) { }
                 });
-            }, 100);
+            }, 300);
         } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Radikale konnten nicht geladen werden.</span>`; }
 
         target.addEventListener('click', function (e) {
@@ -636,10 +645,7 @@
                     break;
                 case 'neon': {
                     p.setAttribute('stroke-width', width);
-                    var dk = document.documentElement.classList.contains('nightMode') ||
-                        document.documentElement.classList.contains('night_mode') ||
-                        document.body.classList.contains('nightMode') ||
-                        document.body.classList.contains('night_mode');
+                    var dk = window._kanjiIsDark();
                     var wk = document.documentElement.classList.contains('is-ankimobile');
                     p.setAttribute('filter', 'url(#' + (wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow')) + ')');
                     break;
@@ -895,10 +901,7 @@
                 // Clean old gel halos before re-applying any style
                 var svgBgEl = document.getElementById('svg-bg');
                 if (svgBgEl) svgBgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
-                var dk = document.documentElement.classList.contains('nightMode') ||
-                    document.documentElement.classList.contains('night_mode') ||
-                    document.body.classList.contains('nightMode') ||
-                    document.body.classList.contains('night_mode');
+                var dk = window._kanjiIsDark();
                 var wk = document.documentElement.classList.contains('is-ankimobile');
                 // First pass: reset all paths + apply basic style properties
                 paths.forEach((path, i) => {
@@ -1075,15 +1078,19 @@
 
                     const SAMPLE_N = 65;
 
+                    const _parseScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    _parseScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+                    document.body.appendChild(_parseScratch);
                     const parseDToPoints = (d) => {
-                        const parts = d.trim().split(/\s+/);
+                        const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        tmp.setAttribute('d', d);
+                        _parseScratch.appendChild(tmp);
+                        const L = tmp.getTotalLength();
+                        if (!L) { _parseScratch.removeChild(tmp); return []; }
                         const pts = [];
-                        for (let i = 0; i < parts.length; i++) {
-                            if (parts[i] === 'M' || parts[i] === 'L') {
-                                pts.push({ x: parseFloat(parts[i + 1]), y: parseFloat(parts[i + 2]) });
-                                i += 2;
-                            }
-                        }
+                        for (let i = 0; i < 20; i++)
+                            pts.push(tmp.getPointAtLength((i / 19) * L));
+                        _parseScratch.removeChild(tmp);
                         return pts;
                     };
 
@@ -1113,6 +1120,7 @@
                         const rawPts = parseDToPoints(s.d);
                         return resamplePts(smooth(rawPts, 2), SAMPLE_N);
                     });
+                    if (_parseScratch.parentNode) _parseScratch.parentNode.removeChild(_parseScratch);
 
                     const refProcessed = [];
                     for (let r = 0; r < nRef; r++) refProcessed.push(sampleRef(paths[r]));
@@ -2362,7 +2370,8 @@
                                         revSvgWK.classList.add('handwriting-overlay');
                                         let _qtLastAnim = null;
                                         var _isNumbersRevWK = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', (getGlobalConfig().numbers))) === 'on';
-                                        for (const pair of _qtRevPairs) {
+                                        for (let _qti = 0; _qti < _qtRevPairs.length; _qti++) {
+                                            const pair = _qtRevPairs[_qti];
                                             const u = _qtResamplePts(pair.userD);
                                             const r = _qtResamplePts(pair.refD);
                                             if (!u || !r) continue;
@@ -2417,8 +2426,8 @@
                                             _qtLastAnim = anim;
                                             // Animate number label for this pair (SMIL x/y on text element)
                                             if (_isNumbersRevWK && pair.numLabel) {
-                                                var lpFrom = _qtAdjRef[pair.refIdx]; // start = collision-adjusted SVG-Pfade position
-                                                var lpTo = _qtAdjUser[_qtRevPairs.indexOf(pair)]; // end = collision-adjusted HW position
+                                                var lpFrom = _qtAdjRef[pair.refIdx];
+                                                var lpTo = _qtAdjUser[_qti]; // use loop index — no O(n) indexOf
                                                 if (lpFrom && lpTo) {
                                                     var ntQ = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                                                     ntQ.setAttribute('class', 'stroke-number');
@@ -2474,19 +2483,27 @@
                                             renderFreeView();
                                         }
                                     } else if (_transC) {
-                                        // No morph data → simple fade
-                                        _transC.style.transition = 'opacity 180ms ease-out';
-                                        _transC.style.opacity = '0';
-                                        setTimeout(() => {
-                                            _transC.style.transition = '';
+                                        if (_isWKQt) {
+                                            // WKWebView with no morph data → fade
+                                            _transC.style.transition = 'opacity 180ms ease-out';
+                                            _transC.style.opacity = '0';
+                                            setTimeout(() => {
+                                                _transC.style.transition = '';
+                                                window._kanjiFromMorph = true;
+                                                renderFreeView();
+                                                requestAnimationFrame(() => requestAnimationFrame(() => {
+                                                    _transC.style.transition = 'opacity 220ms ease-in';
+                                                    _transC.style.opacity = '1';
+                                                    setTimeout(() => { _transC.style.transition = ''; _transC.style.opacity = ''; }, 240);
+                                                }));
+                                            }, 190);
+                                        } else {
+                                            // Desktop with no morph data → direct call, same as HW→SVG
+                                            // renderFreeView() teardown+rebuild is a single sync JS task,
+                                            // so the browser never paints a blank frame between the two states.
                                             window._kanjiFromMorph = true;
                                             renderFreeView();
-                                            requestAnimationFrame(() => requestAnimationFrame(() => {
-                                                _transC.style.transition = 'opacity 220ms ease-in';
-                                                _transC.style.opacity = '1';
-                                                setTimeout(() => { _transC.style.transition = ''; _transC.style.opacity = ''; }, 240);
-                                            }));
-                                        }, 190);
+                                        }
                                     } else {
                                         window._kanjiFromMorph = true;
                                         renderFreeView();
