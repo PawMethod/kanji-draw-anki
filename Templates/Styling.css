@@ -390,10 +390,12 @@ svg#svg-bg {
     gap: 6px;
     pointer-events: none;
 }
+
 #legacy-gesture-warning.lgw-visible {
     display: flex;
     pointer-events: auto;
 }
+
 #legacy-gesture-warning svg {
     width: 32px;
     height: 32px;
@@ -401,16 +403,19 @@ svg#svg-bg {
     flex-shrink: 0;
     margin-bottom: 4px;
 }
+
 #legacy-gesture-warning p {
     margin: 0;
     font-size: 0.72rem;
     line-height: 1.35;
     color: var(--text-main);
 }
+
 #legacy-gesture-warning strong {
     font-size: 0.8rem;
     color: #d97706;
 }
+
 #legacy-gesture-warning .lgw-path {
     font-size: 0.68rem;
     background: var(--accent-bg);
@@ -420,6 +425,7 @@ svg#svg-bg {
     margin-top: 4px;
     line-height: 1.5;
 }
+
 #lgw-dismiss {
     pointer-events: auto;
     margin-top: 10px;
@@ -433,6 +439,7 @@ svg#svg-bg {
     cursor: pointer;
     flex-shrink: 0;
 }
+
 #lgw-dismiss:active {
     opacity: 0.8;
 }
@@ -455,39 +462,47 @@ svg#svg-bg {
     gap: 5px;
     pointer-events: none;
 }
+
 #addon-hint.addon-hint-visible {
     display: flex;
     pointer-events: auto;
 }
-#addon-hint > svg {
+
+#addon-hint>svg {
     width: 28px;
     height: 28px;
     stroke: #2563eb;
     flex-shrink: 0;
     margin-bottom: 2px;
 }
+
 #addon-hint p {
     margin: 0;
     font-size: 0.72rem;
     line-height: 1.35;
     color: var(--text-main);
 }
+
 #addon-hint strong {
     color: #2563eb;
 }
+
 #addon-hint em {
     font-style: normal;
     color: #2563eb;
     opacity: 0.85;
 }
+
 #addon-hint em a {
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 2px;
 }
+
 #addon-hint em a:hover {
     opacity: 1;
 }
+
 #addon-hint .addon-hint-steps {
     font-size: 0.68rem;
     background: var(--accent-bg);
@@ -497,6 +512,7 @@ svg#svg-bg {
     margin-top: 4px;
     line-height: 1.6;
 }
+
 #addon-hint .addon-hint-code-row {
     display: flex;
     align-items: center;
@@ -504,6 +520,7 @@ svg#svg-bg {
     pointer-events: auto;
     margin-top: 2px;
 }
+
 #addon-hint-code {
     font-family: monospace;
     font-size: 1.05rem;
@@ -516,6 +533,7 @@ svg#svg-bg {
     color: var(--text-main);
     user-select: all;
 }
+
 #addon-hint-copy {
     pointer-events: auto;
     background: var(--accent);
@@ -528,14 +546,17 @@ svg#svg-bg {
     cursor: pointer;
     flex-shrink: 0;
 }
+
 #addon-hint-copy:active {
     opacity: 0.8;
 }
+
 #addon-hint .addon-hint-note {
     font-size: 0.63rem;
     color: var(--text-muted);
     margin-top: 2px;
 }
+
 #addon-hint-dismiss {
     pointer-events: auto;
     margin-top: 8px;
@@ -548,15 +569,17 @@ svg#svg-bg {
     cursor: pointer;
     flex-shrink: 0;
 }
+
 #addon-hint-dismiss:active {
     opacity: 0.7;
 }
 
 /* In dark mode the base blue #2563eb is too dark — use a lighter blue for readability */
-.nightMode #addon-hint > svg,
-.night_mode #addon-hint > svg {
+.nightMode #addon-hint>svg,
+.night_mode #addon-hint>svg {
     stroke: #60a5fa;
 }
+
 .nightMode #addon-hint strong,
 .nightMode #addon-hint em,
 .night_mode #addon-hint strong,
@@ -2285,8 +2308,13 @@ ruby rt {
 }
 
 @keyframes fadeInNumbers {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Invisible touch-target extension — keeps visual size unchanged */
@@ -2792,4 +2820,3 @@ html.is-ankimobile .rewind-anim {
 .settings-page.hover-frozen {
     pointer-events: none;
 }
-
