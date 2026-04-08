@@ -961,7 +961,7 @@
         <p class="lgw-path"><strong>Wischgesten deaktivieren</strong> unter<br>Einstellungen&nbsp;→ Steuerung<br>oder
             ggf. auf den <strong>Neuen Lernmodus</strong> wechseln.</p>
         <button id="lgw-dismiss"
-            onclick="(function(){try{localStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}document.getElementById('legacy-gesture-warning').classList.remove('lgw-visible');})()">Verstanden</button>
+            onclick="(function(){window._lgwDismissed=true;try{sessionStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}try{localStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}document.getElementById('legacy-gesture-warning').classList.remove('lgw-visible');})()">Verstanden</button>
     </div>
     <div id="addon-hint">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1087,6 +1087,8 @@
             if (!isNewMode) {
                 var dismissed = false;
                 try { dismissed = localStorage.getItem('kanji-lgw-dismissed') === '1'; } catch (e) { }
+                if (!dismissed) { try { dismissed = sessionStorage.getItem('kanji-lgw-dismissed') === '1'; } catch (e) { } }
+                if (!dismissed) { dismissed = !!window._lgwDismissed; }
                 if (!dismissed) {
                     var w = document.getElementById('legacy-gesture-warning');
                     if (w) w.classList.add('lgw-visible');
