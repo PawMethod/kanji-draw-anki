@@ -595,7 +595,7 @@
         // ── Shared helpers ──
 
         // Add stroke numbers to an SVG using getPointAtLength for positioning
-        const addNumbersGPAL = (svg, colorFn, opacityFn, numberFn) => {
+        const addNumbersGPAL = (svg, colorFn, opacityFn, numberFn, skipAnim) => {
             const svgPaths = svg.querySelectorAll('path:not(.gel-halo)');
             const placed = [];
             const MD = 6.0;
@@ -633,7 +633,7 @@
                 t.setAttribute('class', 'stroke-number');
                 t.textContent = numberFn ? numberFn(i) : (i + 1);
                 const opVal = opacityFn ? opacityFn(i) : undefined;
-                t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill' + (opVal !== undefined ? ';opacity:' + opVal : '');
+                t.style.cssText = 'fill:' + colorFn(i) + ';stroke:var(--surface);stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill' + (opVal !== undefined ? ';opacity:' + opVal : '') + (skipAnim ? ';animation:none;opacity:1' : '');
                 frag.appendChild(t);
             });
             svg.appendChild(frag);
@@ -872,7 +872,7 @@
         // forceFreeMode: pass true when calling from free-mode render paths (renderFreeView,
         // showFinalSvgView) so m=2 always maps to --stroke-err regardless of storage state.
         // Passing false (or omitting) means guided mode — m=2 → --stroke-warn2 as intended.
-        const applyBackFeatures = function (forceFreeMode) {
+        const applyBackFeatures = function (forceFreeMode, skipNumberAnim) {
             if (applyBackFeatures._running) return;
             applyBackFeatures._running = true;
             try {
@@ -980,7 +980,7 @@
                 if (isNumbers) {
                     addNumbersGPAL(svgBg, (i) => {
                         return (pathColors[i] !== 'var(--stroke-active)') ? pathColors[i] : 'var(--text-muted)';
-                    });
+                    }, undefined, undefined, skipNumberAnim);
                 }
             } finally {
                 applyBackFeatures._running = false;
@@ -1485,9 +1485,7 @@
                             // Helper: show final SVG-Pfade view with badges (no animation)
                             const showFinalSvgView = () => {
                                 hideRefPaths();
-                                applyBackFeatures(true);
-                                // If view switch: skip fadeIn animation on svgBg stroke numbers
-                                if (_isViewSwitch) svgBg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
+                                applyBackFeatures(true, _isViewSwitch);
                                 // Remove any placeholder badges from the morph animation
                                 cont.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge').forEach(el => el.remove());
 
@@ -1505,9 +1503,8 @@
                                         wrapInPulseGroup(overlaySvg, p, 'stroke-extra-group');
                                     });
                                     if (isNumbers) {
-                                        addNumbersGPAL(overlaySvg, () => 'var(--stroke-err)', undefined, (i) => extraStrokes[i] ? extraStrokes[i].userIdx + 1 : i + 1);
+                                        addNumbersGPAL(overlaySvg, () => 'var(--stroke-err)', undefined, (i) => extraStrokes[i] ? extraStrokes[i].userIdx + 1 : i + 1, _isViewSwitch);
                                         adoptNumbersIntoGroups(overlaySvg);
-                                        if (_isViewSwitch) overlaySvg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
                                     }
                                     preHideGroupsIfNeeded(overlaySvg, 'stroke-extra-group');
                                     cont.appendChild(overlaySvg);
@@ -1666,10 +1663,11 @@
                                         _wkAnimDone = true;
                                         if (_wkScratch.parentNode) _wkScratch.parentNode.removeChild(_wkScratch);
                                         if (_freeRenderGen !== myRenderGen) { morphSvg.remove(); return; }
-                                        // Same pattern as desktop: render real view first, then remove
-                                        // morph overlay — browser paints once, no flash.
-                                        cont.classList.remove('show-handwriting');
+                                        // Build final view WHILE show-handwriting CSS still hides svgBg
+                                        // numbers (display:none). Removing the class after reveals the
+                                        // already-correct numbers — no remove→recreate flash.
                                         showFinalSvgView();
+                                        cont.classList.remove('show-handwriting');
                                         morphSvg.remove();
                                     };
 
@@ -1783,8 +1781,8 @@
                                     } else {
                                         // No animatable pairs → just show final immediately
                                         if (_wkScratch.parentNode) _wkScratch.parentNode.removeChild(_wkScratch);
-                                        cont.classList.remove('show-handwriting');
                                         if (_freeRenderGen === myRenderGen) showFinalSvgView();
+                                        cont.classList.remove('show-handwriting');
                                     }
                                 } else {
                                     // ── Desktop/Android: pre-computed morph animation ──
@@ -1943,12 +1941,11 @@
                                                 requestAnimationFrame(tick);
                                             } else {
                                                 if (_freeRenderGen !== myRenderGen) return;
-                                                // showFinalSvgView renders real numbers onto svgBg (which sits behind
-                                                // morphSvg). Removing morphSvg immediately after — in the same JS
-                                                // task — means the browser paints exactly once: morph overlay gone,
-                                                // real numbers visible. No gap, no fade-in flash.
-                                                cont.classList.remove('show-handwriting');
+                                                // Build final view WHILE show-handwriting CSS still hides
+                                                // svgBg numbers. Removing the class after reveals already-
+                                                // correct numbers — no remove→recreate flash.
                                                 showFinalSvgView();
+                                                cont.classList.remove('show-handwriting');
                                                 morphSvg.remove();
                                                 if (_scratchSvg.parentNode) _scratchSvg.parentNode.removeChild(_scratchSvg);
                                             }
