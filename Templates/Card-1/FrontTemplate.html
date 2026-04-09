@@ -1455,6 +1455,7 @@
     function applyThemeSettings() {
         if (_themeApplying) return;
         _themeApplying = true;
+        _cachedGlobalConf = null; // M6: invalidate so theme changes are picked up
         try {
             var globalConf = getGlobalConfig();
             var mode = safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system');
@@ -2011,7 +2012,9 @@
             return out;
         },
         discreteFrechet: function (P, Q) {
-            var n = P.length, m = Q.length, size = n * m;
+            var n = P.length, m = Q.length;
+            if (n === 0 || m === 0) return Infinity;
+            var size = n * m;
             if (!window._kanjiAlgo._dpBuf || window._kanjiAlgo._dpBuf.length < size)
                 window._kanjiAlgo._dpBuf = new Float64Array(Math.max(size, 128 * 128));
             var dp = window._kanjiAlgo._dpBuf;
@@ -2471,8 +2474,8 @@
         const getMousePos = (evt) => {
             if (!_cachedRect) _cachedRect = drawLayer.getBoundingClientRect();
             const rect = _cachedRect;
-            const clientX = evt.clientX !== undefined ? evt.clientX : evt.touches[0].clientX;
-            const clientY = evt.clientY !== undefined ? evt.clientY : evt.touches[0].clientY;
+            const clientX = evt.clientX !== undefined ? evt.clientX : (evt.touches && evt.touches[0] ? evt.touches[0].clientX : (evt.changedTouches && evt.changedTouches[0] ? evt.changedTouches[0].clientX : 0));
+            const clientY = evt.clientY !== undefined ? evt.clientY : (evt.touches && evt.touches[0] ? evt.touches[0].clientY : (evt.changedTouches && evt.changedTouches[0] ? evt.changedTouches[0].clientY : 0));
             const x = Math.max(0, Math.min(SVG_GRID_SIZE, ((clientX - rect.left) / rect.width) * SVG_GRID_SIZE));
             const y = Math.max(0, Math.min(SVG_GRID_SIZE, ((clientY - rect.top) / rect.height) * SVG_GRID_SIZE));
             return { x, y };
@@ -2602,8 +2605,9 @@
         const smoothInput = window._kanjiAlgo.smoothInput;
 
         const avgPointDist = (P, Q) => {
-            let sum = 0;
             const n = Math.min(P.length, Q.length);
+            if (n === 0) return Infinity;
+            let sum = 0;
             for (let i = 0; i < n; i++) sum += Math.hypot(P[i].x - Q[i].x, P[i].y - Q[i].y);
             return sum / n;
         };
@@ -2636,7 +2640,9 @@
                 clearTimeout(errorTimeout); clearTimeout(fadeTimeout);
                 drawLayer.classList.remove('fade-out'); clearDrawLayer();
                 const _hintPath = paths[currentStroke];
-                _hintPath.classList.remove('hint-active');
+                _hintPath.classList.remove('hint-active', 'rewind-anim');
+                _hintPath.style.removeProperty('stroke');
+                _hintPath.style.removeProperty('opacity');
                 const _hintPrevH = _hintPath.previousElementSibling;
                 if (_hintPrevH && _hintPrevH.classList.contains('gel-halo')) _hintPrevH.parentNode.removeChild(_hintPrevH);
             }
@@ -2658,6 +2664,7 @@
             currentSVGPath.setAttribute("stroke-linejoin", "round");
             applyPathStyle(currentSVGPath);
 
+            if (_useCanvas && !_ctx) _resizeCanvas(); // M3: retry if initial layout was zero-sized
             if (_useCanvas && _ctx) {
                 _canvasEl.style.display = 'block';
                 _canvasPath = new Path2D();
@@ -2860,11 +2867,17 @@
                 mistakes = 0;
                 const si = currentStroke, dp = currentSVGPath, up = userPoints.slice();
                 const gh = _gelHalo;
-                paths[si].classList.remove('hint-active');
+                paths[si].classList.remove('hint-active', 'rewind-anim');
+                paths[si].style.removeProperty('stroke');
+                paths[si].style.removeProperty('opacity');
                 currentStroke++; saveState(); currentSVGPath = null; _gelHalo = null;
                 const afterSnapGen = _drawGen;
                 const afterSnap = () => {
-                    if (afterSnapGen !== _drawGen) return; // reset fired during morph — discard
+                    // Always make the reference path visible — even when
+                    // _drawGen changed (race condition: user started next
+                    // stroke before snap finished → clearDrawLayer incremented
+                    // _drawGen).  The old code returned early here, leaving
+                    // the reference invisible.
                     paths[si].classList.add('stroke-complete');
                     paths[si].classList.remove('rewind-anim');
                     paths[si].style.removeProperty('stroke-dashoffset');
@@ -2875,6 +2888,7 @@
                     _addGelHaloToPath(paths[si]);
                     if (dp && dp.parentNode) dp.parentNode.removeChild(dp);
                     if (gh && gh.parentNode) gh.parentNode.removeChild(gh);
+                    if (afterSnapGen !== _drawGen) return; // skip completion check only
                     if (currentStroke >= paths.length) { if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); }
                 };
                 if (dp && up.length >= 2) {
@@ -2891,7 +2905,11 @@
 
                 if (mistakes >= 3 && isAutoDrawOn) {
                     const p = paths[currentStroke];
-                    p.classList.remove('hint-active');
+                    // Clean up any leftover rewind-anim state from a previous reset
+                    // (rewind cleanup can be skipped when clearDrawLayer increments _drawGen)
+                    p.classList.remove('hint-active', 'rewind-anim');
+                    p.style.removeProperty('stroke');
+                    p.style.removeProperty('opacity');
                     // Remove old gel halo before re-animating
                     const prevH = p.previousElementSibling;
                     if (prevH && prevH.classList.contains('gel-halo')) prevH.parentNode.removeChild(prevH);
@@ -3029,6 +3047,12 @@
             const _guidedResetGen = _drawGen;
             currentStroke = 0; mistakes = 0; userPoints = []; problemStrokes.fill(0); saveState();
             skipTimeouts.forEach(clearTimeout); skipTimeouts = [];
+            // H1/M5: Clean up celebration state that may have been left behind
+            // when _drawGen changed during the completion animation timeout.
+            if (kanjiContainer) { kanjiContainer.classList.remove('celebration'); kanjiContainer.style.removeProperty('-webkit-animation'); kanjiContainer.style.removeProperty('animation'); kanjiContainer.style.willChange = 'auto'; }
+            const _celSvg = document.getElementById('svg-bg');
+            if (_celSvg) { _celSvg.style.removeProperty('-webkit-animation'); _celSvg.style.removeProperty('animation'); _celSvg.style.willChange = 'auto'; }
+            if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
             const strokeColor = getCSSVar('--stroke-active') || '';
             const hintColor = getCSSVar('--stroke-hint') || strokeColor;
             // Collect halo elements for batched reflow (avoid O(n) forced layouts in loop)
@@ -3193,6 +3217,11 @@
             _drawGen++;
             const _freeResetGen = _drawGen;
             _isRewinding = true;
+            // H1/M5: Clean up celebration state (see guidedResetAction)
+            if (kanjiContainer) { kanjiContainer.classList.remove('celebration'); kanjiContainer.style.removeProperty('-webkit-animation'); kanjiContainer.style.removeProperty('animation'); kanjiContainer.style.willChange = 'auto'; }
+            const _celSvg = document.getElementById('svg-bg');
+            if (_celSvg) { _celSvg.style.removeProperty('-webkit-animation'); _celSvg.style.removeProperty('animation'); _celSvg.style.willChange = 'auto'; }
+            if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
             // Snapshot state at reset time so cleanup only undoes what existed then.
             const _strokeCountAtReset = currentStroke; // guided-mode progress at reset
             // Snapshot which paths exist NOW (before reset) so we only remove these later.

@@ -636,7 +636,7 @@
                 const existing = svgBg.querySelectorAll('.stroke-number');
                 if (existing.length === paths.length) {
                     // Numbers already present (from FrontSide) — just update colors in place, no flicker
-                    existing.forEach((el, i) => { el.style.fill = colorFn(i); });
+                    existing.forEach((el, i) => { el.style.fill = colorFn(i); el.style.animation = 'none'; el.style.opacity = '1'; });
                 } else {
                     svgBg.querySelectorAll('.stroke-number').forEach(el => el.remove());
                     addNumbersGPAL(svgBg, colorFn);
