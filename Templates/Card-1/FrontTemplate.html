@@ -982,7 +982,7 @@
         <div class="addon-hint-code-row">
             <code id="addon-hint-code">905251277</code>
             <button id="addon-hint-copy"
-                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');function done(ok){b.textContent=ok?'✓':'Fehler';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true);}).catch(function(){done(false);});}else{try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);done(true);}catch(e){done(false);}}})()">Kopieren</button>
+                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
         </div>
         <p class="addon-hint-note">Danach Anki neu starten – das Addon speichert deine Einstellungen dauerhaft.</p>
         <button id="addon-hint-dismiss"
@@ -2629,7 +2629,7 @@
         // ---- Unified Drawing Handlers ----
 
         const startDrawing = (e) => {
-            if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
+            if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn') || e.target.closest('#addon-hint') || e.target.closest('#legacy-gesture-warning')) return;
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             if (!isFreeMode && currentStroke >= paths.length) return;
             if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
@@ -2966,7 +2966,7 @@
                 });
             }
             window._kanjiBlockAppGestures = (e) => {
-                if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn')) return;
+                if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn') || e.target.closest('#addon-hint') || e.target.closest('#legacy-gesture-warning')) return;
                 e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
                 // On AnkiMobile, also preventDefault to suppress native swipe-to-flip.
                 // Only needed during active drawing (touchmove) or when a stroke
