@@ -376,6 +376,23 @@ svg#svg-bg {
     transform: translateZ(0);
 }
 
+/* Transparent HTML overlay that receives touch events instead of the SVG draw-layer.
+   Workaround for WebKit Bug 200610: touch-action:none is ignored on SVG elements,
+   so iOS starts native swipe gestures during guided-mode gaps when the SVG is empty.
+   An HTML div has working touch-action:none — keeps gestures suppressed.
+   Only activated on WKWebView (via JS); hidden on other platforms. */
+#touch-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11;
+    touch-action: none;
+    cursor: crosshair;
+    pointer-events: none;
+}
+
 #draw-layer.fade-out {
     opacity: 0;
 }

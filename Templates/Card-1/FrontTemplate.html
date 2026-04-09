@@ -952,6 +952,7 @@
     <canvas id="draw-canvas"
         style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;border-radius:var(--border-rad-main);display:none"></canvas>
     <svg id="draw-layer" viewBox="0 0 109 109"></svg>
+    <div id="touch-shield"></div>
     <div id="legacy-gesture-warning">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
@@ -2133,6 +2134,13 @@
 
         const drawLayer = document.getElementById('draw-layer');
         if (!drawLayer) return;
+        // HTML overlay for touch events — works around WebKit Bug 200610
+        // (touch-action:none broken on SVG). Only activated on WKWebView;
+        // on other platforms drawLayer handles events directly.
+        const touchShield = document.getElementById('touch-shield');
+        const _wkShield = document.documentElement.classList.contains('is-ankimobile');
+        const _evTarget = (_wkShield && touchShield) ? touchShield : drawLayer;
+        if (_wkShield && touchShield) touchShield.style.pointerEvents = 'auto';
 
         // ···· State & Initialization ····
 
@@ -2633,7 +2641,7 @@
             if (e.target.closest('.settings-overlay') || e.target.closest('.gear-btn') || e.target.closest('#addon-hint') || e.target.closest('#legacy-gesture-warning')) return;
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             if (!isFreeMode && currentStroke >= paths.length) return;
-            if (e && e.pointerId) { try { drawLayer.setPointerCapture(e.pointerId); } catch (err) { } }
+            if (e && e.pointerId) { try { _evTarget.setPointerCapture(e.pointerId); } catch (err) { } }
 
             _cachedRect = null; // Force fresh rect measurement on new stroke
 
@@ -2761,7 +2769,7 @@
 
         const stopDrawing = (e) => {
             if (!isDrawing) { if (e && e.cancelable !== false) e.preventDefault(); return; }
-            if (e && e.pointerId) { try { drawLayer.releasePointerCapture(e.pointerId); } catch (err) { } }
+            if (e && e.pointerId) { try { _evTarget.releasePointerCapture(e.pointerId); } catch (err) { } }
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             isDrawing = false;
 
@@ -3001,17 +3009,17 @@
         let _touchStartFallback = null, _touchMoveFallback = null;
 
         if (window.PointerEvent) {
-            drawLayer.addEventListener('pointerdown', startDrawing); drawLayer.addEventListener('pointermove', draw);
-            drawLayer.addEventListener('pointerleave', stopDrawingOnLeave);
+            _evTarget.addEventListener('pointerdown', startDrawing); _evTarget.addEventListener('pointermove', draw);
+            _evTarget.addEventListener('pointerleave', stopDrawingOnLeave);
             document.addEventListener('pointerup', window.kanjiStopDrawingHandler); document.addEventListener('pointercancel', window.kanjiStopDrawingHandler);
-            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.addEventListener(evt, touchPreventDefault, { passive: false }); });
+            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { _evTarget.addEventListener(evt, touchPreventDefault, { passive: false }); });
         } else {
             _touchStartFallback = (e) => { if (e.cancelable) e.preventDefault(); startDrawing(e); };
             _touchMoveFallback = (e) => { if (e.cancelable) e.preventDefault(); draw(e); };
-            drawLayer.addEventListener('mousedown', startDrawing); drawLayer.addEventListener('mousemove', draw);
-            drawLayer.addEventListener('touchstart', _touchStartFallback, { passive: false });
-            drawLayer.addEventListener('touchmove', _touchMoveFallback, { passive: false });
-            drawLayer.addEventListener('touchend', touchPreventDefault, { passive: false });
+            _evTarget.addEventListener('mousedown', startDrawing); _evTarget.addEventListener('mousemove', draw);
+            _evTarget.addEventListener('touchstart', _touchStartFallback, { passive: false });
+            _evTarget.addEventListener('touchmove', _touchMoveFallback, { passive: false });
+            _evTarget.addEventListener('touchend', touchPreventDefault, { passive: false });
             document.addEventListener('mouseup', window.kanjiStopDrawingHandler); document.addEventListener('touchend', window.kanjiStopDrawingHandler); document.addEventListener('touchcancel', window.kanjiStopDrawingHandler);
         }
 
@@ -3026,14 +3034,14 @@
             if (_snapRafId) { cancelAnimationFrame(_snapRafId); _snapRafId = null; }
             _ctx = null; _canvasEl = null;
             if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
-            drawLayer.removeEventListener('pointerdown', startDrawing);
-            drawLayer.removeEventListener('pointermove', draw);
-            drawLayer.removeEventListener('pointerleave', stopDrawingOnLeave);
-            drawLayer.removeEventListener('mousedown', startDrawing);
-            drawLayer.removeEventListener('mousemove', draw);
-            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { drawLayer.removeEventListener(evt, touchPreventDefault); });
-            if (_touchStartFallback) { drawLayer.removeEventListener('touchstart', _touchStartFallback); _touchStartFallback = null; }
-            if (_touchMoveFallback) { drawLayer.removeEventListener('touchmove', _touchMoveFallback); _touchMoveFallback = null; }
+            _evTarget.removeEventListener('pointerdown', startDrawing);
+            _evTarget.removeEventListener('pointermove', draw);
+            _evTarget.removeEventListener('pointerleave', stopDrawingOnLeave);
+            _evTarget.removeEventListener('mousedown', startDrawing);
+            _evTarget.removeEventListener('mousemove', draw);
+            ['touchstart', 'touchmove', 'touchend'].forEach(evt => { _evTarget.removeEventListener(evt, touchPreventDefault); });
+            if (_touchStartFallback) { _evTarget.removeEventListener('touchstart', _touchStartFallback); _touchStartFallback = null; }
+            if (_touchMoveFallback) { _evTarget.removeEventListener('touchmove', _touchMoveFallback); _touchMoveFallback = null; }
             if (window._kanjiBlockAppGestures && window._kanjiBlockAppGesturesEl) {
                 ['touchstart', 'touchmove', 'touchend'].forEach(evt => {
                     window._kanjiBlockAppGesturesEl.removeEventListener(evt, window._kanjiBlockAppGestures, { passive: false });
@@ -3423,6 +3431,15 @@
 
             // Re-bind button actions for new mode
             bindModeButtons();
+
+            // Deferred cleanup: freeResetAction uses timed animations (700ms+)
+            // that may be skipped if _drawGen changes. Nuclear-remove any
+            // leftover gel halos from both drawLayer and svg-bg after animation.
+            setTimeout(() => {
+                drawLayer.querySelectorAll('.gel-halo').forEach(h => h.remove());
+                const svgBg = document.getElementById('svg-bg');
+                if (svgBg) svgBg.querySelectorAll('.gel-halo').forEach(h => h.remove());
+            }, ANIMATION_DURATION_MS + 100);
         };
     })();
 
