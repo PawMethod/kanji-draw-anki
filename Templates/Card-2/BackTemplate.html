@@ -264,7 +264,7 @@
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
-                '.setting-section-title': [13, 11, 15], '.visual-option span': [11, 10, 12],
+                '.visual-option span': [11, 10, 12],
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
@@ -597,6 +597,12 @@
             if (svgBgEl) svgBgEl.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
             // First pass: reset all paths + apply basic style properties
             var resolvedColors = [];
+            var dk = document.documentElement.classList.contains('nightMode') ||
+                document.documentElement.classList.contains('night_mode') ||
+                document.body.classList.contains('nightMode') ||
+                document.body.classList.contains('night_mode');
+            var wk = (ss === 'neon') ? document.documentElement.classList.contains('is-ankimobile') : false;
+            var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
             paths.forEach((path, i) => {
                 // Full reset
                 path.style.removeProperty('filter');
@@ -605,24 +611,14 @@
                 path.removeAttribute('filter');
                 path.removeAttribute('paint-order');
                 // Apply new style
-                var dk = document.documentElement.classList.contains('nightMode') ||
-                    document.documentElement.classList.contains('night_mode') ||
-                    document.body.classList.contains('nightMode') ||
-                    document.body.classList.contains('night_mode');
                 switch (ss) {
-                    case 'neon': {
-                        var wk = document.documentElement.classList.contains('is-ankimobile');
-                        var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
+                    case 'neon':
                         path.setAttribute('filter', 'url(#' + fId + ')');
                         break;
-                    }
                     case 'gel': {
                         path.setAttribute('stroke-width', '4.5');
                         path.setAttribute('paint-order', 'stroke');
-                        // Resolve actual color for drop-shadow; cache for second (halo) pass
-                        var resolvedC;
-                        try { resolvedC = getComputedStyle(path).stroke; } catch (e) { resolvedC = ''; }
-                        if (!resolvedC || resolvedC === 'none') resolvedC = pathColors[i] || 'var(--stroke-active)';
+                        var resolvedC = pathColors[i] || 'var(--stroke-active)';
                         resolvedColors[i] = resolvedC;
                         path.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + resolvedC + ')');
                         path.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + resolvedC + ')');

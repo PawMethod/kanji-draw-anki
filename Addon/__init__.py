@@ -40,7 +40,8 @@ def _load():
                 _settings_cache = json.load(f)
                 return _settings_cache
         except FileNotFoundError:
-            return {}
+            _settings_cache = {}
+            return _settings_cache
         except (json.JSONDecodeError, OSError) as e:
             _log.warning("Failed to load settings: %s", e)
             return {}
@@ -57,7 +58,7 @@ def _save(data):
                 json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
             os.replace(tmp, _SETTINGS_FILE)
             _settings_cache = data
-        except OSError as e:
+        except (OSError, TypeError) as e:
             _log.warning("Failed to save settings: %s", e)
             try:
                 os.unlink(tmp)

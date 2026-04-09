@@ -1560,7 +1560,7 @@
                 if (strokeStyle !== 'standard') kanjiC.classList.add('stroke-style-' + strokeStyle);
             }
             // Apply SVG filters to reference paths (no gel halos on front — paths are hidden until drawn/revealed)
-            var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             var _neonRef = _wk
                 ? (_dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)')
@@ -1616,7 +1616,7 @@
                         window._kanjiAddGelHaloToPath(p);
                     });
                 }
-            } else if (!document.getElementById('is-back-side-marker')) {
+            } else {
                 var svgBgForClean = document.getElementById('svg-bg');
                 if (svgBgForClean) svgBgForClean.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
             }
@@ -1642,7 +1642,7 @@
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
-                '.setting-section-title': [13, 11, 15], '.visual-option span': [11, 10, 12],
+                '.visual-option span': [11, 10, 12],
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fontSize === 'small' ? 1 : fontSize === 'large' ? 2 : 0;
@@ -1997,7 +1997,6 @@
                 var isScrollable = document.documentElement.scrollHeight > window.innerHeight + 5;
 
                 if (isScrollable) {
-                    document.body.classList.remove('no-scroll');
                     document.documentElement.style.removeProperty('overflow-y');
                 } else {
                     document.body.classList.add('no-scroll');
@@ -2303,15 +2302,6 @@
             _ctx.shadowColor = 'transparent';
             _ctx.globalAlpha = 1;
         };
-        const _drawCanvasSegment = (x0, y0, x1, y1) => {
-            if (!_ctx) return;
-            var sx = _ctx._scaleX, sy = _ctx._scaleY;
-            _ctx.beginPath();
-            _ctx.moveTo(x0 * sx, y0 * sy);
-            _ctx.lineTo(x1 * sx, y1 * sy);
-            _ctx.stroke();
-        };
-        // Materialize canvas-drawn stroke into SVG elements for grading and snap animation
         const _finalizeCanvasToSVG = () => {
             if (!_useCanvas || !_ctx) return;
             _clearCanvas();
@@ -2726,13 +2716,17 @@
                 _ctx.globalAlpha = 0.85;
                 _ctx.lineWidth = 4 * sx;
                 _ctx.stroke(_canvasPath);
-            } else {
+            } else if (style === 'gel') {
                 // Gel: wide translucent halo + normal stroke
                 _ctx.globalAlpha = 0.08;
                 _ctx.lineWidth = 8 * sx;
                 _ctx.stroke(_canvasPath);
                 _ctx.globalAlpha = 1;
                 _ctx.lineWidth = 4.5 * sx;
+                _ctx.stroke(_canvasPath);
+            } else {
+                // Standard: simple stroke
+                _ctx.lineWidth = 4 * sx;
                 _ctx.stroke(_canvasPath);
             }
             _ctx.restore();

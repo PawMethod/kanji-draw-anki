@@ -304,6 +304,7 @@ html.is-ankimobile:has(.info-overlay.active) .card {
     letter-spacing: -0.3px;
     transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     line-height: 1.3;
     text-align: center;
 }
@@ -331,6 +332,7 @@ html.is-ankimobile:has(.info-overlay.active) .card {
     -webkit-tap-highlight-color: transparent;
     transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     contain: layout style paint;
     isolation: isolate;
 }
@@ -798,6 +800,7 @@ svg#svg-guide path,
     appearance: none;
     transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     outline: none;
 }
 
@@ -1080,6 +1083,7 @@ svg#svg-guide path,
     width: 90%;
     max-height: calc(100dvh - 48px - 48px);
     overflow-y: auto;
+    overflow-x: hidden;
     overflow-x: clip;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -1700,23 +1704,6 @@ svg#svg-guide path,
 }
 
 /* --------------------------------------------------------------------------
-   5c. Setting Section Title (front / back side sub-headers)
-   -------------------------------------------------------------------------- */
-.setting-section-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-    margin: 20px 0 8px 0;
-    padding-top: 14px;
-    border-top: 1px dashed var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* --------------------------------------------------------------------------
    6. Stroke Logic
    State machine: .svg-stroke → .animate-draw / .stroke-complete / .hint-active → .rewind-anim
    All paths use pathLength="100" with dasharray:105 / dashoffset for reveal animations.
@@ -2033,6 +2020,7 @@ ruby rt {
     appearance: none;
     transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     position: relative;
 }
 
@@ -2759,10 +2747,6 @@ html.font-small .settings-main-title {
     font-size: 14px;
 }
 
-html.font-small .setting-section-title {
-    font-size: 11px;
-}
-
 html.font-small .visual-option span {
     font-size: 10px;
 }
@@ -2878,10 +2862,6 @@ html.font-large .subpage-header h3 {
 
 html.font-large .settings-main-title {
     font-size: 18px;
-}
-
-html.font-large .setting-section-title {
-    font-size: 15px;
 }
 
 html.font-large .visual-option span {

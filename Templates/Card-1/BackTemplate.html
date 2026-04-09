@@ -340,7 +340,7 @@
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
-                '.setting-section-title': [13, 11, 15], '.visual-option span': [11, 10, 12],
+                '.visual-option span': [11, 10, 12],
                 '.accent-option span': [10, 9, 11], '.close-settings': [14, 12, 16]
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
@@ -419,6 +419,7 @@
     function closeInfoModal(e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
         var ol = document.getElementById('info-overlay');
+        if (!ol) return;
         // For backdrop clicks, verify pointerdown was also on the overlay itself.
         if (e && e.target === ol && !ol._bgPointerDown) return;
         ol._bgPointerDown = false;
@@ -652,7 +653,6 @@
             switch (ss) {
                 case 'gel':
                     p.setAttribute('stroke-width', Math.max(parseFloat(width), 4.5).toString());
-                    p.setAttribute('stroke-linecap', 'round');
                     p.setAttribute('paint-order', 'stroke');
                     p.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + color + ')');
                     p.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + color + ')');
@@ -1074,6 +1074,50 @@
             const globalConfFree = getGlobalConfig();
             const freeView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConfFree.freeView || 'handwriting'));
 
+            // ── Shared morph utilities (used by WK forward, Desktop forward, Desktop reverse, WK reverse) ──
+            var _morphResample = function (d, scratch, n) {
+                var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                tmp.setAttribute('d', d);
+                scratch.appendChild(tmp);
+                var L = tmp.getTotalLength();
+                if (!L) { scratch.removeChild(tmp); return null; }
+                var pts = [];
+                for (var i = 0; i < n; i++) { var pt = tmp.getPointAtLength((i / (n - 1)) * L); pts.push(pt.x, pt.y); }
+                scratch.removeChild(tmp);
+                return pts;
+            };
+            var _morphLabelPos = function (d, scratch) {
+                var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                tmp.setAttribute('d', d); scratch.appendChild(tmp);
+                var L = tmp.getTotalLength();
+                if (!L) { scratch.removeChild(tmp); return null; }
+                var s0 = tmp.getPointAtLength(0);
+                var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
+                scratch.removeChild(tmp);
+                var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                return { x: s0.x - dx / dist * 4.5, y: s0.y - dy / dist * 4.5 };
+            };
+            var _morphColAdj = function (rawArr) {
+                var MD = 6.0, placed = [];
+                return rawArr.map(function (pos) {
+                    if (!pos) { placed.push(null); return null; }
+                    var fx = pos.x, fy = pos.y, moved = true, att = 0;
+                    while (moved && att < 10) {
+                        moved = false;
+                        for (var ci = 0; ci < placed.length; ci++) {
+                            var cp = placed[ci]; if (!cp) continue;
+                            var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < MD) {
+                                moved = true; var pd = dist || 1.414;
+                                fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
+                                fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
+                            }
+                        } att++;
+                    }
+                    placed.push({ x: fx, y: fy }); return { x: fx, y: fy };
+                });
+            };
+
             let freeStrokeData = window._kanjiFreeStrokes || null;
             if (!freeStrokeData) {
                 try {
@@ -1116,10 +1160,11 @@
                     };
 
                     const _algo = window._kanjiAlgo;
-                    const resamplePts = _algo.resamplePoints;
-                    const frechet = _algo.discreteFrechet;
-                    const smooth = _algo.smoothInput;
-                    const hungarian = _algo.hungarianMatch;
+                    if (!_algo) { console.warn('KanjiDraw: _kanjiAlgo not available — FrontSide injection failed'); }
+                    const resamplePts = _algo ? _algo.resamplePoints : null;
+                    const frechet = _algo ? _algo.discreteFrechet : null;
+                    const smooth = _algo ? _algo.smoothInput : null;
+                    const hungarian = _algo ? _algo.hungarianMatch : null;
 
                     const sampleRef = (path) => {
                         const len = (path._cachedTotalLength !== undefined ? path._cachedTotalLength : (path._cachedTotalLength = path.getTotalLength())) || 1;
@@ -1335,8 +1380,8 @@
                         var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
                         if (_ss === 'soft') _ss = 'gel';
                         window._kanjiStrokeStyle = _ss;
-                        const cont = document.querySelector('.kanji-container');
-                        const bg = document.getElementById('svg-bg');
+                        const cont = container;
+                        const bg = svgBg;
                         if (!cont || !bg) return;
                         const refPaths = bg.querySelectorAll('path[d]:not(.gel-halo)');
 
@@ -1644,17 +1689,7 @@
                                     document.body.appendChild(_wkScratch);
                                     if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
                                     window._kanjiScratchSvgs.push(_wkScratch);
-                                    var _wkResamplePts = function (d) {
-                                        var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        tmp.setAttribute('d', d);
-                                        _wkScratch.appendChild(tmp);
-                                        var L = tmp.getTotalLength();
-                                        if (!L) { _wkScratch.removeChild(tmp); return null; }
-                                        var pts = [];
-                                        for (var i = 0; i < WK_N; i++) { var pt = tmp.getPointAtLength((i / (WK_N - 1)) * L); pts.push(pt.x, pt.y); }
-                                        _wkScratch.removeChild(tmp);
-                                        return pts;
-                                    };
+                                    var _wkResamplePts = function (d) { return _morphResample(d, _wkScratch, WK_N); };
 
                                     var DUR = 0.32; // seconds
                                     var _wkAnimDone = false;
@@ -1715,37 +1750,8 @@
                                     // Must be done after the morphPairs.forEach loop so all uLP/rLP are
                                     // available for the collision pass across the full set.
                                     if (isNumbers) {
-                                        var _wkTrueLP = function (d) {
-                                            var tp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                            tp.setAttribute('d', d); _wkScratch.appendChild(tp);
-                                            var tL = tp.getTotalLength();
-                                            if (!tL) { _wkScratch.removeChild(tp); return null; }
-                                            var ts0 = tp.getPointAtLength(0);
-                                            var ts1; try { ts1 = tp.getPointAtLength(Math.min(4, tL)); } catch (e) { ts1 = ts0; }
-                                            _wkScratch.removeChild(tp);
-                                            var tdx = ts1.x - ts0.x, tdy = ts1.y - ts0.y, td = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
-                                            return { x: ts0.x - tdx / td * 4.5, y: ts0.y - tdy / td * 4.5 };
-                                        };
-                                        var _wkColAdj = function (rawArr) {
-                                            var MD = 6.0, placed = [];
-                                            return rawArr.map(function (pos) {
-                                                if (!pos) { placed.push(null); return null; }
-                                                var fx = pos.x, fy = pos.y, moved = true, att = 0;
-                                                while (moved && att < 10) {
-                                                    moved = false;
-                                                    for (var ci = 0; ci < placed.length; ci++) {
-                                                        var cp = placed[ci]; if (!cp) continue;
-                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
-                                                        if (dist < MD) {
-                                                            moved = true; var pd = dist || 1.414;
-                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
-                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
-                                                        }
-                                                    } att++;
-                                                }
-                                                placed.push({ x: fx, y: fy }); return { x: fx, y: fy };
-                                            });
-                                        };
+                                        var _wkTrueLP = function (d) { return _morphLabelPos(d, _wkScratch); };
+                                        var _wkColAdj = _morphColAdj;
                                         // End: all ref paths (matches addNumbersGPAL on svgBg)
                                         var _wkRawRef = [];
                                         for (var ri4 = 0; ri4 < ev.nRef; ri4++) _wkRawRef.push(_wkTrueLP(ev.refPathData[ri4]));
@@ -1796,20 +1802,7 @@
                                     if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
                                     window._kanjiScratchSvgs.push(_scratchSvg);
 
-                                    var resample = function (d) {
-                                        var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        tmp.setAttribute('d', d);
-                                        _scratchSvg.appendChild(tmp);
-                                        var L = tmp.getTotalLength();
-                                        if (!L) { _scratchSvg.removeChild(tmp); return null; }
-                                        var pts = [];
-                                        for (var i = 0; i < N; i++) {
-                                            var pt = tmp.getPointAtLength((i / (N - 1)) * L);
-                                            pts.push(pt.x, pt.y);
-                                        }
-                                        _scratchSvg.removeChild(tmp);
-                                        return pts;
-                                    };
+                                    var resample = function (d) { return _morphResample(d, _scratchSvg, N); };
 
                                     var startMorph = function () {
                                         var anims = [];
@@ -1840,54 +1833,21 @@
                                             anims.push({ el: pair.el, halo: halo, frames: frames, numLabel: pair.numLabel || 0, numColor: pair.numColor || 'var(--text-muted)' });
                                         }
                                         // Compute raw label position from a bezier path via getPointAtLength.
-                                        var _trueLabelPos = function (d, scratch) {
-                                            var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                            tmp.setAttribute('d', d);
-                                            scratch.appendChild(tmp);
-                                            var L = tmp.getTotalLength();
-                                            if (!L) { scratch.removeChild(tmp); return null; }
-                                            var s0 = tmp.getPointAtLength(0);
-                                            var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
-                                            scratch.removeChild(tmp);
-                                            var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                                            return { x: s0.x - dx / dist * 4.5, y: s0.y - dy / dist * 4.5 };
-                                        };
+                                        var _trueLabelPos = function (d) { return _morphLabelPos(d, _scratchSvg); };
                                         // Apply the same collision-avoidance as addNumbersGPAL to an array of
                                         // raw label positions (nulls are preserved and skipped).
-                                        var _colAdj = function (rawArr) {
-                                            var MD = 6.0, placed = [];
-                                            return rawArr.map(function (pos) {
-                                                if (!pos) { placed.push(null); return null; }
-                                                var fx = pos.x, fy = pos.y, moved = true, att = 0;
-                                                while (moved && att < 10) {
-                                                    moved = false;
-                                                    for (var ci = 0; ci < placed.length; ci++) {
-                                                        var cp = placed[ci]; if (!cp) continue;
-                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
-                                                        if (dist < MD) {
-                                                            moved = true;
-                                                            var pd = dist || 1.414;
-                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
-                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
-                                                        }
-                                                    }
-                                                    att++;
-                                                }
-                                                placed.push({ x: fx, y: fy });
-                                                return { x: fx, y: fy };
-                                            });
-                                        };
+                                        var _colAdj = _morphColAdj;
                                         var numAnims = [];
                                         if (isNumbers) {
                                             // End positions: ALL ref paths in order (including ghost strokes)
                                             // so collision detection matches addNumbersGPAL exactly.
                                             var _rawAllRef = [];
                                             for (var ri2 = 0; ri2 < ev.nRef; ri2++) {
-                                                _rawAllRef.push(_trueLabelPos(ev.refPathData[ri2], _scratchSvg));
+                                                _rawAllRef.push(_trueLabelPos(ev.refPathData[ri2]));
                                             }
                                             var _adjAllRef = _colAdj(_rawAllRef);
                                             // Start positions: matched user paths in morphPairs order
-                                            var _rawAllUser = morphPairs.map(function (p) { return _trueLabelPos(p.userD, _scratchSvg); });
+                                            var _rawAllUser = morphPairs.map(function (p) { return _trueLabelPos(p.userD); });
                                             var _adjAllUser = _colAdj(_rawAllUser);
                                             for (var mpi2 = 0; mpi2 < morphPairs.length; mpi2++) {
                                                 var pair2 = morphPairs[mpi2];
@@ -2045,7 +2005,6 @@
                             if (isNumbers) {
                                 // Build an index mapping: svgPathIndex → grade (for user) or null (for ghost)
                                 const userSvgOrder = ev.orderedStrokes
-                                    .filter(e => e.type === 'user' || e.type === 'extra' || e.type === 'ghost')
                                     .map(e => e.type === 'user' ? (e.stroke && e.stroke.grade) : null);
                                 addNumbersGPAL(userSvg, (i) => {
                                     if (!isColorBack) return 'var(--text-muted)';
@@ -2135,20 +2094,7 @@
                                     document.body.appendChild(_scratchR);
                                     if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
                                     window._kanjiScratchSvgs.push(_scratchR);
-                                    const _resampleR = function (d) {
-                                        const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        tmp.setAttribute('d', d);
-                                        _scratchR.appendChild(tmp);
-                                        const L = tmp.getTotalLength();
-                                        if (!L) { _scratchR.removeChild(tmp); return null; }
-                                        const pts = [];
-                                        for (let i = 0; i < N_R; i++) {
-                                            const pt = tmp.getPointAtLength((i / (N_R - 1)) * L);
-                                            pts.push(pt.x, pt.y);
-                                        }
-                                        _scratchR.removeChild(tmp);
-                                        return pts;
-                                    };
+                                    const _resampleR = function (d) { return _morphResample(d, _scratchR, N_R); };
                                     const revSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                                     revSvg.setAttribute('viewBox', '0 0 109 109');
                                     revSvg.classList.add('handwriting-overlay');
@@ -2188,40 +2134,8 @@
                                         animsR.push({ el, halo: haloR, frames, numLabel: pair.numLabel, numColor: pair.numColor });
                                     }
                                     // Build animated number labels for reverse morph with collision adjustment.
-                                    var _trueLabelPosR = function (d) {
-                                        var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        tmp.setAttribute('d', d);
-                                        _scratchR.appendChild(tmp);
-                                        var L = tmp.getTotalLength();
-                                        if (!L) { _scratchR.removeChild(tmp); return null; }
-                                        var s0 = tmp.getPointAtLength(0);
-                                        var s1; try { s1 = tmp.getPointAtLength(Math.min(4, L)); } catch (e) { s1 = s0; }
-                                        _scratchR.removeChild(tmp);
-                                        var dx = s1.x - s0.x, dy = s1.y - s0.y, dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                                        return { x: s0.x - dx / dist * 4.5, y: s0.y - dy / dist * 4.5 };
-                                    };
-                                    var _colAdjR = function (rawArr) {
-                                        var MD = 6.0, placed = [];
-                                        return rawArr.map(function (pos) {
-                                            if (!pos) { placed.push(null); return null; }
-                                            var fx = pos.x, fy = pos.y, moved = true, att = 0;
-                                            while (moved && att < 10) {
-                                                moved = false;
-                                                for (var ci = 0; ci < placed.length; ci++) {
-                                                    var cp = placed[ci]; if (!cp) continue;
-                                                    var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
-                                                    if (dist < MD) {
-                                                        moved = true; var pd = dist || 1.414;
-                                                        fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
-                                                        fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
-                                                    }
-                                                }
-                                                att++;
-                                            }
-                                            placed.push({ x: fx, y: fy });
-                                            return { x: fx, y: fy };
-                                        });
-                                    };
+                                    var _trueLabelPosR = function (d) { return _morphLabelPos(d, _scratchR); };
+                                    var _colAdjR = _morphColAdj;
                                     var numAnimsR = [];
                                     var _isNumbersRev = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', (getGlobalConfig().numbers))) === 'on';
                                     if (_isNumbersRev) {
@@ -2337,49 +2251,10 @@
                                         document.body.appendChild(_qtScratch);
                                         if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
                                         window._kanjiScratchSvgs.push(_qtScratch);
-                                        const _qtResamplePts = function (d) {
-                                            const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                            tmp.setAttribute('d', d);
-                                            _qtScratch.appendChild(tmp);
-                                            const L = tmp.getTotalLength();
-                                            if (!L) { _qtScratch.removeChild(tmp); return null; }
-                                            const pts = [];
-                                            for (let i = 0; i < QT_N; i++) { const pt = tmp.getPointAtLength((i / (QT_N - 1)) * L); pts.push(pt.x, pt.y); }
-                                            _qtScratch.removeChild(tmp);
-                                            return pts;
-                                        };
+                                        const _qtResamplePts = function (d) { return _morphResample(d, _qtScratch, QT_N); };
                                         // True bezier label position + collision adjustment.
-                                        const _qtTrueLP = function (d) {
-                                            const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                            tmp.setAttribute('d', d); _qtScratch.appendChild(tmp);
-                                            const tL = tmp.getTotalLength();
-                                            if (!tL) { _qtScratch.removeChild(tmp); return null; }
-                                            const ts0 = tmp.getPointAtLength(0);
-                                            let ts1; try { ts1 = tmp.getPointAtLength(Math.min(4, tL)); } catch (e) { ts1 = ts0; }
-                                            _qtScratch.removeChild(tmp);
-                                            const tdx = ts1.x - ts0.x, tdy = ts1.y - ts0.y, td = Math.sqrt(tdx * tdx + tdy * tdy) || 1;
-                                            return { x: ts0.x - tdx / td * 4.5, y: ts0.y - tdy / td * 4.5 };
-                                        };
-                                        const _qtColAdj = function (rawArr) {
-                                            var MD = 6.0, placed = [];
-                                            return rawArr.map(function (pos) {
-                                                if (!pos) { placed.push(null); return null; }
-                                                var fx = pos.x, fy = pos.y, moved = true, att = 0;
-                                                while (moved && att < 10) {
-                                                    moved = false;
-                                                    for (var ci = 0; ci < placed.length; ci++) {
-                                                        var cp = placed[ci]; if (!cp) continue;
-                                                        var dx = fx - cp.x, dy = fy - cp.y, dist = Math.sqrt(dx * dx + dy * dy);
-                                                        if (dist < MD) {
-                                                            moved = true; var pd = dist || 1.414;
-                                                            fx += (dist > 0 ? dx / pd : -0.707) * (MD - dist + 0.5);
-                                                            fy += (dist > 0 ? dy / pd : -0.707) * (MD - dist + 0.5);
-                                                        }
-                                                    } att++;
-                                                }
-                                                placed.push({ x: fx, y: fy }); return { x: fx, y: fy };
-                                            });
-                                        };
+                                        const _qtTrueLP = function (d) { return _morphLabelPos(d, _qtScratch); };
+                                        const _qtColAdj = _morphColAdj;
                                         // Pre-compute collision-adjusted positions for all pairs before the loop
                                         const _qtRawRef = [];
                                         const _qtEvR = window._kanjiFreeEval;
