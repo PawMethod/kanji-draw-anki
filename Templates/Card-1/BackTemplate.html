@@ -456,9 +456,11 @@
             });
         }
 
+        const _esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
         function renderNode(node) {
             if (!node || !node.value) return '';
-            const kwAttr = node.keyword ? ` data-keyword="${node.keyword}"` : '';
+            const kwAttr = node.keyword ? ` data-keyword="${_esc(node.keyword)}"` : '';
             let displayVal = node.value;
             if (displayVal.toLowerCase().includes('<path') && !displayVal.toLowerCase().includes('<svg')) {
                 const isFontRaster = /M\s*\d{3,}/.test(displayVal);
@@ -467,7 +469,7 @@
                     : `<svg class="custom-svg-icon kanji-stroke-format auto-fit" viewBox="0 0 109 109">${displayVal}</svg>`;
             }
             let primitiveBadge = node.isPrimitive ? `<svg class="primitive-tag-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` : '';
-            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${node.keyword}</div>` : '';
+            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${_esc(node.keyword)}</div>` : '';
             return `<div class="tree-node tappable"${kwAttr}>${primitiveBadge}<div class="tree-node-char">${displayVal}</div>${tooltipHtml}</div>`;
         }
 
@@ -515,13 +517,14 @@
         const targetWordsEl = document.getElementById('formatted-hint-words');
         if (rawWordsEl && targetWordsEl) {
             let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
+            const _wesc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             targetWordsEl.innerHTML = words.map(word => {
                 word = word.trim();
                 if (!word) return '';
                 let match = word.match(/^(.*?)\s*\((.*?)\)$/);
                 return match
-                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${match[2]}</div></div></div>`
-                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wesc(match[1])}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wesc(word)}</div></div></div>`;
             }).join('');
             targetWordsEl.addEventListener('click', function (e) {
                 var item = e.target.closest('.word-example-item');
@@ -855,7 +858,7 @@
                 const strokeStr = safeGetState('kanjiCurrentStroke');
 
                 if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
-                if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
+                if (strokesCompleted === 0 && strokeStr) { var _parsed = parseInt(strokeStr, 10); if (!isNaN(_parsed)) strokesCompleted = _parsed; }
 
                 // 1. Compute stroke colors and apply inline styles in a single pass
                 // Use forceFreeMode when called from a known free-mode context (renderFreeView /
@@ -1170,7 +1173,7 @@
                     // shape quality. The matching cost matrix stays shape-only so ghost/extra
                     // detection is unaffected by order or direction.
                     //
-                    // Direction cap: any reversed stroke → at most "ok" (all modes)
+                    // Direction penalty: any reversed stroke → always "bad" (all modes)
                     //
                     // Order caps per strictness (orderDelta = |drawingPosition − refIndex|):
                     //   loose:  delta 0 = no cap | delta 1 = no cap | delta 2 = ok | delta 3+ = bad
@@ -1182,8 +1185,8 @@
                     const computeGrade = (shapeCost, u, ri) => {
                         // 1. Base grade from shape
                         let g = shapeCost <= GOOD_THRESH ? 0 : shapeCost <= OK_THRESH ? 1 : 2;
-                        // 2. Direction cap
-                        if (isReversed(userProcessed[u], refProcessed[ri])) g = Math.max(g, 1);
+                        // 2. Direction penalty: reversed stroke → bad (grade 2 = red)
+                        if (isReversed(userProcessed[u], refProcessed[ri])) g = Math.max(g, 2);
                         // 3. Order cap
                         const delta = Math.abs(u - ri);
                         if (delta >= ORDER_BAD_THRESH) g = 2;

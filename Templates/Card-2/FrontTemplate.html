@@ -975,7 +975,7 @@
         <div class="addon-hint-code-row">
             <code id="addon-hint-code">905251277</code>
             <button id="addon-hint-copy"
-                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
+                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}).catch(function(){b.textContent='Fehler';});}else{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
         </div>
         <p class="addon-hint-note">Danach Anki neu starten – das Addon speichert deine Einstellungen dauerhaft.</p>
         <button id="addon-hint-dismiss"
@@ -1864,11 +1864,11 @@
                 applyThemeSettings();
             }
         };
-        if (window._kanjiMQHandler && darkMQ.removeEventListener) {
+        if (window._kanjiMQHandler && darkMQ && darkMQ.removeEventListener) {
             try { darkMQ.removeEventListener('change', window._kanjiMQHandler); } catch (ex) { }
         }
         window._kanjiMQHandler = mqHandler;
-        darkMQ.addEventListener('change', mqHandler);
+        if (darkMQ) darkMQ.addEventListener('change', mqHandler);
     }
 
     // --- Cleanup stale DOM (runs unconditionally, front + back via {{FrontSide}}) ---
@@ -1922,11 +1922,11 @@
         }
     }
 
-    var _checkScrollRAF = null;
+    if (window._kanjiScrollCheckRAF) { cancelAnimationFrame(window._kanjiScrollCheckRAF); window._kanjiScrollCheckRAF = null; }
     function checkScrollability() {
-        if (_checkScrollRAF) return; // debounce: already scheduled
-        _checkScrollRAF = requestAnimationFrame(function () {
-            _checkScrollRAF = null;
+        if (window._kanjiScrollCheckRAF) return; // debounce: already scheduled
+        window._kanjiScrollCheckRAF = requestAnimationFrame(function () {
+            window._kanjiScrollCheckRAF = null;
             // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
             if (document.documentElement.classList.contains('is-ankiweb')) {
                 document.body.classList.add('no-scroll');

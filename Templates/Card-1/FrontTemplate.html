@@ -984,7 +984,7 @@
         <div class="addon-hint-code-row">
             <code id="addon-hint-code">905251277</code>
             <button id="addon-hint-copy"
-                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
+                onclick="(function(){var t='905251277',b=document.getElementById('addon-hint-copy');try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}).catch(function(){b.textContent='Fehler';});}else{var el=document.createElement('textarea');el.value=t;el.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(el);el.focus();el.select();document.execCommand('copy');document.body.removeChild(el);b.textContent='✓';clearTimeout(b._ct);b._ct=setTimeout(function(){b.textContent='Kopieren';},1500);}}catch(e){b.textContent='Fehler';}})()">Kopieren</button>
         </div>
         <p class="addon-hint-note">Danach Anki neu starten – das Addon speichert deine Einstellungen dauerhaft.</p>
         <button id="addon-hint-dismiss"
@@ -1895,11 +1895,11 @@
                 applyThemeSettings();
             }
         };
-        if (window._kanjiMQHandler && darkMQ.removeEventListener) {
+        if (window._kanjiMQHandler && darkMQ && darkMQ.removeEventListener) {
             try { darkMQ.removeEventListener('change', window._kanjiMQHandler); } catch (ex) { }
         }
         window._kanjiMQHandler = mqHandler;
-        darkMQ.addEventListener('change', mqHandler);
+        if (darkMQ) darkMQ.addEventListener('change', mqHandler);
     }
 
     // Re-apply theme after bfcache restore (WKWebView iOS 14+ may cache and restore
@@ -1944,11 +1944,11 @@
         }
     }
 
-    var _checkScrollRAF = null;
+    if (window._kanjiScrollCheckRAF) { cancelAnimationFrame(window._kanjiScrollCheckRAF); window._kanjiScrollCheckRAF = null; }
     function checkScrollability() {
-        if (_checkScrollRAF) return; // debounce: already scheduled
-        _checkScrollRAF = requestAnimationFrame(function () {
-            _checkScrollRAF = null;
+        if (window._kanjiScrollCheckRAF) return; // debounce: already scheduled
+        window._kanjiScrollCheckRAF = requestAnimationFrame(function () {
+            window._kanjiScrollCheckRAF = null;
             // AnkiWeb: sizes are JS-calculated to fit – always lock scroll
             if (document.documentElement.classList.contains('is-ankiweb')) {
                 document.body.classList.add('no-scroll');
@@ -2116,6 +2116,7 @@
         const actionButtons = document.querySelector('.action-buttons');
         let problemStrokes = new Array(paths.length).fill(0);
         const svgBg = document.getElementById('svg-bg');
+        if (!svgBg) return;
 
         const existingGuide = document.getElementById('svg-guide');
         if (existingGuide) existingGuide.remove();
@@ -2276,52 +2277,6 @@
             _ctx.lineTo(x1 * sx, y1 * sy);
             _ctx.stroke();
         };
-        const _redrawCanvasFull = (errorColor) => {
-            if (!_ctx || !_canvasEl) return;
-            _clearCanvas();
-            var style = _activeDrawStyle;
-            var color = errorColor || getCSSVar('--stroke-active') || '#333';
-            var sx = _ctx._scaleX;
-            if (!_canvasPath) return;
-            _ctx.save();
-            if (style === 'gel') {
-                _ctx.lineWidth = 8 * sx;
-                _ctx.globalAlpha = 0.12;
-                _ctx.strokeStyle = color;
-                _ctx.lineCap = 'round';
-                _ctx.lineJoin = 'round';
-                _ctx.stroke(_canvasPath);
-                _ctx.globalAlpha = 1;
-            }
-            _ctx.lineJoin = 'round';
-            _ctx.strokeStyle = color;
-            if (style === 'ink') {
-                _ctx.lineCap = 'square';
-                _ctx.globalAlpha = 0.85;
-                _ctx.lineWidth = 4 * sx;
-                _ctx.stroke(_canvasPath);
-                _ctx.restore();
-                return;
-            }
-            _ctx.lineCap = 'round';
-            if (style === 'neon') {
-                _ctx.lineWidth = 4 * sx;
-                _ctx.shadowColor = color;
-                // Outer halo pass (wide, soft — matches feGaussianBlur b2)
-                _ctx.shadowBlur = sx * 10;
-                _ctx.globalAlpha = 0.55;
-                _ctx.stroke(_canvasPath);
-                // Inner tight glow pass (matches feGaussianBlur b1 + SourceGraphic)
-                _ctx.shadowBlur = sx * 4;
-                _ctx.globalAlpha = 1;
-                _ctx.stroke(_canvasPath);
-            } else {
-                _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
-                _ctx.shadowBlur = 0;
-                _ctx.stroke(_canvasPath);
-            }
-            _ctx.restore();
-        };
         // Materialize canvas-drawn stroke into SVG elements for grading and snap animation
         const _finalizeCanvasToSVG = () => {
             if (!_useCanvas || !_ctx) return;
@@ -2437,6 +2392,7 @@
         // A visible <g> group holds short segments with individual stroke-widths.
 
         // Smooth snap animation: morph user's drawn stroke toward the reference SVG path
+        let _snapRafId = null;
         const snapToReference = (drawnPath, refPath, userPts, onDone, gelHalo) => {
             const N = 24;
             const uPts = window._kanjiAlgo.resamplePoints(userPts, N);
@@ -2453,6 +2409,7 @@
             const dur = 200, t0 = performance.now();
             const snapGen = _drawGen;
             const tick = (now) => {
+                _snapRafId = null;
                 if (!drawnPath.parentNode || snapGen !== _drawGen) { onDone(); return; }
                 let t = Math.min(1, (now - t0) / dur);
                 t = 1 - (1 - t) * (1 - t) * (1 - t); // ease-out cubic
@@ -2464,10 +2421,10 @@
                 }
                 drawnPath.setAttribute('d', d);
                 if (gelHalo) gelHalo.setAttribute('d', d);
-                if (t < 1) requestAnimationFrame(tick);
+                if (t < 1) _snapRafId = requestAnimationFrame(tick);
                 else onDone();
             };
-            requestAnimationFrame(tick);
+            _snapRafId = requestAnimationFrame(tick);
         };
 
         // Cached bounding rect — avoids layout thrashing on every pointermove.
@@ -2751,13 +2708,8 @@
             if (_useCanvas && _ctx) {
                 // Canvas: accumulate path, schedule one render per animation frame
                 _canvasPath.lineTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
-                var _dStyle = _activeDrawStyle;
-                if (_dStyle === 'gel' || _dStyle === 'neon' || _dStyle === 'ink') {
-                    _canvasDirty = true;
-                    if (!_canvasRafId) _canvasRafId = requestAnimationFrame(_renderCanvasFrame);
-                } else {
-                    _drawCanvasSegment(_lastCanvasX, _lastCanvasY, pos.x, pos.y);
-                }
+                _canvasDirty = true;
+                if (!_canvasRafId) _canvasRafId = requestAnimationFrame(_renderCanvasFrame);
                 _lastCanvasX = pos.x;
                 _lastCanvasY = pos.y;
             } else {
@@ -3032,6 +2984,7 @@
             _isRewinding = false;
             if (_svgRafId) { cancelAnimationFrame(_svgRafId); _svgRafId = null; }
             if (_canvasRafId) { cancelAnimationFrame(_canvasRafId); _canvasRafId = null; }
+            if (_snapRafId) { cancelAnimationFrame(_snapRafId); _snapRafId = null; }
             drawLayer.removeEventListener('pointerdown', startDrawing);
             drawLayer.removeEventListener('pointermove', draw);
             drawLayer.removeEventListener('pointerleave', stopDrawingOnLeave);
@@ -3258,6 +3211,7 @@
                     p.style.strokeDashoffset = len + '';
                 });
                 // Also rewind visible reference strokes (from Strich einblenden)
+                const pendingHalos = [];
                 paths.forEach(p => {
                     if (p.classList.contains('stroke-complete') || p.classList.contains('animate-draw') || p.classList.contains('hint-active')) {
                         // Preserve hint color (green) during rewind
@@ -3265,20 +3219,25 @@
                         if (col) p.style.setProperty('stroke', col, 'important');
                         p.classList.remove('stroke-complete', 'hint-active', 'animate-draw');
                         p.classList.add('rewind-anim');
-                        // Rewind gel halo in sync with stroke (dashoffset animation)
+                        // Collect gel halos for batched reflow
                         const prevH = p.previousElementSibling;
                         if (prevH && prevH.classList.contains('gel-halo')) {
                             prevH.setAttribute('stroke-dasharray', '105');
                             prevH.style.setProperty('stroke-dashoffset', '0', 'important');
                             prevH.style.setProperty('transition', 'none', 'important');
-                            prevH.getBoundingClientRect();
-                            prevH.style.setProperty('stroke-dashoffset', '105', 'important');
-                            prevH.style.setProperty('transition', 'stroke-dashoffset 0.7s ease-in-out', 'important');
-                            const _h = prevH;
-                            setTimeout(() => { if (_freeResetGen !== _drawGen) return; if (_h.parentNode) _h.parentNode.removeChild(_h); }, 700);
+                            pendingHalos.push(prevH);
                         }
                     }
                 });
+                if (pendingHalos.length) {
+                    pendingHalos[0].getBoundingClientRect(); // one reflow for all
+                    const haloTransition = 'stroke-dashoffset 0.7s ease-in-out';
+                    pendingHalos.forEach(_h => {
+                        _h.style.setProperty('stroke-dashoffset', '105', 'important');
+                        _h.style.setProperty('transition', haloTransition, 'important');
+                        setTimeout(() => { if (_freeResetGen !== _drawGen) return; if (_h.parentNode) _h.parentNode.removeChild(_h); }, 700);
+                    });
+                }
             });
             setTimeout(() => {
                 if (_drawGen !== _freeResetGen) { _isRewinding = false; return; } // card navigated — abort
@@ -3365,6 +3324,7 @@
         // ===================================================================
 
         window._kanjiSwitchDrawMode = (newMode) => {
+            if (newMode === (isFreeMode ? 'free' : 'guided')) return;
             if (btnReset && btnReset._kanjiAction) btnReset._kanjiAction();
 
             // Update mode flag

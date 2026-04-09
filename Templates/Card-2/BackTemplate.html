@@ -376,9 +376,11 @@
             });
         }
 
+        const _esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
         function renderNode(node) {
             if (!node || !node.value) return '';
-            const kwAttr = node.keyword ? ` data-keyword="${node.keyword}"` : '';
+            const kwAttr = node.keyword ? ` data-keyword="${_esc(node.keyword)}"` : '';
             let displayVal = node.value;
             if (displayVal.toLowerCase().includes('<path') && !displayVal.toLowerCase().includes('<svg')) {
                 const isFontRaster = /M\s*\d{3,}/.test(displayVal);
@@ -387,7 +389,7 @@
                     : `<svg class="custom-svg-icon kanji-stroke-format auto-fit" viewBox="0 0 109 109">${displayVal}</svg>`;
             }
             let primitiveBadge = node.isPrimitive ? `<svg class="primitive-tag-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` : '';
-            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${node.keyword}</div>` : '';
+            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${_esc(node.keyword)}</div>` : '';
             return `<div class="tree-node tappable"${kwAttr}>${primitiveBadge}<div class="tree-node-char">${displayVal}</div>${tooltipHtml}</div>`;
         }
 
@@ -435,13 +437,14 @@
         const targetWordsEl = document.getElementById('formatted-hint-words');
         if (rawWordsEl && targetWordsEl) {
             let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
+            const _wesc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
             targetWordsEl.innerHTML = words.map(word => {
                 word = word.trim();
                 if (!word) return '';
                 let match = word.match(/^(.*?)\s*\((.*?)\)$/);
                 return match
-                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${match[2]}</div></div></div>`
-                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wesc(match[1])}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wesc(word)}</div></div></div>`;
             }).join('');
             targetWordsEl.addEventListener('click', function (e) {
                 var item = e.target.closest('.word-example-item');
