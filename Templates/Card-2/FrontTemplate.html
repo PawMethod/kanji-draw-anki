@@ -1630,11 +1630,13 @@
             document.head.appendChild(_newStyle);
 
             // --- 4. Tell Qt/Chromium that we handle theming ourselves.
-            //    color-scheme must follow Anki's NATIVE dark state, not our
-            //    template override. ForceDarkMode on Anki Desktop inverts pages
-            //    with color-scheme:light when Anki is dark — using
-            //    _ankiNativeNightMode here prevents that inversion.
-            var scheme = window._ankiNativeNightMode ? 'dark' : 'light';
+            //    Anki 25.02–25.09 enabled ForceDarkMode (inverts color-scheme:light
+            //    pages when Anki is dark) → follow Anki's NATIVE dark state there.
+            //    Anki 26.05+ (QtWebEngine >= 6.11) reverted it → follow the applied
+            //    theme. Other platforms keep the native-state behaviour.
+            var _qtv = /QtWebEngine\/(\d+)\.(\d+)/.exec(navigator.userAgent);
+            var _noForceDark = !!_qtv && (+_qtv[1] > 6 || (+_qtv[1] === 6 && +_qtv[2] >= 11));
+            var scheme = (_noForceDark ? isDark : window._ankiNativeNightMode) ? 'dark' : 'light';
             root.style.colorScheme = scheme;
             var meta = document.querySelector('meta[name="color-scheme"]');
             if (!meta) {
