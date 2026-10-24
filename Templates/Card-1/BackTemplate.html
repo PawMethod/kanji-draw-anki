@@ -2682,9 +2682,8 @@
                 el.addEventListener('pointerup', function (e) {
                     if (e.pointerType !== 'pen') return;
                     var now = Date.now();
-                    if (handler === 'info' && now - lastInfoOpen < 400) return;
+                    if (handler === 'info' || handler === 'order') { if (now - lastInfoOpen < 400) return; lastInfoOpen = now; }
                     if (handler === 'gear' && now - lastGearOpen < 400) return;
-                    if (handler === 'info') lastInfoOpen = now;
                     if (handler === 'gear') lastGearOpen = now;
                     e.preventDefault(); e.stopPropagation();
                     if (window._kanjiModalEatClick) {
@@ -2693,6 +2692,7 @@
                         window._kanjiModalEatClick = null;
                     }
                     if (handler === 'info') openInfoModal(e);
+                    else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
                     var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
                     window._kanjiModalEatClick = _eatHandler;
@@ -2702,6 +2702,7 @@
             });
         }
         addPenHandler('.info-btn', 'info');
+        addPenHandler('.order-btn', 'order');
         addPenHandler('.gear-btn', 'gear');
 
         // Apple Pencil: synthesize click for interactive elements inside info modal

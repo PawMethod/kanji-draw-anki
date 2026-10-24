@@ -3020,12 +3020,13 @@ html.is-ankiweb .back-actions {
     margin-top: 10px;
 }
 
-/* Stroke-order button: round, directly below the gear button */
+/* Stroke-order button: round, mirrors the gear button in the opposite top corner
+   (below the gear it would overlap the drawing pad on phones) */
 .order-btn {
     box-sizing: border-box;
     position: absolute;
-    top: 62px;
-    right: 16px;
+    top: 16px;
+    left: 16px;
     z-index: 50;
     padding: 8px;
     border-radius: 50%;
@@ -3046,8 +3047,8 @@ html.is-ankiweb .back-actions {
 }
 
 html.left-handed .order-btn {
-    right: auto;
-    left: 16px;
+    left: auto;
+    right: 16px;
 }
 
 .order-btn * {

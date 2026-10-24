@@ -899,14 +899,6 @@
             </div>
             <div class="setting-group-title">Händigkeit</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="theme-hand" value="right"
-                        onchange="updateThemeSetting('hand', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="12" height="12" rx="2" />
-                            <circle cx="19" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
-                        <span>Rechtshänder</span></div>
-                </label>
                 <label><input type="radio" name="theme-hand" value="left"
                         onchange="updateThemeSetting('hand', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -914,6 +906,14 @@
                             <rect x="9" y="3" width="12" height="12" rx="2" />
                             <circle cx="5" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
                         <span>Linkshänder</span></div>
+                </label>
+                <label><input type="radio" name="theme-hand" value="right"
+                        onchange="updateThemeSetting('hand', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="12" height="12" rx="2" />
+                            <circle cx="19" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
+                        <span>Rechtshänder</span></div>
                 </label>
             </div>
             <div class="setting-group-title">Strichfarbe</div>

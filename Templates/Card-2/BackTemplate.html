@@ -915,9 +915,8 @@
                 el.addEventListener('pointerup', function (e) {
                     if (e.pointerType !== 'pen') return;
                     var now = Date.now();
-                    if (handler === 'info' && now - lastInfoOpen < 400) return;
+                    if (handler === 'info' || handler === 'order') { if (now - lastInfoOpen < 400) return; lastInfoOpen = now; }
                     if (handler === 'gear' && now - lastGearOpen < 400) return;
-                    if (handler === 'info') lastInfoOpen = now;
                     if (handler === 'gear') lastGearOpen = now;
                     e.preventDefault(); e.stopPropagation();
                     if (window._kanjiModalEatClick) {
@@ -926,6 +925,7 @@
                         window._kanjiModalEatClick = null;
                     }
                     if (handler === 'info') openInfoModal(e);
+                    else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
                     window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
                     document.addEventListener('click', window._kanjiModalEatClick, true);
@@ -934,6 +934,7 @@
             });
         }
         addPenHandler('.info-btn', 'info');
+        addPenHandler('.order-btn', 'order');
         addPenHandler('.gear-btn', 'gear');
 
         var infoModal = document.querySelector('.info-modal');
