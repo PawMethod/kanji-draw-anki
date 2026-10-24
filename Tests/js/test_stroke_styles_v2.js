@@ -410,9 +410,11 @@ test('C2-Back stores stroke style on window._kanjiStrokeStyle', () => {
   assert(c2b.includes('window._kanjiStrokeStyle = ss'), 'Must store stroke style globally');
 });
 
-test('C2-Back gel halos use getComputedStyle for path color', () => {
-  assert(c2b.includes('getComputedStyle(path).stroke') || c2b.includes('getComputedStyle(p).stroke'),
-    'Gel halos must use getComputedStyle for accurate color');
+test('C2-Back gel halos use the resolved per-path color', () => {
+  assert(/var haloC = resolvedColors\[i\] \|\| pathColors\[i\]/.test(c2b),
+    'Gel halos must reuse the per-path color resolved in the first pass');
+  assert(c2b.includes("h2.style.setProperty('stroke', haloC, 'important')"),
+    'Gel halo stroke must be set explicitly from the resolved color');
 });
 
 // ── 7. Style-switch reliability ──
