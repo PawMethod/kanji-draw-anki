@@ -376,6 +376,32 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title" id="start-hint-title">Startpunkt-Hilfe</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="start-hint-grid">
+                <label><input type="radio" name="opt-start-hint" value="off"
+                        onchange="updateFeatureSetting('startHint', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 18L18 6" opacity="0.4" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-start-hint" value="on"
+                        onchange="updateFeatureSetting('startHint', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="6" cy="18" r="2.5" fill="currentColor" stroke="none" />
+                            <path d="M9 15L18 6" />
+                            <polyline points="12 6 18 6 18 12" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
             <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
         </div>
 
@@ -849,6 +875,46 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Strichstärke</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-stroke-width" value="thin"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="1.5" /></svg>
+                        <span>Dünn</span></div>
+                </label>
+                <label><input type="radio" name="theme-stroke-width" value="normal"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="2.5" /></svg>
+                        <span>Normal</span></div>
+                </label>
+                <label><input type="radio" name="theme-stroke-width" value="thick"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="4" /></svg>
+                        <span>Dick</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Händigkeit</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="theme-hand" value="right"
+                        onchange="updateThemeSetting('hand', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="12" height="12" rx="2" />
+                            <circle cx="19" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
+                        <span>Rechtshänder</span></div>
+                </label>
+                <label><input type="radio" name="theme-hand" value="left"
+                        onchange="updateThemeSetting('hand', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="3" width="12" height="12" rx="2" />
+                            <circle cx="5" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
+                        <span>Linkshänder</span></div>
+                </label>
+            </div>
             <div class="setting-group-title">Strichfarbe</div>
             <div class="accent-options-grid">
                 <label><input type="radio" name="theme-stroke-color" value="black"
@@ -1290,6 +1356,7 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
+            'opt-start-hint': scopedGet('kanjiOptStartHint', globalConf.startHint),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
             'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
@@ -1297,7 +1364,9 @@
             'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
             'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
             'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
-            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard')
+            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard'),
+            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal'),
+            'theme-hand': safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right')
         };
         _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
@@ -1325,6 +1394,11 @@
         var adGrid = document.getElementById('autodraw-grid');
         if (adTitle) adTitle.classList.toggle('setting-disabled', isFree);
         if (adGrid) adGrid.classList.toggle('setting-disabled', isFree);
+        // Startpunkt-Hilfe: disabled in free mode
+        var shTitle = document.getElementById('start-hint-title');
+        var shGrid = document.getElementById('start-hint-grid');
+        if (shTitle) shTitle.classList.toggle('setting-disabled', isFree);
+        if (shGrid) shGrid.classList.toggle('setting-disabled', isFree);
         // Side-by-side: disabled in guided mode
         var sbsTitle = document.getElementById('sbs-title');
         var sbsGrid = document.getElementById('sbs-grid');
@@ -1364,12 +1438,15 @@
             drawMode: getVar('--default-opt-draw-mode', 'guided'),
             sideBySide: getVar('--default-opt-side-by-side', 'on'),
             freeView: getVar('--default-opt-free-view', 'handwriting'),
+            startHint: getVar('--default-opt-start-hint', 'off'),
             themeMode: getVar('--default-theme-mode', 'system'),
             themeAccent: getVar('--default-theme-accent', 'green'),
             themeFontSize: getVar('--default-theme-font-size', 'normal'),
             themePrimary: getVar('--default-theme-primary', 'neutral'),
             themeStrokeColor: getVar('--default-theme-stroke-color', 'black'),
-            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard')
+            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard'),
+            themeStrokeWidth: getVar('--default-theme-stroke-width', 'normal'),
+            themeHand: getVar('--default-theme-hand', 'right')
         };
         return _cachedGlobalConf;
     }
@@ -1474,6 +1551,9 @@
             var mode = safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system');
             var accent = safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green');
             var fontSize = safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal');
+            var strokeWidth = safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal');
+            document.documentElement.style.setProperty('--kd-sw', strokeWidth === 'thin' ? '0.7' : strokeWidth === 'thick' ? '1.4' : '1');
+            document.documentElement.classList.toggle('left-handed', safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right') === 'left');
 
             // --- 1. Dark/Light mode override ---
             var root = document.documentElement;
@@ -1687,7 +1767,7 @@
 
     function updateThemeSetting(category, val) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
+        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle', strokeWidth: 'kanjiThemeStrokeWidth', hand: 'kanjiThemeHand' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
         // Immediately refresh back-side features (stroke colors, gel halos, etc.)
@@ -2183,6 +2263,7 @@
         window._kanjiRefreshDrawConfig = () => {
             _cfgAutodraw = hostGet('kanjiOptAutodraw', cachedGlobalConf.autodraw) === 'on';
             _cfgColorFront = hostGet('kanjiOptColorFront', cachedGlobalConf.colorFront) === 'on';
+            updateStartMarker();
         };
 
         // ···· Draw Mode Detection ····
@@ -2201,12 +2282,47 @@
             if (kanjiContainer) kanjiContainer.classList.add('free-canvas-mode');
         }
 
+        // ···· Start-Point Hint (guided mode) ····
+
+        let _startMarkerSvg = null;
+        const updateStartMarker = () => {
+            const on = !isFreeMode && currentStroke < paths.length &&
+                hostGet('kanjiOptStartHint', cachedGlobalConf.startHint || 'off') === 'on';
+            if (!on) { if (_startMarkerSvg) _startMarkerSvg.style.display = 'none'; return; }
+            if (!kanjiContainer) return;
+            if (!_startMarkerSvg || !_startMarkerSvg.isConnected) {
+                kanjiContainer.querySelectorAll('#start-marker-layer').forEach(el => el.remove());
+                _startMarkerSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                _startMarkerSvg.id = 'start-marker-layer';
+                _startMarkerSvg.setAttribute('viewBox', '0 0 109 109');
+                _startMarkerSvg.setAttribute('aria-hidden', 'true');
+                kanjiContainer.appendChild(_startMarkerSvg);
+            }
+            const p = paths[currentStroke];
+            let len = 0;
+            try { len = p.getTotalLength(); } catch (e) { }
+            if (!len) { _startMarkerSvg.style.display = 'none'; return; }
+            const p0 = p.getPointAtLength(0), p1 = p.getPointAtLength(Math.min(8, len));
+            const dl = Math.hypot(p1.x - p0.x, p1.y - p0.y) || 1;
+            const ux = (p1.x - p0.x) / dl, uy = (p1.y - p0.y) / dl;
+            const ax = p0.x + ux * 5, ay = p0.y + uy * 5, bx = p0.x + ux * 12, by = p0.y + uy * 12;
+            const hx = -ux * 3, hy = -uy * 3, nx = -uy * 2.4, ny = ux * 2.4;
+            const f = (n) => n.toFixed(2);
+            _startMarkerSvg.innerHTML =
+                '<circle class="start-ring" cx="' + f(p0.x) + '" cy="' + f(p0.y) + '" r="3"/>' +
+                '<circle class="start-dot" cx="' + f(p0.x) + '" cy="' + f(p0.y) + '" r="2.4"/>' +
+                '<path class="start-arrow" d="M' + f(ax) + ',' + f(ay) + 'L' + f(bx) + ',' + f(by) +
+                'M' + f(bx + hx + nx) + ',' + f(by + hy + ny) + 'L' + f(bx) + ',' + f(by) + 'L' + f(bx + hx - nx) + ',' + f(by + hy - ny) + '"/>';
+            _startMarkerSvg.style.display = '';
+        };
+
         // ···· Save & Auto-Flip ····
 
         const _saveStateTimer = { id: null };
         const saveState = () => {
             window._kanjiProblemStrokes = problemStrokes;
             window._kanjiCurrentStroke = currentStroke;
+            updateStartMarker();
             // Debounce storage writes: batch rapid successive strokes (e.g. guided skip)
             // into a single write. 50ms is imperceptible but avoids sync I/O on each stroke.
             clearTimeout(_saveStateTimer.id);
@@ -2242,6 +2358,7 @@
         // ···· Per-path stroke style application ····
         // Returns the current stroke style setting
         const getActiveStrokeStyle = () => safeGetItem('kanjiThemeStrokeStyle', cachedGlobalConf.themeStrokeStyle || 'standard');
+        const _swf = () => { const v = safeGetItem('kanjiThemeStrokeWidth', cachedGlobalConf.themeStrokeWidth || 'normal'); return v === 'thin' ? 0.7 : v === 'thick' ? 1.4 : 1; };
         const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
         // Cached per-stroke style — set once in startDrawing, reused in draw() hot path
         let _activeDrawStyle = 'standard';
@@ -2296,7 +2413,7 @@
             _ctx.strokeStyle = color;
             _ctx.lineCap = 'round';
             _ctx.lineJoin = 'round';
-            _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx;
+            _ctx.lineWidth = (style === 'gel' ? 4.5 : 4) * sx * _swf();
             _ctx.shadowBlur = 0;
             _ctx.shadowColor = 'transparent';
             _ctx.globalAlpha = 1;
@@ -2314,7 +2431,7 @@
                 _gelHalo.setAttribute("fill", "none");
                 _gelHalo.setAttribute("class", "gel-halo");
                 _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
-                _gelHalo.setAttribute("stroke-width", "8");
+                _gelHalo.setAttribute("stroke-width", String(8 * _swf()));
                 _gelHalo.setAttribute("stroke-linecap", "round");
                 _gelHalo.setAttribute("stroke-linejoin", "round");
                 _gelHalo.style.setProperty("opacity", "0.12");
@@ -2344,12 +2461,12 @@
             pathEl.removeAttribute('filter');
             pathEl.removeAttribute('paint-order');
             // Reset drawing attributes to defaults before applying new style
-            pathEl.setAttribute('stroke-width', '4');
+            pathEl.setAttribute('stroke-width', String(4 * _swf()));
             pathEl.setAttribute('stroke-linecap', 'round');
             pathEl.setAttribute('stroke-linejoin', 'round');
             switch (style) {
                 case 'gel':
-                    pathEl.setAttribute('stroke-width', '4.5');
+                    pathEl.setAttribute('stroke-width', String(4.5 * _swf()));
                     pathEl.setAttribute('paint-order', 'stroke');
                     pathEl.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + c + ')');
                     break;
@@ -2657,7 +2774,7 @@
             currentSVGPath.setAttribute("d", dSegments.join(''));
             currentSVGPath.setAttribute("fill", "none");
             currentSVGPath.style.setProperty("stroke", "var(--stroke-active)");
-            currentSVGPath.setAttribute("stroke-width", "4");
+            currentSVGPath.setAttribute("stroke-width", String(4 * _swf()));
             currentSVGPath.setAttribute("stroke-linecap", "round");
             currentSVGPath.setAttribute("stroke-linejoin", "round");
             applyPathStyle(currentSVGPath);
@@ -2680,7 +2797,7 @@
                     _gelHalo.setAttribute("fill", "none");
                     _gelHalo.setAttribute("class", "gel-halo");
                     _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
-                    _gelHalo.setAttribute("stroke-width", "8");
+                    _gelHalo.setAttribute("stroke-width", String(8 * _swf()));
                     _gelHalo.setAttribute("stroke-linecap", "round");
                     _gelHalo.style.setProperty("opacity", "0.12");
                     drawLayer.appendChild(_gelHalo);
@@ -2700,7 +2817,7 @@
             _canvasDirty = false;
             const style = _activeDrawStyle;
             const color = _cachedStrokeColor;
-            const sx = _ctx._scaleX;
+            const sx = _ctx._scaleX * _swf();
             _clearCanvas();
             _ctx.save();
             _ctx.lineCap = 'round'; _ctx.lineJoin = 'round';
@@ -3424,6 +3541,7 @@
 
             // Re-bind button actions for new mode
             bindModeButtons();
+            updateStartMarker();
 
             // Deferred cleanup: freeResetAction uses timed animations (700ms+)
             // that may be skipped if _drawGen changes. Nuclear-remove any

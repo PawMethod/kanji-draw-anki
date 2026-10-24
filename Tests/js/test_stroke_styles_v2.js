@@ -101,7 +101,7 @@ test('applyPathStyle resets all style-specific attributes before applying', () =
   assert(fnMatch[0].includes("removeAttribute('filter')"), 'Must clear filter attr');
   assert(fnMatch[0].includes("removeAttribute('paint-order')"), 'Must clear paint-order');
   // Verify drawing attributes reset to defaults before style switch
-  assert(fnMatch[0].includes("setAttribute('stroke-width', '4')"), 'Must reset stroke-width to default 4');
+  assert(fnMatch[0].includes("setAttribute('stroke-width', String(4 * _swf()))"), 'Must reset stroke-width to default 4 (scaled)');
   assert(fnMatch[0].includes("setAttribute('stroke-linecap', 'round')"), 'Must reset stroke-linecap to round');
   assert(fnMatch[0].includes("setAttribute('stroke-linejoin', 'round')"), 'Must reset stroke-linejoin to round');
 });
@@ -459,8 +459,8 @@ test('_addGelHaloToPath uses getComputedStyle first (not fallback)', () => {
 test('applyPathStyle resets stroke-width to 4 before gel sets 4.5', () => {
   const fn = c1f.match(/const applyPathStyle[\s\S]*?window\._kanjiApplyPathStyle/);
   assert(fn, 'Must have applyPathStyle');
-  const resetIdx = fn[0].indexOf("setAttribute('stroke-width', '4')");
-  const gelIdx = fn[0].indexOf("setAttribute('stroke-width', '4.5')");
+  const resetIdx = fn[0].indexOf("setAttribute('stroke-width', String(4 * _swf()))");
+  const gelIdx = fn[0].indexOf("setAttribute('stroke-width', String(4.5 * _swf()))");
   assert(resetIdx > -1 && gelIdx > -1 && resetIdx < gelIdx,
     'stroke-width:4 reset must come before gel stroke-width:4.5');
 });

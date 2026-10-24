@@ -53,6 +53,9 @@
     /* Strichansicht (Nur Zeichnen-Karte, Frei-Modus): 'handwriting' (Handschrift), 'svg' (SVG-Pfade) */
     --default-opt-free-view: handwriting;
 
+    /* Startpunkt-Hilfe (Nur Zeichnen-Karte, Geführt-Modus): 'on' (An), 'off' (Aus) */
+    --default-opt-start-hint: off;
+
     /* --- 3. ERSCHEINUNGSBILD (Appearance) --- */
 
     /* Modus: 'system' (System), 'light' (Hell), 'dark' (Dunkel) */
@@ -72,6 +75,12 @@
 
     /* Strichstil: 'standard' (Standard), 'gel' (Gelstift), 'ink' (Tusche), 'neon' (Neon) */
     --default-theme-stroke-style: standard;
+
+    /* Strichstärke: 'thin' (Dünn), 'normal' (Normal), 'thick' (Dick) */
+    --default-theme-stroke-width: normal;
+
+    /* Händigkeit: 'right' (Rechtshänder), 'left' (Linkshänder) */
+    --default-theme-hand: right;
 }
 
 /* ==========================================================================
@@ -646,7 +655,7 @@ svg#svg-guide path,
 /* Gelstift — bold, opaque, saturated gel ink: wider rounded strokes with subtle ink spread */
 .kanji-container.stroke-style-gel #svg-bg path:not(.gel-halo),
 .kanji-container.stroke-style-gel #svg-guide path:not(.gel-halo) {
-    stroke-width: 4.5;
+    stroke-width: calc(4.5px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     paint-order: stroke;
@@ -655,7 +664,7 @@ svg#svg-guide path,
 /* Tusche (Ink) — organic, wider, calligraphic reference strokes */
 .kanji-container.stroke-style-ink #svg-bg path,
 .kanji-container.stroke-style-ink #svg-guide path {
-    stroke-width: 4.5;
+    stroke-width: calc(4.5px * var(--kd-sw, 1));
     stroke-linecap: square;
     opacity: 0.85;
 }
@@ -1711,7 +1720,7 @@ svg#svg-guide path,
 #svg-guide path,
 .svg-stroke {
     fill: none !important;
-    stroke-width: 4;
+    stroke-width: calc(4px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 105 !important;
@@ -2945,6 +2954,237 @@ html.is-ankimobile .rewind-anim {
 }
 
 /* ============================================================
+   12b. Start-Point Hint, Stroke-Order Player, Grade Recommendation
+   ============================================================ */
+#start-marker-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+    overflow: visible;
+}
+
+#start-marker-layer .start-dot {
+    fill: var(--accent);
+    opacity: 0.9;
+}
+
+#start-marker-layer .start-ring {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: startPulse 1.6s ease-out infinite;
+}
+
+#start-marker-layer .start-arrow,
+#order-svg .order-arrow {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+}
+
+@keyframes startPulse {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(2.2);
+        opacity: 0;
+    }
+}
+
+.back-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: var(--dynamic-size);
+    margin: 24px auto 0;
+}
+
+.back-actions .info-btn {
+    margin-top: 0;
+}
+
+html.is-ankiweb .back-actions {
+    margin-top: 10px;
+}
+
+/* Stroke-order button: round, directly below the gear button */
+.order-btn {
+    box-sizing: border-box;
+    position: absolute;
+    top: 62px;
+    right: 16px;
+    z-index: 50;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--surface);
+    color: var(--text-faint);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--filter-soft);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    transform: translateZ(0);
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInNumbers 0.3s ease-out 0.1s both;
+}
+
+html.left-handed .order-btn {
+    right: auto;
+    left: 16px;
+}
+
+.order-btn * {
+    pointer-events: none;
+}
+
+.order-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.order-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+}
+
+@media (hover: hover) {
+    .order-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--filter-hover);
+        transform: translateY(-1px) translateZ(0);
+    }
+}
+
+.order-btn:active {
+    transform: scale(0.94) translateZ(0);
+}
+
+.order-stage {
+    width: min(100%, 300px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-rad-main);
+    background: var(--surface);
+}
+
+#order-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+#order-svg .order-grid {
+    stroke: var(--border-color);
+    stroke-width: 0.6;
+    stroke-dasharray: 2 2;
+    fill: none;
+}
+
+#order-svg .order-ghost {
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.15;
+}
+
+#order-svg .order-stroke {
+    fill: none;
+    stroke: var(--stroke-active);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 105;
+}
+
+#order-svg .order-stroke.order-current {
+    stroke: var(--accent);
+}
+
+#order-svg .order-dot {
+    fill: var(--accent);
+}
+
+#order-svg .order-num {
+    font-size: 6.5px;
+    font-weight: 700;
+    fill: var(--text-muted);
+    stroke: var(--surface);
+    stroke-width: 1.5px;
+    paint-order: stroke fill;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.order-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0 4px;
+}
+
+.order-ctrl {
+    box-sizing: border-box;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.order-ctrl * {
+    pointer-events: none;
+}
+
+.order-ctrl svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.2;
+}
+
+.order-ctrl.order-ctrl-main {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.order-ctrl:active {
+    transform: scale(0.96);
+}
+
+/* ============================================================
    13. Reduced Motion — Accessibility & iGPU Performance
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -2958,6 +3198,15 @@ html.is-ankimobile .rewind-anim {
     }
 }
 
+/* Anki Desktop: Preferences → "Reduce motion" sets this body class */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
 /* ============================================================
    S-Pen / Stylus hover fix
    While navigating settings pages, each incoming page gets
@@ -2967,4 +3216,19 @@ html.is-ankimobile .rewind-anim {
    ============================================================ */
 .settings-page.hover-frozen {
     pointer-events: none;
+}
+
+/* Left-handed mode: controls move to the left side */
+html.left-handed .gear-btn {
+    right: auto;
+    left: 16px;
+}
+
+html.left-handed .action-buttons {
+    flex-direction: row-reverse;
+}
+
+html.left-handed .kanji-container .free-view-quicktoggle {
+    right: auto;
+    left: 6px;
 }

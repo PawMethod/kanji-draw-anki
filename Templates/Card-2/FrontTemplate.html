@@ -377,6 +377,32 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title" id="start-hint-title">Startpunkt-Hilfe</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="start-hint-grid">
+                <label><input type="radio" name="opt-start-hint" value="off"
+                        onchange="updateFeatureSetting('startHint', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 18L18 6" opacity="0.4" />
+                            <line x1="3" y1="3" x2="21" y2="21" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-start-hint" value="on"
+                        onchange="updateFeatureSetting('startHint', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="6" cy="18" r="2.5" fill="currentColor" stroke="none" />
+                            <path d="M9 15L18 6" />
+                            <polyline points="12 6 18 6 18 12" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
             <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
         </div>
 
@@ -850,6 +876,46 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Strichstärke</div>
+            <div class="visual-options-grid">
+                <label><input type="radio" name="theme-stroke-width" value="thin"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="1.5" /></svg>
+                        <span>Dünn</span></div>
+                </label>
+                <label><input type="radio" name="theme-stroke-width" value="normal"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="2.5" /></svg>
+                        <span>Normal</span></div>
+                </label>
+                <label><input type="radio" name="theme-stroke-width" value="thick"
+                        onchange="updateThemeSetting('strokeWidth', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="4" /></svg>
+                        <span>Dick</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Händigkeit</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="theme-hand" value="right"
+                        onchange="updateThemeSetting('hand', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="12" height="12" rx="2" />
+                            <circle cx="19" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
+                        <span>Rechtshänder</span></div>
+                </label>
+                <label><input type="radio" name="theme-hand" value="left"
+                        onchange="updateThemeSetting('hand', this.value)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="3" width="12" height="12" rx="2" />
+                            <circle cx="5" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
+                        <span>Linkshänder</span></div>
+                </label>
+            </div>
             <div class="setting-group-title">Strichfarbe</div>
             <div class="accent-options-grid">
                 <label><input type="radio" name="theme-stroke-color" value="black"
@@ -1285,6 +1351,7 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
+            'opt-start-hint': scopedGet('kanjiOptStartHint', globalConf.startHint),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
             'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
@@ -1292,7 +1359,9 @@
             'theme-font-size': safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal'),
             'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
             'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
-            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard')
+            'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard'),
+            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal'),
+            'theme-hand': safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right')
         };
         _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
@@ -1320,6 +1389,11 @@
         var adGrid = document.getElementById('autodraw-grid');
         if (adTitle) adTitle.classList.toggle('setting-disabled', isFree);
         if (adGrid) adGrid.classList.toggle('setting-disabled', isFree);
+        // Startpunkt-Hilfe: disabled in free mode
+        var shTitle = document.getElementById('start-hint-title');
+        var shGrid = document.getElementById('start-hint-grid');
+        if (shTitle) shTitle.classList.toggle('setting-disabled', isFree);
+        if (shGrid) shGrid.classList.toggle('setting-disabled', isFree);
         // Side-by-side: disabled in guided mode
         var sbsTitle = document.getElementById('sbs-title');
         var sbsGrid = document.getElementById('sbs-grid');
@@ -1359,12 +1433,15 @@
             drawMode: getVar('--default-opt-draw-mode', 'guided'),
             sideBySide: getVar('--default-opt-side-by-side', 'on'),
             freeView: getVar('--default-opt-free-view', 'handwriting'),
+            startHint: getVar('--default-opt-start-hint', 'off'),
             themeMode: getVar('--default-theme-mode', 'system'),
             themeAccent: getVar('--default-theme-accent', 'green'),
             themeFontSize: getVar('--default-theme-font-size', 'normal'),
             themePrimary: getVar('--default-theme-primary', 'neutral'),
             themeStrokeColor: getVar('--default-theme-stroke-color', 'black'),
-            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard')
+            themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard'),
+            themeStrokeWidth: getVar('--default-theme-stroke-width', 'normal'),
+            themeHand: getVar('--default-theme-hand', 'right')
         };
         return _cachedGlobalConf;
     }
@@ -1490,6 +1567,9 @@
             var mode = safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system');
             var accent = safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green');
             var fontSize = safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal');
+            var strokeWidth = safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal');
+            document.documentElement.style.setProperty('--kd-sw', strokeWidth === 'thin' ? '0.7' : strokeWidth === 'thick' ? '1.4' : '1');
+            document.documentElement.classList.toggle('left-handed', safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right') === 'left');
 
             // --- 1. Dark/Light mode override ---
             var root = document.documentElement;
@@ -1658,7 +1738,7 @@
 
     function updateThemeSetting(category, val) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
-        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle' };
+        var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle', strokeWidth: 'kanjiThemeStrokeWidth', hand: 'kanjiThemeHand' };
         safeSetItem(keyMap[category], val);
         applyThemeSettings();
         // Immediately refresh back-side features (stroke colors, gel halos, etc.)
