@@ -22,11 +22,12 @@ Requirements:
 Usage:
   python3 Tests/live_stress_test.py
 """
-import json, time, sys, random, threading
+import json, os, time, sys, random, tempfile, threading
 import urllib.request
 
 ANKI_PORT = 8765
 EVAL_PORT  = 8767
+TOKEN_FILE = os.path.join(tempfile.gettempdir(), "kanjidraw_stress_token")
 EASE_HARD  = 1   # "Again" — card is immediately requeued, prevents exhausting the daily review queue
 
 # ─── HTTP helpers ──────────────────────────────────────────────────────────────
@@ -37,11 +38,23 @@ def anki(action, **params):
         data=payload, headers={"Content-Type": "application/json"})
     return json.loads(urllib.request.urlopen(req, timeout=5).read())
 
+_eval_token = None
+
+def _eval_headers():
+    global _eval_token
+    if _eval_token is None:
+        try:
+            with open(TOKEN_FILE, encoding="utf-8") as f:
+                _eval_token = f.read().strip()
+        except FileNotFoundError:
+            sys.exit(f"Token file {TOKEN_FILE} not found — is the stress helper add-on loaded?")
+    return {"Content-Type": "application/json", "Authorization": f"Bearer {_eval_token}"}
+
 def js(code):
     """Fire-and-forget JS execution in the card WebView."""
     req = urllib.request.Request(f"http://127.0.0.1:{EVAL_PORT}/eval",
         data=json.dumps({"js": code}).encode(),
-        headers={"Content-Type": "application/json"})
+        headers=_eval_headers())
     try:
         return json.loads(urllib.request.urlopen(req, timeout=3).read())
     except Exception as e:
@@ -51,7 +64,7 @@ def js_sync(code, timeout=35):
     """Execute JS and return the result value. Server retry every 2s for up to 30s."""
     req = urllib.request.Request(f"http://127.0.0.1:{EVAL_PORT}/eval_sync",
         data=json.dumps({"js": code}).encode(),
-        headers={"Content-Type": "application/json"})
+        headers=_eval_headers())
     try:
         return json.loads(urllib.request.urlopen(req, timeout=timeout).read())
     except Exception as e:
