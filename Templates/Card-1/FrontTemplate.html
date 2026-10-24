@@ -880,39 +880,29 @@
                 <label><input type="radio" name="theme-stroke-width" value="thin"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="1.5" /></svg>
-                        <span>Dünn</span></div>
+                            stroke-linecap="round">
+                            <path d="M4 18Q12 4 20 10" stroke-width="1.5" />
+                        </svg>
+                        <span>Dünn</span>
+                    </div>
                 </label>
                 <label><input type="radio" name="theme-stroke-width" value="normal"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="2.5" /></svg>
-                        <span>Normal</span></div>
+                            stroke-linecap="round">
+                            <path d="M4 18Q12 4 20 10" stroke-width="2.5" />
+                        </svg>
+                        <span>Normal</span>
+                    </div>
                 </label>
                 <label><input type="radio" name="theme-stroke-width" value="thick"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round"><path d="M4 18Q12 4 20 10" stroke-width="4" /></svg>
-                        <span>Dick</span></div>
-                </label>
-            </div>
-            <div class="setting-group-title">Händigkeit</div>
-            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <label><input type="radio" name="theme-hand" value="left"
-                        onchange="updateThemeSetting('hand', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="3" width="12" height="12" rx="2" />
-                            <circle cx="5" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
-                        <span>Linkshänder</span></div>
-                </label>
-                <label><input type="radio" name="theme-hand" value="right"
-                        onchange="updateThemeSetting('hand', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="12" height="12" rx="2" />
-                            <circle cx="19" cy="19" r="2.5" fill="currentColor" stroke="none" /></svg>
-                        <span>Rechtshänder</span></div>
+                            stroke-linecap="round">
+                            <path d="M4 18Q12 4 20 10" stroke-width="4" />
+                        </svg>
+                        <span>Dick</span>
+                    </div>
                 </label>
             </div>
             <div class="setting-group-title">Strichfarbe</div>
@@ -1365,8 +1355,7 @@
             'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
             'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
             'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard'),
-            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal'),
-            'theme-hand': safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right')
+            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal')
         };
         _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
@@ -1445,8 +1434,7 @@
             themePrimary: getVar('--default-theme-primary', 'neutral'),
             themeStrokeColor: getVar('--default-theme-stroke-color', 'black'),
             themeStrokeStyle: getVar('--default-theme-stroke-style', 'standard'),
-            themeStrokeWidth: getVar('--default-theme-stroke-width', 'normal'),
-            themeHand: getVar('--default-theme-hand', 'right')
+            themeStrokeWidth: getVar('--default-theme-stroke-width', 'normal')
         };
         return _cachedGlobalConf;
     }
@@ -1553,7 +1541,6 @@
             var fontSize = safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal');
             var strokeWidth = safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal');
             document.documentElement.style.setProperty('--kd-sw', strokeWidth === 'thin' ? '0.7' : strokeWidth === 'thick' ? '1.4' : '1');
-            document.documentElement.classList.toggle('left-handed', safeGetItem('kanjiThemeHand', globalConf.themeHand || 'right') === 'left');
 
             // --- 1. Dark/Light mode override ---
             var root = document.documentElement;
@@ -1645,6 +1632,8 @@
             var _neonRef = _wk
                 ? (_dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)')
                 : (_dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
+            var _swfTheme = strokeWidth === 'thin' ? 0.7 : strokeWidth === 'thick' ? 1.4 : 1;
+            var _refStrokeW = String((strokeStyle === 'gel' || strokeStyle === 'ink' ? 4.5 : 4) * _swfTheme);
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
                 // Nuclear cleanup: remove ALL effect artifacts first
@@ -1656,6 +1645,7 @@
                     p.style.removeProperty('opacity');
                     p.removeAttribute('filter');
                     p.removeAttribute('paint-order');
+                    p.setAttribute('stroke-width', _refStrokeW);
                     if (strokeStyle === 'neon') p.setAttribute('filter', _neonRef);
                     if (strokeStyle === 'gel') p.setAttribute('paint-order', 'stroke');
                     if (strokeStyle === 'ink') p.style.opacity = '0.85';
@@ -2340,9 +2330,41 @@
         saveState();
 
         const triggerAutoFlip = () => {
-            if (typeof pycmd !== "undefined" && !navigator.userAgent.includes("Android")) { try { pycmd("ans"); } catch (e) { } }
-            else if (typeof window.showAnswer === "function" && typeof window.require === "undefined") { try { window.showAnswer(); } catch (e) { } }
-            else { const fakeBack = document.getElementById("answer-fallback"); if (fakeBack) fakeBack.style.display = "block"; }
+            if (typeof pycmd !== "undefined" && !navigator.userAgent.includes("Android")) { try { pycmd("ans"); } catch (e) { } return; }
+            let flipped = false;
+            // Synthetic <a click> triggers Android WebView's shouldOverrideUrlLoading reliably
+            // even after async setTimeout / rAF chains where window.location.href can be ignored.
+            const navScheme = (href) => {
+                try {
+                    const a = document.createElement("a");
+                    a.href = href;
+                    a.style.display = "none";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } catch (e) { }
+            };
+            if (typeof AnkiDroidJS !== "undefined") {
+                const isNewReviewer = typeof globalThis.ankidroid !== "undefined" && typeof globalThis.ankidroid.userAction === "function";
+                if (isNewReviewer) {
+                    navScheme("ankidroid://show-answer");
+                    flipped = true;
+                } else {
+                    try {
+                        if (!window._kdJsApi) window._kdJsApi = new AnkiDroidJS({ version: "0.0.3", developer: "github.com/PawMethod/kanji-draw-anki" });
+                        if (typeof window._kdJsApi.ankiShowAnswer === "function") { window._kdJsApi.ankiShowAnswer(); flipped = true; }
+                    } catch (e) { }
+                    navScheme("signal:show_answer");
+                    flipped = true;
+                }
+            }
+            if (typeof window.showAnswer === "function" && typeof window.require === "undefined") {
+                try { window.showAnswer(); flipped = true; } catch (e) { }
+            }
+            if (!flipped) {
+                const fakeBack = document.getElementById("answer-fallback");
+                if (fakeBack) fakeBack.style.display = "block";
+            }
         };
 
         // ···· Draw Helpers & Pointer Handlers ····
@@ -2359,6 +2381,7 @@
         // Returns the current stroke style setting
         const getActiveStrokeStyle = () => safeGetItem('kanjiThemeStrokeStyle', cachedGlobalConf.themeStrokeStyle || 'standard');
         const _swf = () => { const v = safeGetItem('kanjiThemeStrokeWidth', cachedGlobalConf.themeStrokeWidth || 'normal'); return v === 'thin' ? 0.7 : v === 'thick' ? 1.4 : 1; };
+        window._kanjiGetStrokeWidthFactor = _swf;
         const isDarkMode = () => document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
         // Cached per-stroke style — set once in startDrawing, reused in draw() hot path
         let _activeDrawStyle = 'standard';
@@ -2506,7 +2529,7 @@
             }
             const halo = refPath.cloneNode(false);
             halo.setAttribute('class', 'gel-halo');
-            halo.setAttribute('stroke-width', '8');
+            halo.setAttribute('stroke-width', String(8 * _swf()));
             halo.setAttribute('stroke-linecap', 'round');
             halo.setAttribute('stroke-linejoin', 'round');
             halo.style.cssText = '';
@@ -3731,6 +3754,19 @@
                 document.addEventListener('click', mark, true);
                 _markTimer = setTimeout(function () { document.removeEventListener('click', mark, true); }, 600);
             }, true);
+            var _spenHoverSel = '.action-buttons button, .gear-btn, .order-btn, .info-btn, .link-btn, .visual-option, .accent-option, .category-card, .segment-btn, .close-settings, .back-btn, .order-ctrl, .word-example-item, .tree-node, .pt-node';
+            var _spenHovered = null;
+            var _clearSpenHover = function () { if (_spenHovered) { _spenHovered.classList.remove('spen-hover'); _spenHovered = null; } };
+            document.addEventListener('pointermove', function (e) {
+                if (e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+                if (e.buttons) { _clearSpenHover(); return; }
+                var t = e.target && e.target.closest ? e.target.closest(_spenHoverSel) : null;
+                if (t === _spenHovered) return;
+                _clearSpenHover();
+                if (t) { _spenHovered = t; t.classList.add('spen-hover'); }
+            }, true);
+            document.addEventListener('pointerdown', _clearSpenHover, true);
+            document.addEventListener('pointercancel', _clearSpenHover, true);
         }
     } // end guard
 

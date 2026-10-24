@@ -72,8 +72,7 @@
 
 {{FrontSide}}
 
-<button class="order-btn" onclick="openStrokeOrder(event)" title="Strichfolge ansehen"
-    aria-label="Strichfolge ansehen">
+<button class="order-btn" onclick="openStrokeOrder(event)" title="Strichfolge ansehen" aria-label="Strichfolge ansehen">
     <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
         <polygon points="8 5 19 12 8 19 8 5"></polygon>
     </svg>
@@ -331,6 +330,10 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
+            var swVal = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
+                : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
+            var swf0 = swVal === 'thin' ? 0.7 : swVal === 'thick' ? 1.4 : 1;
             var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
@@ -343,13 +346,13 @@
                     p.style.removeProperty('opacity');
                     p.removeAttribute('filter');
                     p.removeAttribute('paint-order');
+                    p.setAttribute('stroke-width', String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf0));
                     // Apply basic style properties (halos added later by applyBackFeatures)
                     switch (ss) {
                         case 'neon':
                             p.setAttribute('filter', _wk ? (dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)') : (dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)'));
                             break;
                         case 'gel':
-                            p.setAttribute('stroke-width', '4.5');
                             p.setAttribute('paint-order', 'stroke');
                             break;
                         case 'ink':
@@ -399,6 +402,210 @@
         }
     })();
 
+    // --- Primitive Tree (Kanji-Study style) [SHARED with c1-back] ---
+    // Field grammar: value[keyword]@strokes{children}, e.g. 吾[Ich]@8-14{五[fünf]@8-11, 口[Mund]@12-14}
+    // Plain "value[keyword], ..." lists (no @/{}) still render, just without stroke colouring.
+
+    window._kanjiRenderPrimitiveTree = function (rawData, target) {
+        const NS = 'http://www.w3.org/2000/svg';
+        const PALETTE = ['#2aa7e0', '#d46be8', '#f0a030', '#3fbf86', '#e8625c', '#8a7cf0'];
+        const R = 28, R_ROOT = 36, H = 98, LINE_MAX = 14;
+        const wrapLabel = (kw) => {
+            if (kw.length <= LINE_MAX) return [kw];
+            let best = -1, bestDist = Infinity;
+            for (let i = 1; i < kw.length - 1; i++) {
+                if (kw[i] === ' ' || kw[i] === '-') {
+                    const d = Math.abs(i - kw.length / 2);
+                    if (d < bestDist) { bestDist = d; best = i; }
+                }
+            }
+            if (best > 0) {
+                const l1 = (kw[best] === '-' ? kw.slice(0, best + 1) : kw.slice(0, best)).trim();
+                const l2 = kw.slice(best + 1).trim();
+                return [l1, l2];
+            }
+            return [kw];
+        };
+
+        const splitTop = (str) => {
+            const out = []; let cur = '', tag = false, br = 0, cb = 0;
+            for (const ch of str) {
+                if (ch === '<') tag = true; else if (ch === '>') tag = false;
+                else if (!tag) { if (ch === '[') br++; else if (ch === ']') br--; else if (ch === '{') cb++; else if (ch === '}') cb--; }
+                if (ch === ',' && !tag && br === 0 && cb === 0) { if (cur.trim()) out.push(cur.trim()); cur = ''; }
+                else cur += ch;
+            }
+            if (cur.trim()) out.push(cur.trim());
+            return out;
+        };
+        const parseStrokes = (s) => {
+            const out = [];
+            s.split('+').forEach(r => {
+                const m = r.match(/^(\d+)(?:-(\d+))?$/);
+                if (!m) return;
+                for (let i = +m[1]; i <= +(m[2] || m[1]); i++) out.push(i - 1);
+            });
+            return out;
+        };
+        const parseItem = (item) => {
+            let s = item.trim(), children = [];
+            if (s.endsWith('}')) {
+                let depth = 0, i = s.length - 1;
+                for (; i >= 0; i--) { if (s[i] === '}') depth++; else if (s[i] === '{' && --depth === 0) break; }
+                if (i > 0) { children = splitTop(s.slice(i + 1, -1)).map(parseItem); s = s.slice(0, i).trim(); }
+            }
+            let strokes = null;
+            const sm = s.match(/@([\d+\-]+)\s*$/);
+            if (sm) { strokes = parseStrokes(sm[1]); s = s.slice(0, sm.index).trim(); }
+            let keyword = '', isPrimitive = false;
+            const bm = s.match(/\[([^\[\]]*)\]\s*$/);
+            if (bm) {
+                keyword = bm[1];
+                if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
+                s = s.slice(0, bm.index).trim();
+            }
+            return { value: s, keyword, isPrimitive, strokes, children };
+        };
+
+        const svgBg = document.getElementById('svg-bg');
+        const ds = svgBg ? Array.prototype.filter.call(svgBg.children, p => p.tagName.toLowerCase() === 'path' && !p.classList.contains('gel-halo')).map(p => p.getAttribute('d')) : [];
+        const rootChar = (target.closest('.tree-container') || document).querySelector('.tree-root-kanji');
+        const root = { value: rootChar ? rootChar.textContent.trim() : '', keyword: '', strokes: ds.map((_, i) => i), children: splitTop(rawData).map(parseItem), isRoot: true };
+
+        // Measure stroke / markup bounding boxes in an off-screen SVG (getBBox needs a rendered element)
+        const scratch = document.createElementNS(NS, 'svg');
+        scratch.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:109px;height:109px;visibility:hidden');
+        document.body.appendChild(scratch);
+        const strokeBox = ds.map(d => {
+            const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); scratch.appendChild(p);
+            let b = null; try { b = p.getBBox(); } catch (e) { }
+            return b && { x: b.x, y: b.y, w: b.width, h: b.height };
+        });
+        const markupBox = (markup) => {
+            const g = document.createElementNS(NS, 'g'); g.innerHTML = markup; scratch.appendChild(g);
+            let b = null; try { b = g.getBBox(); } catch (e) { }
+            return b && b.width > 0 ? { x: b.x, y: b.y, w: b.width, h: b.height } : null;
+        };
+        const unionBox = (idx) => {
+            let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+            idx.forEach(i => { const b = strokeBox[i]; if (!b) return; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); });
+            return x0 === Infinity ? null : { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+        };
+        const squareViewBox = (b, pad) => {
+            const size = Math.max(b.w, b.h, 12) * (1 + pad * 2);
+            return [(b.x + b.w / 2 - size / 2), (b.y + b.h / 2 - size / 2), size, size].map(n => n.toFixed(2)).join(' ');
+        };
+
+        // Layout: leaves spread across a full-width canvas so 1–3 leaves don't cluster in the centre
+        let leafCount = 0;
+        const countLeaves = (n) => { if (!n.children.length) leafCount++; else n.children.forEach(countLeaves); };
+        countLeaves(root);
+        const width = Math.max(320, leafCount * 96);
+        const W = width / Math.max(leafCount, 1);
+        let leaf = 0, maxDepth = 0, bottomLines = 1;
+        const layout = (n, depth) => {
+            n.depth = depth; maxDepth = Math.max(maxDepth, depth);
+            n.lines = (!n.isRoot && n.keyword) ? wrapLabel(n.keyword) : [];
+            if (!n.children.length) { n.x = leaf * W + W / 2; leaf++; }
+            else { n.children.forEach(c => layout(c, depth + 1)); n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2; }
+            n.y = R_ROOT + 6 + depth * H;
+        };
+        layout(root, 0);
+        const findBottomLines = (n) => {
+            if (n.depth === maxDepth) bottomLines = Math.max(bottomLines, n.lines.length || 1);
+            n.children.forEach(findBottomLines);
+        };
+        findBottomLines(root);
+        const height = R_ROOT + 6 + maxDepth * H + R + 18 + (bottomLines - 1) * 13;
+
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('class', 'primitive-tree');
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        const edges = document.createElementNS(NS, 'g'); edges.setAttribute('class', 'pt-edges');
+        const nodes = document.createElementNS(NS, 'g');
+        svg.appendChild(edges); svg.appendChild(nodes);
+
+        const draw = (n) => {
+            const r = n.isRoot ? R_ROOT : R;
+            n.children.forEach(c => {
+                const l = document.createElementNS(NS, 'line');
+                l.setAttribute('x1', n.x); l.setAttribute('y1', n.y); l.setAttribute('x2', c.x); l.setAttribute('y2', c.y);
+                edges.appendChild(l);
+                draw(c);
+            });
+            const g = document.createElementNS(NS, 'g');
+            g.setAttribute('class', 'pt-node' + (n.isRoot ? ' pt-root' : '') + (n.children.length ? '' : ' pt-leaf'));
+            const circle = document.createElementNS(NS, 'circle');
+            circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y); circle.setAttribute('r', r);
+            g.appendChild(circle);
+
+            const glyph = document.createElementNS(NS, 'svg');
+            const gs = r * 1.32;
+            glyph.setAttribute('x', (n.x - gs / 2).toFixed(2)); glyph.setAttribute('y', (n.y - gs / 2).toFixed(2));
+            glyph.setAttribute('width', gs.toFixed(2)); glyph.setAttribute('height', gs.toFixed(2));
+            glyph.setAttribute('class', 'pt-glyph');
+            const box = n.strokes && n.strokes.length ? unionBox(n.strokes) : null;
+            if (box) {
+                const colorOf = {};
+                n.children.forEach((c, ci) => (c.strokes || []).forEach(s => { colorOf[s] = PALETTE[ci % PALETTE.length]; }));
+                glyph.setAttribute('viewBox', squareViewBox(box, 0.12));
+                n.strokes.forEach(s => {
+                    if (!ds[s]) return;
+                    const p = document.createElementNS(NS, 'path');
+                    p.setAttribute('d', ds[s]);
+                    if (colorOf[s]) p.style.stroke = colorOf[s];
+                    glyph.appendChild(p);
+                });
+            } else if (/<path/i.test(n.value)) {
+                glyph.setAttribute('class', 'pt-glyph pt-glyph-fill');
+                glyph.innerHTML = n.value.replace(/<\/?svg[^>]*>/gi, '');
+                const mb = markupBox(glyph.innerHTML);
+                if (mb) glyph.setAttribute('viewBox', squareViewBox(mb, 0.04));
+            } else {
+                glyph.setAttribute('viewBox', '0 0 100 100');
+                const t = document.createElementNS(NS, 'text');
+                t.setAttribute('x', '50'); t.setAttribute('y', '54'); t.setAttribute('class', 'pt-char');
+                t.textContent = n.value;
+                glyph.appendChild(t);
+            }
+            g.appendChild(glyph);
+
+            if (n.lines && n.lines.length) {
+                const label = document.createElementNS(NS, 'text');
+                label.setAttribute('x', n.x); label.setAttribute('y', n.y + r + 13);
+                label.setAttribute('class', 'pt-label' + (n.isPrimitive ? ' pt-label-primitive' : ''));
+                n.lines.forEach((ln, li) => {
+                    const ts = document.createElementNS(NS, 'tspan');
+                    ts.setAttribute('x', n.x);
+                    if (li > 0) ts.setAttribute('dy', '12');
+                    ts.textContent = ln;
+                    label.appendChild(ts);
+                });
+                const title = document.createElementNS(NS, 'title'); title.textContent = n.keyword;
+                g.appendChild(title);
+                g.appendChild(label);
+            }
+            nodes.appendChild(g);
+        };
+        draw(root);
+        scratch.remove();
+
+        target.innerHTML = '';
+        target.appendChild(svg);
+        const container = target.closest('.tree-container');
+        if (container) container.classList.add('tree-graph-mode');
+        svg.addEventListener('click', function (e) {
+            const node = e.target.closest('.pt-node');
+            if (!node) return;
+            e.stopPropagation();
+            const wasActive = node.classList.contains('pt-active');
+            svg.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
+            svg.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
+            if (wasActive) node.classList.add('pt-dismissed');
+            else node.classList.add('pt-active');
+        });
+    };
+
     // --- Radical Tree Renderer [SHARED with c1-back] ---
 
     (() => {
@@ -410,83 +617,17 @@
         rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
         if (!rawData) return;
 
-        function parseFlatTree(str) {
-            let items = [], currentItem = "", inTag = false, inBracket = false;
-            for (let i = 0; i < str.length; i++) {
-                let char = str[i];
-                if (char === '<') inTag = true; else if (char === '>') inTag = false;
-                else if (char === '[') inBracket = true; else if (char === ']') inBracket = false;
-                if (char === ',' && !inTag && !inBracket) {
-                    if (currentItem.trim()) items.push(currentItem.trim());
-                    currentItem = "";
-                } else currentItem += char;
-            }
-            if (currentItem.trim()) items.push(currentItem.trim());
-
-            return items.map(item => {
-                let keyword = "", isPrimitive = false, displayVal = item;
-                let bracketMatch = item.match(/\[(.*?)\]$/);
-                if (bracketMatch) {
-                    keyword = bracketMatch[1];
-                    if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
-                    displayVal = item.replace(/\[.*?\]$/, '').trim();
-                }
-                return { value: displayVal, keyword: keyword, isPrimitive: isPrimitive };
-            });
-        }
-
-        const _esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-        function renderNode(node) {
-            if (!node || !node.value) return '';
-            const kwAttr = node.keyword ? ` data-keyword="${_esc(node.keyword)}"` : '';
-            let displayVal = node.value;
-            if (displayVal.toLowerCase().includes('<path') && !displayVal.toLowerCase().includes('<svg')) {
-                const isFontRaster = /M\s*\d{3,}/.test(displayVal);
-                displayVal = isFontRaster
-                    ? `<svg class="custom-svg-icon font-stroke-format auto-fit">${displayVal}</svg>`
-                    : `<svg class="custom-svg-icon kanji-stroke-format auto-fit" viewBox="0 0 109 109">${displayVal}</svg>`;
-            }
-            let primitiveBadge = node.isPrimitive ? `<svg class="primitive-tag-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` : '';
-            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${_esc(node.keyword)}</div>` : '';
-            return `<div class="tree-node tappable"${kwAttr}>${primitiveBadge}<div class="tree-node-char">${displayVal}</div>${tooltipHtml}</div>`;
-        }
-
-        try {
-            const parsedItems = parseFlatTree(rawData);
-            target.innerHTML = parsedItems.map(renderNode).join('');
-            setTimeout(() => {
-                target.querySelectorAll('svg.auto-fit').forEach(svg => {
-                    try {
-                        const bbox = svg.getBBox();
-                        if (bbox.width > 0 && bbox.height > 0) {
-                            const isFont = svg.classList.contains('font-stroke-format');
-                            const padX = bbox.width * (isFont ? 0.02 : 0.10);
-                            const padY = bbox.height * (isFont ? 0.02 : 0.10);
-                            svg.setAttribute('viewBox', `${Math.floor(bbox.x - padX)} ${Math.floor(bbox.y - padY)} ${Math.ceil(bbox.width + padX * 2)} ${Math.ceil(bbox.height + padY * 2)}`);
-                        }
-                    } catch (err) { }
-                });
-            }, 100);
-        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Radikale konnten nicht geladen werden.</span>`; }
-
-        target.addEventListener('click', function (e) {
-            const node = e.target.closest('.tree-node');
-            if (!node || !node.getAttribute('data-keyword')) return;
-            e.stopPropagation();
-            const wasActive = node.classList.contains('show-tooltip');
-            target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip'));
-            target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed'));
-            if (wasActive) {
-                node.classList.add('tooltip-dismissed');
-            } else {
-                node.classList.add('show-tooltip');
-            }
-        });
-
         if (window.kanjiHideTooltipHandlerC2) document.removeEventListener('click', window.kanjiHideTooltipHandlerC2);
-        window.kanjiHideTooltipHandlerC2 = e => { if (!e.target.closest('.tree-children')) { target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip')); target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed')); } };
+        window.kanjiHideTooltipHandlerC2 = e => {
+            if (!e.target.closest('.tree-children')) {
+                target.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
+                target.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
+            }
+        };
         document.addEventListener('click', window.kanjiHideTooltipHandlerC2);
+        try {
+            window._kanjiRenderPrimitiveTree(rawData, target);
+        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Primitive konnten nicht geladen werden.</span>`; }
     })();
 
     // --- Word Examples (furigana toggle) [SHARED with c1-back] ---
@@ -643,6 +784,10 @@
                 document.body.classList.contains('night_mode');
             var wk = (ss === 'neon') ? document.documentElement.classList.contains('is-ankimobile') : false;
             var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
+            var swVal2 = (typeof safeGetItem === 'function')
+                ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
+                : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
+            var swf = swVal2 === 'thin' ? 0.7 : swVal2 === 'thick' ? 1.4 : 1;
             paths.forEach((path, i) => {
                 // Full reset
                 path.style.removeProperty('filter');
@@ -650,13 +795,13 @@
                 path.style.removeProperty('opacity');
                 path.removeAttribute('filter');
                 path.removeAttribute('paint-order');
+                path.setAttribute('stroke-width', String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf));
                 // Apply new style
                 switch (ss) {
                     case 'neon':
                         path.setAttribute('filter', 'url(#' + fId + ')');
                         break;
                     case 'gel': {
-                        path.setAttribute('stroke-width', '4.5');
                         path.setAttribute('paint-order', 'stroke');
                         var resolvedC = pathColors[i] || 'var(--stroke-active)';
                         resolvedColors[i] = resolvedC;
@@ -676,7 +821,7 @@
                     var haloC = resolvedColors[i] || pathColors[i] || 'var(--stroke-active)';
                     var h2 = path.cloneNode(false);
                     h2.setAttribute('class', 'gel-halo');
-                    h2.setAttribute('stroke-width', '8');
+                    h2.setAttribute('stroke-width', String(8 * swf));
                     h2.setAttribute('stroke-linecap', 'round');
                     h2.setAttribute('stroke-linejoin', 'round');
                     h2.style.cssText = '';
@@ -826,6 +971,8 @@
             var ol = document.getElementById('order-overlay');
             if (!ol) return;
             if (st.svg !== document.getElementById('order-svg') && !build()) return;
+            var ob = document.querySelector('.order-btn');
+            if (ob) ob.classList.add('no-hover-fx');
             pause(); st.idx = 0; st.prog = 0; render();
             ol.classList.add('active');
             setTimeout(function () { if (ol.classList.contains('active')) play(); }, 250);
@@ -835,6 +982,8 @@
             if (!ol) return;
             if (e && e.target === ol && !ol._bgPointerDown) return;
             ol._bgPointerDown = false;
+            var ob = document.querySelector('.order-btn');
+            if (ob) ob.classList.remove('no-hover-fx');
             pause();
             ol.classList.remove('active');
             // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
@@ -942,7 +1091,7 @@
             infoModal._ankiPenDelegateFixed = true;
             infoModal.addEventListener('pointerup', function (e) {
                 if (e.pointerType !== 'pen') return;
-                var tappable = e.target.closest('.tree-node, .word-example-item, .tappable');
+                var tappable = e.target.closest('.tree-node, .pt-node, .word-example-item, .tappable');
                 if (!tappable) return;
                 e.preventDefault(); e.stopPropagation();
                 tappable.click();

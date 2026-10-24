@@ -78,9 +78,6 @@
 
     /* Strichstärke: 'thin' (Dünn), 'normal' (Normal), 'thick' (Dick) */
     --default-theme-stroke-width: normal;
-
-    /* Händigkeit: 'right' (Rechtshänder), 'left' (Linkshänder) */
-    --default-theme-hand: right;
 }
 
 /* ==========================================================================
@@ -655,7 +652,7 @@ svg#svg-guide path,
 /* Gelstift — bold, opaque, saturated gel ink: wider rounded strokes with subtle ink spread */
 .kanji-container.stroke-style-gel #svg-bg path:not(.gel-halo),
 .kanji-container.stroke-style-gel #svg-guide path:not(.gel-halo) {
-    stroke-width: calc(4.5px * var(--kd-sw, 1));
+    stroke-width: 4.5;
     stroke-linecap: round;
     stroke-linejoin: round;
     paint-order: stroke;
@@ -664,7 +661,7 @@ svg#svg-guide path,
 /* Tusche (Ink) — organic, wider, calligraphic reference strokes */
 .kanji-container.stroke-style-ink #svg-bg path,
 .kanji-container.stroke-style-ink #svg-guide path {
-    stroke-width: calc(4.5px * var(--kd-sw, 1));
+    stroke-width: 4.5;
     stroke-linecap: square;
     opacity: 0.85;
 }
@@ -970,7 +967,8 @@ svg#svg-guide path,
     -webkit-animation: controlTap 0.3s ease-out;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
+    .action-buttons button:hover,
     .action-buttons button:active {
         background: var(--surface);
         color: var(--accent);
@@ -1003,7 +1001,7 @@ svg#svg-guide path,
     transform: translateZ(0);
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .gear-btn:hover {
         background: var(--surface);
         color: var(--accent);
@@ -1195,7 +1193,7 @@ svg#svg-guide path,
     transform: scale(0.94);
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .visual-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
@@ -1296,7 +1294,7 @@ svg#svg-guide path,
     -webkit-user-select: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .close-settings:hover {
         background: var(--accent-bg);
         filter: brightness(1.1);
@@ -1398,7 +1396,7 @@ svg#svg-guide path,
     opacity: 0.6;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .segment-btn:not(.active):hover {
         background: transparent;
         color: var(--text-main);
@@ -1443,7 +1441,7 @@ svg#svg-guide path,
     background: var(--bg-main);
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .category-card:hover {
         background: var(--bg-main);
     }
@@ -1546,7 +1544,7 @@ svg#svg-guide path,
     box-shadow: var(--filter-soft);
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .accent-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
@@ -1691,7 +1689,7 @@ svg#svg-guide path,
     border-color: transparent;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .back-btn:hover {
         background: var(--border-color);
         border-color: transparent;
@@ -1720,7 +1718,7 @@ svg#svg-guide path,
 #svg-guide path,
 .svg-stroke {
     fill: none !important;
-    stroke-width: calc(4px * var(--kd-sw, 1));
+    stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 105 !important;
@@ -1898,7 +1896,7 @@ svg#svg-guide path,
     transform: translateY(-1px);
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .word-example-item:hover {
         border-color: var(--accent);
         box-shadow: var(--filter-hover);
@@ -1960,7 +1958,7 @@ ruby rt {
     transform: translateY(6px) !important;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .word-example-item:hover ruby rt {
         opacity: 1;
         transform: translateY(0);
@@ -2037,7 +2035,7 @@ ruby rt {
     pointer-events: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .info-btn:hover {
         background: var(--surface);
         color: var(--accent);
@@ -2090,7 +2088,7 @@ ruby rt {
     position: relative;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .link-btn:hover {
         background: var(--bg-main);
         color: var(--accent);
@@ -2246,7 +2244,7 @@ ruby rt {
     transform: translateX(-50%) translateY(4px) !important;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .tree-node:hover {
         border-color: var(--accent);
         box-shadow: var(--filter-hover);
@@ -2263,6 +2261,123 @@ ruby rt {
     color: var(--text-muted);
     font-style: italic;
     font-size: 13px;
+}
+
+/* Primitive tree (Kanji-Study style): circles + connectors, parts colour-coded */
+.tree-container.tree-graph-mode .tree-root-kanji {
+    display: none;
+}
+
+.tree-container.tree-graph-mode {
+    padding: 12px 6px;
+}
+
+.tree-container.tree-graph-mode .tree-children {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border-top: none;
+}
+
+.primitive-tree {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 290px;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+.primitive-tree .pt-edges line {
+    stroke: var(--border-color);
+    stroke-width: 2;
+}
+
+.primitive-tree .pt-node {
+    cursor: pointer;
+}
+
+.primitive-tree .pt-node circle {
+    fill: var(--bg-main);
+    stroke: var(--border-color);
+    stroke-width: 1;
+    transition: stroke 0.15s ease, filter 0.15s ease;
+}
+
+@media (hover: hover), (any-hover: hover) {
+    .primitive-tree .pt-node:hover circle {
+        stroke: var(--accent);
+        stroke-width: 1.5;
+        filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+    }
+
+    .primitive-tree .pt-node:hover .pt-label {
+        fill: var(--accent);
+    }
+}
+
+.primitive-tree .pt-node.pt-active circle {
+    stroke: var(--accent) !important;
+    stroke-width: 1.5 !important;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+}
+
+.primitive-tree .pt-node.pt-active .pt-label {
+    fill: var(--accent) !important;
+}
+
+.primitive-tree .pt-node.pt-dismissed circle {
+    stroke: var(--border-color) !important;
+    stroke-width: 1 !important;
+    filter: none !important;
+}
+
+.primitive-tree .pt-node.pt-dismissed .pt-label {
+    fill: var(--text-muted) !important;
+}
+
+.primitive-tree .pt-glyph {
+    overflow: visible;
+}
+
+.primitive-tree .pt-glyph path {
+    fill: none;
+    stroke: var(--text-main);
+    stroke-width: 2.4px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.primitive-tree .pt-root .pt-glyph path {
+    stroke-width: 2.8px;
+}
+
+.primitive-tree .pt-leaf .pt-glyph path {
+    stroke: var(--text-muted);
+}
+
+.primitive-tree .pt-glyph-fill path {
+    fill: var(--text-muted);
+    stroke: none;
+}
+
+.primitive-tree .pt-char {
+    font-size: 64px;
+    fill: var(--text-muted);
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.primitive-tree .pt-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--text-muted);
+    text-anchor: middle;
+}
+
+.primitive-tree .pt-label-primitive {
+    font-style: italic;
 }
 
 .answer-fallback {
@@ -3046,9 +3161,15 @@ html.is-ankiweb .back-actions {
     animation: fadeInNumbers 0.3s ease-out 0.1s both;
 }
 
-html.left-handed .order-btn {
-    left: auto;
-    right: 16px;
+/* Force-reset order-btn hover state when overlay is open (prevents stuck S-Pen hover) */
+.order-btn.no-hover-fx,
+.order-btn.no-hover-fx:hover {
+    background: var(--surface) !important;
+    color: var(--text-faint) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: var(--filter-soft) !important;
+    transform: translateZ(0) !important;
+    transition: none !important;
 }
 
 .order-btn * {
@@ -3066,7 +3187,7 @@ html.left-handed .order-btn {
     inset: -6px;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .order-btn:hover {
         color: var(--accent);
         border-color: var(--accent);
@@ -3185,6 +3306,149 @@ html.left-handed .order-btn {
     transform: scale(0.96);
 }
 
+@media (hover: hover), (any-hover: hover) {
+    .order-ctrl:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--filter-hover);
+        transform: translateY(-1px);
+    }
+}
+
+/* ============================================================
+   S-Pen / Stylus explicit hover (.spen-hover set on pointermove)
+   Works even when Android WebView evaluates (hover: hover) and
+   (any-hover: hover) to false and suppresses CSS :hover for pen.
+   ============================================================ */
+.action-buttons button.spen-hover {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px) translateZ(0);
+}
+
+.gear-btn:not(.no-hover-fx).spen-hover {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px) translateZ(0);
+}
+
+.gear-btn:not(.no-hover-fx).spen-hover svg {
+    transform: rotate(45deg);
+}
+
+.order-btn:not(.no-hover-fx).spen-hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px) translateZ(0);
+}
+
+.info-btn.spen-hover {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px) translateZ(0);
+}
+
+.link-btn.spen-hover {
+    background: var(--bg-main);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px);
+}
+
+.visual-option.spen-hover {
+    border-color: var(--active-tab-color, var(--accent));
+    background: var(--surface);
+    box-shadow: var(--filter-hover);
+}
+
+.visual-option.spen-hover svg {
+    stroke: var(--active-tab-color, var(--accent));
+}
+
+.visual-option.spen-hover span {
+    color: var(--active-tab-color, var(--accent));
+}
+
+.visual-option.spen-hover svg text,
+.visual-option.spen-hover svg path[fill="currentColor"] {
+    fill: var(--active-tab-color, var(--accent));
+}
+
+.accent-option.spen-hover {
+    border-color: var(--active-tab-color, var(--accent));
+    background: var(--surface);
+    box-shadow: var(--filter-hover);
+}
+
+.category-card.spen-hover {
+    background: var(--bg-main);
+}
+
+.segment-btn:not(.active).spen-hover {
+    background: transparent;
+    color: var(--text-main);
+}
+
+.close-settings.spen-hover {
+    background: var(--accent-bg);
+    filter: brightness(1.1);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+    border-color: transparent;
+}
+
+.back-btn.spen-hover {
+    background: var(--border-color);
+    border-color: transparent;
+}
+
+.order-ctrl.spen-hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px);
+}
+
+.word-example-item:not(.furigana-dismissed).spen-hover {
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px);
+}
+
+.word-example-item:not(.furigana-dismissed).spen-hover ruby rt {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tree-node:not(.tooltip-dismissed).spen-hover {
+    border-color: var(--accent);
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px);
+}
+
+.tree-node:not(.tooltip-dismissed).spen-hover .tree-node-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.primitive-tree .pt-node:not(.pt-dismissed).spen-hover circle {
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+}
+
+.primitive-tree .pt-node:not(.pt-dismissed).spen-hover .pt-label {
+    fill: var(--accent);
+}
+
 /* ============================================================
    13. Reduced Motion — Accessibility & iGPU Performance
    ============================================================ */
@@ -3217,19 +3481,4 @@ body.reduce-motion *::after {
    ============================================================ */
 .settings-page.hover-frozen {
     pointer-events: none;
-}
-
-/* Left-handed mode: controls move to the left side */
-html.left-handed .gear-btn {
-    right: auto;
-    left: 16px;
-}
-
-html.left-handed .action-buttons {
-    flex-direction: row-reverse;
-}
-
-html.left-handed .kanji-container .free-view-quicktoggle {
-    right: auto;
-    left: 6px;
 }
