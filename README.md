@@ -2,7 +2,7 @@
 
 Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen — mit **echter Strich-Erkennung**, deutschen Eselsbrücken und vollständiger Plattform-Kompatibilität.
 
-![Anki](https://img.shields.io/badge/Anki-2.1%2B-blue)
+![Anki](https://img.shields.io/badge/Anki-23.10%2B-blue)
 ![Plattformen](https://img.shields.io/badge/Desktop%20%7C%20Android%20%7C%20iOS%20%7C%20Web-✓-green)
 ![Sprache](https://img.shields.io/badge/Sprache-Deutsch-yellow)
 ![Lizenz](https://img.shields.io/badge/Lizenz-MIT-lightgrey)
@@ -203,8 +203,8 @@ Das Info-Modal (📖-Schaltfläche auf der Rückseite) zeigt alle verfügbaren I
 
 | Plattform | Status | Besonderheiten |
 |---|:---:|---|
-| **Anki Desktop** (2.1+) | ✅ | Maus + Pointer-Events; Add-on für Einstellungspersistenz empfohlen |
-| **AnkiDroid** | ✅ | Touch + S-Pen; CookieManager-Flush; Gesten-Hooks `userJs1/2/3` |
+| **Anki Desktop** (23.10+, getestet bis 26.09) | ✅ | Maus + Pointer-Events; Add-on für Einstellungspersistenz empfohlen |
+| **AnkiDroid** (2.25.3+ empfohlen) | ✅ | Touch + S-Pen; Cookie-Persistenz; Gesten-Hooks `userJs1/2/3`; alter und neuer Lernbildschirm |
 | **AnkiMobile (iOS)** | ✅ | Touch + Apple Pencil; `position:fixed` Scroll-Lock; Safe-Area-Insets |
 | **AnkiWeb** | ✅ | Vollständig browserbasiert; dynamische Viewport-Anpassung |
 
@@ -223,9 +223,10 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 
 ### Hinweise zu AnkiDroid
 
-- **localStorage** kann ab AnkiDroid 2.21+ explizit aktiviert werden:  
+- Der **neue Lernbildschirm** (*Einstellungen → Neuer Lernbildschirm*) wird empfohlen. Der alte Lernbildschirm erhält laut AnkiDroid-Team keine neuen Features mehr und wird künftig entfernt. Im alten Modus kann es zu Konflikten mit Wisch-Gesten kommen; das Template zeigt dann einen Hinweis an.
+- Einstellungen werden über ein Cookie gespeichert und bleiben auch ohne `localStorage` erhalten. `localStorage` kann ab AnkiDroid 2.21 zusätzlich aktiviert werden:  
   *Einstellungen → Erweitert → localStorage aktivieren*
-- Im **Legacy-Lernmodus** kann es zu Konflikten mit Wisch-Gesten kommen. Das Template zeigt in diesem Fall einen Hinweis an. Der **neue Lernmodus** ist empfohlen.
+- In **AnkiDroid 2.24.1 bis 2.25.2** können die externen Links im Info-Modal (Jisho, Tatoeba, …) durch eine Sicherheitsänderung blockiert sein. Ab **2.25.3** funktionieren sie wieder.
 
 ---
 
@@ -280,6 +281,7 @@ Auf **Anki Desktop** verwendet Qt WebEngine ein Off-The-Record-Profil — Cookie
 - Fängt Einstellungs-Updates aus dem Template ab (`pycmd('kdp:{...}')`)
 - Speichert alle Einstellungen in `user_files/settings.json` (atomarer Schreibvorgang)
 - Stellt die Einstellungen beim nächsten Kartenaufruf automatisch wieder her
+- Wirkt nur auf Karten von Notiztypen mit dem Feld `SVGPfade` — andere Notiztypen bleiben unverändert
 - Arbeitet transparent im Hintergrund — keine Benutzeroberfläche notwendig
 
 ### Installation
@@ -322,8 +324,8 @@ kanji-draw-anki/
 │   └── manifest.json             ← Add-on-Metadaten
 │
 ├── Tests/
-│   ├── js/                       ← JavaScript-Unit-Tests (Node.js, 11 Dateien, 848 Tests)
-│   └── anki_addon_stress_helper/ ← Live-Stresstests über AnkiConnect
+│   ├── js/                       ← JavaScript-Unit-Tests (Node.js ≥ 21, `npm test`, 11 Dateien, 848 Tests)
+│   └── anki_addon_stress_helper/ ← Live-Stresstests (nur zum Testen installieren, token-geschützt)
 │
 ├── Media/
 │   └── demos/                    ← Demo-GIFs für README
