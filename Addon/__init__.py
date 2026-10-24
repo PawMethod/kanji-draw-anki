@@ -25,6 +25,10 @@ _log = logging.getLogger(__name__)
 _SETTINGS_FILE = os.path.join(
     os.path.dirname(__file__), "user_files", "settings.json"
 )
+# Kanji Draw note types are identified by this field (see README: Notiztyp-Felder).
+_MARKER_FIELD = "SVGPfade"
+# Real settings stay far below this (templates cap their cookie at ~3.8 KB).
+_MAX_MESSAGE_LEN = 64 * 1024
 _settings_cache = None
 _lock = threading.Lock()
 
@@ -70,6 +74,9 @@ def _on_js_message(handled, message, context):
     """Intercept pycmd('kdp:{...}') from card templates."""
     if not isinstance(message, str) or not message.startswith("kdp:"):
         return handled
+    if len(message) > _MAX_MESSAGE_LEN:
+        _log.warning("Ignoring oversized kdp message (%d bytes)", len(message))
+        return (True, None)
     try:
         data = json.loads(message[4:])
         if isinstance(data, dict):
@@ -79,8 +86,18 @@ def _on_js_message(handled, message, context):
     return (True, None)
 
 
+def _is_kanji_draw_card(card):
+    try:
+        fields = card.note_type()["flds"]
+    except Exception:
+        return False
+    return any(f.get("name") == _MARKER_FIELD for f in fields)
+
+
 def _on_card_will_show(text, card, kind):
     """Inject saved settings before template scripts run."""
+    if not _is_kanji_draw_card(card):
+        return text
     settings = _load()
     # Always inject sentinel so templates can detect that the addon is present.
     # Also restore persisted settings into window._ks and localStorage when available.
