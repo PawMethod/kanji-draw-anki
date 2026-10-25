@@ -3174,23 +3174,42 @@ ruby rt {
 }
 
 .reading-label {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
     font-size: 11px;
     font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 6px;
-    margin-right: 12px;
-    letter-spacing: 0.5px;
+    line-height: 1.2;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-right: 14px;
+    letter-spacing: 0.6px;
+    text-align: center;
     flex-shrink: 0;
+    box-shadow: var(--filter-soft);
 }
 
+.onyomi-label,
 .label-on {
     background: var(--tag-on-bg);
     color: var(--tag-on-text);
+    border: 1.5px solid var(--border-color);
 }
 
+.kunyomi-label,
 .label-kun {
     background: var(--tag-kun-bg);
     color: var(--tag-kun-text);
+    border: 1.5px solid var(--border-color);
+    border-color: color-mix(in srgb, var(--tag-kun-text) 35%, var(--border-color));
+}
+
+.reading-value {
+    color: var(--text-main);
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 /* Back-side Info button — matches tactile card button design & active theme */
