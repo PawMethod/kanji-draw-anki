@@ -47,9 +47,6 @@
     /* Zeichenmodus (Nur Zeichnen-Karte): 'guided' (Geführt), 'free' (Frei) */
     --default-opt-draw-mode: guided;
 
-    /* Vergleichsansicht (Nur Zeichnen-Karte, Frei-Modus): 'on' (An), 'off' (Aus) */
-    --default-opt-side-by-side: on;
-
     /* Strichansicht (Nur Zeichnen-Karte, Frei-Modus): 'handwriting' (Handschrift), 'svg' (SVG-Pfade) */
     --default-opt-free-view: handwriting;
 
@@ -3791,7 +3788,7 @@ ruby rt {
 }
 
 /* Badge for excess strokes */
-/* Stroke-count badges — positioned as overlays inside .kanji-container / .sbs-kanji */
+/* Stroke-count badges — positioned as overlays inside .kanji-container */
 .excess-strokes-badge,
 .missing-strokes-badge {
     position: absolute;
@@ -3856,34 +3853,6 @@ ruby rt {
     background: var(--text-muted, #888) !important;
 }
 
-/* SBS badge row — badges placed below the SBS wrapper, centered in their respective half */
-.sbs-badge-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    padding: 6px 0 2px;
-}
-
-.sbs-badge-row .excess-strokes-badge,
-.sbs-badge-row .missing-strokes-badge {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    right: auto;
-}
-
-/* Excess ("zu viel") → left half, centered */
-.sbs-badge-row .excess-strokes-badge {
-    grid-column: 1;
-    justify-self: center;
-}
-
-/* Missing ("zu wenig") → right half, centered */
-.sbs-badge-row .missing-strokes-badge {
-    grid-column: 2;
-    justify-self: center;
-}
-
 /* Quicksettings: Handschrift ↔ SVG-Pfade toggle (session-only, no persistence) */
 .free-view-quicktoggle {
     position: absolute;
@@ -3928,64 +3897,6 @@ ruby rt {
 .kanji-container .free-view-quicktoggle {
     pointer-events: auto !important;
     touch-action: manipulation !important;
-}
-
-/* --------------------------------------------------------------------------
-   10b. Side-by-Side Comparison View (free mode, back side)
-   -------------------------------------------------------------------------- */
-.side-by-side-wrapper {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    gap: 14px;
-    width: var(--dynamic-size);
-    margin: 0 auto;
-    justify-content: center;
-    align-items: flex-start;
-}
-
-.side-by-side-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1 1 0;
-    min-width: 0;
-}
-
-.side-by-side-box .sbs-kanji {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border: 2px solid var(--border-color);
-    border-bottom-width: 4px;
-    border-radius: var(--border-rad-main);
-    background-color: var(--surface) !important;
-    overflow: hidden;
-    box-shadow: var(--shadow-elevated);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.side-by-side-box .sbs-kanji svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: var(--border-rad-main);
-}
-
-.side-by-side-label {
-    margin-top: 12px;
-    padding: 3px 14px;
-    background: var(--title-bg);
-    color: var(--title-text);
-    border: 2px solid var(--title-border);
-    border-radius: 999px;
-    box-shadow: 0 2px 0 var(--title-lip);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
 }
 
 /* --------------------------------------------------------------------------
@@ -4068,10 +3979,6 @@ html.font-small .tree-node-tooltip {
 
 html.font-small .no-tree-data {
     font-size: 11px;
-}
-
-html.font-small .side-by-side-label {
-    font-size: 10px;
 }
 
 html.font-small .setting-group-title {
@@ -4187,10 +4094,6 @@ html.font-large .no-tree-data {
     font-size: 15px;
 }
 
-html.font-large .side-by-side-label {
-    font-size: 12px;
-}
-
 html.font-large .setting-group-title {
     font-size: 12px;
 }
@@ -4272,10 +4175,6 @@ html.is-ankimobile .settings-modal {
 
 html.is-ankimobile .segment-btn {
     transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-html.is-ankimobile .side-by-side-box .sbs-kanji {
-    transition: none;
 }
 
 /* Faster stroke-dashoffset animation (shorter GPU repaint window) */

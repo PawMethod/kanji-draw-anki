@@ -16,9 +16,7 @@
 
     /* Badges inside .kanji-container must be tappable despite parent pointer-events:none */
     .kanji-container .excess-strokes-badge,
-    .kanji-container .missing-strokes-badge,
-    .sbs-kanji .excess-strokes-badge,
-    .sbs-kanji .missing-strokes-badge {
+    .kanji-container .missing-strokes-badge {
         pointer-events: auto !important;
         touch-action: manipulation !important;
         -webkit-tap-highlight-color: transparent;
@@ -124,11 +122,10 @@
                     else { var s = document.createElement('style'); s.id = 'kanji-anti-flicker'; s.textContent = css; document.head.appendChild(s); }
                 }
             }
-            // Hide SVG paths in handwriting/SBS mode to prevent 1-frame flash
+            // Hide SVG paths in handwriting mode to prevent 1-frame flash
             var freeView = _ck('c1_kanjiOptFreeView') || localStorage.getItem('c1_kanjiOptFreeView') || _ck('kanjiOptFreeView') || localStorage.getItem('kanjiOptFreeView') || 'handwriting';
-            var sbsOn = (_ck('c1_kanjiOptSideBySide') || localStorage.getItem('c1_kanjiOptSideBySide') || _ck('kanjiOptSideBySide') || localStorage.getItem('kanjiOptSideBySide') || 'on') === 'on';
             var hasFreeStrokes = !!(sessionStorage.getItem('kanjiFreeStrokes') || localStorage.getItem('kanjiFreeStrokes'));
-            if (drawMode === 'free' && hasFreeStrokes && (freeView === 'handwriting' || sbsOn)) {
+            if (drawMode === 'free' && hasFreeStrokes && freeView === 'handwriting') {
                 var hwCSS = '#svg-bg path { stroke: transparent !important; }';
                 var el2 = document.getElementById('kanji-anti-flicker');
                 if (el2) el2.textContent += hwCSS;
@@ -351,7 +348,7 @@
                 '.reading-row': [16, 14, 18], '.reading-label': [11, 10, 12], '.info-btn': [15, 13, 17],
                 '.info-tag': [12, 10, 14], '.link-btn': [14, 12, 16], '.tree-root-kanji': [36, 32, 40],
                 '.tree-node-char': [28, 24, 32], '.tree-node-tooltip': [13, 11, 15],
-                '.no-tree-data': [13, 11, 15], '.side-by-side-label': [11, 10, 12],
+                '.no-tree-data': [13, 11, 15],
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
@@ -1179,71 +1176,11 @@
             applyBackFeatures();
         }
 
-        // --- Grid Builder for Side-by-Side ---
-
-        const buildGridSvg = () => {
-            const globalConf = getGlobalConfig();
-            const type = safeGetItem('c1_kanjiGridType', safeGetItem('kanjiGridType', globalConf.type));
-            const style = safeGetItem('c1_kanjiGridStyle', safeGetItem('kanjiGridStyle', globalConf.style));
-            const thick = safeGetItem('c1_kanjiGridThick', safeGetItem('kanjiGridThick', globalConf.thick));
-            const opac = safeGetItem('c1_kanjiGridOpac', safeGetItem('kanjiGridOpac', globalConf.opac));
-
-            if (type === 'none') return null;
-
-            let dashValue = '3, 6', thickValue = '0.5', opacityValue = '0.5';
-            if (style === 'solid') dashValue = 'none';
-            if (style === 'dotted') dashValue = '0.05, 5';
-            if (thick === 'thin') thickValue = '0.3';
-            else if (thick === 'thick') thickValue = '1.0';
-            if (opac === 'light') opacityValue = '0.25';
-            if (opac === 'dark') opacityValue = '0.8';
-
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 109 109');
-            svg.setAttribute('class', 'sbs-grid');
-            svg.style.opacity = opacityValue;
-
-            const c = 54.5;
-            const frag = document.createDocumentFragment();
-            const addSeg = (d) => {
-                const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                p.setAttribute('d', d);
-                p.setAttribute('fill', 'none');
-                p.setAttribute('stroke', 'var(--grid-color)');
-                p.setAttribute('stroke-width', thickValue);
-                if (dashValue !== 'none') p.setAttribute('stroke-dasharray', dashValue);
-                if (style === 'dotted') p.setAttribute('stroke-linecap', 'round');
-                frag.appendChild(p);
-            };
-
-            if (type === 'cross' || type === 'full') {
-                addSeg(`M ${c},${c} L ${c},0`); addSeg(`M ${c},${c} L ${c},109`);
-                addSeg(`M ${c},${c} L 0,${c}`); addSeg(`M ${c},${c} L 109,${c}`);
-            }
-            if (type === 'full') {
-                addSeg(`M ${c},${c} L 0,0`); addSeg(`M ${c},${c} L 109,0`);
-                addSeg(`M ${c},${c} L 0,109`); addSeg(`M ${c},${c} L 109,109`);
-            }
-            svg.appendChild(frag);
-            return svg;
-        };
-
-        // Rebuild SBS grid lines (called on settings change)
-        const rebuildSbsGrids = () => {
-            const wrapper = document.querySelector('.side-by-side-wrapper');
-            if (!wrapper) return;
-            wrapper.querySelectorAll('.sbs-grid').forEach(el => el.remove());
-            wrapper.querySelectorAll('.sbs-kanji').forEach(box => {
-                const grid = buildGridSvg();
-                if (grid) box.insertBefore(grid, box.firstChild);
-            });
-        };
-
-        // --- Determine mode and build side-by-side if free ---
+        // --- Determine mode and evaluate free-mode strokes ---
         // drawMode: 'guided' → standard stroke-by-stroke display
         //           'free'   → Fréchet/Hungarian evaluation → renderFreeView()
         // freeView: 'handwriting' → user strokes colored, ref paths hidden
-        //           'svg'         → standard SVG path display + SBS option
+        //           'svg'         → standard SVG path display
         // Generation counter guards against stale setTimeout callbacks.
 
         const drawMode = safeGetItem('c1_kanjiOptDrawMode', safeGetItem('kanjiOptDrawMode', 'guided'));
@@ -1251,7 +1188,7 @@
 
         if (drawMode === 'free') {
             // ===================================================================
-            // FREE MODE: Evaluation + Side-by-Side  OR  Handwriting Overlay
+            // FREE MODE: Evaluation + Handwriting / SVG-Pfade Overlay
             // ===================================================================
 
             const globalConfFree = getGlobalConfig();
@@ -1573,16 +1510,11 @@
                         // _freeViewOverride is a session-only in-memory toggle (Quicksettings).
                         // It never touches localStorage and is reset on card navigation.
                         const curView = window._freeViewOverride || safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', gc.freeView || 'handwriting'));
-                        const sbsEnabled = safeGetItem('c1_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', gc.sideBySide || 'on')) === 'on';
-                        const needsTransparent = curView === 'handwriting' || sbsEnabled;
+                        const needsTransparent = curView === 'handwriting';
 
                         // Tear down previous view
                         cont.querySelectorAll('.handwriting-overlay, .excess-strokes-overlay').forEach(el => el.remove());
                         cont.classList.remove('show-handwriting');
-                        const oldSbs = cont.parentNode ? cont.parentNode.querySelector('.side-by-side-wrapper') : null;
-                        if (oldSbs) oldSbs.remove();
-                        const oldSbsBadgeRow = cont.parentNode ? cont.parentNode.querySelector('.sbs-badge-row') : null;
-                        if (oldSbsBadgeRow) oldSbsBadgeRow.remove();
                         // Save badges before removal so they can act as visual placeholders during morph animation
                         const _prevBadges = [...cont.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge')];
                         _prevBadges.forEach(el => el.remove());
@@ -1631,8 +1563,8 @@
                         const isNumbers = safeGetItem('c1_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', gc.numbers)) === 'on';
                         const gradeColor = (g) => isColorBack ? (gradeColors[g] || 'var(--stroke-active)') : 'var(--stroke-active)';
 
-                        if (curView === 'handwriting' && !sbsEnabled) {
-                            // ── HANDWRITING VIEW (no SBS) ──
+                        if (curView === 'handwriting') {
+                            // ── HANDWRITING VIEW ──
                             hideRefPaths();
 
                             const overlaySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1707,8 +1639,8 @@
                                 adoptNumbersIntoGroups(overlaySvg);
                                 if (_isViewSwitch) overlaySvg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
                             }
-                        } else if (!sbsEnabled) {
-                            // ── SVG-PFADE VIEW (no SBS) ──
+                        } else {
+                            // ── SVG-PFADE VIEW ──
 
                             // Helper: show final SVG-Pfade view with badges (no animation)
                             const showFinalSvgView = () => {
@@ -2101,112 +2033,6 @@
                                     startMorph();
                                 }
                             }
-                        } else {
-                            // ── SIDE-BY-SIDE ──
-                            hideRefPaths();
-
-                            // Left: user strokes + ghost (missing) strokes as dashed indicators
-                            const userSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                            userSvg.setAttribute('viewBox', '0 0 109 109');
-                            ev.orderedStrokes.forEach(entry => {
-                                if (entry.type === 'user') {
-                                    const stroke = entry.stroke;
-                                    if (!stroke.d) return;
-                                    appendStrokePath(userSvg, makeStrokePath(stroke.d, '3', gradeColor(stroke.grade)));
-                                } else if (entry.type === 'extra') {
-                                    const stroke = entry.stroke;
-                                    if (!stroke.d) return;
-                                    const ep = makeStrokePath(stroke.d, '3', 'var(--stroke-err)');
-                                    stripGelStyle(ep);
-                                    ep.classList.add('stroke-extra');
-                                    wrapInPulseGroup(userSvg, ep, 'stroke-extra-group');
-                                } else if (entry.type === 'ghost') {
-                                    const origD = ev.refPathData[entry.refIdx];
-                                    if (!origD) return;
-                                    const gp = makeStrokePath(origD, '3', 'var(--stroke-warn2, var(--stroke-err))');
-                                    stripGelStyle(gp);
-                                    gp.classList.add('stroke-ghost');
-                                    wrapInPulseGroup(userSvg, gp, 'stroke-ghost-group');
-                                }
-                            });
-
-                            // Right: reference paths
-                            const refSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                            refSvg.setAttribute('viewBox', '0 0 109 109');
-                            ev.refPathData.forEach((origD, idx) => {
-                                if (!origD) return;
-                                const color = isColorBack ? penaltyColor(ev.freePS[idx] || 0) : 'var(--stroke-active)';
-                                const p = makeStrokePath(origD, '3', color);
-                                p.style.strokeDashoffset = '0';
-                                p.style.strokeDasharray = 'none';
-                                appendStrokePath(refSvg, p);
-                            });
-
-                            const wrapper = document.createElement('div');
-                            wrapper.className = 'side-by-side-wrapper';
-                            wrapper.innerHTML =
-                                '<div class="side-by-side-box"><div class="sbs-kanji"></div><div class="side-by-side-label">Du</div></div>' +
-                                '<div class="side-by-side-box"><div class="sbs-kanji"></div><div class="side-by-side-label">Original</div></div>';
-                            const sbsBoxes = wrapper.querySelectorAll('.sbs-kanji');
-                            const gridUser = buildGridSvg();
-                            const gridRef = buildGridSvg();
-                            if (gridUser) sbsBoxes[0].appendChild(gridUser);
-                            if (gridRef) sbsBoxes[1].appendChild(gridRef);
-                            preHideGroupsIfNeeded(userSvg, 'stroke-extra-group');
-                            preHideGroupsIfNeeded(userSvg, 'stroke-ghost-group');
-                            sbsBoxes[0].appendChild(userSvg);
-                            sbsBoxes[1].appendChild(refSvg);
-
-                            cont.style.display = 'none';
-                            // Remove placeholder badges from cont — SBS uses its own badge row outside cont
-                            cont.querySelectorAll('.excess-strokes-badge, .missing-strokes-badge').forEach(el => el.remove());
-                            cont.parentNode && cont.parentNode.insertBefore(wrapper, cont.nextSibling);
-
-                            // Stroke count badges for SBS view — placed in a row AFTER the SBS wrapper
-                            // (below both drawing pads) so they don't crowd the compact SBS layout.
-                            const sbsExtra = ev.orderedStrokes.filter(e => e.type === 'extra').length;
-                            const sbsGhost = ev.orderedStrokes.filter(e => e.type === 'ghost').length;
-                            if (sbsExtra > 0 || sbsGhost > 0) {
-                                const sbsBadgeRow = document.createElement('div');
-                                sbsBadgeRow.className = 'sbs-badge-row';
-                                if (sbsExtra > 0) {
-                                    const eb = makeBadge('excess-strokes-badge', '<span style="font-size:11px;line-height:1">✚</span>' + (+sbsExtra === 1 ? ' 1 Strich zu viel' : ' ' + sbsExtra + ' Striche zu viel'), 'stroke-extra-group', sbsBoxes[0]);
-                                    applyBadgeImmediate(eb);
-                                    sbsBadgeRow.appendChild(eb);
-                                    restoreBadgeVisibility(eb, 'stroke-extra-group', sbsBoxes[0]);
-                                }
-                                if (sbsGhost > 0) {
-                                    const mb = makeBadge('missing-strokes-badge', '<span style="font-size:11px;line-height:1;display:inline-block;transform:rotate(45deg)">✚</span>' + (+sbsGhost === 1 ? ' 1 Strich zu wenig' : ' ' + sbsGhost + ' Striche zu wenig'), 'stroke-ghost-group', sbsBoxes[0]);
-                                    applyBadgeImmediate(mb);
-                                    sbsBadgeRow.appendChild(mb);
-                                    restoreBadgeVisibility(mb, 'stroke-ghost-group', sbsBoxes[0]);
-                                }
-                                // Insert badge row after the SBS wrapper (below both drawing pads)
-                                wrapper.parentNode && wrapper.parentNode.insertBefore(sbsBadgeRow, wrapper.nextSibling);
-                            }
-
-                            if (isNumbers) {
-                                // Build an index mapping: svgPathIndex → grade (for user) or null (for ghost)
-                                const userSvgOrder = ev.orderedStrokes
-                                    .map(e => e.type === 'user' ? (e.stroke && e.stroke.grade) : null);
-                                addNumbersGPAL(userSvg, (i) => {
-                                    if (!isColorBack) return 'var(--text-muted)';
-                                    const g = userSvgOrder[i];
-                                    return g && g !== 'good' ? gradeColor(g) : 'var(--text-muted)';
-                                });
-                                adoptNumbersIntoGroups(userSvg);
-                                if (_isViewSwitch) userSvg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
-                                addNumbersGPAL(refSvg, (i) => {
-                                    if (!isColorBack) return 'var(--text-muted)';
-                                    return penaltyColor(ev.freePS[i] || 0) !== 'var(--stroke-active)' ? penaltyColor(ev.freePS[i] || 0) : 'var(--text-muted)';
-                                });
-                                if (_isViewSwitch) refSvg.querySelectorAll('text.stroke-number').forEach(t => { t.style.animation = 'none'; t.style.opacity = '1'; });
-                            }
-
-                            requestAnimationFrame(() => {
-                                wrapper.classList.add('splitting');
-                                requestAnimationFrame(() => { wrapper.classList.add('visible'); });
-                            });
                         }
                     };
 
@@ -2222,14 +2048,9 @@
 
                     // ── Quicksettings toggle button (Handschrift ↔ SVG-Pfade) ──
                     // Session-only: does NOT persist to localStorage/settings.
-                    // Safe to call multiple times — creates only if missing, removes if SBS active.
+                    // Safe to call multiple times — creates only if missing.
                     const _ensureQsButton = () => {
-                        const _sbsActive = safeGetItem('c1_kanjiOptSideBySide', safeGetItem('kanjiOptSideBySide', (getGlobalConfig().sideBySide || 'on'))) === 'on';
                         const _existing = document.querySelector('.free-view-quicktoggle');
-                        if (_sbsActive) {
-                            if (_existing) _existing.remove();
-                            return;
-                        }
                         if (_existing) return; // already injected
                         const _baseView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConfFree.freeView || 'handwriting'));
                         const qs = document.createElement('button');
@@ -2601,7 +2422,7 @@
             }
         }
 
-        // Settings handler: re-apply colors + rebuild SBS grids dynamically
+        // Settings handler: re-apply colors dynamically
         window.kanjiSettingsGlobalHandler = () => {
             // Re-read and apply stroke style class (may have changed)
             var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
@@ -2617,7 +2438,6 @@
                 if (window._kanjiEnsureQsButton) window._kanjiEnsureQsButton();
             } else {
                 applyBackFeatures(!!window._kanjiRenderFreeView);
-                rebuildSbsGrids();
             }
         };
     })();

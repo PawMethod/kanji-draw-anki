@@ -62,7 +62,7 @@ Kanji Draw ist ein vollständig selbst enthaltenes Anki-Template — kein Build-
 | | **Card 1 – Aktiv (Schreiben)** | **Card 2 – Passiv (Erkennen)** |
 |---|---|---|
 | **Vorderseite** | Deutsche Bedeutung · Zeichenfläche | Kanji sichtbar · Zeichenfläche |
-| **Rückseite** | Ergebnis · Vergleichsansicht · Info-Modal | Schlüsselwort · Farbige Strichreihenfolge · Ergebnis · Info-Modal |
+| **Rückseite** | Ergebnis · Info-Modal | Schlüsselwort · Farbige Strichreihenfolge · Ergebnis · Info-Modal |
 | **Lernziel** | Kanji aus der Bedeutung abrufen und schreiben | Kanji sehen und die Bedeutung abrufen |
 
 Die Kartentypen können unabhängig voneinander konfiguriert werden. Card 1 bietet den vollen Einstellungsumfang (Zeichenmodus, Genauigkeit usw.); Card 2 beschränkt sich auf Darstellungsoptionen für das angezeigte Kanji (Strich-Nummern, Strich-Darstellung) sowie die gemeinsamen Erscheinungsbild-Einstellungen.
@@ -149,7 +149,6 @@ Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen 
 |---|:---:|:---:|---|
 | **Farb-Bewertung** | ✓ | — | An · Aus |
 | **Strich-Nummern** | ✓ | ✓ | An · Aus |
-| **Vergleichsansicht** | ✓ | — | An · Aus |
 | **Strichansicht** | ✓ | — | Handschrift beibehalten · SVG-Pfade einblenden |
 | **Strich-Darstellung** | — | ✓ | Standard · Farbig (Regenbogen-Strichreihenfolge) |
 
@@ -313,7 +312,7 @@ kanji-draw-anki/
 ├── Templates/
 │   ├── Card-1/
 │   │   ├── FrontTemplate.html    ← Zeichenfläche + Strich-Erkennung + Einstellungs-UI
-│   │   └── BackTemplate.html     ← Ergebnis + Vergleichsansicht + Info-Modal
+│   │   └── BackTemplate.html     ← Ergebnis + Info-Modal
 │   ├── Card-2/
 │   │   ├── FrontTemplate.html    ← Zeichenfläche + Strich-Erkennung + Einstellungs-UI
 │   │   └── BackTemplate.html     ← Strichreihenfolge + Ergebnis + Info-Modal

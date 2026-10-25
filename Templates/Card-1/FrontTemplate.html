@@ -554,34 +554,6 @@
                 </label>
             </div>
             <div class="c1-only-setting">
-                <div class="setting-group-title" id="sbs-title">Vergleichsansicht</div>
-                <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="sbs-grid">
-                    <label><input type="radio" name="opt-side-by-side" value="off"
-                            onchange="updateFeatureSetting('sideBySide', this.value)">
-                        <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="5" y="3.5" width="14" height="17" rx="3" class="fi-cream" />
-                                <path d="M8 3.5h8a3 3 0 0 1 3 3v2.5H5V6.5a3 3 0 0 1 3-3z" class="fi-teal" />
-                                <circle cx="12" cy="14.5" r="2.6" class="fi-gold" />
-                            </svg>
-                            <span>Aus</span>
-                        </div>
-                    </label>
-                    <label><input type="radio" name="opt-side-by-side" value="on"
-                            onchange="updateFeatureSetting('sideBySide', this.value)">
-                        <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="10.5" y="5.5" width="10.5" height="14.5" rx="2.5" class="fi-cream" />
-                                <rect x="3" y="3.5" width="10.5" height="14.5" rx="2.5" class="fi-teal" />
-                                <path d="M6.2 13l2-5 2 5M6.7 11.8h3" />
-                                <path d="M14.5 11.5h4M16.5 9.5v5" />
-                            </svg>
-                            <span>An</span>
-                        </div>
-                    </label>
-                </div>
                 <div class="setting-group-title" id="free-view-title">Strichansicht</div>
                 <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="free-view-grid">
                     <label><input type="radio" name="opt-free-view" value="handwriting"
@@ -1185,11 +1157,11 @@
             <circle cx="1010" cy="48" r="1.7" class="fs-star" />
         </g>
 
-        <!-- Distant misty hills (spanning -600 to +1400 within GPU texture bounds) -->
+        <!-- Distant misty hills (extended across ultrawide / zoomed-out viewports) -->
         <path class="fs-hill-far"
-            d="M-600 192 Q-460 156 -320 176 Q-120 140 80 176 Q220 132 370 174 T690 156 Q880 138 1160 176 L1400 192 L1400 220 L-600 220 Z" />
+            d="M-3000 192 Q-2600 162 -2200 180 T-1400 168 T-600 182 Q-460 156 -320 176 Q-120 140 80 176 Q220 132 370 174 T690 156 Q880 138 1160 176 Q1320 158 1480 178 T2200 166 T3000 178 Q3400 164 3800 192 L3800 220 L-3000 220 Z" />
         <path class="fs-hill-near"
-            d="M-600 196 Q-420 166 -260 182 Q-60 156 160 182 Q310 154 460 184 T780 166 Q960 152 1160 182 L1400 196 L1400 220 L-600 220 Z" />
+            d="M-3000 196 Q-2500 170 -2000 184 T-1200 174 T-600 184 Q-420 166 -260 182 Q-60 156 160 182 Q310 154 460 184 T780 166 Q960 152 1160 182 Q1340 166 1520 184 T2300 172 T3100 184 Q3450 172 3800 196 L3800 220 L-3000 220 Z" />
 
         <!-- ═══════════════════════════════════════════════════════════════════
              SCENE 1: FUJI (neutral) — Mount Fuji, Bamboo, Vermilion Torii & Sakura
@@ -1916,14 +1888,21 @@
             <circle cx="768" cy="146" r="2.2" class="fs-firefly-core" />
         </g>
 
-        <!-- Iconic Forest Grass & Earth Ledge across the bottom (spanning -600 to +1400 within GPU texture bounds) -->
-        <rect x="-600" y="186" width="2000" height="11" class="fs-grass-top" />
-        <rect x="-600" y="194" width="2000" height="9" class="fs-grass-overhang" />
+        <!-- Iconic Forest Grass & Earth Ledge across the bottom (quasi-infinite horizontal span for ultrawide & zoom-out) -->
+        <rect x="-20000" y="186" width="40800" height="11" class="fs-grass-top" />
+        <rect x="-20000" y="194" width="40800" height="9" class="fs-grass-overhang" />
         <path class="fs-grass-overhang"
             d="M-600 194 L-580 203 L-550 194 L-520 203 L-490 194 L-460 203 L-430 194 L-400 203 L-360 194 L-330 202 L-300 194 L-270 203 L-240 194 L-210 202 L-180 194 L-150 203 L-120 194 L-90 202 L-60 194 L-30 203 L0 194 L22 202 L44 194 L68 203 L92 194 L118 202 L144 194 L170 203 L196 194 L224 202 L252 194 L280 203 L308 194 L336 202 L364 194 L392 203 L420 194 L448 202 L476 194 L504 203 L532 194 L560 202 L588 194 L616 203 L644 194 L672 202 L700 194 L728 203 L756 194 L780 202 L800 194 L830 203 L860 194 L890 202 L920 194 L950 203 L980 194 L1010 202 L1040 194 L1070 203 L1100 194 L1130 202 L1160 194 L1190 203 L1220 194 L1250 203 L1280 194 L1310 203 L1340 194 L1370 203 L1400 194 L1400 206 L-600 206 Z" />
-        <rect x="-600" y="202" width="2000" height="18" class="fs-earth" />
+        <rect x="-20000" y="202" width="40800" height="18" class="fs-earth" />
         <!-- Soil pebbles -->
         <g class="fs-pebbles">
+            <ellipse cx="-2400" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="-2150" cy="213" rx="8" ry="4" />
+            <ellipse cx="-1900" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="-1650" cy="212" rx="8.5" ry="4" />
+            <ellipse cx="-1400" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="-1160" cy="213" rx="8" ry="4" />
+            <ellipse cx="-920" cy="210" rx="9.5" ry="4.5" />
             <ellipse cx="-680" cy="211" rx="9" ry="4.5" />
             <ellipse cx="-520" cy="213" rx="8" ry="4" />
             <ellipse cx="-360" cy="210" rx="9.5" ry="4.5" />
@@ -1941,6 +1920,13 @@
             <ellipse cx="1180" cy="213" rx="8" ry="4" />
             <ellipse cx="1340" cy="211" rx="9" ry="4.5" />
             <ellipse cx="1500" cy="212" rx="8.5" ry="4" />
+            <ellipse cx="1720" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="1960" cy="213" rx="8" ry="4" />
+            <ellipse cx="2200" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="2450" cy="212" rx="8.5" ry="4" />
+            <ellipse cx="2700" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="2950" cy="213" rx="8" ry="4" />
+            <ellipse cx="3200" cy="211" rx="9" ry="4.5" />
         </g>
     </svg>
 </div>
@@ -2091,7 +2077,6 @@
     //              strictness: loose ×1.35 | normal ×1.0 | strict ×0.7
     // Free eval:   Fréchet + Hungarian assignment → per-stroke grading
     //              views: handwriting (user strokes colored) | SVG paths
-    //              side-by-side: optional split view (user vs reference)
     // Celebration: WAAPI animations (glow, bounce, shine, sparkles)
     // Auto-flip:   pycmd / showAnswer / answer-fallback div
     // Cleanup:     generation counter guards stale setTimeout callbacks
@@ -2442,7 +2427,6 @@
             'opt-celebration': scopedGet('kanjiOptCelebration', globalConf.celebration),
             'opt-display-style': scopedGet('kanjiOptDisplayStyle', globalConf.displayStyle),
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
-            'opt-side-by-side': scopedGet('kanjiOptSideBySide', globalConf.sideBySide),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
             'opt-start-hint': scopedGet('kanjiOptStartHint', globalConf.startHint),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
@@ -2486,18 +2470,11 @@
         var shGrid = document.getElementById('start-hint-grid');
         if (shTitle) shTitle.classList.toggle('setting-disabled', isFree);
         if (shGrid) shGrid.classList.toggle('setting-disabled', isFree);
-        // Side-by-side: disabled in guided mode
-        var sbsTitle = document.getElementById('sbs-title');
-        var sbsGrid = document.getElementById('sbs-grid');
-        if (sbsTitle) sbsTitle.classList.toggle('setting-disabled', !isFree);
-        if (sbsGrid) sbsGrid.classList.toggle('setting-disabled', !isFree);
-        // Free view (Strichansicht): disabled in guided mode OR when SBS is on
-        var sbsOn = isFree && scopedGet('kanjiOptSideBySide', globalConf.sideBySide || 'on') === 'on';
-        var fvDisabled = !isFree || sbsOn;
+        // Free view (Strichansicht): disabled in guided mode
         var fvTitle = document.getElementById('free-view-title');
         var fvGrid = document.getElementById('free-view-grid');
-        if (fvTitle) fvTitle.classList.toggle('setting-disabled', fvDisabled);
-        if (fvGrid) fvGrid.classList.toggle('setting-disabled', fvDisabled);
+        if (fvTitle) fvTitle.classList.toggle('setting-disabled', !isFree);
+        if (fvGrid) fvGrid.classList.toggle('setting-disabled', !isFree);
     }
 
     // Read CSS custom properties once and cache (avoids Anki timing/load-order issues)
@@ -2523,7 +2500,6 @@
             celebration: getVar('--default-opt-celebration', 'on'),
             displayStyle: getVar('--default-opt-display-style', 'standard'),
             drawMode: getVar('--default-opt-draw-mode', 'guided'),
-            sideBySide: getVar('--default-opt-side-by-side', 'on'),
             freeView: getVar('--default-opt-free-view', 'handwriting'),
             startHint: getVar('--default-opt-start-hint', 'off'),
             themeMode: getVar('--default-theme-mode', 'system'),
@@ -2827,7 +2803,7 @@
                 '.reading-row': [16, 14, 18], '.reading-label': [11, 10, 12], '.info-btn': [15, 13, 17],
                 '.info-tag': [12, 10, 14], '.link-btn': [14, 12, 16], '.tree-root-kanji': [36, 32, 40],
                 '.tree-node-char': [28, 24, 32], '.tree-node-tooltip': [13, 11, 15],
-                '.no-tree-data': [13, 11, 15], '.side-by-side-label': [11, 10, 12],
+                '.no-tree-data': [13, 11, 15],
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
@@ -3243,9 +3219,9 @@
     window.addEventListener('resize', window.kanjiResizeHandler);
 
     // --- Cleanup stale DOM (runs unconditionally, front + back via {{FrontSide}}) ---
-    // On back side this is a no-op: SBS/sparkles haven't been created yet.
+    // On back side this is a no-op: sparkles haven't been created yet.
     // On front side this removes stale back-side artifacts from editor toggling.
-    document.querySelectorAll('.side-by-side-wrapper, .completion-sparkle, .handwriting-overlay, .excess-strokes-overlay, .excess-strokes-badge').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.completion-sparkle, .handwriting-overlay, .excess-strokes-overlay, .excess-strokes-badge').forEach(function (el) { el.remove(); });
     document.querySelectorAll('.kanji-container').forEach(function (c) { c.style.removeProperty('display'); c.classList.remove('show-handwriting'); });
     if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
     window.kanjiSettingsGlobalHandler = null;

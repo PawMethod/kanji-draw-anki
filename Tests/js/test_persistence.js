@@ -265,14 +265,13 @@ test('parses CSS defaults correctly', () => {
         '--default-opt-celebration': 'on',
         '--default-opt-display-style': 'standard',
         '--default-opt-draw-mode': 'guided',
-        '--default-opt-side-by-side': 'on',
         '--default-opt-free-view': 'handwriting',
         '--default-theme-mode': 'system',
         '--default-theme-accent': 'green',
         '--default-theme-font-size': 'normal'
     };
-    // Verify all 17 config values are present
-    assert.strictEqual(Object.keys(cssDefaults).length, 17);
+    // Verify all 16 config values are present
+    assert.strictEqual(Object.keys(cssDefaults).length, 16);
     // Verify values are valid
     assert(['none', 'cross', 'full'].includes(cssDefaults['--default-grid-type']));
     assert(['on', 'off'].includes(cssDefaults['--default-opt-color-front']));
