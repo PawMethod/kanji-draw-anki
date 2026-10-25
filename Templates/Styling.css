@@ -90,29 +90,30 @@
    1. CSS Variables & Theming
    -------------------------------------------------------------------------- */
 :root {
-    /* Light Mode Colors — Forest clearing palette (Ref 1 & 4) */
+    /* Light Mode Colors — Fuji (neutral) palette */
     --bg-main: #dff3e4;
     --sky-top: #eefbf0;
     --meadow-tint: #bde8cb;
     --surface: #fbfef9;
     --border-color: #b7dec2;
-    --btn-lip: #8ec49e;
-    --pad-frame: #e8f7ec;
-    --pad-lip: #74c824;
-    --pad-earth: #7a5222;
-    --title-bg: #1c5b52;
+    --btn-lip: var(--border-color);
+    --pad-frame: var(--border-color);
+    --pad-lip: var(--border-color);
+    --pad-earth: var(--border-color);
+    --title-bg: #265949;
     --title-text: #f4fcf7;
-    --title-border: #dff2e6;
-    --title-lip: #123e38;
+    --title-border: #b7dec2;
+    --title-lip: #16382e;
     --forest-header-bg: #265949;
-    --forest-header-pill: rgba(12, 30, 24, 0.36);
-    --modal-frame: #e2f2e6;
-    --speech-bg: #1c5858;
-    --speech-border: #dff0e6;
+    --forest-header-pill: rgba(10, 26, 20, 0.34);
+    --modal-frame: var(--border-color);
+    --speech-bg: #265949;
+    --speech-border: #b7dec2;
     --speech-text: #f5fcf8;
     --wood-branch: #8c6438;
-    --shadow-soft: 0 3px 0 rgba(28, 76, 56, 0.10), 0 6px 14px rgba(24, 58, 42, 0.08);
-    --shadow-elevated: 0 5px 0 var(--pad-lip), 0 9px 0 var(--pad-earth), 0 18px 34px rgba(18, 48, 36, 0.18);
+    --icon-ink: #2b180e;
+    --shadow-soft: 0 3px 10px rgba(20, 48, 36, 0.08), 0 1px 3px rgba(20, 48, 36, 0.06);
+    --shadow-elevated: 0 10px 28px rgba(18, 44, 34, 0.12), 0 3px 8px rgba(18, 44, 34, 0.07);
     --text-main: #1d3b2e;
     --text-muted: #4e6e5d;
     --text-faint: #7fa08d;
@@ -129,24 +130,24 @@
     /* Tags */
     --tag-on-bg: #e1f0e5;
     --tag-on-text: #27543c;
-    --tag-kun-bg: #d9f0ce;
-    --tag-kun-text: #235e18;
+    --tag-kun-bg: var(--accent-bg);
+    --tag-kun-text: var(--accent);
 
     /* Accent (Forest leaf green) */
     --accent: #56a83a;
     --accent-hover: #4a9432;
     --accent-bg: #e3f4dc;
-    --accent-lip: #3d7d24;
-    --btn-3d-top: #8ad42a;
-    --btn-3d-bot: #70ba16;
-    --btn-3d-lip: #4c880d;
+    --accent-lip: var(--border-color);
+    --btn-3d-top: var(--surface);
+    --btn-3d-bot: var(--surface);
+    --btn-3d-lip: var(--border-color);
 
     /* Tab Colors (settings modal ribbon) */
     --tab-color-c1: #56a83a;
     --tab-color-c2: #2d9588;
 
     /* Hover-Shadow */
-    --shadow-hover: 0 4px 0 var(--btn-lip), 0 10px 20px rgba(24, 58, 42, 0.15);
+    --shadow-hover: 0 6px 18px rgba(20, 48, 36, 0.14), 0 2px 6px rgba(20, 48, 36, 0.08);
 
     /* GPU-composited shadow filters (transition-safe on WKWebView) */
     --filter-soft: 0 2px 6px rgba(20, 52, 38, 0.10), 0 1px 2px rgba(20, 52, 38, 0.06);
@@ -165,10 +166,7 @@
 html.is-ankiweb,
 html.is-ankiweb body {
     background-color: var(--bg-main) !important;
-    background-image:
-        radial-gradient(ellipse 85% 45% at 50% 0%, var(--sky-top), transparent 72%),
-        linear-gradient(180deg, transparent 55%, var(--meadow-tint) 100%) !important;
-    background-attachment: fixed !important;
+    background-image: none !important;
 }
 
 /* AnkiWeb: the .card / #qa wrapper may create a containing block for
@@ -230,7 +228,7 @@ html.is-ankiweb .info-modal {
     max-height: var(--ankiweb-modal-max-h, 70vh) !important;
 }
 
-/* Night Mode Colors — Deep pine forest night (Ref 2 & 3) */
+/* Night Mode Colors — Deep pine forest night (Fuji default) */
 .nightMode,
 .night_mode {
     --bg-main: #173328;
@@ -238,47 +236,47 @@ html.is-ankiweb .info-modal {
     --meadow-tint: #1d3f31;
     --surface: #204436;
     --border-color: #326350;
-    --btn-lip: #11261e;
-    --pad-frame: #366b56;
-    --pad-lip: #559e24;
-    --pad-earth: #4d3316;
+    --btn-lip: var(--border-color);
+    --pad-frame: var(--border-color);
+    --pad-lip: var(--border-color);
+    --pad-earth: var(--border-color);
     --title-bg: #255746;
     --title-text: #eef9f2;
-    --title-border: #48826c;
+    --title-border: #3d705c;
     --title-lip: #102920;
     --forest-header-bg: #285c4a;
-    --forest-header-pill: rgba(8, 22, 17, 0.44);
-    --modal-frame: #3a6e59;
-    --speech-bg: #23544a;
-    --speech-border: #4a8572;
+    --forest-header-pill: rgba(8, 20, 16, 0.44);
+    --modal-frame: var(--border-color);
+    --speech-bg: #255746;
+    --speech-border: #3d705c;
     --speech-text: #eefaf3;
-    --wood-branch: #70967c;
-    --shadow-soft: 0 3px 0 rgba(8, 22, 16, 0.45), 0 6px 14px rgba(0, 0, 0, 0.32);
-    --shadow-elevated: 0 5px 0 var(--pad-lip), 0 9px 0 var(--pad-earth), 0 20px 38px rgba(0, 0, 0, 0.48);
+    --wood-branch: #9c7a54;
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.32), 0 1px 4px rgba(0, 0, 0, 0.22);
+    --shadow-elevated: 0 14px 34px rgba(0, 0, 0, 0.44), 0 4px 12px rgba(0, 0, 0, 0.28);
     --text-main: #ecf6ef;
     --text-muted: #9ec0ad;
     --text-faint: #668a76;
     --stroke-active: #f0f8f2;
     --stroke-guide: #365c4b;
-    --grid-color: #5b8270;
+    --grid-color: #4d7360;
     --stroke-warn1: #f0c040;
     --stroke-warn2: #f09840;
     --stroke-err: #e85450;
     --stroke-hint: #7cd43b;
     --tag-on-bg: #294f3f;
     --tag-on-text: #d6ede0;
-    --tag-kun-bg: #224d29;
-    --tag-kun-text: #8ce26e;
+    --tag-kun-bg: var(--accent-bg);
+    --tag-kun-text: var(--accent);
     --accent: #7cd43b;
     --accent-hover: #6bc22c;
     --accent-bg: #1e3d28;
-    --accent-lip: #3f7816;
-    --btn-3d-top: #7ed028;
-    --btn-3d-bot: #62b014;
-    --btn-3d-lip: #3e7509;
+    --accent-lip: var(--border-color);
+    --btn-3d-top: var(--surface);
+    --btn-3d-bot: var(--surface);
+    --btn-3d-lip: var(--border-color);
     --tab-color-c1: #7cd43b;
     --tab-color-c2: #4ec4b8;
-    --shadow-hover: 0 4px 0 var(--btn-lip), 0 10px 22px rgba(0, 0, 0, 0.45);
+    --shadow-hover: 0 8px 22px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.30);
     --filter-soft: 0 2px 8px rgba(0, 0, 0, 0.34), 0 1px 3px rgba(0, 0, 0, 0.22);
     --filter-hover: 0 6px 16px rgba(0, 0, 0, 0.48), 0 2px 5px rgba(0, 0, 0, 0.30);
 }
@@ -350,20 +348,26 @@ html.is-ankimobile:has(.info-overlay.active) {
     line-height: 1.5;
 }
 
-/* Full-viewport sky & meadow backdrop layer inside .card stacking context.
+#qa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Full-viewport backdrop layer inside .card stacking context.
    On Anki Desktop, document.body (which is body.card) keeps Anki's native --canvas
    background so TopWebView.update_background_image() never tints Anki's top menu bar,
-   while .card::before paints the full Japanese nature background in the reviewer! */
+   while .card::before paints the full Japanese nature background in the reviewer!
+   Uses solid background-color and non-negative z-index: 0 to prevent OpenGL tile
+   Z-fighting and 8-bit gradient Bayer dithering dots on Anki Desktop. */
 .card::before {
     content: "";
     position: fixed;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
     background-color: var(--bg-main);
-    background-image:
-        radial-gradient(ellipse 85% 45% at 50% 0%, var(--sky-top), transparent 72%),
-        linear-gradient(180deg, transparent 55%, var(--meadow-tint) 100%);
 }
 
 html.is-ankidesktop body,
@@ -378,11 +382,12 @@ html.is-ankidesktop .card {
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100vw;
+    width: 100%;
     height: clamp(145px, 26vw, 220px);
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     overflow: hidden;
+    contain: layout style paint;
 }
 
 .forest-scenery svg {
@@ -923,18 +928,40 @@ html[data-jp-theme="sage"] .forest-scenery .jp-scene-sage {
 html[data-jp-theme="rose"] {
     --sky-top: #fff0f5;
     --meadow-tint: #f2cedc;
+    --text-main: #3d202e;
+    --text-muted: #754a5e;
+    --text-faint: #a67c90;
+    --grid-color: #d1a8b8;
     --title-bg: #7c3654;
+    --title-border: #e0becb;
     --title-lip: #522036;
     --forest-header-bg: #7c3654;
+    --speech-bg: #7c3654;
+    --speech-border: #e0becb;
+    --wood-branch: #825448;
+    --tag-on-bg: #f5dce6;
+    --tag-on-text: #632842;
 }
 
 html[data-jp-theme="rose"].nightMode,
-html[data-jp-theme="rose"] .nightMode {
+html[data-jp-theme="rose"].night_mode,
+html[data-jp-theme="rose"] .nightMode,
+html[data-jp-theme="rose"] .night_mode {
     --sky-top: #2e1824;
     --meadow-tint: #381e2c;
+    --text-main: #f7eaf0;
+    --text-muted: #c79eb0;
+    --text-faint: #8c6476;
+    --grid-color: #6b4c5c;
     --title-bg: #69304a;
-    --title-border: #9c5876;
+    --title-border: #854864;
+    --title-lip: #361424;
     --forest-header-bg: #69304a;
+    --speech-bg: #5c2a40;
+    --speech-border: #854864;
+    --wood-branch: #a67468;
+    --tag-on-bg: #4a2e3c;
+    --tag-on-text: #f0d5e0;
 }
 
 html[data-jp-theme="rose"] .forest-scenery .fs-hill-far {
@@ -955,24 +982,84 @@ html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-hill-near {
     fill: rgba(74, 32, 52, 0.54);
 }
 
+/* Theme: Fuji & Wald (neutral) — Mt. Fuji & pine forest default */
+html[data-jp-theme="neutral"] {
+    --sky-top: #eefbf0;
+    --meadow-tint: #bde8cb;
+    --text-main: #1d3b2e;
+    --text-muted: #4e6e5d;
+    --text-faint: #7fa08d;
+    --grid-color: #9ec0a8;
+    --title-bg: #265949;
+    --title-border: #b7dec2;
+    --title-lip: #16382e;
+    --forest-header-bg: #265949;
+    --speech-bg: #265949;
+    --speech-border: #b7dec2;
+    --wood-branch: #8c6438;
+    --tag-on-bg: #e1f0e5;
+    --tag-on-text: #27543c;
+}
+
+html[data-jp-theme="neutral"].nightMode,
+html[data-jp-theme="neutral"].night_mode,
+html[data-jp-theme="neutral"] .nightMode,
+html[data-jp-theme="neutral"] .night_mode {
+    --sky-top: #11261e;
+    --meadow-tint: #1d3f31;
+    --text-main: #ecf6ef;
+    --text-muted: #9ec0ad;
+    --text-faint: #668a76;
+    --grid-color: #4d7360;
+    --title-bg: #255746;
+    --title-border: #3d705c;
+    --title-lip: #102920;
+    --forest-header-bg: #285c4a;
+    --speech-bg: #255746;
+    --speech-border: #3d705c;
+    --wood-branch: #9c7a54;
+    --tag-on-bg: #294f3f;
+    --tag-on-text: #d6ede0;
+}
+
 /* Theme: Kyoto-Herbst (sepia) — Momiji red-and-gold autumn maple foliage */
 html[data-jp-theme="sepia"] {
     --sky-top: #fff6e4;
     --meadow-tint: #ebd2a4;
-    --pad-lip: #d97a24;
+    --text-main: #3b2818;
+    --text-muted: #73563d;
+    --text-faint: #a3876c;
+    --grid-color: #cbb288;
     --title-bg: #7a3b1e;
+    --title-border: #d9c59a;
     --title-lip: #4f2410;
     --forest-header-bg: #7a3b1e;
+    --speech-bg: #7a3b1e;
+    --speech-border: #d9c59a;
+    --wood-branch: #8c5830;
+    --tag-on-bg: #f0dfc2;
+    --tag-on-text: #5e3818;
 }
 
 html[data-jp-theme="sepia"].nightMode,
-html[data-jp-theme="sepia"] .nightMode {
+html[data-jp-theme="sepia"].night_mode,
+html[data-jp-theme="sepia"] .nightMode,
+html[data-jp-theme="sepia"] .night_mode {
     --sky-top: #2c1e12;
     --meadow-tint: #382618;
-    --pad-lip: #b8621b;
+    --text-main: #f6ede0;
+    --text-muted: #c4ab90;
+    --text-faint: #8c735b;
+    --grid-color: #6e5840;
     --title-bg: #6b341a;
-    --title-border: #9e5a38;
+    --title-border: #825236;
+    --title-lip: #36180a;
     --forest-header-bg: #6b341a;
+    --speech-bg: #5e3019;
+    --speech-border: #825236;
+    --wood-branch: #a8784e;
+    --tag-on-bg: #4a3522;
+    --tag-on-text: #eddcc4;
 }
 
 html[data-jp-theme="sepia"] .forest-scenery .fs-sakura-light {
@@ -1044,18 +1131,40 @@ html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-grass-overhang {
 html[data-jp-theme="cool"] {
     --sky-top: #eefbfc;
     --meadow-tint: #bae4ea;
+    --text-main: #183a42;
+    --text-muted: #46707a;
+    --text-faint: #789ea8;
+    --grid-color: #94c2cc;
     --title-bg: #1e5266;
+    --title-border: #add8d1;
     --title-lip: #123644;
     --forest-header-bg: #1e5266;
+    --speech-bg: #1e5266;
+    --speech-border: #add8d1;
+    --wood-branch: #7d6448;
+    --tag-on-bg: #dceef2;
+    --tag-on-text: #1b4d5c;
 }
 
 html[data-jp-theme="cool"].nightMode,
-html[data-jp-theme="cool"] .nightMode {
+html[data-jp-theme="cool"].night_mode,
+html[data-jp-theme="cool"] .nightMode,
+html[data-jp-theme="cool"] .night_mode {
     --sky-top: #10222b;
     --meadow-tint: #18323e;
+    --text-main: #eaf6f8;
+    --text-muted: #96bec8;
+    --text-faint: #5c8490;
+    --grid-color: #3d6e7a;
     --title-bg: #1d4c5e;
-    --title-border: #3e7c94;
+    --title-border: #366d80;
+    --title-lip: #0e2630;
     --forest-header-bg: #1d4c5e;
+    --speech-bg: #1d4c5e;
+    --speech-border: #366d80;
+    --wood-branch: #967a5c;
+    --tag-on-bg: #224854;
+    --tag-on-text: #cde8f0;
 }
 
 html[data-jp-theme="cool"] .forest-scenery .fs-hill-far {
@@ -1070,18 +1179,40 @@ html[data-jp-theme="cool"] .forest-scenery .fs-hill-near {
 html[data-jp-theme="warm"] {
     --sky-top: #fdfce8;
     --meadow-tint: #dce3a8;
+    --text-main: #333818;
+    --text-muted: #636b38;
+    --text-faint: #8f9664;
+    --grid-color: #b5be84;
     --title-bg: #545c22;
+    --title-border: #c5d198;
     --title-lip: #363c12;
     --forest-header-bg: #545c22;
+    --speech-bg: #545c22;
+    --speech-border: #c5d198;
+    --wood-branch: #8c6830;
+    --tag-on-bg: #eaefd0;
+    --tag-on-text: #464d19;
 }
 
 html[data-jp-theme="warm"].nightMode,
-html[data-jp-theme="warm"] .nightMode {
+html[data-jp-theme="warm"].night_mode,
+html[data-jp-theme="warm"] .nightMode,
+html[data-jp-theme="warm"] .night_mode {
     --sky-top: #1e2212;
     --meadow-tint: #282e18;
+    --text-main: #f4f6e6;
+    --text-muted: #b8c092;
+    --text-faint: #7d8556;
+    --grid-color: #636e42;
     --title-bg: #48501e;
-    --title-border: #78823c;
+    --title-border: #687332;
+    --title-lip: #22260c;
     --forest-header-bg: #48501e;
+    --speech-bg: #48501e;
+    --speech-border: #687332;
+    --wood-branch: #a88648;
+    --tag-on-bg: #3d4722;
+    --tag-on-text: #e2e8c0;
 }
 
 html[data-jp-theme="warm"] .forest-scenery .fs-torii-red {
@@ -1096,9 +1227,40 @@ html[data-jp-theme="warm"] .forest-scenery .fs-torii-shade {
 html[data-jp-theme="sage"] {
     --sky-top: #eff9eb;
     --meadow-tint: #bfe2b4;
+    --text-main: #1c3822;
+    --text-muted: #4b6e52;
+    --text-faint: #7c9e82;
+    --grid-color: #9ec492;
     --title-bg: #225934;
+    --title-border: #b5d6a9;
     --title-lip: #143b20;
     --forest-header-bg: #225934;
+    --speech-bg: #225934;
+    --speech-border: #b5d6a9;
+    --wood-branch: #7d5c34;
+    --tag-on-bg: #dfeed8;
+    --tag-on-text: #22522b;
+}
+
+html[data-jp-theme="sage"].nightMode,
+html[data-jp-theme="sage"].night_mode,
+html[data-jp-theme="sage"] .nightMode,
+html[data-jp-theme="sage"] .night_mode {
+    --sky-top: #112216;
+    --meadow-tint: #183020;
+    --text-main: #ebf5ec;
+    --text-muted: #98bd9e;
+    --text-faint: #608566;
+    --grid-color: #466e4e;
+    --title-bg: #205230;
+    --title-border: #3b6e4a;
+    --title-lip: #0f2916;
+    --forest-header-bg: #205230;
+    --speech-bg: #205230;
+    --speech-border: #3b6e4a;
+    --wood-branch: #96784e;
+    --tag-on-bg: #264a30;
+    --tag-on-text: #d2ebd6;
 }
 
 /* Reset Anki's global button styles (webview.css sets button backgrounds
@@ -1147,7 +1309,8 @@ html[data-jp-theme="sage"] {
     z-index: 2;
     width: var(--dynamic-size);
     height: var(--dynamic-size);
-    border: 3px solid var(--pad-frame);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 4px;
     border-radius: var(--border-rad-main);
     background-color: var(--surface) !important;
     touch-action: none;
@@ -1475,7 +1638,7 @@ svg#svg-guide path,
 /* Gelstift — bold, opaque, saturated gel ink: wider rounded strokes with subtle ink spread */
 .kanji-container.stroke-style-gel #svg-bg path:not(.gel-halo),
 .kanji-container.stroke-style-gel #svg-guide path:not(.gel-halo) {
-    stroke-width: 4.5;
+    stroke-width: calc(4.5px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     paint-order: stroke;
@@ -1484,7 +1647,7 @@ svg#svg-guide path,
 /* Tusche (Ink) — organic, wider, calligraphic reference strokes */
 .kanji-container.stroke-style-ink #svg-bg path,
 .kanji-container.stroke-style-ink #svg-guide path {
-    stroke-width: 4.5;
+    stroke-width: calc(4.5px * var(--kd-sw, 1));
     stroke-linecap: square;
     opacity: 0.85;
 }
@@ -1609,13 +1772,15 @@ svg#svg-guide path,
     z-index: 2;
     display: flex;
     justify-content: space-evenly;
-    margin-top: 22px;
+    margin: 22px auto 0 auto;
     width: var(--dynamic-size);
 }
 
 .action-buttons button {
-    width: 52px;
-    height: 52px;
+    box-sizing: border-box;
+    padding: 0;
+    width: clamp(52px, 10.5vmin, 62px);
+    height: clamp(52px, 10.5vmin, 62px);
     border-radius: 16px;
     background-color: var(--surface);
     border: 2px solid var(--border-color);
@@ -1642,9 +1807,12 @@ svg#svg-guide path,
 }
 
 .action-buttons button svg {
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
+    width: 66%;
+    height: 66%;
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
+    stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
     pointer-events: none;
@@ -1806,8 +1974,8 @@ svg#svg-guide path,
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 42px;
-    height: 42px;
+    width: clamp(44px, 8vmin, 52px);
+    height: clamp(44px, 8vmin, 52px);
     background: var(--surface);
     border: 2px solid var(--border-color);
     color: var(--text-main);
@@ -1864,9 +2032,12 @@ svg#svg-guide path,
 }
 
 .gear-btn svg {
-    width: 21px;
-    height: 21px;
-    stroke-width: 1.8;
+    width: 64%;
+    height: 64%;
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
+    stroke-width: 1.9;
     transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1890,15 +2061,18 @@ svg#svg-guide path,
     align-items: flex-start;
     z-index: 100;
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s ease-out;
-    contain: layout style;
+    transition: opacity 0.2s ease-out, visibility 0s linear 0.4s;
+    contain: layout style paint;
 }
 
 .settings-overlay.active,
 .info-overlay.active {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
+    transition: opacity 0.2s ease-out, visibility 0s linear 0s;
 }
 
 /* AnkiMobile: native toolbar overlays the WebView — reserve space at the bottom */
@@ -1919,7 +2093,7 @@ svg#svg-guide path,
     background: var(--surface);
     padding: 24px;
     border-radius: var(--border-rad-main);
-    border: 3.5px solid var(--modal-frame);
+    border: 2px solid var(--border-color);
     width: 90%;
     max-height: calc(100dvh - 48px - 48px);
     overflow-y: auto;
@@ -1929,7 +2103,7 @@ svg#svg-guide path,
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-    box-shadow: 0 7px 0 var(--btn-lip), 0 22px 48px rgba(10, 28, 22, 0.34);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.34), 0 6px 16px rgba(0, 0, 0, 0.18);
     transform: translateY(20px) scale(0.95);
     opacity: 0;
     text-align: left;
@@ -2035,8 +2209,7 @@ svg#svg-guide path,
     transform: scale(0.94);
 }
 
-@media (hover: hover),
-(any-hover: hover) {
+@media (hover: hover) and (pointer: fine) {
     .visual-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
@@ -2050,21 +2223,16 @@ svg#svg-guide path,
 
 /* SVG default styling — crisp retro-pastel outline (Ref 4) */
 .visual-option svg {
-    width: 28px;
-    height: 28px;
-    stroke: #3b2416;
-    color: #3b2416;
+    width: clamp(34px, 6.5vmin, 40px);
+    height: clamp(34px, 6.5vmin, 40px);
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
     stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: transform 0.15s ease;
     overflow: visible;
-}
-
-.nightMode .visual-option svg,
-.night_mode .visual-option svg {
-    stroke: #f4ece1;
-    color: #f4ece1;
 }
 
 .visual-option svg text {
@@ -2103,7 +2271,7 @@ svg#svg-guide path,
     font-weight: 800;
 }
 
-/* Forest 3D Push-Button ("Freischalten" style from Ref 4) */
+/* Modal close button — matches tactile card button design & active theme */
 .close-settings {
     box-sizing: border-box;
     width: 100%;
@@ -2113,16 +2281,17 @@ svg#svg-guide path,
     align-items: center;
     margin: 24px auto 0 auto;
     padding: 0;
-    background: linear-gradient(180deg, var(--btn-3d-top) 0%, var(--btn-3d-bot) 100%);
-    color: #ffffff;
-    border: none;
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
     border-radius: 14px;
-    box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.4), 0 4px 0 var(--btn-3d-lip), 0 8px 16px rgba(18, 48, 34, 0.18);
+    box-shadow: var(--filter-soft);
     font-weight: 800;
     font-size: 15px;
     letter-spacing: 0.3px;
     cursor: pointer;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
@@ -2131,15 +2300,17 @@ svg#svg-guide path,
 @media (hover: hover),
 (any-hover: hover) {
     .close-settings:hover {
-        filter: brightness(1.06);
+        background: var(--surface);
+        color: var(--active-tab-color, var(--accent));
+        border-color: var(--active-tab-color, var(--accent));
+        box-shadow: var(--filter-hover);
         transform: translateY(-1px);
-        box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.45), 0 5px 0 var(--btn-3d-lip), 0 10px 20px rgba(18, 48, 34, 0.22);
     }
 }
 
 .close-settings:active {
-    transform: translateY(3px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 0 var(--btn-3d-lip);
+    transform: scale(0.98);
+    box-shadow: var(--filter-soft);
 }
 
 /* --------------------------------------------------------------------------
@@ -2282,9 +2453,9 @@ svg#svg-guide path,
 }
 
 .category-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
+    width: clamp(42px, 7.5vmin, 46px);
+    height: clamp(42px, 7.5vmin, 46px);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2292,8 +2463,9 @@ svg#svg-guide path,
 }
 
 .category-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 66%;
+    height: 66%;
+    flex-shrink: 0;
     stroke-width: 1.9;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -2305,153 +2477,153 @@ svg#svg-guide path,
 /* Filled-object pastel vector classes (with crisp outlines, matching the reference icon sheet) */
 .fi-cream {
     fill: #fbf0d9;
-    fill-opacity: 0.98;
+    fill-opacity: 1;
 }
 
 .fi-coral,
 .pi-coral {
     fill: #df6d53;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .fi-gold,
 .pi-gold {
     fill: #edb25e;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .fi-mint,
 .pi-mint {
     fill: #86bd91;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .fi-teal,
 .pi-sky {
     fill: #6ea6b5;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .fi-tan {
-    fill: #b57a4c;
-    fill-opacity: 0.96;
+    fill: #c48758;
+    fill-opacity: 1;
 }
 
 .fi-rose,
 .pi-rose {
     fill: #eb94ad;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .fi-lavender,
 .pi-lavender {
     fill: #b392e0;
-    fill-opacity: 0.96;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-cream,
 .night_mode .fi-cream {
-    fill: #e8dcc4;
-    fill-opacity: 0.92;
+    fill: #f7ead0;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-coral,
 .night_mode .fi-coral,
 .nightMode .pi-coral,
 .night_mode .pi-coral {
-    fill: #d9654c;
-    fill-opacity: 0.92;
+    fill: #e37258;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-gold,
 .night_mode .fi-gold,
 .nightMode .pi-gold,
 .night_mode .pi-gold {
-    fill: #e0a650;
-    fill-opacity: 0.92;
+    fill: #f0b65e;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-mint,
 .night_mode .fi-mint,
 .nightMode .pi-mint,
 .night_mode .pi-mint {
-    fill: #66a876;
-    fill-opacity: 0.92;
+    fill: #82bf90;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-teal,
 .night_mode .fi-teal,
 .nightMode .pi-sky,
 .night_mode .pi-sky {
-    fill: #5894a4;
-    fill-opacity: 0.92;
+    fill: #70abbd;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-tan,
 .night_mode .fi-tan {
-    fill: #a86e42;
-    fill-opacity: 0.92;
+    fill: #c98c5c;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-rose,
 .night_mode .fi-rose,
 .nightMode .pi-rose,
 .night_mode .pi-rose {
-    fill: #d97e9a;
-    fill-opacity: 0.92;
+    fill: #ec96b0;
+    fill-opacity: 1;
 }
 
 .nightMode .fi-lavender,
 .night_mode .fi-lavender,
 .nightMode .pi-lavender,
 .night_mode .pi-lavender {
-    fill: #9b78cc;
-    fill-opacity: 0.92;
+    fill: #b694e6;
+    fill-opacity: 1;
 }
 
 /* Warm retro-pastel squircle badges (inspired by reference icon grid) */
 .category-icon.cat-grid {
     background: #d8e2d2;
-    color: #3b2416;
+    color: #2b180e;
 }
 
 .category-icon.cat-front {
     background: #92bec4;
-    color: #3b2416;
+    color: #2b180e;
 }
 
 .category-icon.cat-back {
-    background: #d3dbcb;
-    color: #3b2416;
+    background: #dcd3b2;
+    color: #2b180e;
 }
 
 .category-icon.cat-theme {
-    background: #b87452;
-    color: #3b2416;
+    background: #c4825e;
+    color: #2b180e;
 }
 
 .nightMode .category-icon.cat-grid,
 .night_mode .category-icon.cat-grid {
-    background: #2b3e35;
-    color: #f4ece1;
+    background: #c6d4be;
+    color: #26150c;
 }
 
 .nightMode .category-icon.cat-front,
 .night_mode .category-icon.cat-front {
-    background: #264852;
-    color: #f4ece1;
+    background: #88b4bc;
+    color: #26150c;
 }
 
 .nightMode .category-icon.cat-back,
 .night_mode .category-icon.cat-back {
-    background: #2d4238;
-    color: #f4ece1;
+    background: #cfc49e;
+    color: #26150c;
 }
 
 .nightMode .category-icon.cat-theme,
 .night_mode .category-icon.cat-theme {
-    background: #5c3828;
-    color: #f4ece1;
+    background: #bd7c58;
+    color: #26150c;
 }
 
 .category-info {
@@ -2476,8 +2648,8 @@ svg#svg-guide path,
 }
 
 .category-chevron {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     color: var(--text-faint);
     flex-shrink: 0;
 }
@@ -2514,8 +2686,7 @@ svg#svg-guide path,
     box-shadow: var(--filter-soft);
 }
 
-@media (hover: hover),
-(any-hover: hover) {
+@media (hover: hover) and (pointer: fine) {
     .accent-option:hover {
         border-color: var(--active-tab-color, var(--accent));
         background: var(--surface);
@@ -2528,8 +2699,8 @@ svg#svg-guide path,
 }
 
 .accent-swatch {
-    width: 24px;
-    height: 24px;
+    width: clamp(26px, 5vmin, 30px);
+    height: clamp(26px, 5vmin, 30px);
     border-radius: 50%;
     border: 2px solid rgba(0, 0, 0, 0.15);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
@@ -2633,8 +2804,8 @@ svg#svg-guide path,
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     border: 1.5px solid rgba(255, 255, 255, 0.28);
     background: var(--forest-header-pill);
     border-radius: 10px;
@@ -2651,8 +2822,9 @@ svg#svg-guide path,
 }
 
 .back-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
 }
 
 .back-btn:active {
@@ -2685,6 +2857,14 @@ svg#svg-guide path,
     z-index: 15;
 }
 
+.settings-main-title svg {
+    width: 22px !important;
+    height: 22px !important;
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
+}
+
 /* --------------------------------------------------------------------------
    6. Stroke Logic
    State machine: .svg-stroke → .animate-draw / .stroke-complete / .hint-active → .rewind-anim
@@ -2693,7 +2873,7 @@ svg#svg-guide path,
 #svg-guide path,
 .svg-stroke {
     fill: none !important;
-    stroke-width: 4;
+    stroke-width: calc(4px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 105 !important;
@@ -2785,15 +2965,15 @@ svg#svg-guide path,
     flex-wrap: wrap;
 }
 
-/* Forest coin & leaf badges (Ref 4) */
+/* Info tags — theme-adaptive pills with retro-pastel icons */
 .info-tag {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: linear-gradient(180deg, #fae058 0%, #ecc01c 100%);
-    color: #543705;
-    border: 1.5px solid #fff099;
-    box-shadow: 0 3px 0 #b8880a;
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1.5px solid var(--border-color);
+    box-shadow: var(--filter-soft);
     padding: 5px 14px;
     border-radius: 999px;
     font-size: 12px;
@@ -2801,11 +2981,12 @@ svg#svg-guide path,
     letter-spacing: 0.3px;
 }
 
-.tag-frequency {
-    background: linear-gradient(180deg, #98e044 0%, #78c41e 100%);
-    color: #193e06;
-    border: 1.5px solid #c6f492;
-    box-shadow: 0 3px 0 #4d8a0d;
+.info-tag svg {
+    width: clamp(18px, 1.35em, 22px);
+    height: clamp(18px, 1.35em, 22px);
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
 }
 
 .info-section-title {
@@ -2821,11 +3002,22 @@ svg#svg-guide path,
 }
 
 .info-section-title svg {
-    color: var(--accent);
-    background: var(--accent-bg);
+    width: clamp(20px, 1.45em, 24px);
+    height: clamp(20px, 1.45em, 24px);
+    flex-shrink: 0;
+    color: #2b180e;
+    stroke: #2b180e;
+    background: #dcd3b2;
     padding: 5px;
     border-radius: 9px;
     box-sizing: content-box;
+}
+
+.nightMode .info-section-title svg,
+.night_mode .info-section-title svg {
+    background: #cfc49e;
+    color: #26150c;
+    stroke: #26150c;
 }
 
 .info-text-story {
@@ -2837,10 +3029,10 @@ svg#svg-guide path,
     border-radius: var(--border-rad-sm);
     padding: 14px 16px;
     margin: 0 0 24px 0;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    box-shadow: var(--filter-soft);
 }
 
-/* Forest speech-bubble callout ("Bleib fokussiert, sonst verwelke ich!" Ref 1) */
+/* Speech-bubble callout */
 .visuell-hinweis {
     position: relative;
     display: flex;
@@ -2853,13 +3045,16 @@ svg#svg-guide path,
     background: var(--speech-bg);
     padding: 12px 16px;
     border-radius: 16px;
-    border: 3px solid var(--speech-border);
-    box-shadow: 0 4px 0 rgba(16, 44, 38, 0.22), 0 8px 18px rgba(16, 44, 38, 0.14);
+    border: 2px solid var(--speech-border);
+    box-shadow: var(--filter-soft);
 }
 
 .visuell-hinweis svg {
+    width: clamp(22px, 1.5em, 26px);
+    height: clamp(22px, 1.5em, 26px);
     flex-shrink: 0;
-    color: #8ee53f;
+    color: #2b180e;
+    stroke: #2b180e;
 }
 
 .visuell-hinweis::after {
@@ -3001,12 +3196,13 @@ ruby rt {
     color: var(--tag-kun-text);
 }
 
-/* Forest 3D Push-Button ("Freischalten" style from Ref 4) */
+/* Back-side Info button — matches tactile card button design & active theme */
 .info-btn {
     box-sizing: border-box;
-    background: linear-gradient(180deg, var(--btn-3d-top) 0%, var(--btn-3d-bot) 100%);
-    color: #ffffff;
-    border: 2px solid rgba(255, 255, 255, 0.55);
+    background: var(--surface);
+    color: var(--text-main);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
     padding: 14px 24px;
     border-radius: 16px;
     font-weight: 800;
@@ -3018,8 +3214,8 @@ ruby rt {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.4), 0 5px 0 var(--btn-3d-lip), 0 10px 22px rgba(18, 48, 34, 0.20);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+    box-shadow: var(--filter-soft);
+    transition: color 0.18s ease, border-color 0.18s ease, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.18s ease;
     width: var(--dynamic-size);
     -webkit-tap-highlight-color: transparent;
     -webkit-appearance: none;
@@ -3038,16 +3234,17 @@ ruby rt {
 @media (hover: hover),
 (any-hover: hover) {
     .info-btn:hover {
-        filter: brightness(1.06);
-        color: #ffffff;
+        background: var(--surface);
+        color: var(--accent);
+        border-color: var(--accent);
         transform: translateY(-1px) translateZ(0);
-        box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 6px 0 var(--btn-3d-lip), 0 12px 24px rgba(18, 48, 34, 0.24);
+        box-shadow: var(--filter-hover);
     }
 }
 
 .info-btn:active {
-    transform: translateY(3px) translateZ(0);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 0 var(--btn-3d-lip);
+    transform: scale(0.97) translateZ(0);
+    box-shadow: var(--filter-soft);
 }
 
 .info-btn.info-tap {
@@ -3056,10 +3253,12 @@ ruby rt {
 }
 
 .info-btn svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 2.2;
-    color: #ffffff;
+    width: clamp(24px, 1.55em, 30px);
+    height: clamp(24px, 1.55em, 30px);
+    flex-shrink: 0;
+    stroke-width: 1.9;
+    stroke: #2b180e;
+    color: #2b180e;
 }
 
 .link-grid {
@@ -3276,8 +3475,9 @@ ruby rt {
 .tree-container.tree-graph-mode {
     padding: 14px 8px 16px;
     background: linear-gradient(180deg, var(--bg-main) 0%, var(--surface) 100%);
-    border: 2.5px solid var(--border-color);
-    box-shadow: 0 4px 0 var(--pad-lip), 0 7px 0 var(--pad-earth), 0 12px 22px rgba(18, 48, 36, 0.12);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
+    box-shadow: var(--shadow-soft);
 }
 
 .tree-container.tree-graph-mode .tree-children {
@@ -3310,15 +3510,15 @@ ruby rt {
     fill: var(--surface);
     stroke: var(--border-color);
     stroke-width: 2.2;
-    filter: drop-shadow(0 3px 0 var(--btn-lip));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.14));
     transition: stroke 0.15s ease, filter 0.15s ease;
 }
 
 .primitive-tree .pt-root circle {
     fill: var(--surface);
-    stroke: var(--accent);
-    stroke-width: 2.6;
-    filter: drop-shadow(0 3.5px 0 var(--pad-lip));
+    stroke: var(--border-color);
+    stroke-width: 2.8;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
 }
 
 @media (hover: hover),
@@ -3412,9 +3612,11 @@ ruby rt {
     padding: 12px 24px 14px;
     text-align: center;
     background: var(--surface);
-    border: 2.5px solid var(--accent);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
     border-radius: 18px;
-    box-shadow: 0 5px 0 var(--pad-lip), 0 12px 28px rgba(10, 28, 22, 0.28);
+    box-shadow: var(--shadow-elevated);
+    width: var(--dynamic-size);
     max-width: var(--dynamic-size);
     box-sizing: border-box;
 }
@@ -3685,14 +3887,14 @@ ruby rt {
 /* Quicksettings: Handschrift ↔ SVG-Pfade toggle (session-only, no persistence) */
 .free-view-quicktoggle {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 8px;
+    right: 8px;
     z-index: 11;
-    width: 28px;
-    height: 28px;
-    padding: 5px;
+    width: clamp(30px, 6vmin, 36px);
+    height: clamp(30px, 6vmin, 36px);
+    padding: 6px;
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
     background: var(--surface-raised, rgba(128, 128, 128, 0.15));
     color: var(--text-muted, #888);
     cursor: pointer;
@@ -3754,7 +3956,8 @@ ruby rt {
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    border: 3px solid var(--pad-frame);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 4px;
     border-radius: var(--border-rad-main);
     background-color: var(--surface) !important;
     overflow: hidden;
@@ -4165,8 +4368,8 @@ html.is-ankiweb .back-actions {
     position: absolute;
     top: 16px;
     left: 16px;
-    width: 42px;
-    height: 42px;
+    width: clamp(44px, 8vmin, 52px);
+    height: clamp(44px, 8vmin, 52px);
     z-index: 50;
     padding: 0;
     border-radius: 50%;
@@ -4201,8 +4404,12 @@ html.is-ankiweb .back-actions {
 }
 
 .order-btn svg {
-    width: 21px;
-    height: 21px;
+    width: 64%;
+    height: 64%;
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
+    stroke-width: 1.9;
 }
 
 .order-btn::after {
@@ -4252,7 +4459,7 @@ html.is-ankiweb .back-actions {
 #order-svg .order-ghost {
     fill: none;
     stroke: var(--text-muted);
-    stroke-width: 3.5;
+    stroke-width: calc(3.5px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     opacity: 0.15;
@@ -4261,7 +4468,7 @@ html.is-ankiweb .back-actions {
 #order-svg .order-stroke {
     fill: none;
     stroke: var(--stroke-active);
-    stroke-width: 4;
+    stroke-width: calc(4px * var(--kd-sw, 1));
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 105;
@@ -4295,8 +4502,8 @@ html.is-ankiweb .back-actions {
 
 .order-ctrl {
     box-sizing: border-box;
-    min-width: 44px;
-    height: 44px;
+    min-width: 46px;
+    height: 46px;
     padding: 0 10px;
     display: inline-flex;
     align-items: center;
@@ -4318,8 +4525,8 @@ html.is-ankiweb .back-actions {
 }
 
 .order-ctrl svg {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     stroke-width: 2.2;
 }
 
@@ -4375,10 +4582,11 @@ html.is-ankiweb .back-actions {
 }
 
 .info-btn.spen-hover {
-    filter: brightness(1.06);
-    color: #ffffff;
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--accent);
     transform: translateY(-1px) translateZ(0);
-    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 6px 0 var(--btn-3d-lip), 0 12px 24px rgba(18, 48, 34, 0.24);
+    box-shadow: var(--filter-hover);
 }
 
 .link-btn.spen-hover {
@@ -4396,16 +4604,11 @@ html.is-ankiweb .back-actions {
 }
 
 .visual-option.spen-hover svg {
-    stroke: var(--active-tab-color, var(--accent));
+    transform: scale(1.06);
 }
 
 .visual-option.spen-hover span {
     color: var(--active-tab-color, var(--accent));
-}
-
-.visual-option.spen-hover svg text,
-.visual-option.spen-hover svg path[fill="currentColor"] {
-    fill: var(--active-tab-color, var(--accent));
 }
 
 .accent-option.spen-hover {
@@ -4424,8 +4627,10 @@ html.is-ankiweb .back-actions {
 }
 
 .close-settings.spen-hover {
-    filter: brightness(1.06);
-    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45), 0 6px 0 var(--btn-3d-lip), 0 12px 24px rgba(18, 48, 34, 0.24);
+    background: var(--surface);
+    color: var(--active-tab-color, var(--accent));
+    border-color: var(--active-tab-color, var(--accent));
+    box-shadow: var(--filter-hover);
     transform: translateY(-1px);
 }
 

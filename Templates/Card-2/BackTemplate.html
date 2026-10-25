@@ -1,4 +1,4 @@
-<script>if (typeof anki !== "undefined") anki.aFade = 0;</script>
+<script>aFade = 0; qFade = 0; if (typeof anki !== "undefined") { anki.aFade = 0; anki.qFade = 0; }</script>
 <style id="kanji-anti-flicker">
     /* Static rules – applied by the browser IMMEDIATELY on parse, even with innerHTML */
 
@@ -18,6 +18,11 @@
     .kanji-container {
         touch-action: auto !important;
         pointer-events: none !important;
+        transition: none !important;
+    }
+
+    .gear-btn,
+    .order-btn {
         transition: none !important;
     }
 
@@ -120,13 +125,13 @@
 
         {{#Eselsbrücke}}
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path
-                    d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14z"
+                    d="M15.1 14.5c.2-.9.6-1.7 1.4-2.5A4.6 4.6 0 0 0 18 8.2a6 6 0 0 0-12 0c0 1 .2 2.2 1.5 3.8.7.8 1.2 1.6 1.4 2.5z"
                     class="fi-gold" />
-                <path d="M9 18h6" />
-                <path d="M10 22h4" />
+                <rect x="8.8" y="14.5" width="6.4" height="5.5" rx="1.6" class="fi-cream" />
+                <line x1="9" y1="17.2" x2="15" y2="17.2" />
             </svg>
             Eselsbrücke
         </div>
@@ -150,7 +155,7 @@
 
         {{#Wortbeispiel}}
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" class="fi-teal"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" class="fi-cream"></path>
@@ -164,11 +169,18 @@
         {{/Wortbeispiel}}
 
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" class="fi-gold"></path>
-                <circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"></circle>
-                <circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"></circle>
+                <path
+                    d="M10.5 4C6.4 4 3 6.7 3 10c0 1.8 1 3.4 2.5 4.5L4.5 17l3.2-1.4c.9.3 1.8.4 2.8.4 4.1 0 7.5-2.7 7.5-6S14.6 4 10.5 4z"
+                    class="fi-gold"></path>
+                <path
+                    d="M16 11.5c-2.8 0-5 2-5 4.4s2.2 4.4 5 4.4c.6 0 1.2-.1 1.8-.3l2.2 1-0.6-2c1-0.8 1.6-1.9 1.6-3.1 0-2.4-2.2-4.4-5-4.4z"
+                    class="fi-cream"></path>
+                <circle cx="8.2" cy="9.8" r="0.9" fill="currentColor" stroke="none"></circle>
+                <circle cx="12.2" cy="9.8" r="0.9" fill="currentColor" stroke="none"></circle>
+                <circle cx="14.5" cy="15.8" r="0.8" fill="currentColor" stroke="none"></circle>
+                <circle cx="17.5" cy="15.8" r="0.8" fill="currentColor" stroke="none"></circle>
             </svg>
             Lesungen
         </div>
@@ -254,7 +266,6 @@
             // Always remove+recreate dynamic style (WKWebView caching workaround)
             var _dynFontId = 'dyn-font-size';
             var _dynEl = document.getElementById(_dynFontId);
-            if (_dynEl) _dynEl.parentNode.removeChild(_dynEl);
             var _fsMap = {
                 '.card': [16, 14, 18], '.card-title': [26, 23, 29], '.info-modal-header': [18, 16, 20],
                 '.info-modal-title': [13, 11, 15], '.info-modal-meaning': [14, 12, 16],
@@ -272,10 +283,13 @@
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
             var _cssRules = Object.keys(_fsMap).map(function (_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
-            var _newStyle = document.createElement('style');
-            _newStyle.id = _dynFontId;
-            _newStyle.textContent = _cssRules;
-            document.head.appendChild(_newStyle);
+            if (!_dynEl || _dynEl.textContent !== _cssRules || document.documentElement.classList.contains('is-ankimobile')) {
+                if (_dynEl) _dynEl.parentNode.removeChild(_dynEl);
+                var _newStyle = document.createElement('style');
+                _newStyle.id = _dynFontId;
+                _newStyle.textContent = _cssRules;
+                document.head.appendChild(_newStyle);
+            }
         } catch (e) { }
     })();
 
@@ -298,6 +312,7 @@
                 ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
                 : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
             var swf0 = swVal === 'thin' ? 0.7 : swVal === 'thick' ? 1.4 : 1;
+            document.documentElement.style.setProperty('--kd-sw', String(swf0));
             var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
@@ -310,7 +325,9 @@
                     p.style.removeProperty('opacity');
                     p.removeAttribute('filter');
                     p.removeAttribute('paint-order');
-                    p.setAttribute('stroke-width', String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf0));
+                    var rw0 = String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf0);
+                    p.setAttribute('stroke-width', rw0);
+                    p.style.strokeWidth = rw0;
                     // Apply basic style properties (halos added later by applyBackFeatures)
                     switch (ss) {
                         case 'neon':
@@ -425,7 +442,7 @@
             let keyword = '', isPrimitive = false;
             const bm = s.match(/\[([^\[\]]*)\]\s*$/);
             if (bm) {
-                keyword = bm[1];
+                keyword = bm[1].replace(/\u00ad/g, '');
                 if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
                 s = s.slice(0, bm.index).trim();
             }
@@ -512,7 +529,7 @@
             const box = n.strokes && n.strokes.length ? unionBox(n.strokes) : null;
             if (box) {
                 const colorOf = {};
-                n.children.forEach((c, ci) => (c.strokes || []).forEach(s => { colorOf[s] = PALETTE[ci % PALETTE.length]; }));
+                n.children.forEach((c, ci) => (c.strokes || []).forEach(s => { if (colorOf[s] == null) colorOf[s] = PALETTE[ci % PALETTE.length]; }));
                 glyph.setAttribute('viewBox', squareViewBox(box, 0.12));
                 n.strokes.forEach(s => {
                     if (!ds[s]) return;
@@ -523,9 +540,9 @@
                 });
             } else if (/<path/i.test(n.value)) {
                 glyph.setAttribute('class', 'pt-glyph pt-glyph-fill');
-                glyph.innerHTML = n.value.replace(/<\/?svg[^>]*>/gi, '');
+                glyph.innerHTML = '<g transform="scale(1,-1)">' + n.value.replace(/<\/?svg[^>]*>/gi, '') + '</g>';
                 const mb = markupBox(glyph.innerHTML);
-                if (mb) glyph.setAttribute('viewBox', squareViewBox(mb, 0.04));
+                if (mb) glyph.setAttribute('viewBox', squareViewBox(mb, 0.16));
             } else {
                 glyph.setAttribute('viewBox', '0 0 100 100');
                 const t = document.createElementNS(NS, 'text');
@@ -560,7 +577,8 @@
         const container = target.closest('.tree-container');
         if (container) container.classList.add('tree-graph-mode');
         svg.addEventListener('click', function (e) {
-            const node = e.target.closest('.pt-node');
+            const el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+            const node = el && el.closest ? el.closest('.pt-node') : null;
             if (!node) return;
             e.stopPropagation();
             const wasActive = node.classList.contains('pt-active');
@@ -753,6 +771,7 @@
                 ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
                 : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
             var swf = swVal2 === 'thin' ? 0.7 : swVal2 === 'thick' ? 1.4 : 1;
+            document.documentElement.style.setProperty('--kd-sw', String(swf));
             paths.forEach((path, i) => {
                 // Full reset
                 path.style.removeProperty('filter');
@@ -760,7 +779,9 @@
                 path.style.removeProperty('opacity');
                 path.removeAttribute('filter');
                 path.removeAttribute('paint-order');
-                path.setAttribute('stroke-width', String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf));
+                var rw = String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf);
+                path.setAttribute('stroke-width', rw);
+                path.style.strokeWidth = rw;
                 // Apply new style
                 switch (ss) {
                     case 'neon':
@@ -790,6 +811,7 @@
                     h2.setAttribute('stroke-linecap', 'round');
                     h2.setAttribute('stroke-linejoin', 'round');
                     h2.style.cssText = '';
+                    h2.style.setProperty('stroke-width', String(8 * swf), 'important');
                     h2.style.setProperty('opacity', '0.12', 'important');
                     h2.style.setProperty('stroke', haloC, 'important');
                     h2.removeAttribute('filter');
@@ -1001,20 +1023,38 @@
         document.querySelectorAll('.settings-modal, .info-modal').forEach(function (modal) {
             if (modal._kanjiPenClick) return;
             modal._kanjiPenClick = true;
+            modal.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'pen') return;
+                modal._penDownX = e.clientX;
+                modal._penDownY = e.clientY;
+            });
             modal.addEventListener('pointerup', function (e) {
                 if (e.pointerType !== 'pen') return;
-                var target = e.target.closest('input, button, label, select, a, .settings-link, [onclick]');
-                if (!target) return;
+                if (modal._penDownX !== undefined && Math.hypot(e.clientX - modal._penDownX, e.clientY - modal._penDownY) > 14) return;
+                var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .tree-node, .pt-node, .word-example-item, .tappable') : null;
+                if (!target) {
+                    if (!el || !el.closest || !el.closest('.tree-children')) {
+                        modal.querySelectorAll('.pt-node.pt-active').forEach(function (n) { n.classList.remove('pt-active'); });
+                        modal.querySelectorAll('.pt-node.pt-dismissed').forEach(function (n) { n.classList.remove('pt-dismissed'); });
+                    }
+                    return;
+                }
                 e.preventDefault();
                 e.stopPropagation();
                 if (window._kanjiModalEatClick) {
                     document.removeEventListener('click', window._kanjiModalEatClick, true);
                     clearTimeout(window._kanjiModalEatTimer);
                 }
-                target.click();
-                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                document.addEventListener('click', window._kanjiModalEatClick, true);
-                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                if (typeof target.click === 'function') {
+                    target.click();
+                } else {
+                    target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                }
+                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
+                window._kanjiModalEatClick = _eatHandler;
+                document.addEventListener('click', _eatHandler, true);
+                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
             });
         });
     }
@@ -1041,27 +1081,16 @@
                     if (handler === 'info') openInfoModal(e);
                     else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
-                    window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                    document.addEventListener('click', window._kanjiModalEatClick, true);
-                    window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                    var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
+                    window._kanjiModalEatClick = _eatHandler;
+                    document.addEventListener('click', _eatHandler, true);
+                    window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
                 });
             });
         }
         addPenHandler('.info-btn', 'info');
         addPenHandler('.order-btn', 'order');
         addPenHandler('.gear-btn', 'gear');
-
-        var infoModal = document.querySelector('.info-modal');
-        if (infoModal && !infoModal._ankiPenDelegateFixed) {
-            infoModal._ankiPenDelegateFixed = true;
-            infoModal.addEventListener('pointerup', function (e) {
-                if (e.pointerType !== 'pen') return;
-                var tappable = e.target.closest('.tree-node, .pt-node, .word-example-item, .tappable');
-                if (!tappable) return;
-                e.preventDefault(); e.stopPropagation();
-                tappable.click();
-            });
-        }
     })();
 
     // --- S-Pen / Stylus: backdrop-close verification ---
