@@ -1,11 +1,19 @@
 <script>qFade = 0; if (typeof anki !== "undefined") anki.qFade = 0;</script>
+<button class="order-btn" onclick="openStrokeOrder(event)" title="Strichfolge ansehen" aria-label="Strichfolge ansehen"
+    tabindex="-1">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M8 6.5c0-1.1 1.2-1.8 2.1-1.2l9 5.5c.9.6.9 1.8 0 2.4l-9 5.5c-.9.6-2.1-.1-2.1-1.2V6.5z" class="fi-coral">
+        </path>
+    </svg>
+</button>
 <button class="gear-btn" onclick="openSettings(event)" title="Einstellungen" tabindex="-1">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path
+        <path class="fi-tan"
             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
         </path>
+        <circle cx="12" cy="12" r="3.2" class="fi-cream"></circle>
     </svg>
 </button>
 
@@ -17,10 +25,10 @@
             <div class="settings-main-title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     style="width:18px;height:18px;stroke-width:2;">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path
+                    <path class="fi-tan"
                         d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
                     </path>
+                    <circle cx="12" cy="12" r="3" class="fi-cream"></circle>
                 </svg>
                 Einstellungen
             </div>
@@ -34,7 +42,10 @@
                 <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-grid')">
                     <div class="category-icon cat-grid">
                         <svg viewBox="0 0 24 24">
-                            <path d="M4 6h16M4 12h16M4 18h7"></path>
+                            <path d="M8 4h4v8H4V8a4 4 0 0 1 4-4z" class="fi-coral"></path>
+                            <path d="M12 4h4a4 4 0 0 1 4 4v4h-8V4z" class="fi-gold"></path>
+                            <path d="M4 12h8v8H8a4 4 0 0 1-4-4v-4z" class="fi-coral"></path>
+                            <path d="M12 12h8v4a4 4 0 0 1-4 4h-4v-8z" class="fi-cream"></path>
                         </svg>
                     </div>
                     <div class="category-info">
@@ -50,8 +61,9 @@
                     onclick="navigateToPage('page-front')">
                     <div class="category-icon cat-front">
                         <svg viewBox="0 0 24 24">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            <circle cx="12" cy="12" r="8.5" class="fi-cream" />
+                            <polygon points="15.8,8.2 13.4,13.4 8.2,15.8 10.6,10.6" class="fi-coral" />
+                            <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
                         </svg>
                     </div>
                     <div class="category-info">
@@ -67,8 +79,9 @@
                     onclick="navigateToPage('page-front-c2')">
                     <div class="category-icon cat-front">
                         <svg viewBox="0 0 24 24">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            <circle cx="12" cy="12" r="8.5" class="fi-cream" />
+                            <polygon points="15.8,8.2 13.4,13.4 8.2,15.8 10.6,10.6" class="fi-coral" />
+                            <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
                         </svg>
                     </div>
                     <div class="category-info">
@@ -83,8 +96,9 @@
                 <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-back')">
                     <div class="category-icon cat-back">
                         <svg viewBox="0 0 24 24">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <path d="M9 18l6-6-6-6" transform="rotate(180 12 12)"></path>
+                            <rect x="9" y="6" width="11" height="14" rx="2" class="fi-cream"></rect>
+                            <rect x="4" y="4" width="11" height="14" rx="2" class="fi-teal"></rect>
+                            <path d="M7.2 11l2 2 3.5-4"></path>
                         </svg>
                     </div>
                     <div class="category-info">
@@ -103,13 +117,18 @@
                 <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-theme')">
                     <div class="category-icon cat-theme">
                         <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M12 2a10 10 0 0 1 0 20z"></path>
+                            <path
+                                d="M12 3a9 9 0 1 0 0 18c1.5 0 2.5-1 2.5-2.2 0-.6-.2-1.1-.6-1.5-.4-.4-.6-.9-.6-1.5 0-1.2 1-2.2 2.2-2.2H17a4 4 0 0 0 4-4c0-3.9-4-6.6-9-6.6z"
+                                class="fi-tan"></path>
+                            <circle cx="7.5" cy="11.5" r="1.5" class="fi-coral"></circle>
+                            <circle cx="10.2" cy="7.5" r="1.5" class="fi-gold"></circle>
+                            <circle cx="14.5" cy="7.5" r="1.5" class="fi-mint"></circle>
+                            <circle cx="16.8" cy="11" r="1.5" class="fi-teal"></circle>
                         </svg>
                     </div>
                     <div class="category-info">
                         <span class="category-name">Erscheinungsbild</span>
-                        <span class="category-desc">Modus, Farben, Schrift, Striche</span>
+                        <span class="category-desc">Japan-Themes, Modus, Farben, Striche</span>
                     </div>
                     <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -135,25 +154,24 @@
             <div class="visual-options-grid">
                 <label><input type="radio" name="grid-type" value="none"
                         onchange="updateGridSetting('type', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                                opacity="0.4" />
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                            <rect x="4" y="4" width="16" height="16" rx="3" class="fi-cream" />
                         </svg><span>Keine</span></div>
                 </label>
                 <label><input type="radio" name="grid-type" value="cross"
                         onchange="updateGridSetting('type', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                                opacity="0.4" />
-                            <path d="M12 4v16M4 12h16" stroke-width="1.5" />
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                            <path d="M7 4h5v8H4V7a3 3 0 0 1 3-3z" class="fi-coral" />
+                            <path d="M12 4h5a3 3 0 0 1 3 3v5h-8V4z" class="fi-gold" />
+                            <path d="M4 12h8v8H7a3 3 0 0 1-3-3v-5z" class="fi-teal" />
+                            <path d="M12 12h8v5a3 3 0 0 1-3 3h-5v-8z" class="fi-cream" />
                         </svg><span>Kreuz</span></div>
                 </label>
                 <label><input type="radio" name="grid-type" value="full"
                         onchange="updateGridSetting('type', this.value)">
-                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5" stroke-dasharray="2 2"
-                                opacity="0.4" />
-                            <path d="M12 4v16M4 12h16M4 4l16 16M4 20L20 4" stroke-width="1.5" />
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                            <rect x="4" y="4" width="16" height="16" rx="3" class="fi-gold" />
+                            <path d="M12 4v16M4 12h16M5 5l14 14M5 19L19 5" />
                         </svg><span>Voll</span></div>
                 </label>
             </div>
@@ -162,21 +180,23 @@
                 <div class="visual-options-grid">
                     <label><input type="radio" name="grid-style" value="dotted"
                             onchange="updateGridSetting('style', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <path d="M4 12h0.01M8 12h0.01M12 12h0.01M16 12h0.01M20 12h0.01" stroke-width="3"
-                                    stroke-linecap="round" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <circle cx="6" cy="12" r="2.6" class="fi-coral" />
+                                <circle cx="12" cy="12" r="2.6" class="fi-gold" />
+                                <circle cx="18" cy="12" r="2.6" class="fi-teal" />
                             </svg><span>Punkte</span></div>
                     </label>
                     <label><input type="radio" name="grid-style" value="dashed"
                             onchange="updateGridSetting('style', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" stroke-dasharray="4 4" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <rect x="2.5" y="9.5" width="8" height="5" rx="2.5" class="fi-mint" />
+                                <rect x="13.5" y="9.5" width="8" height="5" rx="2.5" class="fi-teal" />
                             </svg><span>Striche</span></div>
                     </label>
                     <label><input type="radio" name="grid-style" value="solid"
                             onchange="updateGridSetting('style', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <line x1="2" y1="12" x2="22" y2="12" stroke-width="2" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <rect x="2.5" y="9.5" width="19" height="5" rx="2.5" class="fi-gold" />
                             </svg><span>Linie</span></div>
                     </label>
                 </div>
@@ -184,20 +204,20 @@
                 <div class="visual-options-grid">
                     <label><input type="radio" name="grid-thick" value="thin"
                             onchange="updateGridSetting('thick', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <line x1="4" y1="12" x2="20" y2="12" stroke-width="1" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <rect x="3" y="10.5" width="18" height="3" rx="1.5" class="fi-teal" />
                             </svg><span>Dünn</span></div>
                     </label>
                     <label><input type="radio" name="grid-thick" value="medium"
                             onchange="updateGridSetting('thick', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <line x1="4" y1="12" x2="20" y2="12" stroke-width="2.5" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <rect x="3" y="9" width="18" height="6" rx="3" class="fi-mint" />
                             </svg><span>Mittel</span></div>
                     </label>
                     <label><input type="radio" name="grid-thick" value="thick"
                             onchange="updateGridSetting('thick', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <line x1="4" y1="12" x2="20" y2="12" stroke-width="4" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <rect x="3" y="7" width="18" height="10" rx="4" class="fi-coral" />
                             </svg><span>Dick</span></div>
                     </label>
                 </div>
@@ -205,20 +225,22 @@
                 <div class="visual-options-grid">
                     <label><input type="radio" name="grid-opac" value="light"
                             onchange="updateGridSetting('opac', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.3" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="7" class="fi-cream" />
                             </svg><span>Dezent</span></div>
                     </label>
                     <label><input type="radio" name="grid-opac" value="medium"
                             onchange="updateGridSetting('opac', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="6" stroke-width="2" opacity="0.6" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="7" class="fi-cream" />
+                                <path d="M12 5a7 7 0 0 1 0 14z" class="fi-teal" />
                             </svg><span>Normal</span></div>
                     </label>
                     <label><input type="radio" name="grid-opac" value="dark"
                             onchange="updateGridSetting('opac', this.value)">
-                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="6" stroke-width="2" opacity="1" />
+                        <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+                                <circle cx="12" cy="12" r="7" class="fi-gold" />
+                                <circle cx="12" cy="12" r="3" class="fi-coral" />
                             </svg><span>Stark</span></div>
                     </label>
                 </div>
@@ -242,12 +264,10 @@
                 <label><input type="radio" name="opt-draw-mode" value="guided"
                         onchange="updateFeatureSetting('drawMode', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 19Q5 5 20 5" stroke-dasharray="3 2" opacity="0.4" />
-                            <polyline points="15 5 20 5 20 10" />
-                            <path d="M5 19Q7 13 11 10" />
-                            <circle cx="5" cy="19" r="2" fill="currentColor" stroke="none" />
+                            <circle cx="12" cy="12" r="8.5" class="fi-teal" />
+                            <polygon points="16,8 13.5,13.5 8,16 10.5,10.5" class="fi-coral" />
                         </svg>
                         <span>Geführt</span>
                     </div>
@@ -255,10 +275,10 @@
                 <label><input type="radio" name="opt-draw-mode" value="free"
                         onchange="updateFeatureSetting('drawMode', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 17c3-12 7 8 16-8" />
-                            <circle cx="4" cy="17" r="1.5" fill="currentColor" stroke="none" />
+                            <path d="M14 5l5 5L8 21l-5 1 1-5L14 5z" class="fi-gold" />
+                            <path d="M14 5l2.5-2.5a2 2 0 0 1 3 3L17 8l-3-3z" class="fi-coral" />
                         </svg>
                         <span>Frei</span>
                     </div>
@@ -269,9 +289,9 @@
                 <label><input type="radio" name="opt-strictness" value="loose"
                         onchange="updateFeatureSetting('strictness', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 12c2-2 4 2 6 0s4 2 6 0 4 2 6 0" />
+                            <path d="M3 9c3-3 6 3 9 0s6 3 9 0v6c-3 3-6-3-9 0s-6-3-9 0V9z" class="fi-mint" />
                         </svg>
                         <span>Locker</span>
                     </div>
@@ -279,10 +299,12 @@
                 <label><input type="radio" name="opt-strictness" value="normal"
                         onchange="updateFeatureSetting('strictness', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 12h18" />
-                            <path d="M3 12c3-1 6 1 9 0s6 1 9 0" opacity="0.3" />
+                            <rect x="3" y="8" width="18" height="8" rx="2.5" class="fi-teal" />
+                            <line x1="8" y1="8" x2="8" y2="12" />
+                            <line x1="12" y1="8" x2="12" y2="13" />
+                            <line x1="16" y1="8" x2="16" y2="12" />
                         </svg>
                         <span>Normal</span>
                     </div>
@@ -290,11 +312,11 @@
                 <label><input type="radio" name="opt-strictness" value="strict"
                         onchange="updateFeatureSetting('strictness', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="8" />
-                            <circle cx="12" cy="12" r="4" />
-                            <circle cx="12" cy="12" r="0.5" fill="currentColor" />
+                            <circle cx="12" cy="12" r="8.5" class="fi-coral" />
+                            <circle cx="12" cy="12" r="5" class="fi-cream" />
+                            <circle cx="12" cy="12" r="2" class="fi-gold" />
                         </svg>
                         <span>Streng</span>
                     </div>
@@ -305,10 +327,11 @@
                 <label><input type="radio" name="opt-color-front" value="off"
                         onchange="updateFeatureSetting('colorFront', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                            <circle cx="12" cy="12" r="9" class="fi-cream" />
+                            <line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
+                            <line x1="15.5" y1="8.5" x2="8.5" y2="15.5" />
                         </svg>
                         <span>Aus</span>
                     </div>
@@ -316,10 +339,10 @@
                 <label><input type="radio" name="opt-color-front" value="on"
                         onchange="updateFeatureSetting('colorFront', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
+                            <circle cx="12" cy="12" r="9" class="fi-mint" />
+                            <polyline points="8 12.5 11 15.5 16.5 9.5" />
                         </svg>
                         <span>An</span>
                     </div>
@@ -330,11 +353,10 @@
                 <label><input type="radio" name="opt-autodraw" value="off"
                         onchange="updateFeatureSetting('autodraw', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                            <path d="M15 5l4 4"></path>
-                            <line x1="2" y1="2" x2="22" y2="22"></line>
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" class="fi-cream"></path>
+                            <line x1="3" y1="3" x2="21" y2="21"></line>
                         </svg>
                         <span>Aus</span>
                     </div>
@@ -342,9 +364,9 @@
                 <label><input type="radio" name="opt-autodraw" value="on"
                         onchange="updateFeatureSetting('autodraw', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" class="fi-gold"></path>
                             <path d="M15 5l4 4"></path>
                         </svg>
                         <span>An</span>
@@ -356,10 +378,11 @@
                 <label><input type="radio" name="opt-celebration" value="off"
                         onchange="updateFeatureSetting('celebration', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path
-                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
+                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z"
+                                class="fi-cream" />
                             <line x1="4" y1="4" x2="20" y2="20" />
                         </svg>
                         <span>Aus</span>
@@ -368,10 +391,11 @@
                 <label><input type="radio" name="opt-celebration" value="on"
                         onchange="updateFeatureSetting('celebration', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path
-                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z" />
+                                d="M12 2L14.4 8.26L21.2 9.27L15.45 12.91L16.81 20L12 16.77L7.19 20L8.55 12.91L2.8 9.27L9.6 8.26Z"
+                                class="fi-gold" />
                         </svg>
                         <span>An</span>
                     </div>
@@ -382,10 +406,10 @@
                 <label><input type="radio" name="opt-start-hint" value="off"
                         onchange="updateFeatureSetting('startHint', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 18L18 6" opacity="0.4" />
-                            <line x1="3" y1="3" x2="21" y2="21" />
+                            <circle cx="7" cy="17" r="3.5" class="fi-cream" />
+                            <line x1="4" y1="4" x2="20" y2="20" />
                         </svg>
                         <span>Aus</span>
                     </div>
@@ -393,11 +417,11 @@
                 <label><input type="radio" name="opt-start-hint" value="on"
                         onchange="updateFeatureSetting('startHint', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="6" cy="18" r="2.5" fill="currentColor" stroke="none" />
-                            <path d="M9 15L18 6" />
-                            <polyline points="12 6 18 6 18 12" />
+                            <circle cx="7" cy="17" r="4" class="fi-coral" />
+                            <path d="M10.5 13.5L18 6" />
+                            <polyline points="12.5 6 18 6 18 11.5" />
                         </svg>
                         <span>An</span>
                     </div>
@@ -423,14 +447,16 @@
                     <label><input type="radio" name="opt-color-back" value="off"
                             onchange="updateFeatureSetting('colorBack', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <path
-                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                                <line x1="3" y1="3" x2="21" y2="21" />
+                                    d="M12 3a9 9 0 1 0 0 18c1.6 0 2.6-1 2.6-2.3 0-.6-.2-1.1-.6-1.5-.4-.4-.6-.9-.6-1.5 0-1.2 1-2.1 2.2-2.1H17a4 4 0 0 0 4-4C21 5.8 17 3 12 3z"
+                                    class="fi-cream" />
+                                <circle cx="7.5" cy="12" r="1.6" class="fi-cream" />
+                                <circle cx="10" cy="7.8" r="1.6" class="fi-cream" />
+                                <circle cx="14.5" cy="7.8" r="1.6" class="fi-cream" />
+                                <circle cx="17.5" cy="17.5" r="4.2" class="fi-coral" />
+                                <path d="M16 16l3 3M19 16l-3 3" />
                             </svg>
                             <span>Aus</span>
                         </div>
@@ -438,13 +464,15 @@
                     <label><input type="radio" name="opt-color-back" value="on"
                             onchange="updateFeatureSetting('colorBack', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
                                 <path
-                                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.2-.7-.4-1-.2-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9.5-10-9.5z" />
-                                <path d="M9.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                                <path d="M14.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
-                                <path d="M18.5 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor" />
+                                    d="M12 3a9 9 0 1 0 0 18c1.6 0 2.6-1 2.6-2.3 0-.6-.2-1.1-.6-1.5-.4-.4-.6-.9-.6-1.5 0-1.2 1-2.1 2.2-2.1H17a4 4 0 0 0 4-4C21 5.8 17 3 12 3z"
+                                    class="fi-gold" />
+                                <circle cx="7.5" cy="12" r="1.8" class="fi-coral" />
+                                <circle cx="10" cy="7.8" r="1.8" class="fi-cream" />
+                                <circle cx="14.6" cy="7.8" r="1.8" class="fi-teal" />
+                                <circle cx="9.2" cy="16.2" r="1.7" class="fi-mint" />
                             </svg>
                             <span>An</span>
                         </div>
@@ -456,12 +484,12 @@
                 <label><input type="radio" name="opt-numbers" value="off"
                         onchange="updateFeatureSetting('numbers', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" />
-                            <path d="M20 6 L20 34" />
-                            <path d="M20 16 Q 15 22 6 34" />
-                            <path d="M20 16 Q 25 22 34 34" />
+                            <rect x="4" y="3.5" width="16" height="17" rx="3.2" class="fi-cream" />
+                            <path d="M7.2 3.5h9.6A3.2 3.2 0 0 1 20 6.7v2.3H4V6.7a3.2 3.2 0 0 1 3.2-3.2z"
+                                class="fi-tan" />
+                            <path d="M8.5 14h7M12 11v6.5" />
                         </svg>
                         <span>Aus</span>
                     </div>
@@ -469,20 +497,13 @@
                 <label><input type="radio" name="opt-numbers" value="on"
                         onchange="updateFeatureSetting('numbers', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" />
-                            <path d="M20 6 L20 34" />
-                            <path d="M20 16 Q 15 22 6 34" />
-                            <path d="M20 16 Q 25 22 34 34" />
-                            <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">1</text>
-                            <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">2</text>
-                            <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">3</text>
-                            <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">4</text>
+                            <path d="M7 4h5v8H4V7a3 3 0 0 1 3-3z" class="fi-coral" />
+                            <path d="M12 4h5a3 3 0 0 1 3 3v5h-8V4z" class="fi-gold" />
+                            <path d="M4 12h8v8H7a3 3 0 0 1-3-3v-5z" class="fi-teal" />
+                            <path d="M12 12h8v5a3 3 0 0 1-3 3h-5v-8z" class="fi-cream" />
+                            <path d="M8 6.5v3.2M14.8 6.5h2.2l-2.2 3.2h2.2M7 14.5h2l-1 1.5 1 1.5H7M15 16h2.5" />
                         </svg>
                         <span>An</span>
                     </div>
@@ -494,10 +515,11 @@
                     <label><input type="radio" name="opt-side-by-side" value="off"
                             onchange="updateFeatureSetting('sideBySide', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="18" height="18" rx="2" />
-                                <line x1="4" y1="4" x2="20" y2="20" />
+                                <rect x="5" y="3.5" width="14" height="17" rx="3" class="fi-cream" />
+                                <path d="M8 3.5h8a3 3 0 0 1 3 3v2.5H5V6.5a3 3 0 0 1 3-3z" class="fi-teal" />
+                                <circle cx="12" cy="14.5" r="2.6" class="fi-gold" />
                             </svg>
                             <span>Aus</span>
                         </div>
@@ -505,10 +527,12 @@
                     <label><input type="radio" name="opt-side-by-side" value="on"
                             onchange="updateFeatureSetting('sideBySide', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="3" width="9" height="18" rx="2" />
-                                <rect x="13" y="3" width="9" height="18" rx="2" />
+                                <rect x="10.5" y="5.5" width="10.5" height="14.5" rx="2.5" class="fi-cream" />
+                                <rect x="3" y="3.5" width="10.5" height="14.5" rx="2.5" class="fi-teal" />
+                                <path d="M6.2 13l2-5 2 5M6.7 11.8h3" />
+                                <path d="M14.5 11.5h4M16.5 9.5v5" />
                             </svg>
                             <span>An</span>
                         </div>
@@ -519,9 +543,11 @@
                     <label><input type="radio" name="opt-free-view" value="handwriting"
                             onchange="updateFeatureSetting('freeView', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                stroke-linecap="round">
-                                <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3.5" y="4" width="14" height="16" rx="2.8" class="fi-cream" />
+                                <path d="M6.5 14.5c1.5-2.5 3 2.5 4.5 0" />
+                                <path d="M15.5 4.5l4 4-6.5 6.5-3.8.8.8-3.8 5.5-7.5z" class="fi-coral" />
                             </svg>
                             <span>Handschrift</span>
                         </div>
@@ -529,11 +555,12 @@
                     <label><input type="radio" name="opt-free-view" value="svg"
                             onchange="updateFeatureSetting('freeView', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 17 8 8 13 14 18 6 21 10" />
-                                <circle cx="3" cy="17" r="1.5" fill="currentColor" />
-                                <circle cx="21" cy="10" r="1.5" fill="currentColor" />
+                                <path d="M5.5 17.5C5.5 9 18.5 15 18.5 6.5" />
+                                <rect x="3" y="15" width="5" height="5" rx="1.2" class="fi-coral" />
+                                <circle cx="12" cy="12" r="2.8" class="fi-gold" />
+                                <rect x="16" y="4" width="5" height="5" rx="1.2" class="fi-teal" />
                             </svg>
                             <span>SVG-Pfade</span>
                         </div>
@@ -546,12 +573,11 @@
                     <label><input type="radio" name="opt-display-style" value="standard"
                             onchange="updateFeatureSetting('displayStyle', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 16 L32 16" />
-                                <path d="M20 6 L20 34" />
-                                <path d="M20 16 Q 15 22 6 34" />
-                                <path d="M20 16 Q 25 22 34 34" />
+                                <rect x="4" y="4" width="16" height="16" rx="3.2" class="fi-cream" />
+                                <rect x="7" y="7" width="10" height="10" rx="2" class="fi-tan" />
+                                <path d="M9.5 12h5M12 9.5v5" />
                             </svg>
                             <span>Standard</span>
                         </div>
@@ -559,12 +585,16 @@
                     <label><input type="radio" name="opt-display-style" value="colorOrder"
                             onchange="updateFeatureSetting('displayStyle', this.value)">
                         <div class="visual-option">
-                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 16 L32 16" opacity="1" />
-                                <path d="M20 6 L20 34" opacity="0.7" />
-                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
-                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                                <path d="M6.8 4h10.4A2.8 2.8 0 0 1 20 6.8v2.7H4V6.8A2.8 2.8 0 0 1 6.8 4z"
+                                    class="fi-coral" />
+                                <rect x="4" y="9.5" width="16" height="5" class="fi-gold" />
+                                <path d="M4 14.5h16v2.7a2.8 2.8 0 0 1-2.8 2.8H6.8A2.8 2.8 0 0 1 4 17.2v-2.7z"
+                                    class="fi-teal" />
+                                <circle cx="7.5" cy="6.8" r="1.1" class="fi-cream" />
+                                <circle cx="7.5" cy="12" r="1.1" class="fi-cream" />
+                                <circle cx="7.5" cy="17.2" r="1.1" class="fi-cream" />
                             </svg>
                             <span>Farbig</span>
                         </div>
@@ -590,12 +620,12 @@
                 <label><input type="radio" name="opt-numbers-c2f" value="off"
                         onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" />
-                            <path d="M20 6 L20 34" />
-                            <path d="M20 16 Q 15 22 6 34" />
-                            <path d="M20 16 Q 25 22 34 34" />
+                            <rect x="4" y="3.5" width="16" height="17" rx="3.2" class="fi-cream" />
+                            <path d="M7.2 3.5h9.6A3.2 3.2 0 0 1 20 6.7v2.3H4V6.7a3.2 3.2 0 0 1 3.2-3.2z"
+                                class="fi-tan" />
+                            <path d="M8.5 14h7M12 11v6.5" />
                         </svg>
                         <span>Aus</span>
                     </div>
@@ -603,20 +633,13 @@
                 <label><input type="radio" name="opt-numbers-c2f" value="on"
                         onchange="updateFeatureSetting('numbers', this.value, 'c2f')">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" overflow="visible" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 16 L32 16" />
-                            <path d="M20 6 L20 34" />
-                            <path d="M20 16 Q 15 22 6 34" />
-                            <path d="M20 16 Q 25 22 34 34" />
-                            <text x="2" y="14" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">1</text>
-                            <text x="28" y="5" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">2</text>
-                            <text x="-1" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">3</text>
-                            <text x="41" y="39" font-size="10" stroke="none" fill="currentColor" font-weight="900"
-                                font-family="sans-serif" text-anchor="middle">4</text>
+                            <path d="M7 4h5v8H4V7a3 3 0 0 1 3-3z" class="fi-coral" />
+                            <path d="M12 4h5a3 3 0 0 1 3 3v5h-8V4z" class="fi-gold" />
+                            <path d="M4 12h8v8H7a3 3 0 0 1-3-3v-5z" class="fi-teal" />
+                            <path d="M12 12h8v5a3 3 0 0 1-3 3h-5v-8z" class="fi-cream" />
+                            <path d="M8 6.5v3.2M14.8 6.5h2.2l-2.2 3.2h2.2M7 14.5h2l-1 1.5 1 1.5H7M15 16h2.5" />
                         </svg>
                         <span>An</span>
                     </div>
@@ -628,12 +651,11 @@
                     <label><input type="radio" name="opt-display-style-c2f" value="standard"
                             onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
                         <div class="visual-option">
-                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 16 L32 16" />
-                                <path d="M20 6 L20 34" />
-                                <path d="M20 16 Q 15 22 6 34" />
-                                <path d="M20 16 Q 25 22 34 34" />
+                                <rect x="4" y="4" width="16" height="16" rx="3.2" class="fi-cream" />
+                                <rect x="7" y="7" width="10" height="10" rx="2" class="fi-tan" />
+                                <path d="M9.5 12h5M12 9.5v5" />
                             </svg>
                             <span>Standard</span>
                         </div>
@@ -641,12 +663,16 @@
                     <label><input type="radio" name="opt-display-style-c2f" value="colorOrder"
                             onchange="updateFeatureSetting('displayStyle', this.value, 'c2f')">
                         <div class="visual-option">
-                            <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8 16 L32 16" opacity="1" />
-                                <path d="M20 6 L20 34" opacity="0.7" />
-                                <path d="M20 16 Q 15 22 6 34" opacity="0.45" />
-                                <path d="M20 16 Q 25 22 34 34" opacity="0.25" />
+                                <path d="M6.8 4h10.4A2.8 2.8 0 0 1 20 6.8v2.7H4V6.8A2.8 2.8 0 0 1 6.8 4z"
+                                    class="fi-coral" />
+                                <rect x="4" y="9.5" width="16" height="5" class="fi-gold" />
+                                <path d="M4 14.5h16v2.7a2.8 2.8 0 0 1-2.8 2.8H6.8A2.8 2.8 0 0 1 4 17.2v-2.7z"
+                                    class="fi-teal" />
+                                <circle cx="7.5" cy="6.8" r="1.1" class="fi-cream" />
+                                <circle cx="7.5" cy="12" r="1.1" class="fi-cream" />
+                                <circle cx="7.5" cy="17.2" r="1.1" class="fi-cream" />
                             </svg>
                             <span>Farbig</span>
                         </div>
@@ -672,9 +698,9 @@
                 <label><input type="radio" name="theme-mode" value="system"
                         onchange="updateThemeSetting('mode', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="6" y="8" width="28" height="20" rx="3"></rect>
+                            <rect x="6" y="8" width="28" height="20" rx="3" class="fi-teal"></rect>
                             <path d="M14 32h12"></path>
                             <path d="M20 28v4"></path>
                         </svg>
@@ -684,9 +710,9 @@
                 <label><input type="radio" name="theme-mode" value="light"
                         onchange="updateThemeSetting('mode', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="20" cy="20" r="6"></circle>
+                            <circle cx="20" cy="20" r="6.5" class="fi-gold"></circle>
                             <path
                                 d="M20 8v-2M20 34v-2M8 20H6M34 20h-2M11.8 11.8l-1.4-1.4M29.6 29.6l-1.4-1.4M28.2 11.8l1.4-1.4M10.4 29.6l1.4-1.4">
                             </path>
@@ -697,9 +723,9 @@
                 <label><input type="radio" name="theme-mode" value="dark"
                         onchange="updateThemeSetting('mode', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M28 24.5A10 10 0 1 1 15.5 12a8 8 0 0 0 12.5 12.5Z"></path>
+                            <path d="M28 24.5A10 10 0 1 1 15.5 12a8 8 0 0 0 12.5 12.5Z" class="fi-gold"></path>
                         </svg>
                         <span>Dunkel</span>
                     </div>
@@ -710,10 +736,11 @@
                 <label><input type="radio" name="theme-font-size" value="small"
                         onchange="updateThemeSetting('fontSize', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="26" text-anchor="middle" fill="currentColor" stroke="none" font-size="14"
-                                font-weight="700">Aa</text>
+                            <rect x="10" y="8" width="9.5" height="11.5" rx="2" class="fi-cream" />
+                            <rect x="4.5" y="4.5" width="9.5" height="11.5" rx="2" class="fi-teal" />
+                            <path d="M7.2 12.5l2-5 2 5M7.7 11.2h3" />
                         </svg>
                         <span>Klein</span>
                     </div>
@@ -721,10 +748,12 @@
                 <label><input type="radio" name="theme-font-size" value="normal"
                         onchange="updateThemeSetting('fontSize', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="27" text-anchor="middle" fill="currentColor" stroke="none" font-size="18"
-                                font-weight="700">Aa</text>
+                            <rect x="9.5" y="6.5" width="11" height="14" rx="2.4" class="fi-cream" />
+                            <rect x="3.5" y="3.5" width="11" height="14" rx="2.4" class="fi-teal" />
+                            <path d="M6.5 13.5l2.5-6.5 2.5 6.5M7.1 11.8h3.8" />
+                            <path d="M14.5 12h3.5M16.2 10.5v5" />
                         </svg>
                         <span>Normal</span>
                     </div>
@@ -732,10 +761,12 @@
                 <label><input type="radio" name="theme-font-size" value="large"
                         onchange="updateThemeSetting('fontSize', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <text x="20" y="28" text-anchor="middle" fill="currentColor" stroke="none" font-size="22"
-                                font-weight="700">Aa</text>
+                            <rect x="8.5" y="5.5" width="12.5" height="15.5" rx="2.8" class="fi-gold" />
+                            <rect x="3" y="3" width="12.5" height="15.5" rx="2.8" class="fi-coral" />
+                            <path d="M6 14.5l3.2-8 3.2 8M6.8 12.5h4.8" />
+                            <path d="M15 12.5h3.8M16.9 10.5v6" />
                         </svg>
                         <span>Groß</span>
                     </div>
@@ -786,48 +817,92 @@
                     </div>
                 </label>
             </div>
-            <div class="setting-group-title">Primärfarbe</div>
-            <div class="accent-options-grid">
+            <div class="setting-group-title">Japan-Theme (Landschaft &amp; Farben)</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <label><input type="radio" name="theme-primary" value="neutral"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-neutral"></div>
-                        <span>Neutral</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="16.5" cy="7.5" r="3.4" class="fi-coral" />
+                            <path d="M2.5 19.5C6 15 8.5 9.5 10 7.5h4c1.5 2 4 7.5 7.5 12z" class="fi-teal" />
+                            <path d="M7.6 12C8.8 9.6 9.5 8.2 10 7.5h4c.5.7 1.2 2.1 2.4 4.5l-2.1-1.2-2.3 1.5-2.3-1.5z"
+                                class="fi-cream" />
+                        </svg>
+                        <span>Fuji</span>
                     </div>
                 </label>
                 <label><input type="radio" name="theme-primary" value="warm"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-warm"></div>
-                        <span>Warm</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="13.5" width="12" height="6" rx="1" class="fi-cream" />
+                            <rect x="7.5" y="9" width="9" height="4.5" class="fi-gold" />
+                            <path d="M3.5 14Q12 12 20.5 14l-2-2.8h-13z" class="fi-gold" />
+                            <path d="M5 9.2Q12 7.2 19 9.2L16.5 6h-9z" class="fi-coral" />
+                            <path d="M12 3.5V6" />
+                        </svg>
+                        <span>Kinkaku</span>
                     </div>
                 </label>
                 <label><input type="radio" name="theme-primary" value="cool"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-cool"></div>
-                        <span>Kühl</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <ellipse cx="12" cy="16.2" rx="8.5" ry="4" class="fi-teal" />
+                            <circle cx="5.5" cy="18" r="2.2" class="fi-tan" />
+                            <circle cx="10" cy="19.2" r="2.4" class="fi-cream" />
+                            <circle cx="14.8" cy="19" r="2.3" class="fi-tan" />
+                            <circle cx="18.8" cy="17.8" r="2" class="fi-cream" />
+                            <path d="M8.5 11c0-1.4 1.4-1.4 1.4-2.8S8.5 6.8 8.5 5.4" />
+                            <path d="M14.5 11c0-1.4 1.4-1.4 1.4-2.8s-1.4-1.4-1.4-2.8" />
+                        </svg>
+                        <span>Onsen</span>
                     </div>
                 </label>
                 <label><input type="radio" name="theme-primary" value="sepia"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-sepia"></div>
-                        <span>Sepia</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 3l2.2 4.5 4.8-1.5-2.2 4.8 3.7 2.5-4.8 1.5 1 3.7-4.7-2-4.7 2 1-3.7-4.8-1.5 3.7-2.5L5 6l4.8 1.5z"
+                                class="fi-coral" />
+                            <circle cx="12" cy="12.5" r="2.2" class="fi-gold" />
+                            <path d="M12 14.7V21" />
+                        </svg>
+                        <span>Momiji</span>
                     </div>
                 </label>
                 <label><input type="radio" name="theme-primary" value="rose"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-rose"></div>
-                        <span>Rosé</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M12 3c2 0 3.2 2 2.8 4.4 2.3-.8 4.5.2 5.2 2 .6 1.8-.9 3.8-3.2 4.5 1.4 2 1.2 4.3-.4 5.5-1.6 1.2-3.6 0-4.4-2.1-.8 2.1-2.8 3.3-4.4 2.1-1.6-1.2-1.8-3.5-.4-5.5-2.3-.7-3.8-2.7-3.2-4.5.7-1.8 2.9-2.8 5.2-2C8.8 5 10 3 12 3z"
+                                class="fi-rose" />
+                            <circle cx="12" cy="12" r="2.8" class="fi-gold" />
+                        </svg>
+                        <span>Sakura</span>
                     </div>
                 </label>
                 <label><input type="radio" name="theme-primary" value="sage"
                         onchange="updateThemeSetting('primary', this.value)">
-                    <div class="accent-option">
-                        <div class="accent-swatch primary-swatch-sage"></div>
-                        <span>Salbei</span>
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="3.5" width="4.5" height="17" rx="1.8" class="fi-mint" />
+                            <line x1="4.5" y1="9" x2="10" y2="9" />
+                            <line x1="4.5" y1="15" x2="10" y2="15" />
+                            <rect x="13" y="5.5" width="4.5" height="15" rx="1.8" class="fi-teal" />
+                            <line x1="12.5" y1="11.5" x2="18" y2="11.5" />
+                            <line x1="12.5" y1="16.5" x2="18" y2="16.5" />
+                            <path d="M9.5 7.5C12 5 14.5 5 16 6.5c-2 2-4.5 2-6.5 1z" class="fi-gold" />
+                        </svg>
+                        <span>Bambus</span>
                     </div>
                 </label>
             </div>
@@ -836,9 +911,12 @@
                 <label><input type="radio" name="theme-stroke-style" value="standard"
                         onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                            <path d="M14 5l5 5-9.5 9.5-5.5 1.5 1.5-5.5L14 5z" class="fi-gold" />
+                            <path d="M14 5l2.2-2.2a2.2 2.2 0 0 1 3.1 0l1.9 1.9a2.2 2.2 0 0 1 0 3.1L19 10l-5-5z"
+                                class="fi-coral" />
+                            <path d="M5.5 15.5l3 3-4.5 1.5 1.5-4.5z" class="fi-cream" />
                         </svg>
                         <span>Standard</span>
                     </div>
@@ -846,10 +924,12 @@
                 <label><input type="radio" name="theme-stroke-style" value="gel"
                         onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="8" opacity="0.12"></path>
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8" stroke-width="4"></path>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3l6 8-2.5 6.5h-7L6 11l6-8z" class="fi-teal" />
+                            <rect x="7.5" y="17.5" width="9" height="3.2" rx="1.2" class="fi-tan" />
+                            <circle cx="12" cy="11.5" r="2" class="fi-cream" />
+                            <line x1="12" y1="3" x2="12" y2="9.5" />
                         </svg>
                         <span>Gelstift</span>
                     </div>
@@ -857,9 +937,11 @@
                 <label><input type="radio" name="theme-stroke-style" value="ink"
                         onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M8 32 Q13 12 18 18 Q23 24 28 10 L32 8" stroke-dasharray="2 1"></path>
+                            <path d="M15.5 3.5l5 5-6 6-5-5 6-6z" class="fi-tan" />
+                            <path d="M9.5 9.5l5 5-2 2-5-5 2-2z" class="fi-gold" />
+                            <path d="M7.5 11.5c-2.5 2.5-3.2 6-3.8 8.8 2.8-.6 6.3-1.3 8.8-3.8l-5-5z" class="fi-coral" />
                         </svg>
                         <span>Tusche</span>
                     </div>
@@ -867,10 +949,10 @@
                 <label><input type="radio" name="theme-stroke-style" value="neon"
                         onchange="updateThemeSetting('strokeStyle', this.value)">
                     <div class="visual-option">
-                        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            style="filter:drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor)">
-                            <path d="M8 32 Q14 10 20 18 Q26 26 32 8"></path>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9" class="fi-lavender" />
+                            <polygon points="13,4.8 7.5,12.8 11.8,12.8 11,19.2 16.5,11.2 12.2,11.2" class="fi-gold" />
                         </svg>
                         <span>Neon</span>
                     </div>
@@ -881,8 +963,10 @@
                 <label><input type="radio" name="theme-stroke-width" value="thin"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round">
-                            <path d="M4 18Q12 4 20 10" stroke-width="1.5" />
+                            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="5" width="16" height="3.2" rx="1.6" class="fi-cream" />
+                            <rect x="4" y="10.4" width="16" height="3.2" rx="1.6" class="fi-gold" />
+                            <rect x="4" y="15.8" width="16" height="3.2" rx="1.6" class="fi-teal" />
                         </svg>
                         <span>Dünn</span>
                     </div>
@@ -890,8 +974,11 @@
                 <label><input type="radio" name="theme-stroke-width" value="normal"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round">
-                            <path d="M4 18Q12 4 20 10" stroke-width="2.5" />
+                            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="5.5" width="16" height="5.2" rx="2.4" class="fi-gold" />
+                            <rect x="4" y="13.3" width="16" height="5.2" rx="2.4" class="fi-teal" />
+                            <circle cx="7.5" cy="8.1" r="1.1" class="fi-cream" />
+                            <circle cx="7.5" cy="15.9" r="1.1" class="fi-cream" />
                         </svg>
                         <span>Normal</span>
                     </div>
@@ -899,8 +986,10 @@
                 <label><input type="radio" name="theme-stroke-width" value="thick"
                         onchange="updateThemeSetting('strokeWidth', this.value)">
                     <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-linecap="round">
-                            <path d="M4 18Q12 4 20 10" stroke-width="4" />
+                            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="6.5" width="17" height="11" rx="4" class="fi-coral" />
+                            <circle cx="8.2" cy="12" r="2" class="fi-cream" />
+                            <line x1="13" y1="12" x2="17" y2="12" />
                         </svg>
                         <span>Dick</span>
                     </div>
@@ -954,6 +1043,701 @@
             <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
         </div>
     </div>
+</div>
+
+<div class="info-overlay order-overlay" id="order-overlay" onclick="closeStrokeOrder(event)">
+    <div class="info-modal order-modal" onclick="event.stopPropagation()">
+        <div class="info-modal-header">
+            <span class="info-modal-title">Strichfolge</span>
+            <span class="info-modal-meaning" id="order-progress"></span>
+        </div>
+        <div class="order-stage"><svg id="order-svg" viewBox="0 0 109 109" aria-hidden="true"></svg></div>
+        <div class="order-controls">
+            <button class="order-ctrl" onclick="strokeOrderAction('prev', event)" title="Strich zurück"
+                aria-label="Strich zurück">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="order-ctrl order-ctrl-main" id="order-toggle" onclick="strokeOrderAction('toggle', event)"
+                title="Abspielen / Pause" aria-label="Abspielen / Pause"></button>
+            <button class="order-ctrl" onclick="strokeOrderAction('next', event)" title="Nächster Strich"
+                aria-label="Nächster Strich">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+            <button class="order-ctrl" id="order-speed" onclick="strokeOrderAction('speed', event)"
+                title="Geschwindigkeit" aria-label="Geschwindigkeit">1×</button>
+        </div>
+        <div role="button" tabindex="0" class="close-settings" onclick="closeStrokeOrder(event)">Schließen</div>
+    </div>
+</div>
+
+<div class="forest-scenery" aria-hidden="true">
+    <svg viewBox="0 0 800 220" preserveAspectRatio="xMidYMax meet">
+        <!-- ═══ DAYTIME EXCLUSIVE LAYER (.fs-day-only): Morning Sun, Fluffy Clouds & Flying Cranes ═══ -->
+        <g class="fs-day-only">
+            <circle cx="434" cy="108" r="52" class="fs-sun-halo" />
+            <circle cx="434" cy="108" r="38" class="fs-sun" />
+            <path d="M128 58 Q138 46 154 50 Q168 38 186 48 Q200 44 208 58 Z" class="fs-cloud" />
+            <path d="M518 48 Q528 36 544 40 Q558 30 574 42 Q588 38 594 48 Z" class="fs-cloud" />
+            <path d="M-110 66 Q-96 52 -78 58 Q-62 46 -44 58 Q-30 54 -22 66 Z" class="fs-cloud" />
+            <path d="M860 60 Q874 48 892 54 Q908 42 924 54 Q938 50 946 60 Z" class="fs-cloud" />
+            <path d="M312 66 Q319 59 325 65 Q331 59 338 66" class="fs-crane" />
+            <path d="M336 54 Q341 49 346 53 Q351 49 356 54" class="fs-crane" />
+        </g>
+
+        <!-- ═══ NIGHTTIME EXCLUSIVE LAYER (.fs-night-only): Crescent Moon, Starry Sky & Constellations ═══ -->
+        <g class="fs-night-only">
+            <circle cx="452" cy="76" r="38" class="fs-moon-halo" />
+            <path d="M446 48 A26 26 0 1 1 424 88 A21 21 0 1 0 446 48 Z" class="fs-moon" />
+            <path d="M170 36 L172 42 L178 44 L172 46 L170 52 L168 46 L162 44 L168 42 Z" class="fs-star" />
+            <path d="M310 30 L311.5 35 L316.5 36.5 L311.5 38 L310 43 L308.5 38 L303.5 36.5 L308.5 35 Z"
+                class="fs-star" />
+            <path d="M558 34 L560 40 L566 42 L560 44 L558 50 L556 44 L550 42 L556 40 Z" class="fs-star" />
+            <circle cx="-180" cy="44" r="1.8" class="fs-star" />
+            <circle cx="-75" cy="32" r="2.2" class="fs-star" />
+            <circle cx="88" cy="28" r="1.8" class="fs-star" />
+            <circle cx="242" cy="52" r="1.6" class="fs-star" />
+            <circle cx="358" cy="44" r="1.5" class="fs-star" />
+            <circle cx="508" cy="54" r="1.7" class="fs-star" />
+            <circle cx="622" cy="26" r="2" class="fs-star" />
+            <circle cx="765" cy="42" r="1.8" class="fs-star" />
+            <circle cx="890" cy="34" r="2.2" class="fs-star" />
+            <circle cx="1010" cy="48" r="1.7" class="fs-star" />
+        </g>
+
+        <path class="fs-hill-far"
+            d="M-3200 192 Q-2400 148 -1600 178 T-360 172 Q-120 140 80 176 Q220 132 370 174 T690 156 Q880 138 1160 176 T2400 168 L4000 192 L4000 220 L-3200 220 Z" />
+        <path class="fs-hill-near"
+            d="M-3200 196 Q-2200 158 -1400 184 T-360 180 Q-60 156 160 182 Q310 154 460 184 T780 166 Q960 152 1160 182 T2400 176 L4000 196 L4000 220 L-3200 220 Z" />
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 1: FUJI (neutral) — Mount Fuji, Bamboo, Vermilion Torii & Sakura
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-neutral">
+            <g class="fs-fuji">
+                <path class="fs-fuji-light" d="M250 190 Q332 152 382 68 L400 68 L400 190 Z" />
+                <path class="fs-fuji-dark" d="M400 68 L418 68 Q468 152 550 190 L400 190 Z" />
+                <polygon class="fs-fuji-snow" points="382,68 400,68 400,112 389,102 379,115 368,104 358,116" />
+                <polygon class="fs-fuji-snow-shade" points="400,68 418,68 442,116 431,104 421,115 411,102 400,112" />
+            </g>
+            <rect x="268" y="128" width="96" height="9" rx="4.5" class="fs-mist" />
+            <rect x="436" y="114" width="88" height="8" rx="4" class="fs-mist" />
+            <rect x="330" y="148" width="140" height="10" rx="5" class="fs-mist" />
+            <g transform="translate(-145, 78)">
+                <rect x="25" y="4" width="3" height="18" class="fs-torii-roof" />
+                <polygon points="10,22 43,22 39,28 14,28" class="fs-torii-roof" />
+                <rect x="16" y="28" width="21" height="12" class="fs-torii-red" />
+                <polygon points="6,40 47,40 42,47 11,47" class="fs-torii-roof" />
+                <rect x="14" y="47" width="25" height="14" class="fs-torii-red" />
+                <polygon points="2,61 51,61 46,69 7,69" class="fs-torii-roof" />
+                <rect x="12" y="69" width="29" height="42" class="fs-torii-shade" />
+                <rect x="23" y="31" width="6" height="6" rx="1" class="fs-lantern-glow" />
+                <rect x="23" y="50" width="7" height="7" rx="1" class="fs-lantern-glow" />
+            </g>
+            <path d="M-190 190 Q-165 162 -135 174 Q-110 156 -80 176 Q-55 166 -30 190 Z" class="fs-bush-dark" />
+            <g class="fs-bamboo-grove">
+                <g transform="translate(38, 26) rotate(-4 6 160)">
+                    <rect x="3" y="12" width="6.5" height="154" rx="2" class="fs-bamboo" />
+                    <rect x="6.2" y="12" width="3.3" height="154" rx="1" class="fs-bamboo-dark" />
+                    <line x1="2" y1="42" x2="10.5" y2="42" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="76" x2="10.5" y2="76" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="112" x2="10.5" y2="112" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="146" x2="10.5" y2="146" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M4 42 Q-14 34 -22 44 Q-10 46 4 42 Z" class="fs-bamboo-leaf" />
+                    <path d="M4 42 Q-10 24 -18 28 Q-6 36 4 42 Z" class="fs-bamboo-leaf" />
+                    <path d="M9 76 Q26 66 34 74 Q20 79 9 76 Z" class="fs-bamboo-leaf" />
+                    <path d="M4 112 Q-14 104 -20 114 Q-8 116 4 112 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(64, 14) rotate(2 6 170)">
+                    <rect x="3" y="8" width="7.5" height="168" rx="2" class="fs-bamboo" />
+                    <rect x="6.8" y="8" width="3.7" height="168" rx="1" class="fs-bamboo-dark" />
+                    <line x1="2" y1="38" x2="11.5" y2="38" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="74" x2="11.5" y2="74" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="110" x2="11.5" y2="110" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="2" y1="146" x2="11.5" y2="146" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M10 38 Q28 28 38 36 Q24 42 10 38 Z" class="fs-bamboo-leaf" />
+                    <path d="M10 38 Q24 18 32 22 Q20 32 10 38 Z" class="fs-bamboo-leaf" />
+                    <path d="M4 74 Q-14 64 -22 72 Q-8 77 4 74 Z" class="fs-bamboo-leaf" />
+                    <path d="M10 110 Q28 100 36 108 Q22 113 10 110 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(92, 44) rotate(5 5 140)">
+                    <rect x="2" y="10" width="5.5" height="136" rx="2" class="fs-bamboo" />
+                    <rect x="4.8" y="10" width="2.7" height="136" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="40" x2="8.5" y2="40" stroke-width="1.8" class="fs-bamboo-node" />
+                    <line x1="1" y1="76" x2="8.5" y2="76" stroke-width="1.8" class="fs-bamboo-node" />
+                    <line x1="1" y1="112" x2="8.5" y2="112" stroke-width="1.8" class="fs-bamboo-node" />
+                    <path d="M7 40 Q24 30 32 38 Q18 43 7 40 Z" class="fs-bamboo-leaf" />
+                    <path d="M7 76 Q22 68 28 76 Q16 80 7 76 Z" class="fs-bamboo-leaf" />
+                </g>
+            </g>
+            <g class="fs-torii" transform="translate(124, 96)">
+                <polygon points="18,22 25,22 23,92 15,92" class="fs-torii-red" />
+                <polygon points="22,22 25,22 23,92 20,92" class="fs-torii-shade" />
+                <polygon points="63,22 70,22 73,92 65,92" class="fs-torii-red" />
+                <polygon points="67,22 70,22 73,92 69,92" class="fs-torii-shade" />
+                <rect x="13" y="84" width="12" height="8" rx="1.5" class="fs-torii-roof" />
+                <rect x="63" y="84" width="12" height="8" rx="1.5" class="fs-torii-roof" />
+                <rect x="8" y="34" width="72" height="6.5" rx="1.5" class="fs-torii-red" />
+                <rect x="8" y="38" width="72" height="2.5" class="fs-torii-shade" />
+                <rect x="40.5" y="21" width="7" height="15" rx="1" class="fs-torii-roof" />
+                <rect x="42.5" y="24" width="3" height="8" rx="0.8" fill="#f5c84c" />
+                <polygon points="4,17 84,17 81,23 7,23" class="fs-torii-red" />
+                <path d="M0 11 Q44 19 88 11 L84 18 Q44 24 4 18 Z" class="fs-torii-roof" />
+                <g class="fs-night-only">
+                    <circle cx="44" cy="49" r="14" class="fs-chochin-glow" />
+                    <line x1="44" y1="40" x2="44" y2="43" stroke="#1c2824" stroke-width="1.2" />
+                    <ellipse cx="44" cy="49" rx="5.2" ry="6.5" class="fs-chochin-body" />
+                    <ellipse cx="44" cy="49" rx="3" ry="4.5" class="fs-chochin-core" />
+                    <rect x="41.5" y="42" width="5" height="1.8" rx="0.6" class="fs-chochin-cap" />
+                    <rect x="41.5" y="54.5" width="5" height="1.8" rx="0.6" class="fs-chochin-cap" />
+                </g>
+            </g>
+            <path d="M8 190 Q18 164 42 172 Q58 156 80 174 Q98 166 110 190 Z" class="fs-bush-dark" />
+            <path d="M78 190 Q92 168 114 176 Q130 164 148 190 Z" class="fs-bush" />
+            <path d="M558 190 Q570 170 590 176 Q608 162 628 178 Q644 170 656 190 Z" class="fs-bush" />
+            <g class="fs-lantern" transform="translate(576, 128)">
+                <circle cx="22" cy="23" r="22" class="fs-chochin-glow fs-night-only" />
+                <polygon points="10,54 34,54 37,62 7,62" class="fs-stone-dark" />
+                <polygon points="17,34 27,34 29,54 15,54" class="fs-stone-light" />
+                <polygon points="22,34 27,34 29,54 22,54" class="fs-stone-dark" />
+                <polygon points="11,29 33,29 30,35 14,35" class="fs-stone-dark" />
+                <rect x="14" y="16" width="16" height="13" class="fs-stone-light" />
+                <rect x="22" y="16" width="8" height="13" class="fs-stone-dark" />
+                <rect x="17.5" y="19" width="9" height="7.5" rx="1" class="fs-lantern-glow" />
+                <path d="M4 17 Q14 12 22 6 Q30 12 40 17 L35 19 Q22 16 9 19 Z" class="fs-stone-light" />
+                <path d="M22 6 Q30 12 40 17 L35 19 Q28 17 22 17 Z" class="fs-stone-dark" />
+                <circle cx="22" cy="4.5" r="2.8" class="fs-stone-light" />
+            </g>
+            <g class="fs-sakura-tree" transform="translate(632, 26)">
+                <path d="M54 94 Q50 128 42 162 L64 162 Q60 128 64 94 Z" class="fs-trunk" />
+                <path d="M58 94 Q60 128 64 162 L54 162 Q56 128 54 94 Z" class="fs-trunk-dark" />
+                <path d="M54 104 L28 78 L35 73 L58 96 Z" class="fs-trunk" />
+                <path d="M60 100 L86 74 L80 69 L56 94 Z" class="fs-trunk-dark" />
+                <g class="fs-night-only">
+                    <circle cx="24" cy="96" r="13" class="fs-chochin-glow" />
+                    <line x1="24" y1="84" x2="24" y2="90" stroke="#331e17" stroke-width="1.2" />
+                    <ellipse cx="24" cy="96" rx="4.6" ry="5.8" class="fs-chochin-body" />
+                    <ellipse cx="24" cy="96" rx="2.6" ry="4" class="fs-chochin-core" />
+                    <rect x="22" y="89.5" width="4" height="1.5" rx="0.5" class="fs-chochin-cap" />
+                    <rect x="22" y="101" width="4" height="1.5" rx="0.5" class="fs-chochin-cap" />
+                    <circle cx="92" cy="94" r="13" class="fs-chochin-glow" />
+                    <line x1="92" y1="82" x2="92" y2="88" stroke="#331e17" stroke-width="1.2" />
+                    <ellipse cx="92" cy="94" rx="4.6" ry="5.8" class="fs-chochin-body" />
+                    <ellipse cx="92" cy="94" rx="2.6" ry="4" class="fs-chochin-core" />
+                    <rect x="90" y="87.5" width="4" height="1.5" rx="0.5" class="fs-chochin-cap" />
+                    <rect x="90" y="99" width="4" height="1.5" rx="0.5" class="fs-chochin-cap" />
+                </g>
+                <polygon points="58,6 22,24 34,56 58,44" class="fs-sakura-light" />
+                <polygon points="58,6 96,24 84,56 58,44" class="fs-sakura-mid" />
+                <polygon points="22,24 -4,52 12,84 38,76 34,56" class="fs-sakura-light" />
+                <polygon points="12,84 38,76 54,94 26,98" class="fs-sakura-dark" />
+                <polygon points="34,56 58,44 84,56 60,78 38,76" class="fs-sakura-light" />
+                <polygon points="38,76 60,78 82,92 54,94" class="fs-sakura-mid" />
+                <polygon points="96,24 120,54 104,86 82,76 84,56" class="fs-sakura-mid" />
+                <polygon points="104,86 82,76 60,78 82,92" class="fs-sakura-dark" />
+                <g transform="translate(42, 32)">
+                    <circle cx="0" cy="-3.6" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="3.4" cy="-1.1" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="2.1" cy="2.9" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="-2.1" cy="2.9" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="-3.4" cy="-1.1" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.6" class="fs-sakura-center" />
+                </g>
+                <g transform="translate(76, 42)">
+                    <circle cx="0" cy="-3.4" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+                <g transform="translate(56, 66)">
+                    <circle cx="0" cy="-3.4" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+            </g>
+            <g transform="translate(855, 62) scale(0.78)">
+                <path d="M54 94 Q50 128 42 162 L64 162 Q60 128 64 94 Z" class="fs-trunk" />
+                <polygon points="58,6 22,24 34,56 58,44" class="fs-sakura-light" />
+                <polygon points="58,6 96,24 84,56 58,44" class="fs-sakura-mid" />
+                <polygon points="22,24 -4,52 12,84 38,76 34,56" class="fs-sakura-light" />
+                <polygon points="34,56 58,44 84,56 60,78 38,76" class="fs-sakura-mid" />
+                <polygon points="96,24 120,54 104,86 82,76 84,56" class="fs-sakura-dark" />
+            </g>
+            <path d="M810 190 Q835 164 865 176 Q890 158 920 178 Q945 168 970 190 Z" class="fs-bush" />
+            <g class="fs-petal">
+                <ellipse cx="612" cy="74" rx="4.2" ry="2.2" transform="rotate(-28 612 74)" />
+                <ellipse cx="584" cy="98" rx="3.8" ry="2" transform="rotate(-18 584 98)" />
+                <ellipse cx="548" cy="86" rx="3.4" ry="1.8" transform="rotate(-35 548 86)" />
+                <ellipse cx="626" cy="118" rx="3.8" ry="2" transform="rotate(-12 626 118)" />
+                <ellipse cx="556" cy="134" rx="3.5" ry="1.8" transform="rotate(-24 556 134)" />
+            </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 2: KINKAKU (warm) — Golden Pavilion (Kinkaku-ji) & Zen Rock Garden
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-warm">
+            <g transform="translate(24, 152)">
+                <rect x="0" y="18" width="184" height="20" rx="8" class="fs-sand" />
+                <path d="M12 24 Q46 19 80 24 T148 24 T174 24" class="fs-sand-groove" />
+                <path d="M10 31 Q46 26 82 31 T152 31 T176 31" class="fs-sand-groove" />
+                <polygon points="36,28 52,8 68,16 74,28" class="fs-stone-light" />
+                <polygon points="52,8 68,16 74,28 54,28" class="fs-stone-dark" />
+                <path d="M40 28 Q54 21 68 28 Z" class="fs-bush" />
+                <polygon points="108,29 122,13 138,18 144,29" class="fs-stone-light" />
+                <polygon points="122,13 138,18 144,29 124,29" class="fs-stone-dark" />
+                <path d="M112 29 Q126 23 138 29 Z" class="fs-bush-dark" />
+            </g>
+            <g transform="translate(28, 128)">
+                <rect x="0" y="0" width="96" height="32" rx="3" fill="#c9a86a" opacity="0.85" />
+                <line x1="0" y1="8" x2="96" y2="8" stroke="#8a6832" stroke-width="2" />
+                <line x1="0" y1="22" x2="96" y2="22" stroke="#8a6832" stroke-width="2" />
+                <line x1="24" y1="0" x2="24" y2="32" stroke="#8a6832" stroke-width="2" />
+                <line x1="48" y1="0" x2="48" y2="32" stroke="#8a6832" stroke-width="2" />
+                <line x1="72" y1="0" x2="72" y2="32" stroke="#8a6832" stroke-width="2" />
+            </g>
+            <ellipse cx="400" cy="186" rx="145" ry="12" class="fs-water" />
+            <path d="M310 185 H360 M415 188 H475 M355 191 H425" class="fs-water-ripple" />
+            <g transform="translate(316, 48)">
+                <rect x="22" y="122" width="124" height="14" rx="2" class="fs-stone-dark" />
+                <rect x="26" y="120" width="116" height="4" class="fs-stone-light" />
+                <rect x="34" y="92" width="100" height="28" fill="#f5ecd8" />
+                <rect x="84" y="92" width="50" height="28" fill="#e2d4b8" />
+                <line x1="54" y1="92" x2="54" y2="120" stroke="#694235" stroke-width="2.5" />
+                <line x1="84" y1="92" x2="84" y2="120" stroke="#694235" stroke-width="2.5" />
+                <line x1="114" y1="92" x2="114" y2="120" stroke="#694235" stroke-width="2.5" />
+                <path d="M12 88 Q84 95 156 88 L146 95 Q84 100 22 95 Z" class="fs-torii-roof" />
+                <rect x="40" y="60" width="88" height="29" class="fs-gold-wall" />
+                <rect x="84" y="60" width="44" height="29" class="fs-gold-shade" />
+                <rect x="34" y="84" width="100" height="4" class="fs-gold-shade" />
+                <rect x="50" y="66" width="16" height="16" rx="1" class="fs-lantern-glow" />
+                <rect x="76" y="66" width="16" height="16" rx="1" class="fs-lantern-glow" />
+                <rect x="102" y="66" width="16" height="16" rx="1" class="fs-lantern-glow" />
+                <path d="M20 55 Q84 63 148 55 L138 62 Q84 67 30 62 Z" class="fs-torii-roof" />
+                <rect x="54" y="34" width="60" height="22" class="fs-gold-wall" />
+                <rect x="84" y="34" width="30" height="22" class="fs-gold-shade" />
+                <circle cx="69" cy="45" r="5.5" class="fs-lantern-glow" />
+                <circle cx="99" cy="45" r="5.5" class="fs-lantern-glow" />
+                <path d="M32 32 Q62 22 84 8 Q106 22 136 32 L126 36 Q84 30 42 36 Z" class="fs-torii-roof" />
+                <rect x="81" y="2" width="6" height="7" rx="1" fill="#ffd84d" />
+                <path d="M74 2 Q84 -6 94 2 Q88 6 84 3 Q80 6 74 2 Z" fill="#ffd84d" />
+            </g>
+            <g transform="translate(565, 58)">
+                <path d="M44 130 Q36 98 54 74 Q66 56 48 36" stroke="#694235" stroke-width="8" fill="none"
+                    stroke-linecap="round" />
+                <path d="M48 92 L78 74 M44 64 L20 52" stroke="#694235" stroke-width="5" fill="none"
+                    stroke-linecap="round" />
+                <ellipse cx="20" cy="48" rx="22" ry="11" class="fs-bamboo" />
+                <ellipse cx="48" cy="30" rx="28" ry="13" class="fs-bush" />
+                <ellipse cx="82" cy="70" rx="24" ry="11" class="fs-bamboo-dark" />
+            </g>
+            <g transform="translate(668, 30)">
+                <path d="M48 96 L42 158 L60 158 L54 96 Z" class="fs-trunk" />
+                <polygon points="50,4 16,42 30,96 50,86" class="fs-ginkgo-light" />
+                <polygon points="50,4 84,42 70,96 50,86" class="fs-ginkgo-dark" />
+                <polygon points="16,42 4,78 34,104 50,86" class="fs-ginkgo-light" />
+                <polygon points="84,42 96,78 66,104 50,86" class="fs-ginkgo-dark" />
+            </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 3: ONSEN (cool) — Miyajima Floating Torii, Japanese Alps & Hot Spring
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-cool">
+            <g class="fs-alps">
+                <polygon points="210,190 295,78 375,190" class="fs-fuji-light" />
+                <polygon points="295,78 375,190 315,190" class="fs-fuji-dark" />
+                <polygon points="295,78 268,114 284,106 295,118 308,104 322,114" class="fs-fuji-snow" />
+                <polygon points="330,190 425,58 520,190" class="fs-fuji-light" />
+                <polygon points="425,58 520,190 435,190" class="fs-fuji-dark" />
+                <polygon points="425,58 392,102 410,92 425,108 440,92 458,102" class="fs-fuji-snow" />
+                <rect x="240" y="132" width="110" height="8" rx="4" class="fs-mist" />
+                <rect x="410" y="118" width="105" height="8" rx="4" class="fs-mist" />
+            </g>
+            <ellipse cx="145" cy="186" rx="125" ry="12" class="fs-water" />
+            <path d="M55 186 H115 M155 189 H225 M95 192 H170" class="fs-water-ripple" />
+            <g transform="translate(96, 86)">
+                <rect x="18" y="24" width="8" height="76" class="fs-torii-red" />
+                <rect x="6" y="54" width="6" height="46" class="fs-torii-shade" />
+                <rect x="30" y="54" width="6" height="46" class="fs-torii-shade" />
+                <rect x="70" y="24" width="8" height="76" class="fs-torii-red" />
+                <rect x="58" y="54" width="6" height="46" class="fs-torii-shade" />
+                <rect x="82" y="54" width="6" height="46" class="fs-torii-shade" />
+                <rect x="4" y="36" width="88" height="6.5" rx="1.5" class="fs-torii-red" />
+                <rect x="44" y="22" width="8" height="16" class="fs-torii-roof" />
+                <path d="M-4 12 Q48 22 100 12 L94 20 Q48 26 2 20 Z" class="fs-torii-roof" />
+                <polygon points="2,19 94,19 90,25 6,25" class="fs-torii-red" />
+            </g>
+            <g transform="translate(545, 126)">
+                <ellipse cx="95" cy="54" rx="78" ry="14" fill="#6ce6e0" />
+                <polygon points="4,62 18,38 42,44 52,62" class="fs-stone-dark" />
+                <polygon points="18,38 42,44 36,62 12,62" class="fs-stone-light" />
+                <polygon points="138,62 152,36 178,42 190,62" class="fs-stone-light" />
+                <polygon points="152,36 178,42 184,62 154,62" class="fs-stone-dark" />
+                <ellipse cx="48" cy="60" rx="18" ry="7" class="fs-stone-dark" />
+                <ellipse cx="140" cy="60" rx="20" ry="8" class="fs-stone-light" />
+                <ellipse cx="94" cy="63" rx="26" ry="6" class="fs-stone-dark" />
+                <rect x="122" y="42" width="16" height="12" rx="2" fill="#e6be7e" />
+                <line x1="122" y1="46" x2="138" y2="46" stroke="#8c6230" stroke-width="1.5" />
+                <line x1="122" y1="51" x2="138" y2="51" stroke="#8c6230" stroke-width="1.5" />
+                <path d="M66 44 Q58 28 68 16 Q76 4 66 -8" class="fs-steam" />
+                <path d="M96 40 Q88 22 98 8 Q106 -4 96 -16" class="fs-steam" />
+                <path d="M124 44 Q116 28 126 16 Q134 4 124 -8" class="fs-steam" />
+                <g class="fs-night-only" transform="translate(22, 22)">
+                    <circle cx="8" cy="10" r="14" class="fs-chochin-glow" />
+                    <rect x="2" y="2" width="12" height="16" rx="2" fill="#694235" />
+                    <rect x="4" y="5" width="8" height="10" rx="1" class="fs-lantern-glow" />
+                </g>
+            </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 4: MOMIJI (sepia) — Kyoto Autumn, 5-Story Pagoda & Tea House
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-sepia">
+            <g transform="translate(36, 98)">
+                <rect x="14" y="42" width="92" height="50" fill="#f5ead2" />
+                <rect x="62" y="42" width="44" height="50" fill="#e2d2b2" />
+                <rect x="14" y="42" width="92" height="50" fill="none" stroke="#5c3824" stroke-width="3" />
+                <line x1="60" y1="42" x2="60" y2="92" stroke="#5c3824" stroke-width="3" />
+                <rect x="22" y="50" width="30" height="40" class="fs-lantern-glow" stroke="#5c3824"
+                    stroke-width="1.8" />
+                <line x1="37" y1="50" x2="37" y2="90" stroke="#5c3824" stroke-width="1.2" />
+                <line x1="22" y1="63" x2="52" y2="63" stroke="#5c3824" stroke-width="1.2" />
+                <line x1="22" y1="76" x2="52" y2="76" stroke="#5c3824" stroke-width="1.2" />
+                <circle cx="83" cy="64" r="12" class="fs-lantern-glow" stroke="#5c3824" stroke-width="2.2" />
+                <polygon points="0,44 60,14 120,44" class="fs-torii-roof" />
+                <polygon points="60,14 120,44 108,46 60,22 12,46 0,44" class="fs-torii-red" />
+                <line x1="142" y1="42" x2="142" y2="92" stroke="#5c3824" stroke-width="2.8" />
+                <path d="M112 46 Q142 26 172 46 Z" class="fs-torii-red" />
+                <path d="M126 46 Q142 32 158 46 Z" class="fs-torii-shade" />
+            </g>
+            <g transform="translate(218, 42)">
+                <path d="M44 86 Q40 118 34 148 L52 148 Q48 118 52 86 Z" class="fs-trunk" />
+                <polygon points="48,8 14,28 26,62 48,50" class="fs-momiji-light" />
+                <polygon points="48,8 82,28 70,62 48,50" class="fs-momiji-mid" />
+                <polygon points="14,28 -4,58 18,86 48,74 26,62" class="fs-momiji-mid" />
+                <polygon points="82,28 98,58 76,86 48,74 70,62" class="fs-momiji-dark" />
+                <polygon points="26,62 48,50 70,62 48,86" class="fs-momiji-light" />
+            </g>
+            <g transform="translate(465, 22)">
+                <line x1="48" y1="0" x2="48" y2="24" stroke="#d8a21b" stroke-width="3" />
+                <circle cx="48" cy="6" r="3" fill="#ffd84a" />
+                <path d="M22 24 Q48 30 74 24 L68 30 Q48 34 28 30 Z" class="fs-torii-roof" />
+                <rect x="32" y="30" width="32" height="14" class="fs-torii-red" />
+                <rect x="45" y="33" width="6" height="8" class="fs-lantern-glow" />
+                <path d="M18 44 Q48 51 78 44 L72 51 Q48 55 24 51 Z" class="fs-torii-roof" />
+                <rect x="29" y="51" width="38" height="16" class="fs-torii-red" />
+                <rect x="45" y="55" width="6" height="9" class="fs-lantern-glow" />
+                <path d="M14 67 Q48 75 82 67 L75 75 Q48 79 21 75 Z" class="fs-torii-roof" />
+                <rect x="26" y="75" width="44" height="18" class="fs-torii-red" />
+                <rect x="44" y="79" width="8" height="10" class="fs-lantern-glow" />
+                <path d="M9 93 Q48 102 87 93 L80 102 Q48 106 16 102 Z" class="fs-torii-roof" />
+                <rect x="23" y="102" width="50" height="22" class="fs-torii-red" />
+                <rect x="44" y="107" width="8" height="12" class="fs-lantern-glow" />
+                <path d="M4 124 Q48 134 92 124 L84 134 Q48 139 12 134 Z" class="fs-torii-roof" />
+                <rect x="20" y="134" width="56" height="32" class="fs-torii-shade" />
+                <rect x="34" y="140" width="10" height="14" class="fs-lantern-glow" />
+                <rect x="52" y="140" width="10" height="14" class="fs-lantern-glow" />
+            </g>
+            <g transform="translate(628, 28)">
+                <path d="M54 94 Q50 128 42 162 L64 162 Q60 128 64 94 Z" class="fs-trunk" />
+                <polygon points="58,6 22,24 34,56 58,44" class="fs-momiji-light" />
+                <polygon points="58,6 96,24 84,56 58,44" class="fs-momiji-mid" />
+                <polygon points="22,24 -4,52 12,84 38,76 34,56" class="fs-ginkgo-light" />
+                <polygon points="12,84 38,76 54,94 26,98" class="fs-momiji-dark" />
+                <polygon points="34,56 58,44 84,56 60,78 38,76" class="fs-momiji-light" />
+                <polygon points="96,24 120,54 104,86 82,76 84,56" class="fs-momiji-mid" />
+                <polygon points="104,86 82,76 60,78 82,92" class="fs-momiji-dark" />
+            </g>
+            <g class="fs-momiji-mid">
+                <polygon points="360,82 365,78 368,84 362,88" />
+                <polygon points="410,108 416,104 418,110 412,114" />
+                <polygon points="595,92 601,88 604,94 598,98" />
+                <polygon points="615,126 621,122 623,128 617,132" />
+            </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 5: SAKURA (rose) — Hanami Cherry Blossom Park & Red Drum Bridge
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-rose">
+            <g transform="translate(22, 22)">
+                <path d="M54 94 Q50 128 42 166 L64 166 Q60 128 64 94 Z" class="fs-trunk" />
+                <polygon points="58,6 22,24 34,56 58,44" class="fs-sakura-light" />
+                <polygon points="58,6 96,24 84,56 58,44" class="fs-sakura-mid" />
+                <polygon points="22,24 -4,52 12,84 38,76 34,56" class="fs-sakura-light" />
+                <polygon points="34,56 58,44 84,56 60,78 38,76" class="fs-sakura-light" />
+                <polygon points="96,24 120,54 104,86 82,76 84,56" class="fs-sakura-mid" />
+                <polygon points="104,86 82,76 54,94 26,98 12,84" class="fs-sakura-dark" />
+                <g transform="translate(46, 36)">
+                    <circle cx="0" cy="-3.4" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+                <g transform="translate(82, 54)">
+                    <circle cx="0" cy="-3.4" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.5" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+            </g>
+            <g transform="translate(178, 134)">
+                <circle cx="10" cy="14" r="16" class="fs-chochin-glow fs-night-only" />
+                <line x1="10" y1="22" x2="10" y2="54" stroke="#4d2e24" stroke-width="3" />
+                <polygon points="2,6 18,6 20,16 16,24 4,24 0,16" fill="#ffd9e8" stroke="#c94a72" stroke-width="1.5" />
+                <circle cx="10" cy="15" r="4.5" class="fs-lantern-glow" />
+                <path d="M0 6 L10 1 L20 6 Z" class="fs-torii-roof" />
+            </g>
+            <g transform="translate(596, 134)">
+                <circle cx="10" cy="14" r="16" class="fs-chochin-glow fs-night-only" />
+                <line x1="10" y1="22" x2="10" y2="54" stroke="#4d2e24" stroke-width="3" />
+                <polygon points="2,6 18,6 20,16 16,24 4,24 0,16" fill="#ffd9e8" stroke="#c94a72" stroke-width="1.5" />
+                <circle cx="10" cy="15" r="4.5" class="fs-lantern-glow" />
+                <path d="M0 6 L10 1 L20 6 Z" class="fs-torii-roof" />
+            </g>
+            <ellipse cx="400" cy="186" rx="185" ry="12" class="fs-water" />
+            <path d="M275 186 H345 M395 189 H475 M335 192 H420" class="fs-water-ripple" />
+            <ellipse cx="310" cy="184" rx="4" ry="1.6" class="fs-petal" />
+            <ellipse cx="385" cy="187" rx="4.2" ry="1.7" class="fs-petal" />
+            <ellipse cx="455" cy="185" rx="3.8" ry="1.5" class="fs-petal" />
+            <ellipse cx="505" cy="188" rx="4" ry="1.6" class="fs-petal" />
+            <g transform="translate(245, 108)">
+                <rect x="48" y="44" width="7" height="36" class="fs-torii-shade" />
+                <rect x="112" y="28" width="7" height="52" class="fs-torii-shade" />
+                <rect x="191" y="28" width="7" height="52" class="fs-torii-shade" />
+                <rect x="255" y="44" width="7" height="36" class="fs-torii-shade" />
+                <rect x="36" y="30" width="5" height="24" class="fs-torii-red" />
+                <circle cx="38.5" cy="28" r="3" fill="#ffd84a" />
+                <rect x="94" y="10" width="5" height="24" class="fs-torii-red" />
+                <circle cx="96.5" cy="8" r="3" fill="#ffd84a" />
+                <rect x="152.5" y="2" width="5" height="24" class="fs-torii-red" />
+                <circle cx="155" cy="0" r="3.2" fill="#ffd84a" />
+                <rect x="211" y="10" width="5" height="24" class="fs-torii-red" />
+                <circle cx="213.5" cy="8" r="3" fill="#ffd84a" />
+                <rect x="269" y="30" width="5" height="24" class="fs-torii-red" />
+                <circle cx="271.5" cy="28" r="3" fill="#ffd84a" />
+                <path d="M4 62 Q155 -28 306 62" stroke="#de4a37" stroke-width="5.5" fill="none"
+                    stroke-linecap="round" />
+                <path d="M10 70 Q155 -16 300 70" stroke="#f5c84c" stroke-width="2.2" fill="none" />
+                <path d="M0 78 Q155 -6 310 78 L296 82 Q155 8 14 82 Z" class="fs-torii-red" />
+                <path d="M14 82 Q155 8 296 82 L288 85 Q155 15 22 85 Z" class="fs-torii-shade" />
+            </g>
+            <g transform="translate(634, 24)">
+                <path d="M54 94 Q50 128 42 164 L64 164 Q60 128 64 94 Z" class="fs-trunk" />
+                <polygon points="58,6 22,24 34,56 58,44" class="fs-sakura-light" />
+                <polygon points="58,6 96,24 84,56 58,44" class="fs-sakura-mid" />
+                <polygon points="22,24 -4,52 12,84 38,76 34,56" class="fs-sakura-light" />
+                <polygon points="12,84 38,76 54,94 26,98" class="fs-sakura-dark" />
+                <polygon points="34,56 58,44 84,56 60,78 38,76" class="fs-sakura-light" />
+                <polygon points="96,24 120,54 104,86 82,76 84,56" class="fs-sakura-mid" />
+                <g transform="translate(42, 32)">
+                    <circle cx="0" cy="-3.6" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="3.4" cy="-1.1" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="2.1" cy="2.9" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="-2.1" cy="2.9" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="-3.4" cy="-1.1" r="2.6" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.6" class="fs-sakura-center" />
+                </g>
+                <g transform="translate(76, 42)">
+                    <circle cx="0" cy="-3.4" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+                <g transform="translate(56, 66)">
+                    <circle cx="0" cy="-3.4" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-2" cy="2.7" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="-3.2" cy="-1" r="2.4" class="fs-sakura-flower" />
+                    <circle cx="0" cy="0" r="1.5" class="fs-sakura-center" />
+                </g>
+            </g>
+            <g class="fs-petal">
+                <ellipse cx="195" cy="78" rx="4.2" ry="2.2" transform="rotate(-22 195 78)" />
+                <ellipse cx="248" cy="64" rx="3.8" ry="2" transform="rotate(18 248 64)" />
+                <ellipse cx="332" cy="84" rx="4" ry="2.1" transform="rotate(-28 332 84)" />
+                <ellipse cx="468" cy="72" rx="4" ry="2.1" transform="rotate(-18 468 72)" />
+                <ellipse cx="554" cy="88" rx="3.8" ry="2" transform="rotate(-32 554 88)" />
+                <ellipse cx="612" cy="74" rx="4.2" ry="2.2" transform="rotate(-28 612 74)" />
+            </g>
+        </g>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCENE 6: BAMBUS (sage) — Arashiyama Bamboo Forest & Fushimi Inari
+             ═══════════════════════════════════════════════════════════════════ -->
+        <g class="jp-scene jp-scene-sage">
+            <g>
+                <g transform="translate(26, 8) rotate(-3 6 170)">
+                    <rect x="2" y="6" width="8" height="174" rx="2" class="fs-bamboo" />
+                    <rect x="6" y="6" width="4" height="174" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="40" x2="11" y2="40" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="80" x2="11" y2="80" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="120" x2="11" y2="120" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M9 40 Q28 28 38 36 Q22 44 9 40 Z" class="fs-bamboo-leaf" />
+                    <path d="M3 80 Q-16 70 -24 78 Q-10 84 3 80 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(56, 2) rotate(1 6 180)">
+                    <rect x="2" y="4" width="9" height="182" rx="2" class="fs-bamboo" />
+                    <rect x="6.5" y="4" width="4.5" height="182" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="36" x2="12" y2="36" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="76" x2="12" y2="76" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="116" x2="12" y2="116" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="154" x2="12" y2="154" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M10 36 Q30 24 40 34 Q24 40 10 36 Z" class="fs-bamboo-leaf" />
+                    <path d="M3 76 Q-16 64 -24 74 Q-10 80 3 76 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(88, 18) rotate(3 6 160)">
+                    <rect x="2" y="8" width="7" height="164" rx="2" class="fs-bamboo" />
+                    <rect x="5.5" y="8" width="3.5" height="164" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="44" x2="10" y2="44" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="86" x2="10" y2="86" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="128" x2="10" y2="128" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M8 44 Q26 34 34 42 Q20 48 8 44 Z" class="fs-bamboo-leaf" />
+                    <path d="M8 86 Q24 76 32 84 Q18 90 8 86 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(118, 32) rotate(-2 5 150)">
+                    <rect x="2" y="8" width="6" height="150" rx="2" class="fs-bamboo" />
+                    <rect x="5" y="8" width="3" height="150" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="46" x2="9" y2="46" stroke-width="1.8" class="fs-bamboo-node" />
+                    <line x1="1" y1="92" x2="9" y2="92" stroke-width="1.8" class="fs-bamboo-node" />
+                    <path d="M7 46 Q22 36 30 44 Q18 50 7 46 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(656, 28) rotate(3 5 150)">
+                    <rect x="2" y="8" width="6.5" height="154" rx="2" class="fs-bamboo" />
+                    <rect x="5.2" y="8" width="3.3" height="154" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="46" x2="9.5" y2="46" stroke-width="1.8" class="fs-bamboo-node" />
+                    <line x1="1" y1="92" x2="9.5" y2="92" stroke-width="1.8" class="fs-bamboo-node" />
+                    <path d="M3 46 Q-14 36 -22 44 Q-8 50 3 46 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(686, 12) rotate(-2 6 170)">
+                    <rect x="2" y="6" width="8" height="170" rx="2" class="fs-bamboo" />
+                    <rect x="6" y="6" width="4" height="170" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="40" x2="11" y2="40" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="82" x2="11" y2="82" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="124" x2="11" y2="124" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M3 40 Q-16 28 -26 38 Q-10 44 3 40 Z" class="fs-bamboo-leaf" />
+                    <path d="M9 82 Q26 72 34 80 Q20 86 9 82 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(718, 4) rotate(2 6 180)">
+                    <rect x="2" y="4" width="9" height="180" rx="2" class="fs-bamboo" />
+                    <rect x="6.5" y="4" width="4.5" height="180" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="38" x2="12" y2="38" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="78" x2="12" y2="78" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="118" x2="12" y2="118" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M3 38 Q-18 26 -28 36 Q-12 42 3 38 Z" class="fs-bamboo-leaf" />
+                    <path d="M10 78 Q28 66 38 76 Q22 82 10 78 Z" class="fs-bamboo-leaf" />
+                </g>
+                <g transform="translate(752, 22) rotate(4 6 160)">
+                    <rect x="2" y="8" width="7" height="160" rx="2" class="fs-bamboo" />
+                    <rect x="5.5" y="8" width="3.5" height="160" rx="1" class="fs-bamboo-dark" />
+                    <line x1="1" y1="46" x2="10" y2="46" stroke-width="2" class="fs-bamboo-node" />
+                    <line x1="1" y1="92" x2="10" y2="92" stroke-width="2" class="fs-bamboo-node" />
+                    <path d="M3 46 Q-14 36 -22 44 Q-8 50 3 46 Z" class="fs-bamboo-leaf" />
+                </g>
+            </g>
+            <polygon points="345,190 382,148 418,148 455,190" class="fs-stone-light" opacity="0.65" />
+            <g transform="translate(362, 108) scale(0.64)">
+                <rect x="18" y="22" width="8" height="72" class="fs-torii-shade" />
+                <rect x="94" y="22" width="8" height="72" class="fs-torii-shade" />
+                <rect x="8" y="34" width="104" height="7" class="fs-torii-shade" />
+                <path d="M0 14 Q60 22 120 14 L114 22 Q60 28 6 22 Z" class="fs-torii-roof" />
+            </g>
+            <g transform="translate(348, 92) scale(0.82)">
+                <rect x="18" y="22" width="8" height="82" class="fs-torii-red" />
+                <rect x="94" y="22" width="8" height="82" class="fs-torii-red" />
+                <rect x="8" y="34" width="104" height="7" class="fs-torii-red" />
+                <path d="M0 14 Q60 22 120 14 L114 22 Q60 28 6 22 Z" class="fs-torii-roof" />
+            </g>
+            <g transform="translate(332, 74)">
+                <polygon points="18,22 27,22 25,114 15,114" class="fs-torii-red" />
+                <polygon points="109,22 118,22 121,114 111,114" class="fs-torii-red" />
+                <rect x="13" y="104" width="14" height="10" rx="1.5" class="fs-torii-roof" />
+                <rect x="109" y="104" width="14" height="10" rx="1.5" class="fs-torii-roof" />
+                <rect x="6" y="36" width="124" height="8" rx="1.5" class="fs-torii-red" />
+                <rect x="63" y="21" width="10" height="17" rx="1" class="fs-torii-roof" />
+                <rect x="66" y="24" width="4" height="10" rx="0.8" fill="#f5c84c" />
+                <polygon points="2,17 134,17 130,24 6,24" class="fs-torii-red" />
+                <path d="M-4 10 Q68 20 140 10 L134 18 Q68 26 2 18 Z" class="fs-torii-roof" />
+            </g>
+            <g transform="translate(262, 138)">
+                <rect x="4" y="38" width="26" height="14" rx="2" class="fs-stone-dark" />
+                <polygon points="9,38 14,16 22,16 25,38" fill="#f4f7f4" />
+                <circle cx="17" cy="13" r="6" fill="#f4f7f4" />
+                <polygon points="11,10 13,1 17,9" fill="#f4f7f4" />
+                <polygon points="17,9 21,1 23,10" fill="#f4f7f4" />
+                <path d="M12 17 Q17 26 22 17 Z" class="fs-torii-red" />
+                <path d="M23 34 Q34 26 32 16 Q26 22 23 30 Z" fill="#e2eae2" />
+            </g>
+            <g transform="translate(510, 128)">
+                <circle cx="22" cy="23" r="22" class="fs-chochin-glow fs-night-only" />
+                <polygon points="10,54 34,54 37,62 7,62" class="fs-stone-dark" />
+                <polygon points="17,34 27,34 29,54 15,54" class="fs-stone-light" />
+                <polygon points="11,29 33,29 30,35 14,35" class="fs-stone-dark" />
+                <rect x="14" y="16" width="16" height="13" class="fs-stone-light" />
+                <rect x="17.5" y="19" width="9" height="7.5" rx="1" class="fs-lantern-glow" />
+                <path d="M4 17 Q14 12 22 6 Q30 12 40 17 L35 19 Q22 16 9 19 Z" class="fs-stone-light" />
+                <circle cx="22" cy="4.5" r="2.8" class="fs-stone-light" />
+            </g>
+        </g>
+
+        <!-- Night-only Glowing Fireflies (Hotaru) -->
+        <g class="fs-night-only">
+            <circle cx="52" cy="148" r="6.5" class="fs-firefly-glow" />
+            <circle cx="52" cy="148" r="2.2" class="fs-firefly-core" />
+            <circle cx="106" cy="126" r="5.5" class="fs-firefly-glow" />
+            <circle cx="106" cy="126" r="1.8" class="fs-firefly-core" />
+            <circle cx="228" cy="162" r="6" class="fs-firefly-glow" />
+            <circle cx="228" cy="162" r="2" class="fs-firefly-core" />
+            <circle cx="542" cy="156" r="6" class="fs-firefly-glow" />
+            <circle cx="542" cy="156" r="2" class="fs-firefly-core" />
+            <circle cx="768" cy="146" r="6.5" class="fs-firefly-glow" />
+            <circle cx="768" cy="146" r="2.2" class="fs-firefly-core" />
+        </g>
+
+        <rect x="-3200" y="186" width="7200" height="11" class="fs-grass-top" />
+        <rect x="-3200" y="194" width="7200" height="9" class="fs-grass-overhang" />
+        <path class="fs-grass-overhang"
+            d="M-1600 194 L-1570 203 L-1540 194 L-1510 203 L-1480 194 L-1450 203 L-1420 194 L-1390 203 L-1360 194 L-1330 203 L-1300 194 L-1270 203 L-1240 194 L-1210 203 L-1180 194 L-1150 203 L-1120 194 L-1090 203 L-1060 194 L-1030 203 L-1000 194 L-970 203 L-940 194 L-910 203 L-880 194 L-850 203 L-820 194 L-790 203 L-760 194 L-730 203 L-700 194 L-670 203 L-640 194 L-610 203 L-580 194 L-550 203 L-520 194 L-490 203 L-460 194 L-430 203 L-400 194 L-360 203 L-330 194 L-300 202 L-270 194 L-240 203 L-210 194 L-180 202 L-150 194 L-120 203 L-90 194 L-60 202 L-30 194 L0 203 L22 194 L44 202 L68 194 L92 203 L118 194 L144 202 L170 194 L196 203 L224 194 L252 202 L280 194 L308 203 L336 194 L364 202 L392 194 L420 203 L448 194 L476 202 L504 194 L532 203 L560 194 L588 202 L616 194 L644 203 L672 194 L700 202 L728 194 L756 203 L780 194 L800 202 L830 194 L860 203 L890 194 L920 202 L950 194 L980 203 L1010 194 L1040 202 L1070 194 L1100 203 L1130 194 L1160 202 L1190 194 L1220 203 L1250 194 L1280 203 L1310 194 L1340 203 L1370 194 L1400 203 L1430 194 L1460 203 L1490 194 L1520 203 L1550 194 L1580 203 L1610 194 L1640 203 L1670 194 L1700 203 L1730 194 L1760 203 L1790 194 L1820 203 L1850 194 L1880 203 L1910 194 L1940 203 L1970 194 L2000 203 L2030 194 L2060 203 L2090 194 L2120 203 L2150 194 L2180 203 L2210 194 L2240 203 L2270 194 L2300 203 L2330 194 L2360 203 L2400 194 L2400 206 L-1600 206 Z" />
+        <rect x="-3200" y="202" width="7200" height="18" class="fs-earth" />
+        <g class="fs-pebbles">
+            <ellipse cx="-680" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="-520" cy="213" rx="8" ry="4" />
+            <ellipse cx="-360" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="-210" cy="213" rx="7.5" ry="3.8" />
+            <ellipse cx="-80" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="48" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="145" cy="213" rx="7" ry="3.5" />
+            <ellipse cx="268" cy="210" rx="10" ry="4.5" />
+            <ellipse cx="395" cy="213" rx="8" ry="4" />
+            <ellipse cx="520" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="648" cy="213" rx="7.5" ry="3.8" />
+            <ellipse cx="748" cy="210" rx="9" ry="4.5" />
+            <ellipse cx="880" cy="212" rx="8.5" ry="4" />
+            <ellipse cx="1020" cy="210" rx="9.5" ry="4.5" />
+            <ellipse cx="1180" cy="213" rx="8" ry="4" />
+            <ellipse cx="1340" cy="211" rx="9" ry="4.5" />
+            <ellipse cx="1500" cy="212" rx="8.5" ry="4" />
+        </g>
+    </svg>
 </div>
 
 <h2 class="card-title" style="visibility: hidden;">{{Bedeutung}}</h2>
@@ -1051,6 +1835,9 @@
     // --- AnkiWeb / Browser Detection [SHARED with c1-front] ---
     // AnkiMobile also has no pycmd/AnkiDroidJS but runs locally — exclude via UA.
     var _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    if (typeof pycmd === 'function') {
+        document.documentElement.classList.add('is-ankidesktop');
+    }
     if (location.protocol === 'https:' && !_isIOS && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
         document.documentElement.classList.add('is-ankiweb');
         var _awH = window.innerHeight;
@@ -1064,14 +1851,27 @@
         var _ab = document.querySelector('.action-buttons');
         if (_ab) _ab.style.width = _awPx;
 
-        // Force matching background on ALL ancestors up to <html>.
-        // AnkiWeb may wrap the card in intermediate elements whose
-        // default background bleeds through below the card content.
+        // Strip Bootstrap .card / #qa_box borders & backgrounds on intermediate wrappers
+        // so there is no rectangular box in AnkiWeb, while body/html carry the full-bleed theme.
         var _bgEl = document.querySelector('.card');
         while (_bgEl) {
-            _bgEl.style.setProperty('background-color', 'var(--bg-main)', 'important');
+            if (_bgEl === document.body || _bgEl === document.documentElement) {
+                _bgEl.style.setProperty('background-color', 'var(--bg-main)', 'important');
+            } else {
+                _bgEl.style.setProperty('background', 'transparent', 'important');
+                _bgEl.style.setProperty('border', 'none', 'important');
+                _bgEl.style.setProperty('box-shadow', 'none', 'important');
+            }
             _bgEl = _bgEl.parentElement;
         }
+        var _measureAwBar = function () {
+            var bar = document.getElementById('ansarea') || document.querySelector('.fixed-bottom, nav.fixed-bottom');
+            if (bar && bar.offsetHeight > 0) {
+                document.documentElement.style.setProperty('--ankiweb-bottom-bar', bar.offsetHeight + 'px');
+            }
+        };
+        _measureAwBar();
+        setTimeout(_measureAwBar, 60);
     }
 
     // --- AnkiDroid Legacy swipe-gesture warning ---
@@ -1286,6 +2086,92 @@
 
     var _lastNavTime = 0;
 
+    window._initModalScrollbars = function () {
+        if (typeof document === 'undefined' || !document.querySelectorAll) return;
+        var modals = document.querySelectorAll('.settings-modal, .info-modal');
+        for (var i = 0; i < modals.length; i++) {
+            (function (modal) {
+                if (!modal) return;
+                if (!modal._customScrollInit) {
+                    modal._customScrollInit = true;
+                    var rail = document.createElement('div');
+                    rail.className = 'custom-scroll-rail';
+                    var thumb = document.createElement('div');
+                    thumb.className = 'custom-scroll-thumb';
+                    rail.appendChild(thumb);
+                    modal.insertBefore(rail, modal.firstChild);
+
+                    var updateThumb = function () {
+                        var sh = modal.scrollHeight;
+                        var ch = modal.clientHeight;
+                        if (sh <= ch + 2) {
+                            thumb.classList.remove('visible');
+                            return;
+                        }
+                        var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                        var topInset = (hdr ? hdr.offsetHeight : 0) + 2;
+                        var bottomInset = 10;
+                        var trackLen = ch - topInset - bottomInset;
+                        if (trackLen <= 24) {
+                            thumb.classList.remove('visible');
+                            return;
+                        }
+                        var maxScroll = Math.max(1, sh - ch);
+                        var thumbLen = Math.max(32, Math.round(trackLen * (ch / sh)));
+                        var scrollRatio = Math.min(1, Math.max(0, modal.scrollTop / maxScroll));
+                        var thumbTop = topInset + Math.round((trackLen - thumbLen) * scrollRatio);
+                        thumb.style.top = thumbTop + 'px';
+                        thumb.style.height = thumbLen + 'px';
+                        thumb.classList.add('visible');
+                    };
+
+                    thumb.addEventListener('pointerdown', function (ev) {
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        thumb.classList.add('dragging');
+                        if (thumb.setPointerCapture) {
+                            try { thumb.setPointerCapture(ev.pointerId); } catch (e) { }
+                        }
+                        var startY = ev.clientY;
+                        var startScroll = modal.scrollTop;
+                        var onMove = function (me) {
+                            var dy = me.clientY - startY;
+                            var sh = modal.scrollHeight;
+                            var ch = modal.clientHeight;
+                            var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                            var topIn = (hdr ? hdr.offsetHeight : 0) + 2;
+                            var trk = Math.max(1, ch - topIn - 10);
+                            var tLen = Math.max(32, Math.round(trk * (ch / sh)));
+                            var avail = Math.max(1, trk - tLen);
+                            var maxS = Math.max(1, sh - ch);
+                            modal.scrollTop = startScroll + (dy / avail) * maxS;
+                        };
+                        var onUp = function (ue) {
+                            thumb.classList.remove('dragging');
+                            if (thumb.releasePointerCapture) {
+                                try { thumb.releasePointerCapture(ue.pointerId); } catch (e) { }
+                            }
+                            window.removeEventListener('pointermove', onMove);
+                            window.removeEventListener('pointerup', onUp);
+                            window.removeEventListener('pointercancel', onUp);
+                        };
+                        window.addEventListener('pointermove', onMove);
+                        window.addEventListener('pointerup', onUp);
+                        window.addEventListener('pointercancel', onUp);
+                    });
+
+                    modal.addEventListener('scroll', updateThumb, { passive: true });
+                    window.addEventListener('resize', updateThumb);
+                    modal._updateCustomScroll = updateThumb;
+                }
+                if (modal._updateCustomScroll) {
+                    modal._updateCustomScroll();
+                    requestAnimationFrame(modal._updateCustomScroll);
+                }
+            })(modals[i]);
+        }
+    };
+
     function navigateToPage(pageId) {
         var mainEl = document.getElementById(_currentSettingsPage);
         var pageEl = document.getElementById(pageId);
@@ -1303,6 +2189,7 @@
         });
         setTimeout(function () { pageEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = pageId;
+        if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
     function navigateBack() {
@@ -1322,6 +2209,7 @@
         });
         setTimeout(function () { mainEl.classList.remove('hover-frozen'); }, 300);
         _currentSettingsPage = 'settings-main';
+        if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
     function refreshSettingsRadios() {
@@ -1434,59 +2322,59 @@
         return _cachedGlobalConf;
     }
 
-    // --- Theme: Accent color definitions ---
+    // --- Theme: Accent color definitions (Forest botanical & jewel tones) ---
     var _accentColors = {
         green: {
-            accent: '#56a83a', hover: '#4a9432', bg: '#f0f7ec', c1: '#56a83a', c2: '#3a98a8',
-            dark: { accent: '#6abe4e', hover: '#5cac40', bg: '#1e3315', c1: '#6abe4e', c2: '#4ec4b8' }
+            accent: '#56a83a', hover: '#4a9432', bg: '#e3f4dc', c1: '#56a83a', c2: '#2d9588',
+            dark: { accent: '#7cd43b', hover: '#6bc22c', bg: '#1e3d28', c1: '#7cd43b', c2: '#4ec4b8' }
         },
         blue: {
-            accent: '#3478f6', hover: '#2a65d4', bg: '#eaf1fe', c1: '#3478f6', c2: '#5856d6',
-            dark: { accent: '#5a9cf8', hover: '#4a8cf0', bg: '#162040', c1: '#5a9cf8', c2: '#7a78e8' }
+            accent: '#2e86de', hover: '#2272c4', bg: '#e1f0fc', c1: '#2e86de', c2: '#546de5',
+            dark: { accent: '#58a6ff', hover: '#4694ee', bg: '#18304c', c1: '#58a6ff', c2: '#7a88f0' }
         },
         purple: {
-            accent: '#8944ab', hover: '#753a95', bg: '#f3ecf7', c1: '#8944ab', c2: '#c44dba',
-            dark: { accent: '#a866c8', hover: '#9656b8', bg: '#2a1838', c1: '#a866c8', c2: '#d870ce' }
+            accent: '#8854d0', hover: '#7342b8', bg: '#eee5fa', c1: '#8854d0', c2: '#c44dba',
+            dark: { accent: '#b07cf4', hover: '#9c68e2', bg: '#2c1f42', c1: '#b07cf4', c2: '#de78d4' }
         },
         orange: {
-            accent: '#e87c2a', hover: '#d06c20', bg: '#fef3ea', c1: '#e87c2a', c2: '#e5a821',
-            dark: { accent: '#f09840', hover: '#e08830', bg: '#3a2010', c1: '#f09840', c2: '#f0c040' }
+            accent: '#e67e22', hover: '#cf6d17', bg: '#fcecd9', c1: '#e67e22', c2: '#e5a821',
+            dark: { accent: '#f59e3d', hover: '#e48d2c', bg: '#3d2814', c1: '#f59e3d', c2: '#f2c444' }
         },
         red: {
-            accent: '#d4483b', hover: '#bc3c30', bg: '#fcedec', c1: '#d4483b', c2: '#e87c2a',
-            dark: { accent: '#e85450', hover: '#d84540', bg: '#381512', c1: '#e85450', c2: '#f09840' }
+            accent: '#d64541', hover: '#be3733', bg: '#fbe4e3', c1: '#d64541', c2: '#e67e22',
+            dark: { accent: '#f0625d', hover: '#e0504b', bg: '#3d1b1b', c1: '#f0625d', c2: '#f59e3d' }
         },
         teal: {
-            accent: '#2aabb8', hover: '#2295a0', bg: '#e8f6f8', c1: '#2aabb8', c2: '#34c759',
-            dark: { accent: '#4ec4b8', hover: '#3cb4a8', bg: '#102a2c', c1: '#4ec4b8', c2: '#50d070' }
+            accent: '#1e8c7a', hover: '#177566', bg: '#dcf4ef', c1: '#1e8c7a', c2: '#56a83a',
+            dark: { accent: '#48cfad', hover: '#37be9c', bg: '#163834', c1: '#48cfad', c2: '#7cd43b' }
         }
     };
 
-    // --- Theme: Primary surface color definitions ---
+    // --- Theme: Primary surface color definitions (Forest biomes) ---
     var _primaryColors = {
         neutral: {
-            bgMain: '#f7f7f5', surface: '#ffffff', borderColor: '#e2e2df',
-            dark: { bgMain: '#1a1a1a', surface: '#252525', borderColor: '#363636' }
+            bgMain: '#dff3e4', surface: '#fbfef9', borderColor: '#b7dec2',
+            dark: { bgMain: '#173328', surface: '#204436', borderColor: '#31614e' }
         },
         warm: {
-            bgMain: '#f0e6d6', surface: '#f7f0e4', borderColor: '#d8cab0',
-            dark: { bgMain: '#1d1b17', surface: '#282520', borderColor: '#3a3630' }
+            bgMain: '#e5ecc7', surface: '#fcfdf4', borderColor: '#c5d198',
+            dark: { bgMain: '#242e1a', surface: '#313e24', borderColor: '#485a36' }
         },
         cool: {
-            bgMain: '#e2e9f4', surface: '#eaf0fa', borderColor: '#c0c9de',
-            dark: { bgMain: '#181a1f', surface: '#22242a', borderColor: '#33363e' }
+            bgMain: '#d8f0ec', surface: '#f7fdfc', borderColor: '#add8d1',
+            dark: { bgMain: '#142d33', surface: '#1d3e46', borderColor: '#2e5b65' }
         },
         sepia: {
-            bgMain: '#ebe2cc', surface: '#f2ebda', borderColor: '#d0c4a4',
-            dark: { bgMain: '#1c1a14', surface: '#27251e', borderColor: '#3a3628' }
+            bgMain: '#f1e6cc', surface: '#fdfaf1', borderColor: '#d9c59a',
+            dark: { bgMain: '#282016', surface: '#362b1e', borderColor: '#50402d' }
         },
         rose: {
-            bgMain: '#f0e2e8', surface: '#f6eaf0', borderColor: '#d6bfc8',
-            dark: { bgMain: '#1e181a', surface: '#2a2226', borderColor: '#3c3236' }
+            bgMain: '#f5e4eb', surface: '#fff9fb', borderColor: '#e0becb',
+            dark: { bgMain: '#241b21', surface: '#33262f', borderColor: '#4c3846' }
         },
         sage: {
-            bgMain: '#e2ede0', surface: '#eaf4e8', borderColor: '#bcd2b6',
-            dark: { bgMain: '#181d18', surface: '#222822', borderColor: '#343a30' }
+            bgMain: '#e1f0da', surface: '#fafef7', borderColor: '#b5d6a9',
+            dark: { bgMain: '#162c1d', surface: '#203d29', borderColor: '#325a3e' }
         }
     };
 
@@ -1608,8 +2496,9 @@
                 accentTargets[t].style.setProperty('--tab-color-c2', palette.c2);
             }
 
-            // --- 2b. Primary surface colors ---
+            // --- 2b. Primary surface colors (Japan Nature Themes) ---
             var primary = safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral');
+            root.setAttribute('data-jp-theme', primary);
             var pColors = _primaryColors[primary] || _primaryColors.neutral;
             var pPalette = isDark && pColors.dark ? pColors.dark : pColors;
             for (var t = 0; t < accentTargets.length; t++) {
@@ -1717,9 +2606,18 @@
             }
             meta.content = scheme;
 
-            // --- 5. Background-color: set directly on html + body for all platforms.
-            root.style.backgroundColor = pPalette.bgMain;
-            body.style.backgroundColor = pPalette.bgMain;
+            // --- 5. Background-color: on Anki Desktop, keep document.body at Anki's native
+            //    --canvas background so TopWebView.update_background_image() never tints the top bar,
+            //    while .card::before paints the theme backdrop inside the reviewer.
+            if (typeof pycmd === 'function') {
+                root.style.removeProperty('background-color');
+                body.style.setProperty('background', 'var(--canvas)', 'important');
+                body.style.setProperty('background-image', 'none', 'important');
+                try { pycmd('updateToolbar'); } catch (e) { }
+            } else {
+                root.style.backgroundColor = pPalette.bgMain;
+                body.style.backgroundColor = pPalette.bgMain;
+            }
         } finally {
             // Delay reset so MutationObserver callbacks (microtasks) triggered by
             // the class changes above see the guard as true and skip re-entry.
@@ -1731,6 +2629,7 @@
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
         var keyMap = { mode: 'kanjiThemeMode', accent: 'kanjiThemeAccent', fontSize: 'kanjiThemeFontSize', primary: 'kanjiThemePrimary', strokeColor: 'kanjiThemeStrokeColor', strokeStyle: 'kanjiThemeStrokeStyle', strokeWidth: 'kanjiThemeStrokeWidth', hand: 'kanjiThemeHand' };
         safeSetItem(keyMap[category], val);
+        _themeApplying = false;
         applyThemeSettings();
         // Immediately refresh back-side features (stroke colors, gel halos, etc.)
         if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
@@ -1846,6 +2745,7 @@
         if (_settingsModal) _settingsModal.scrollTop = 0;
         _settingsOverlay.classList.add('active');
         updateModeDisabledSettings();
+        if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
     function closeSettings(e) {
@@ -2049,30 +2949,190 @@
 
     // --- Button Feedback & Stylus Fixes [SHARED with c1-front] ---
 
+    // --- Stroke-Order Replay Overlay [SHARED] ---
+    (function () {
+        if (window._kanjiOrder && window._kanjiOrder.st) {
+            if (window._kanjiOrder.st.raf) cancelAnimationFrame(window._kanjiOrder.st.raf);
+            window._kanjiOrder.st.playing = false;
+        }
+        var NS = 'http://www.w3.org/2000/svg';
+        var SPEEDS = [0.5, 1, 1.75];
+        var SPEED_LABELS = { 0.5: '0.5×', 1: '1×', 1.75: '1.75×' };
+        var st = { svg: null, strokes: [], marks: [], nums: [], lens: [], n: 0, idx: 0, prog: 0, playing: false, speed: 1, raf: null, last: 0, waitUntil: 0 };
+        var ICONS = {
+            play: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>',
+            pause: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>',
+            replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>'
+        };
+        var reducedMotion = function () {
+            return document.body.classList.contains('reduce-motion') ||
+                !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        };
+        var mk = function (tag, attrs) {
+            var e = document.createElementNS(NS, tag);
+            for (var k in attrs) e.setAttribute(k, attrs[k]);
+            return e;
+        };
+        var build = function () {
+            var svg = document.getElementById('order-svg'), src = document.getElementById('svg-bg');
+            if (!svg || !src) return false;
+            var ds = [];
+            for (var c = 0; c < src.children.length; c++) {
+                var p = src.children[c];
+                if (p.tagName.toLowerCase() === 'path' && p.getAttribute('d') && !p.classList.contains('gel-halo')) ds.push(p.getAttribute('d'));
+            }
+            if (!ds.length) return false;
+            svg.innerHTML = '';
+            svg.appendChild(mk('path', { 'class': 'order-grid', d: 'M54.5 0V109M0 54.5H109' }));
+            var ghosts = ds.map(function (d) { var g = mk('path', { 'class': 'order-ghost', d: d }); svg.appendChild(g); return g; });
+            st.strokes = ds.map(function (d) { var s = mk('path', { 'class': 'order-stroke', d: d, pathLength: '100' }); svg.appendChild(s); return s; });
+            st.lens = []; st.marks = []; st.nums = [];
+            ghosts.forEach(function (g, i) {
+                var L = 0;
+                try { L = g.getTotalLength(); } catch (e) { }
+                st.lens.push(L || 40);
+                var p0 = L ? g.getPointAtLength(0) : { x: 0, y: 0 }, p1 = L ? g.getPointAtLength(Math.min(8, L)) : p0;
+                var dl = Math.hypot(p1.x - p0.x, p1.y - p0.y) || 1, ux = (p1.x - p0.x) / dl, uy = (p1.y - p0.y) / dl;
+                var bx = p0.x + ux * 12, by = p0.y + uy * 12, hx = -ux * 3, hy = -uy * 3, nx = -uy * 2.4, ny = ux * 2.4;
+                var mark = mk('g', {});
+                mark.appendChild(mk('circle', { 'class': 'order-dot', cx: p0.x.toFixed(2), cy: p0.y.toFixed(2), r: '2.4' }));
+                mark.appendChild(mk('path', {
+                    'class': 'order-arrow',
+                    d: 'M' + (p0.x + ux * 5).toFixed(2) + ',' + (p0.y + uy * 5).toFixed(2) + 'L' + bx.toFixed(2) + ',' + by.toFixed(2) +
+                        'M' + (bx + hx + nx).toFixed(2) + ',' + (by + hy + ny).toFixed(2) + 'L' + bx.toFixed(2) + ',' + by.toFixed(2) +
+                        'L' + (bx + hx - nx).toFixed(2) + ',' + (by + hy - ny).toFixed(2)
+                }));
+                svg.appendChild(mark); st.marks.push(mark);
+                var num = mk('text', { 'class': 'order-num', x: (p0.x - ux * 5).toFixed(2), y: (p0.y - uy * 5).toFixed(2) });
+                num.textContent = String(i + 1);
+                svg.appendChild(num); st.nums.push(num);
+            });
+            st.svg = svg; st.n = ds.length;
+            return true;
+        };
+        var render = function () {
+            for (var i = 0; i < st.n; i++) {
+                var off = i < st.idx ? 0 : (i === st.idx ? 105 * (1 - st.prog) : 105);
+                st.strokes[i].style.strokeDashoffset = off.toFixed(2);
+                st.strokes[i].classList.toggle('order-current', i === st.idx);
+                st.marks[i].style.display = (i === st.idx) ? '' : 'none';
+                st.nums[i].style.display = (i < st.idx || (i === st.idx && st.prog > 0)) ? '' : 'none';
+            }
+            var prog = document.getElementById('order-progress');
+            if (prog) prog.textContent = 'Strich ' + Math.min(st.idx + (st.prog > 0 ? 1 : 0), st.n) + ' / ' + st.n;
+            var tg = document.getElementById('order-toggle');
+            if (tg) tg.innerHTML = st.playing ? ICONS.pause : (st.idx >= st.n ? ICONS.replay : ICONS.play);
+            var sp = document.getElementById('order-speed');
+            if (sp) sp.textContent = SPEED_LABELS[st.speed];
+        };
+        var duration = function (i) { return Math.max(450, Math.min(1400, 300 + st.lens[i] * 11)); };
+        var tick = function (ts) {
+            st.raf = null;
+            if (!st.playing || !st.svg || !st.svg.isConnected) { st.playing = false; return; }
+            var dt = st.last ? Math.min(ts - st.last, 100) : 0;
+            st.last = ts;
+            if (st.waitUntil <= ts) {
+                var rm = reducedMotion();
+                st.prog = rm ? 1 : st.prog + dt * st.speed / duration(st.idx);
+                if (st.prog >= 1) {
+                    st.prog = 0; st.idx++;
+                    st.waitUntil = ts + (rm ? 700 : 280) / st.speed;
+                    if (st.idx >= st.n) { st.idx = st.n; st.playing = false; }
+                }
+                render();
+            }
+            if (st.playing) st.raf = requestAnimationFrame(tick);
+        };
+        var pause = function () {
+            st.playing = false;
+            if (st.raf) { cancelAnimationFrame(st.raf); st.raf = null; }
+        };
+        var play = function () {
+            if (st.idx >= st.n) { st.idx = 0; st.prog = 0; }
+            st.playing = true; st.last = 0; st.waitUntil = 0;
+            if (!st.raf) st.raf = requestAnimationFrame(tick);
+            render();
+        };
+        var open = function () {
+            var ol = document.getElementById('order-overlay');
+            if (!ol) return;
+            if (st.svg !== document.getElementById('order-svg') && !build()) return;
+            var ob = document.querySelector('.order-btn');
+            if (ob) ob.classList.add('no-hover-fx');
+            pause(); st.idx = 0; st.prog = 0; render();
+            ol.classList.add('active');
+            if (window._initModalScrollbars) window._initModalScrollbars();
+            setTimeout(function () { if (ol.classList.contains('active')) play(); }, 250);
+        };
+        var close = function (e) {
+            var ol = document.getElementById('order-overlay');
+            if (!ol) return;
+            if (e && e.target === ol && !ol._bgPointerDown) return;
+            ol._bgPointerDown = false;
+            var ob = document.querySelector('.order-btn');
+            if (ob) ob.classList.remove('no-hover-fx');
+            pause();
+            ol.classList.remove('active');
+            ol.style.pointerEvents = 'auto';
+            clearTimeout(ol._pointerEvTimer);
+            ol._pointerEvTimer = setTimeout(function () { ol.style.pointerEvents = ''; }, 400);
+        };
+        var action = function (act) {
+            if (!st.n) return;
+            if (act === 'toggle') { if (st.playing) pause(); else play(); }
+            else if (act === 'next') { pause(); st.idx = Math.min(st.n, st.idx + 1); st.prog = 0; }
+            else if (act === 'prev') { pause(); if (st.prog > 0) st.prog = 0; else st.idx = Math.max(0, st.idx - 1); }
+            else if (act === 'speed') { st.speed = SPEEDS[(SPEEDS.indexOf(st.speed) + 1) % SPEEDS.length]; }
+            render();
+        };
+        window._kanjiOrder = { st: st, open: open, close: close, action: action };
+    })();
+
+    function openStrokeOrder(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiOrder) window._kanjiOrder.open();
+    }
+    function closeStrokeOrder(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (window._kanjiOrder) window._kanjiOrder.close(e);
+    }
+    function strokeOrderAction(act, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiOrder) window._kanjiOrder.action(act);
+    }
+
     // Stylus fix: Apple Pencil / S-Pen don't reliably fire onclick
     (function () {
-        var lastGearOpen = 0;
-        var gearBtn = _gearBtn;
-        if (!gearBtn || gearBtn._ankiPenFixed) return;
-        gearBtn._ankiPenFixed = true;
-        gearBtn.addEventListener('pointerup', function (e) {
-            if (e.pointerType !== 'pen') return;
-            var now = Date.now();
-            if (now - lastGearOpen < 400) return;
-            lastGearOpen = now;
-            e.preventDefault(); e.stopPropagation();
-            if (window._kanjiModalEatClick) {
-                document.removeEventListener('click', window._kanjiModalEatClick, true);
+        var lastGearOpen = 0, lastOrderOpen = 0;
+        function addPenTopBtn(el, handler) {
+            if (!el || el._ankiPenFixed) return;
+            el._ankiPenFixed = true;
+            el.addEventListener('pointerup', function (e) {
+                if (e.pointerType !== 'pen') return;
+                var now = Date.now();
+                if (handler === 'gear' && now - lastGearOpen < 400) return;
+                if (handler === 'gear') lastGearOpen = now;
+                if (handler === 'order' && now - lastOrderOpen < 400) return;
+                if (handler === 'order') lastOrderOpen = now;
+                e.preventDefault(); e.stopPropagation();
+                if (window._kanjiModalEatClick) {
+                    document.removeEventListener('click', window._kanjiModalEatClick, true);
+                    clearTimeout(window._kanjiModalEatTimer);
+                    window._kanjiModalEatClick = null;
+                }
+                if (handler === 'gear') openSettings(e);
+                else if (handler === 'order') openStrokeOrder(e);
+                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
+                window._kanjiModalEatClick = _eatHandler;
+                document.addEventListener('click', _eatHandler, true);
                 clearTimeout(window._kanjiModalEatTimer);
-                window._kanjiModalEatClick = null;
-            }
-            openSettings(e);
-            var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-            window._kanjiModalEatClick = _eatHandler;
-            document.addEventListener('click', _eatHandler, true);
-            clearTimeout(window._kanjiModalEatTimer);
-            window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
-        });
+                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+            });
+        }
+        addPenTopBtn(_gearBtn, 'gear');
+        addPenTopBtn(document.querySelector('.order-btn'), 'order');
     })();
 
     // --- Scroll Guards [SHARED with c1-front] ---

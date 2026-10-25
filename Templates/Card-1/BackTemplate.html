@@ -26,8 +26,7 @@
     }
 
     /* Elements already visible on front — no animation, instant appearance */
-    .card-title,
-    .gear-btn {
+    .card-title {
         transition: none !important;
     }
 
@@ -141,17 +140,11 @@
 
 {{FrontSide}}
 
-<button class="order-btn" onclick="openStrokeOrder(event)" title="Strichfolge ansehen" aria-label="Strichfolge ansehen">
-    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-        <polygon points="8 5 19 12 8 19 8 5"></polygon>
-    </svg>
-</button>
-
 <div class="back-actions">
     <button class="info-btn" onclick="openInfoModal(event)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" class="fi-cream"></path>
+            <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" class="fi-gold"></path>
         </svg>
         Info & Merkhilfe
     </button>
@@ -170,8 +163,9 @@
             <span class="info-tag">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    <path d="M2 10l10-5 10 5-10 5z" class="fi-cream" />
+                    <path d="M6 12v5c3 3 9 3 12 0v-5" class="fi-gold" />
+                    <path d="M22 10v6" />
                 </svg>
                 {{JLPT}}
             </span>
@@ -180,9 +174,9 @@
             <span class="info-tag tag-frequency">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="14" />
+                    <rect x="4" y="13" width="4" height="7" rx="1" class="fi-cream" />
+                    <rect x="10" y="5" width="4" height="15" rx="1" class="fi-gold" />
+                    <rect x="16" y="9" width="4" height="11" rx="1" class="fi-teal" />
                 </svg>
                 {{Häufigkeit}}
             </span>
@@ -199,12 +193,13 @@
 
         {{#Eselsbrücke}}
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                 stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14z"
+                    class="fi-gold" />
                 <path d="M9 18h6" />
                 <path d="M10 22h4" />
-                <path
-                    d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
             </svg>
             Eselsbrücke
         </div>
@@ -214,8 +209,9 @@
         <div class="visuell-hinweis">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" class="fi-cream" />
+                <circle cx="12" cy="12" r="3.4" class="fi-teal" />
+                <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
             </svg>
             {{Merkhilfe}}
         </div>
@@ -227,10 +223,10 @@
 
         {{#Wortbeispiel}}
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" class="fi-teal"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" class="fi-cream"></path>
             </svg>
             Wortbeispiele
         </div>
@@ -241,9 +237,11 @@
         {{/Wortbeispiel}}
 
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" class="fi-gold"></path>
+                <circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"></circle>
+                <circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"></circle>
             </svg>
             Lesungen
         </div>
@@ -261,11 +259,12 @@
         </div>
 
         <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                 stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="10" class="fi-teal" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                    class="fi-mint" />
                 <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
             </svg>
             Externe Links
         </div>
@@ -302,37 +301,6 @@
         </div>
 
         <div role="button" tabindex="0" class="close-settings" onclick="closeInfoModal(event)">Schließen</div>
-    </div>
-</div>
-
-<div class="info-overlay order-overlay" id="order-overlay" onclick="closeStrokeOrder(event)">
-    <div class="info-modal order-modal" onclick="event.stopPropagation()">
-        <div class="info-modal-header">
-            <span class="info-modal-title">Strichfolge</span>
-            <span class="info-modal-meaning" id="order-progress"></span>
-        </div>
-        <div class="order-stage"><svg id="order-svg" viewBox="0 0 109 109" aria-hidden="true"></svg></div>
-        <div class="order-controls">
-            <button class="order-ctrl" onclick="strokeOrderAction('prev', event)" title="Strich zurück"
-                aria-label="Strich zurück">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-            </button>
-            <button class="order-ctrl order-ctrl-main" id="order-toggle" onclick="strokeOrderAction('toggle', event)"
-                title="Abspielen / Pause" aria-label="Abspielen / Pause"></button>
-            <button class="order-ctrl" onclick="strokeOrderAction('next', event)" title="Nächster Strich"
-                aria-label="Nächster Strich">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </button>
-            <button class="order-ctrl" id="order-speed" onclick="strokeOrderAction('speed', event)"
-                title="Geschwindigkeit" aria-label="Geschwindigkeit">1×</button>
-        </div>
-        <div role="button" tabindex="0" class="close-settings" onclick="closeStrokeOrder(event)">Schließen</div>
     </div>
 </div>
 
@@ -455,6 +423,7 @@
         var im = ol.querySelector('.info-modal');
         if (im) im.scrollTop = 0;
         ol.classList.add('active');
+        if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
     function closeInfoModal(e) {
