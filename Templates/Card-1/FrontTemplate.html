@@ -3563,11 +3563,11 @@
                 _gelHalo.setAttribute("fill", "none");
                 _gelHalo.setAttribute("class", "gel-halo");
                 _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
-                _gelHalo.setAttribute("stroke-width", String(8 * _swf()));
-                _gelHalo.style.strokeWidth = String(8 * _swf());
+                _gelHalo.setAttribute("stroke-width", String(8.5 * _swf()));
+                _gelHalo.style.strokeWidth = String(8.5 * _swf());
                 _gelHalo.setAttribute("stroke-linecap", "round");
                 _gelHalo.setAttribute("stroke-linejoin", "round");
-                _gelHalo.style.setProperty("opacity", "0.12");
+                _gelHalo.style.setProperty("opacity", "0.15");
                 drawLayer.appendChild(_gelHalo);
             }
             // Append main stroke to DOM so it is visible for color feedback and snap animation
@@ -3644,14 +3644,16 @@
             }
             const halo = refPath.cloneNode(false);
             halo.setAttribute('class', 'gel-halo');
-            halo.setAttribute('stroke-width', String(8 * _swf()));
+            halo.setAttribute('stroke-width', String(8.5 * _swf()));
             halo.setAttribute('stroke-linecap', 'round');
             halo.setAttribute('stroke-linejoin', 'round');
             halo.style.cssText = '';
-            halo.style.setProperty('stroke-width', String(8 * _swf()), 'important');
-            halo.style.setProperty('opacity', '0.12', 'important');
+            halo.style.setProperty('stroke-width', String(8.5 * _swf()), 'important');
+            halo.style.setProperty('opacity', '0.15', 'important');
             halo.style.setProperty('stroke', strokeColor, 'important');
             halo.removeAttribute('filter');
+            refPath.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
+            refPath.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
             // Sync dashoffset animation for hint-active / animate-draw paths
             const isAnimating = refPath.classList.contains('hint-active') || refPath.classList.contains('animate-draw');
             if (isAnimating) {
@@ -3936,11 +3938,11 @@
                     _gelHalo.setAttribute("fill", "none");
                     _gelHalo.setAttribute("class", "gel-halo");
                     _gelHalo.style.setProperty("stroke", "var(--stroke-active)");
-                    _gelHalo.setAttribute("stroke-width", String(8 * _swf()));
-                    _gelHalo.style.strokeWidth = String(8 * _swf());
+                    _gelHalo.setAttribute("stroke-width", String(8.5 * _swf()));
+                    _gelHalo.style.strokeWidth = String(8.5 * _swf());
                     _gelHalo.setAttribute("stroke-linecap", "round");
                     _gelHalo.setAttribute("stroke-linejoin", "round");
-                    _gelHalo.style.setProperty("opacity", "0.12");
+                    _gelHalo.style.setProperty("opacity", "0.15");
                     drawLayer.appendChild(_gelHalo);
                 } else {
                     _gelHalo = null;

@@ -2096,6 +2096,21 @@
             });
         }
 
+        // Refresh gel halos & drop-shadows when stroke colors change on Card 2 Front
+        var _ssC2F = safeGetItem('kanjiThemeStrokeStyle', (globalConf && globalConf.themeStrokeStyle) || 'standard');
+        if (_ssC2F === 'soft') _ssC2F = 'gel';
+        if (_ssC2F === 'gel' && typeof _c2AddGelHaloToPath === 'function') {
+            _c2fSvgBg.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
+            if (typeof _c2GelColorCache !== 'undefined' && _c2GelColorCache) {
+                _c2fPaths.forEach(function (p) { _c2GelColorCache.delete(p); });
+            }
+            _c2fPaths.forEach(function (p, idx) {
+                var c = pathColors[idx] || 'var(--stroke-active)';
+                if (typeof _c2GelColorCache !== 'undefined' && _c2GelColorCache) _c2GelColorCache.set(p, c);
+                _c2AddGelHaloToPath(p);
+            });
+        }
+
         _c2fSvgBg.querySelectorAll('.stroke-number').forEach(function (el) { el.remove(); });
         if (isNumbers) {
             _addNumbersC2F(function (i) {
@@ -2494,14 +2509,19 @@
         }
         var sw0 = safeGetItem('kanjiThemeStrokeWidth', 'normal');
         var swf0 = sw0 === 'thin' ? 0.7 : sw0 === 'thick' ? 1.4 : 1;
+        var isDk0 = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+        var isColored0 = strokeColor !== 'var(--stroke-active)' && !!refPath.style.stroke;
+        var haloOp0 = (isDk0 && isColored0) ? '0.22' : '0.15';
+        refPath.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
+        refPath.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
         var halo = refPath.cloneNode(false);
         halo.setAttribute('class', 'gel-halo');
-        halo.setAttribute('stroke-width', String(8 * swf0));
+        halo.setAttribute('stroke-width', String(8.5 * swf0));
         halo.setAttribute('stroke-linecap', 'round');
         halo.setAttribute('stroke-linejoin', 'round');
         halo.style.cssText = '';
-        halo.style.setProperty('stroke-width', String(8 * swf0), 'important');
-        halo.style.setProperty('opacity', '0.12', 'important');
+        halo.style.setProperty('stroke-width', String(8.5 * swf0), 'important');
+        halo.style.setProperty('opacity', haloOp0, 'important');
         halo.style.setProperty('stroke', strokeColor, 'important');
         halo.removeAttribute('filter');
         refPath.parentNode.insertBefore(halo, refPath);

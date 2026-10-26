@@ -842,8 +842,8 @@
         };
         placeSubtree(root);
 
-        // Spread narrow trees horizontally and adapt vertical step so the tree fills the box to the edges
-        const boxH = maxDepth >= 3 ? 285 : (maxDepth === 2 ? 245 : 195);
+        // Spread narrow trees horizontally and adapt vertical step so the tree fills the box cleanly without button overlap
+        const boxH = maxDepth >= 3 ? 305 : (maxDepth === 2 ? 265 : 210);
         const targetAspect = 350 / boxH;
 
         let minEdge = Infinity, maxEdge = -Infinity, minCenter = Infinity, maxCenter = -Infinity;
@@ -860,13 +860,15 @@
         const rawSpan = maxEdge - minEdge;
         const centerSpan = maxCenter > minCenter ? (maxCenter - minCenter) : 0;
 
-        const baseHStep = maxDepth === 1 ? 96 : (maxDepth === 2 ? 98 : 100);
-        const neededH = (rawSpan + 24) / targetAspect;
+        const padTop = 16;
+        const padBottom = 44;
+        const padX = 18;
+        const baseHStep = maxDepth === 1 ? 94 : (maxDepth === 2 ? 96 : 98);
+        const neededH = (rawSpan + padX * 2) / targetAspect;
         const H_STEP = maxDepth > 0
-            ? Math.min(168, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - 36) / maxDepth)))
+            ? Math.min(168, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - padTop - padBottom) / maxDepth)))
             : baseHStep;
 
-        const padTop = 12;
         let maxBottomY = 0;
         const assignY = (n) => {
             const r = n.isRoot ? R_ROOT : R;
@@ -877,14 +879,14 @@
             n.children.forEach(assignY);
         };
         assignY(root);
-        const height = Math.ceil(maxBottomY + 12);
+        const height = Math.ceil(maxBottomY + padBottom);
 
-        const desiredWidth = Math.max(300, Math.round(height * targetAspect));
-        const idealSpan = desiredWidth - 24;
+        const desiredWidth = Math.max(290, Math.round(height * targetAspect));
+        const idealSpan = desiredWidth - padX * 2;
         if (rawSpan < idealSpan && centerSpan > 10) {
             const midC = (minCenter + maxCenter) / 2;
             const outerPad = Math.max(52, rawSpan - centerSpan);
-            const stretch = Math.min(2.6, Math.max(1, (idealSpan - outerPad) / centerSpan));
+            const stretch = Math.min(2.2, Math.max(1, (idealSpan - outerPad) / centerSpan));
             if (stretch > 1.02) {
                 const applyStretch = (n) => {
                     n.x = midC + (n.x - midC) * stretch;
@@ -896,11 +898,11 @@
             }
         }
 
-        const padX = 12;
-        const shiftToPositive = (padX - minEdge);
+        const contentW = Math.ceil(maxEdge - minEdge);
+        const width = Math.max(280, contentW + padX * 2);
+        const shiftToPositive = (width - contentW) / 2 - minEdge;
         const finalizeX = (n) => { n.x += shiftToPositive; n.children.forEach(finalizeX); };
         finalizeX(root);
-        const width = Math.max(260, Math.ceil(maxEdge - minEdge + padX * 2));
 
         const svg = document.createElementNS(NS, 'svg');
         svg.setAttribute('class', 'primitive-tree');
@@ -2058,13 +2060,15 @@
             if (pathEl._gelHaloColor) {
                 var halo = pathEl.cloneNode(false);
                 halo.setAttribute('class', 'gel-halo');
-                var hw = String(8 * _getSwf());
+                var hw = String(8.5 * _getSwf());
+                var isDkH = window._kanjiIsDark();
+                var isColH = pathEl._gelHaloColor !== 'var(--stroke-active)';
                 halo.setAttribute('stroke-width', hw);
                 halo.setAttribute('stroke-linecap', 'round');
                 halo.setAttribute('stroke-linejoin', 'round');
                 halo.style.cssText = '';
                 halo.style.setProperty('stroke-width', hw, 'important');
-                halo.style.setProperty('opacity', '0.12', 'important');
+                halo.style.setProperty('opacity', (isDkH && isColH) ? '0.22' : '0.15', 'important');
                 halo.style.setProperty('stroke', pathEl._gelHaloColor, 'important');
                 halo.removeAttribute('filter');
                 halo.removeAttribute('stroke-dasharray');
@@ -2344,14 +2348,15 @@
                         // which can return rgba(0,0,0,0) if the anti-flicker transparent override
                         // is still active at call time, making the halo invisible.
                         var haloC = pathColors[i] || 'var(--stroke-active)';
+                        var haloOp = (dk && haloC !== 'var(--stroke-active)') ? '0.22' : '0.15';
                         var h2 = path.cloneNode(false);
                         h2.setAttribute('class', 'gel-halo');
-                        h2.setAttribute('stroke-width', String(8 * swf));
+                        h2.setAttribute('stroke-width', String(8.5 * swf));
                         h2.setAttribute('stroke-linecap', 'round');
                         h2.setAttribute('stroke-linejoin', 'round');
                         h2.style.cssText = '';
-                        h2.style.setProperty('stroke-width', String(8 * swf), 'important');
-                        h2.style.setProperty('opacity', '0.12', 'important');
+                        h2.style.setProperty('stroke-width', String(8.5 * swf), 'important');
+                        h2.style.setProperty('opacity', haloOp, 'important');
                         h2.style.setProperty('stroke', haloC, 'important');
                         h2.removeAttribute('filter');
                         path.parentNode.insertBefore(h2, path);
