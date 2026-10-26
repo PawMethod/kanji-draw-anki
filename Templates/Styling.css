@@ -304,19 +304,38 @@ body.no-scroll {
 
 /* iOS/WKWebView: overflow:hidden alone is insufficient – position:fixed required.
    Modals scroll via overflow-y:auto + overscroll-behavior:contain inside the
-   fixed body — no position switching needed on modern iOS (15+). */
-.is-ankimobile body.no-scroll {
+   fixed body — no position switching needed on modern iOS (15+).
+   Anchor to --am-vh (captured at initial card load) so returning from Safari
+   never shifts the layout downward or expands 100dvh behind native toolbars. */
+html.is-ankimobile {
     position: fixed !important;
-    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
+    height: var(--am-vh, 100%) !important;
+    max-height: var(--am-vh, 100%) !important;
+    overflow: hidden !important;
+    transition: background-color 0.2s ease-out;
 }
 
-/* AnkiMobile: the WebView renders slightly behind the native toolbar,
-   but position:fixed bottom:0 stops at the CSS viewport boundary.
-   When an overlay is active, match the html background to the overlay's
-   blended appearance so the gap is invisible. */
-html.is-ankimobile {
-    transition: background-color 0.2s ease-out;
+html.is-ankimobile body,
+.is-ankimobile body.no-scroll {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    height: var(--am-vh, 100%) !important;
+    min-height: 0 !important;
+    max-height: var(--am-vh, 100%) !important;
+    overflow: hidden !important;
+}
+
+html.is-ankimobile .forest-scenery {
+    top: calc(var(--am-vh, 100vh) - clamp(145px, 26vw, 220px)) !important;
+    bottom: auto !important;
 }
 
 html.is-ankimobile:has(.settings-overlay.active),
@@ -2061,6 +2080,10 @@ svg#svg-guide path,
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.2s ease-out, visibility 0s linear 0.4s;
+}
+
+html.is-ankidesktop .settings-overlay,
+html.is-ankidesktop .info-overlay {
     contain: layout style paint;
 }
 
@@ -2075,12 +2098,20 @@ svg#svg-guide path,
 /* AnkiMobile: native toolbar overlays the WebView — reserve space at the bottom */
 .is-ankimobile .settings-overlay,
 .is-ankimobile .info-overlay {
+    top: 0 !important;
+    bottom: auto !important;
+    height: var(--am-vh, 100dvh) !important;
     padding-bottom: max(env(safe-area-inset-bottom, 8px), 80px);
 }
 
 .is-ankimobile .settings-modal,
 .is-ankimobile .info-modal {
     max-height: calc(100dvh - 48px - 80px);
+    max-height: calc(var(--am-vh, 100dvh) - 48px - 80px);
+}
+
+.order-overlay {
+    z-index: 110;
 }
 
 .settings-modal,
@@ -2124,7 +2155,7 @@ svg#svg-guide path,
 
 .settings-overlay.active .settings-modal,
 .info-overlay.active .info-modal {
-    transform: translateY(0) scale(1);
+    transform: none;
     opacity: 1;
 }
 
@@ -3263,9 +3294,10 @@ ruby rt {
     box-shadow: var(--filter-soft);
 }
 
-.info-btn.info-tap {
-    animation: gearTap 0.35s ease-out;
-    -webkit-animation: gearTap 0.35s ease-out;
+.info-btn.info-entered {
+    opacity: 1 !important;
+    animation: none !important;
+    -webkit-animation: none !important;
 }
 
 .info-btn svg {
@@ -3328,6 +3360,263 @@ ruby rt {
     height: 14px;
     opacity: 0.7;
     pointer-events: none;
+}
+
+/* --- Info Modal Compact Action Bar (Strichfolge & Schreibfehler under Kanji Tree) --- */
+.info-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: -10px 0 22px 0;
+}
+
+.info-tool-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 42px;
+    background: var(--bg-main);
+    color: var(--text-main);
+    padding: 0 12px;
+    border-radius: var(--border-rad-sm);
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+}
+
+.info-tool-btn:only-child {
+    grid-column: 1 / -1;
+}
+
+.info-tool-btn * {
+    pointer-events: none;
+}
+
+.info-tool-btn svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    stroke: #2b180e;
+    color: #2b180e;
+    stroke-width: 1.9;
+}
+
+@media (hover: hover),
+(any-hover: hover) {
+    .info-tool-btn:hover {
+        background: var(--bg-main);
+        color: var(--accent);
+        border-color: var(--accent);
+        box-shadow: var(--filter-hover);
+        transform: translateY(-1px);
+    }
+}
+
+.info-tool-btn:active,
+.info-tool-btn.tap-active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: scale(0.97);
+}
+
+/* --- Info Modal Sub-Page: Häufige Schreibfehler (Stolperfallen) --- */
+.pitfalls-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-main);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-rad-main);
+    padding: 16px 14px 14px;
+    margin: 0 0 18px 0;
+    box-shadow: var(--filter-soft);
+}
+
+.pitfalls-preview-pad {
+    position: relative;
+    width: clamp(148px, 42vmin, 182px);
+    height: clamp(148px, 42vmin, 182px);
+    background: var(--surface);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+.pitfalls-preview-pad svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.pitfalls-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.pitfall-filter-btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-color);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.pitfall-filter-btn:active {
+    transform: scale(0.95);
+}
+
+.pitfall-filter-btn.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.pitfalls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.pitfall-card {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-color);
+    border-left-width: 4.5px;
+    border-radius: var(--border-rad-sm);
+    padding: 12px 14px;
+    box-shadow: var(--filter-soft);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+}
+
+.pitfall-card[data-cat="order"] {
+    border-left-color: #e8625c;
+}
+
+.pitfall-card[data-cat="dir"] {
+    border-left-color: #2aa7e0;
+}
+
+.pitfall-card[data-cat="bend"] {
+    border-left-color: #f0a030;
+}
+
+.pitfall-card[data-cat="form"] {
+    border-left-color: #3fbf86;
+}
+
+.pitfall-card.active {
+    box-shadow: var(--filter-hover);
+    transform: translateY(-1px);
+}
+
+.pitfall-card-top,
+.pitfall-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pitfall-cat-badge {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #fff;
+    background: #3fbf86;
+}
+
+.pitfall-cat-badge.cat-order {
+    background: #e8625c;
+}
+
+.pitfall-cat-badge.cat-dir {
+    background: #2aa7e0;
+}
+
+.pitfall-cat-badge.cat-bend {
+    background: #f0a030;
+}
+
+.pitfall-cat-badge.cat-form {
+    background: #3fbf86;
+}
+
+.pitfall-stroke-badge {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+}
+
+.pitfall-title,
+.pitfall-card-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.3;
+}
+
+.pitfall-desc,
+.pitfall-card-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
 }
 
 .tree-container {
@@ -3489,27 +3778,164 @@ ruby rt {
 }
 
 .tree-container.tree-graph-mode {
-    padding: 14px 8px 16px;
+    position: relative;
+    padding: 12px 8px 16px;
     background: linear-gradient(180deg, var(--bg-main) 0%, var(--surface) 100%);
     border: 2px solid var(--border-color);
     border-bottom-width: 3.5px;
     box-shadow: var(--shadow-soft);
+    overflow: hidden;
 }
 
 .tree-container.tree-graph-mode .tree-children {
     display: block;
+    width: 100%;
     margin: 0;
     padding: 0;
     border-top: none;
+    position: relative;
+}
+
+.tree-viewport {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Transparent HTML overlay that receives touch/pointer events instead of the SVG primitive-tree.
+   Workaround for WebKit Bug 200610: touch-action:none is ignored on SVG elements on iOS/WKWebView,
+   causing AnkiMobile's native swipe gestures to fire during tree gestures. */
+.tree-touch-shield {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+    touch-action: none;
+    pointer-events: auto;
+    background: transparent;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tree-container.tree-zoomed .tree-touch-shield {
+    cursor: grab;
+}
+
+.tree-container.tree-zoomed.tree-panning .tree-touch-shield {
+    cursor: grabbing;
+}
+
+.tree-toolbar {
+    position: relative;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    width: 100%;
+    margin: 0 0 8px 0;
+    padding: 0 2px;
+    box-sizing: border-box;
+    touch-action: manipulation;
+}
+
+.tree-zoom-hint {
+    margin-right: auto;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    opacity: 0.85;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.tree-zoom-btn {
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 32px;
+    min-width: 36px;
+    padding: 0 11px;
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1.5px solid var(--border-color);
+    box-shadow: var(--filter-soft);
+    font-size: 11.5px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.tree-zoom-btn * {
+    pointer-events: none;
+}
+
+.tree-zoom-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    flex-shrink: 0;
+}
+
+.tree-zoom-btn.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.tree-zoom-btn:active {
+    transform: scale(0.93);
+}
+
+@media (hover: hover),
+(any-hover: hover) {
+    .tree-zoom-btn:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
 }
 
 .primitive-tree {
     display: block;
     width: 100%;
-    height: auto;
-    max-height: 290px;
+    min-height: 220px;
+    height: 240px;
     margin: 0 auto;
-    overflow: visible;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.tree-container.tree-zoomed .primitive-tree {
+    cursor: grab;
+    touch-action: none;
+}
+
+.tree-container.tree-zoomed.tree-panning .primitive-tree {
+    cursor: grabbing;
 }
 
 .primitive-tree .pt-edges line {
