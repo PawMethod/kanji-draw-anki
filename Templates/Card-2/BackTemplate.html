@@ -451,6 +451,8 @@
         var im = ol.querySelector('.info-modal');
         if (im) im.scrollTop = 0;
         ol.classList.add('active');
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        if (window._kanjiRefreshTreeViewport) window._kanjiRefreshTreeViewport();
         if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
@@ -567,22 +569,39 @@
     window._kanjiRenderPrimitiveTree = function (rawData, target) {
         const NS = 'http://www.w3.org/2000/svg';
         const PALETTE = ['#2aa7e0', '#d46be8', '#f0a030', '#3fbf86', '#e8625c', '#8a7cf0'];
-        const R = 28, R_ROOT = 36, H = 98, LINE_MAX = 14;
-        const wrapLabel = (kw) => {
-            if (kw.length <= LINE_MAX) return [kw];
+        const R = 26, R_ROOT = 33, LINE_MAX = 12;
+        const wrapLabel = (rawKw) => {
+            const clean = (rawKw || '').replace(/\u00ad/g, '').trim();
+            if (!clean) return [];
+            if (clean.length <= LINE_MAX) return [clean];
             let best = -1, bestDist = Infinity;
-            for (let i = 1; i < kw.length - 1; i++) {
-                if (kw[i] === ' ' || kw[i] === '-') {
-                    const d = Math.abs(i - kw.length / 2);
+            for (let i = 1; i < clean.length - 1; i++) {
+                if (clean[i] === ' ' || clean[i] === '-') {
+                    const d = Math.abs(i - clean.length / 2);
                     if (d < bestDist) { bestDist = d; best = i; }
                 }
             }
             if (best > 0) {
-                const l1 = (kw[best] === '-' ? kw.slice(0, best + 1) : kw.slice(0, best)).trim();
-                const l2 = kw.slice(best + 1).trim();
+                const l1 = (clean[best] === '-' ? clean.slice(0, best + 1) : clean.slice(0, best)).trim();
+                const l2 = clean.slice(best + 1).trim();
                 return [l1, l2];
             }
-            return [kw];
+            const shyParts = (rawKw || '').split('\u00ad').map(p => p.trim()).filter(Boolean);
+            if (shyParts.length > 1) {
+                let bIdx = 1, bDiff = Infinity;
+                for (let i = 1; i < shyParts.length; i++) {
+                    const a = shyParts.slice(0, i).join('');
+                    const b = shyParts.slice(i).join('');
+                    const diff = Math.abs(a.length - b.length);
+                    if (diff < bDiff) { bDiff = diff; bIdx = i; }
+                }
+                return [shyParts.slice(0, bIdx).join('') + '-', shyParts.slice(bIdx).join('')];
+            }
+            if (clean.length > 14) {
+                const mid = Math.ceil(clean.length / 2);
+                return [clean.slice(0, mid) + '-', clean.slice(mid)];
+            }
+            return [clean];
         };
 
         const splitTop = (str) => {
@@ -615,24 +634,25 @@
             let strokes = null;
             const sm = s.match(/@([\d+\-]+)\s*$/);
             if (sm) { strokes = parseStrokes(sm[1]); s = s.slice(0, sm.index).trim(); }
-            let keyword = '', isPrimitive = false;
+            let rawKw = '', keyword = '', isPrimitive = false;
             const bm = s.match(/\[([^\[\]]*)\]\s*$/);
             if (bm) {
-                keyword = bm[1].replace(/\u00ad/g, '');
-                if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
+                rawKw = bm[1].trim();
+                if (rawKw.endsWith('*')) { isPrimitive = true; rawKw = rawKw.slice(0, -1); }
+                keyword = rawKw.replace(/\u00ad/g, '');
                 s = s.slice(0, bm.index).trim();
             }
-            return { value: s, keyword, isPrimitive, strokes, children };
+            return { value: s, rawKeyword: rawKw, keyword, isPrimitive, strokes, children };
         };
 
         const svgBg = document.getElementById('svg-bg');
         const ds = svgBg ? Array.prototype.filter.call(svgBg.children, p => p.tagName.toLowerCase() === 'path' && !p.classList.contains('gel-halo')).map(p => p.getAttribute('d')) : [];
         const rootChar = (target.closest('.tree-container') || document).querySelector('.tree-root-kanji');
-        const root = { value: rootChar ? rootChar.textContent.trim() : '', keyword: '', strokes: ds.map((_, i) => i), children: splitTop(rawData).map(parseItem), isRoot: true };
+        const root = { value: rootChar ? rootChar.textContent.trim() : '', rawKeyword: '', keyword: '', strokes: ds.map((_, i) => i), children: splitTop(rawData).map(parseItem), isRoot: true };
 
-        // Measure stroke / markup bounding boxes in an off-screen SVG (getBBox needs a rendered element)
+        // Measure stroke / markup / label bounding boxes in an off-screen SVG
         const scratch = document.createElementNS(NS, 'svg');
-        scratch.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:109px;height:109px;visibility:hidden');
+        scratch.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:200px;height:200px;visibility:hidden');
         document.body.appendChild(scratch);
         const strokeBox = ds.map(d => {
             const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); scratch.appendChild(p);
@@ -654,29 +674,141 @@
             return [(b.x + b.w / 2 - size / 2), (b.y + b.h / 2 - size / 2), size, size].map(n => n.toFixed(2)).join(' ');
         };
 
-        // Layout: leaves spread across a full-width canvas so 1–3 leaves don't cluster in the centre
-        let leafCount = 0;
-        const countLeaves = (n) => { if (!n.children.length) leafCount++; else n.children.forEach(countLeaves); };
-        countLeaves(root);
-        const colW = leafCount <= 4 ? 96 : Math.max(78, 96 - (leafCount - 4) * 3);
-        const width = Math.max(320, leafCount * colW);
-        const W = width / Math.max(leafCount, 1);
-        const H_STEP = Math.min(142, Math.max(98, Math.round(width * 0.175)));
-        let leaf = 0, maxDepth = 0, bottomLines = 1;
-        const layout = (n, depth) => {
-            n.depth = depth; maxDepth = Math.max(maxDepth, depth);
-            n.lines = (!n.isRoot && n.keyword) ? wrapLabel(n.keyword) : [];
-            if (!n.children.length) { n.x = leaf * W + W / 2; leaf++; }
-            else { n.children.forEach(c => layout(c, depth + 1)); n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2; }
-            n.y = R_ROOT + 6 + depth * H_STEP;
+        // Pre-measure node label pills and depths
+        let maxDepth = 0;
+        const initNodes = (n, depth) => {
+            n.depth = depth;
+            maxDepth = Math.max(maxDepth, depth);
+            n.lines = (!n.isRoot && n.keyword) ? wrapLabel(n.rawKeyword || n.keyword) : [];
+            if (n.lines.length) {
+                const maxChars = Math.max.apply(null, n.lines.map(l => l.length));
+                let measuredW = maxChars * 6.3;
+                try {
+                    const t = document.createElementNS(NS, 'text');
+                    t.setAttribute('style', 'font-size:11px;font-weight:800;font-family:sans-serif');
+                    n.lines.forEach((ln, li) => {
+                        const ts = document.createElementNS(NS, 'tspan');
+                        ts.setAttribute('x', '0');
+                        if (li > 0) ts.setAttribute('dy', '12');
+                        ts.textContent = ln;
+                        t.appendChild(ts);
+                    });
+                    scratch.appendChild(t);
+                    const tb = t.getBBox();
+                    if (tb && tb.width > 8) measuredW = Math.max(tb.width, maxChars * 5.6);
+                } catch (e) { }
+                n.pillW = Math.max(44, Math.ceil(measuredW + 16));
+                n.pillH = 19 + (n.lines.length - 1) * 12;
+            } else {
+                n.pillW = 0;
+                n.pillH = 0;
+            }
+            const r = n.isRoot ? R_ROOT : R;
+            n.halfW = Math.max(r + 6, n.pillW / 2 + 4);
+            n.children.forEach(c => initNodes(c, depth + 1));
         };
-        layout(root, 0);
-        const findBottomLines = (n) => {
-            if (n.depth === maxDepth) bottomLines = Math.max(bottomLines, n.lines.length || 1);
-            n.children.forEach(findBottomLines);
+        initNodes(root, 0);
+
+        // Contour-aware hierarchical subtree layout (packs subtrees cleanly across depths without wasting columns)
+        const shiftSubtree = (n, dx) => {
+            n.x += dx;
+            Object.keys(n.minX).forEach(d => { n.minX[d] += dx; n.maxX[d] += dx; });
+            n.children.forEach(c => shiftSubtree(c, dx));
         };
-        findBottomLines(root);
-        const height = R_ROOT + 6 + maxDepth * H_STEP + R + 18 + (bottomLines - 1) * 13;
+        const placeSubtree = (n) => {
+            if (!n.children.length) {
+                n.x = 0;
+                n.minX = { [n.depth]: -n.halfW };
+                n.maxX = { [n.depth]: n.halfW };
+                return;
+            }
+            n.children.forEach(placeSubtree);
+            const accMin = Object.assign({}, n.children[0].minX);
+            const accMax = Object.assign({}, n.children[0].maxX);
+            for (let i = 1; i < n.children.length; i++) {
+                const c = n.children[i];
+                let reqDx = 0;
+                Object.keys(c.minX).forEach(d => {
+                    if (accMax[d] !== undefined) {
+                        const gap = (+d === c.depth) ? 14 : 10;
+                        reqDx = Math.max(reqDx, accMax[d] + gap - c.minX[d]);
+                    }
+                });
+                const prevX = n.children[i - 1].x;
+                reqDx = Math.max(reqDx, prevX + 64 - c.x);
+                shiftSubtree(c, reqDx);
+                Object.keys(c.minX).forEach(d => {
+                    accMin[d] = accMin[d] === undefined ? c.minX[d] : Math.min(accMin[d], c.minX[d]);
+                    accMax[d] = accMax[d] === undefined ? c.maxX[d] : Math.max(accMax[d], c.maxX[d]);
+                });
+            }
+            n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2;
+            accMin[n.depth] = accMin[n.depth] === undefined ? (n.x - n.halfW) : Math.min(accMin[n.depth], n.x - n.halfW);
+            accMax[n.depth] = accMax[n.depth] === undefined ? (n.x + n.halfW) : Math.max(accMax[n.depth], n.x + n.halfW);
+            n.minX = accMin;
+            n.maxX = accMax;
+        };
+        placeSubtree(root);
+
+        // Spread narrow trees horizontally and adapt vertical step so the tree fills the box to the edges
+        const boxH = maxDepth >= 3 ? 285 : (maxDepth === 2 ? 245 : 195);
+        const targetAspect = 350 / boxH;
+
+        let minEdge = Infinity, maxEdge = -Infinity, minCenter = Infinity, maxCenter = -Infinity;
+        const scanX = (n) => {
+            minEdge = Math.min(minEdge, n.x - n.halfW);
+            maxEdge = Math.max(maxEdge, n.x + n.halfW);
+            if (!n.isRoot) {
+                minCenter = Math.min(minCenter, n.x);
+                maxCenter = Math.max(maxCenter, n.x);
+            }
+            n.children.forEach(scanX);
+        };
+        scanX(root);
+        const rawSpan = maxEdge - minEdge;
+        const centerSpan = maxCenter > minCenter ? (maxCenter - minCenter) : 0;
+
+        const baseHStep = maxDepth === 1 ? 96 : (maxDepth === 2 ? 98 : 100);
+        const neededH = (rawSpan + 24) / targetAspect;
+        const H_STEP = maxDepth > 0
+            ? Math.min(168, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - 36) / maxDepth)))
+            : baseHStep;
+
+        const padTop = 12;
+        let maxBottomY = 0;
+        const assignY = (n) => {
+            const r = n.isRoot ? R_ROOT : R;
+            n.y = padTop + R_ROOT + n.depth * H_STEP;
+            n.topY = n.y - r;
+            n.bottomY = n.lines.length ? (n.y + r - 4 + n.pillH) : (n.y + r);
+            maxBottomY = Math.max(maxBottomY, n.bottomY);
+            n.children.forEach(assignY);
+        };
+        assignY(root);
+        const height = Math.ceil(maxBottomY + 12);
+
+        const desiredWidth = Math.max(300, Math.round(height * targetAspect));
+        const idealSpan = desiredWidth - 24;
+        if (rawSpan < idealSpan && centerSpan > 10) {
+            const midC = (minCenter + maxCenter) / 2;
+            const outerPad = Math.max(52, rawSpan - centerSpan);
+            const stretch = Math.min(2.6, Math.max(1, (idealSpan - outerPad) / centerSpan));
+            if (stretch > 1.02) {
+                const applyStretch = (n) => {
+                    n.x = midC + (n.x - midC) * stretch;
+                    n.children.forEach(applyStretch);
+                };
+                applyStretch(root);
+                minEdge = Infinity; maxEdge = -Infinity;
+                scanX(root);
+            }
+        }
+
+        const padX = 12;
+        const shiftToPositive = (padX - minEdge);
+        const finalizeX = (n) => { n.x += shiftToPositive; n.children.forEach(finalizeX); };
+        finalizeX(root);
+        const width = Math.max(260, Math.ceil(maxEdge - minEdge + padX * 2));
 
         const svg = document.createElementNS(NS, 'svg');
         svg.setAttribute('class', 'primitive-tree');
@@ -688,12 +820,27 @@
         const allNodes = [];
         const draw = (n) => {
             const r = n.isRoot ? R_ROOT : R;
-            n.children.forEach(c => {
-                const l = document.createElementNS(NS, 'line');
-                l.setAttribute('x1', n.x); l.setAttribute('y1', n.y); l.setAttribute('x2', c.x); l.setAttribute('y2', c.y);
-                edges.appendChild(l);
-                draw(c);
-            });
+            if (n.children.length) {
+                const startY = n.bottomY;
+                const endY = n.children[0].topY;
+                const midY = startY + (endY - startY) * 0.5;
+                n.children.forEach(c => {
+                    const p = document.createElementNS(NS, 'path');
+                    const dx = c.x - n.x;
+                    let dStr;
+                    if (Math.abs(dx) < 1.5) {
+                        dStr = `M ${n.x.toFixed(1)} ${startY.toFixed(1)} V ${endY.toFixed(1)}`;
+                    } else {
+                        const dir = dx > 0 ? 1 : -1;
+                        const cr = Math.max(0, Math.min(9, Math.abs(dx) / 2, Math.max(2, (endY - startY) / 2 - 1)));
+                        dStr = `M ${n.x.toFixed(1)} ${startY.toFixed(1)} V ${(midY - cr).toFixed(1)} Q ${n.x.toFixed(1)} ${midY.toFixed(1)} ${(n.x + dir * cr).toFixed(1)} ${midY.toFixed(1)} H ${(c.x - dir * cr).toFixed(1)} Q ${c.x.toFixed(1)} ${midY.toFixed(1)} ${c.x.toFixed(1)} ${(midY + cr).toFixed(1)} V ${endY.toFixed(1)}`;
+                    }
+                    p.setAttribute('d', dStr);
+                    edges.appendChild(p);
+                    draw(c);
+                });
+            }
+
             const g = document.createElementNS(NS, 'g');
             g.setAttribute('class', 'pt-node' + (n.isRoot ? ' pt-root' : '') + (n.children.length ? '' : ' pt-leaf'));
             const circle = document.createElementNS(NS, 'circle');
@@ -732,12 +879,24 @@
             g.appendChild(glyph);
 
             if (n.lines && n.lines.length) {
+                const pillY = n.y + r - 4;
+                const pillRect = document.createElementNS(NS, 'rect');
+                pillRect.setAttribute('class', 'pt-label-pill');
+                pillRect.setAttribute('x', (n.x - n.pillW / 2).toFixed(1));
+                pillRect.setAttribute('y', pillY.toFixed(1));
+                pillRect.setAttribute('width', n.pillW.toFixed(1));
+                pillRect.setAttribute('height', n.pillH.toFixed(1));
+                pillRect.setAttribute('rx', '8');
+                pillRect.setAttribute('ry', '8');
+                g.appendChild(pillRect);
+
                 const label = document.createElementNS(NS, 'text');
-                label.setAttribute('x', n.x); label.setAttribute('y', n.y + r + 13);
+                label.setAttribute('x', n.x.toFixed(1));
+                label.setAttribute('y', (pillY + 13).toFixed(1));
                 label.setAttribute('class', 'pt-label' + (n.isPrimitive ? ' pt-label-primitive' : ''));
                 n.lines.forEach((ln, li) => {
                     const ts = document.createElementNS(NS, 'tspan');
-                    ts.setAttribute('x', n.x);
+                    ts.setAttribute('x', n.x.toFixed(1));
                     if (li > 0) ts.setAttribute('dy', '12');
                     ts.textContent = ln;
                     label.appendChild(ts);
@@ -756,45 +915,27 @@
         const container = target.closest('.tree-container');
         if (container) {
             container.classList.add('tree-graph-mode');
-            container.classList.remove('tree-zoomed', 'tree-panning');
+            container.classList.remove('tree-zoomed', 'tree-focused', 'tree-panning');
         }
 
-        // --- Interactive Lupe (Zoom) & Whiteboard Pan/Drag with HTML Touch-Shield ---
-        const boxH = maxDepth >= 3 ? 280 : (maxDepth === 2 ? 250 : 220);
+        // --- Interactive +/- Zoom & Focus-Gated Pan (Double-Tap to Navigate, Tap Outside to Scroll) ---
         let zoom = 1;
-        const minZoom = 0.5;
-        const maxZoom = 3.5;
-        const defaultLupeZoom = 1.5;
+        const minZoom = 1;
+        const maxZoom = 3.0;
         let vx = 0, vy = 0, vw = width, vh = height;
         let panDragged = false;
         let hasPanned = false;
+        let navActive = false;
 
         const toolbar = document.createElement('div');
         toolbar.className = 'tree-toolbar';
-        const hintEl = document.createElement('span');
-        hintEl.className = 'tree-zoom-hint';
-        hintEl.textContent = 'Wischen & Zoomen';
 
         const btnOut = document.createElement('button');
         btnOut.type = 'button';
-        btnOut.className = 'tree-zoom-btn tappable';
+        btnOut.className = 'tree-zoom-btn tappable disabled';
         btnOut.title = 'Verkleinern';
         btnOut.setAttribute('aria-label', 'Verkleinern');
         btnOut.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
-
-        const btnLupe = document.createElement('button');
-        btnLupe.type = 'button';
-        btnLupe.className = 'tree-zoom-btn tappable';
-        btnLupe.title = 'Lupe / Zurücksetzen';
-        btnLupe.setAttribute('aria-label', 'Lupe / Zurücksetzen');
-        btnLupe.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.2" y2="16.2"/></svg><span class="tree-lupe-label">Lupe</span>';
-        const lupeLabelSpan = btnLupe.querySelector('.tree-lupe-label');
-        const renderLupeLabel = () => {
-            const pct = Math.round(zoom * 100);
-            const isModified = Math.abs(zoom - 1) > 0.02 || hasPanned;
-            btnLupe.classList.toggle('active', isModified);
-            if (lupeLabelSpan) lupeLabelSpan.textContent = Math.abs(zoom - 1) > 0.02 ? pct + '%' : 'Lupe';
-        };
 
         const btnIn = document.createElement('button');
         btnIn.type = 'button';
@@ -803,9 +944,12 @@
         btnIn.setAttribute('aria-label', 'Vergrößern');
         btnIn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
 
-        toolbar.appendChild(hintEl);
+        const updateZoomBtns = () => {
+            btnOut.classList.toggle('disabled', zoom <= 1.02 && !hasPanned && !navActive);
+            btnIn.classList.toggle('disabled', zoom >= maxZoom - 0.02);
+        };
+
         toolbar.appendChild(btnOut);
-        toolbar.appendChild(btnLupe);
         toolbar.appendChild(btnIn);
 
         const viewport = document.createElement('div');
@@ -816,14 +960,29 @@
         shield.className = 'tree-touch-shield';
         viewport.appendChild(svg);
         viewport.appendChild(shield);
+        viewport.appendChild(toolbar);
 
-        target.appendChild(toolbar);
         target.appendChild(viewport);
 
+        const setNavActive = (active) => {
+            navActive = !!active;
+            const ta = navActive ? 'none' : 'pan-y';
+            viewport.style.touchAction = ta;
+            shield.style.touchAction = ta;
+            svg.style.touchAction = ta;
+            if (container) {
+                container.classList.toggle('tree-focused', navActive);
+                if (!navActive) container.classList.remove('tree-panning');
+            }
+            updateZoomBtns();
+        };
+        window._kanjiSetTreeNavActive = setNavActive;
+
         const getBaseBox = () => {
-            const rect = svg.getBoundingClientRect();
-            const bW = rect.width > 40 ? rect.width : 320;
-            const bH = rect.height > 40 ? rect.height : boxH;
+            const cW = viewport.clientWidth || svg.clientWidth || 0;
+            const cH = viewport.clientHeight || svg.clientHeight || 0;
+            const bW = cW > 40 ? cW : 350;
+            const bH = cH > 40 ? cH : boxH;
             const aspect = bW / bH;
             const bVw = Math.max(width, height * aspect);
             const bVh = bVw / aspect;
@@ -843,12 +1002,12 @@
         };
 
         const clampPan = () => {
-            const marginX = Math.max(36, vw * 0.22);
+            const marginX = Math.max(24, vw * 0.16);
             const minX = Math.min((width - vw) / 2, -marginX);
             const maxX = Math.max((width - vw) / 2, width - vw + marginX);
             if (vx < minX) vx = minX; else if (vx > maxX) vx = maxX;
 
-            const marginY = Math.max(28, vh * 0.22);
+            const marginY = Math.max(20, vh * 0.16);
             const minY = Math.min((height - vh) / 2, -marginY);
             const maxY = Math.max((height - vh) / 2, height - vh + marginY);
             if (vy < minY) vy = minY; else if (vy > maxY) vy = maxY;
@@ -858,23 +1017,24 @@
             const base = getBaseBox();
             vw = base.bVw / zoom;
             vh = base.bVh / zoom;
-            if (Math.abs(zoom - 1) <= 0.02 && !hasPanned) {
+            if (zoom <= 1.02 && !hasPanned) {
                 zoom = 1;
                 vx = (width - vw) / 2;
                 vy = (height - vh) / 2;
-                if (container) container.classList.remove('tree-zoomed', 'tree-panning');
+                if (container) container.classList.remove('tree-zoomed');
             } else {
                 if (container) container.classList.toggle('tree-zoomed', zoom > 1.02 || hasPanned);
                 clampPan();
             }
             svg.setAttribute('viewBox', `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
-            renderLupeLabel();
+            updateZoomBtns();
         };
+        window._kanjiRefreshTreeViewport = applyViewBox;
 
         const setZoomAround = (newZoom, focusSvgX, focusSvgY, resetPan) => {
             const targetZoom = Math.max(minZoom, Math.min(maxZoom, Math.round(newZoom * 100) / 100));
             const base = getBaseBox();
-            if (resetPan && Math.abs(targetZoom - 1) <= 0.02) {
+            if (targetZoom <= 1.02 && resetPan) {
                 zoom = 1;
                 hasPanned = false;
                 applyViewBox();
@@ -894,6 +1054,7 @@
             applyViewBox();
         };
 
+        setNavActive(false);
         applyViewBox();
 
         const bindTreeBtn = (btn, fn) => {
@@ -934,23 +1095,36 @@
             });
         };
 
-        bindTreeBtn(btnLupe, () => {
-            if (Math.abs(zoom - 1) > 0.02 || hasPanned) {
-                setZoomAround(1, root.x, height / 2, true);
-            } else {
-                setZoomAround(defaultLupeZoom, root.x, height * 0.42, false);
-            }
-        });
         bindTreeBtn(btnIn, () => {
+            setNavActive(true);
             const next = Math.round((zoom + 0.25) * 4) / 4;
             setZoomAround(next);
         });
         bindTreeBtn(btnOut, () => {
             const next = Math.round((zoom - 0.25) * 4) / 4;
-            setZoomAround(next, null, null, Math.abs(next - 1) <= 0.02);
+            if (next <= 1.02) {
+                setZoomAround(1, null, null, true);
+                setNavActive(false);
+            } else {
+                setNavActive(true);
+                setZoomAround(next, null, null, false);
+            }
         });
 
+        let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
         const handleTapAt = (clientX, clientY) => {
+            const now = Date.now();
+            if (now - lastTapTime < 340 && Math.hypot(clientX - lastTapX, clientY - lastTapY) < 34) {
+                lastTapTime = 0;
+                setNavActive(!navActive);
+                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+                svg.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
+                svg.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
+                return;
+            }
+            lastTapTime = now;
+            lastTapX = clientX;
+            lastTapY = clientY;
             const pt = clientToSvg(clientX, clientY);
             let hitNode = null, bestD = Infinity;
             allNodes.forEach(nd => {
@@ -966,7 +1140,7 @@
             }
         };
 
-        // Block AnkiMobile native swipe gestures on the HTML shield (WebKit Bug 200610 fix)
+        // Block AnkiMobile native swipe gestures on the HTML shield when panning/zooming
         const blockAppGesture = e => {
             e.stopPropagation();
             if (e.stopImmediatePropagation) e.stopImmediatePropagation();
@@ -977,8 +1151,9 @@
         let pinchDist0 = 0, pinchZoom0 = 1, pinchSvgX = root.x, pinchSvgY = root.y;
 
         shield.addEventListener('touchstart', function (e) {
-            blockAppGesture(e);
             if (e.touches.length === 2) {
+                blockAppGesture(e);
+                setNavActive(true);
                 isDown = false;
                 panDragged = true;
                 pinchDist0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
@@ -989,19 +1164,22 @@
                 return;
             }
             if (e.touches.length === 1) {
-                applyViewBox();
                 isDown = true;
                 panDragged = false;
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
                 startVx = vx;
                 startVy = vy;
+                if (navActive) {
+                    blockAppGesture(e);
+                    applyViewBox();
+                }
             }
         }, { passive: false });
 
         shield.addEventListener('touchmove', function (e) {
-            blockAppGesture(e);
             if (e.touches.length === 2 && pinchDist0 > 10) {
+                blockAppGesture(e);
                 const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 panDragged = true;
                 setZoomAround(pinchZoom0 * (d / pinchDist0), pinchSvgX, pinchSvgY, false);
@@ -1010,6 +1188,15 @@
             if (!isDown || e.touches.length !== 1) return;
             const dx = e.touches[0].clientX - startX;
             const dy = e.touches[0].clientY - startY;
+            if (!navActive) {
+                // Unfocused: let vertical swipes scroll the pop-up modal naturally without interference
+                if (Math.hypot(dx, dy) > 8) panDragged = true;
+                if (Math.abs(dx) > Math.abs(dy) * 1.4 && Math.abs(dx) > 10) {
+                    blockAppGesture(e);
+                }
+                return;
+            }
+            blockAppGesture(e);
             if (!panDragged && Math.hypot(dx, dy) > 6) {
                 panDragged = true;
                 hasPanned = true;
@@ -1026,10 +1213,12 @@
         }, { passive: false });
 
         shield.addEventListener('touchend', function (e) {
-            blockAppGesture(e);
             lastTouchEnd = Date.now();
             if (isDown && !panDragged && e.changedTouches && e.changedTouches.length === 1) {
+                blockAppGesture(e);
                 handleTapAt(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+            } else if (navActive) {
+                blockAppGesture(e);
             }
             isDown = false;
             pinchDist0 = 0;
@@ -1038,7 +1227,6 @@
         }, { passive: false });
 
         shield.addEventListener('touchcancel', function (e) {
-            blockAppGesture(e);
             isDown = false;
             pinchDist0 = 0;
             if (container) container.classList.remove('tree-panning');
@@ -1048,12 +1236,14 @@
         shield.addEventListener('pointerdown', function (e) {
             if (e.pointerType === 'touch') return;
             if (e.button !== undefined && e.button !== 0) return;
-            e.preventDefault();
-            e.stopPropagation();
-            if (e.pointerId !== undefined && shield.setPointerCapture) {
-                try { shield.setPointerCapture(e.pointerId); } catch (err) { }
+            if (navActive) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.pointerId !== undefined && shield.setPointerCapture) {
+                    try { shield.setPointerCapture(e.pointerId); } catch (err) { }
+                }
+                applyViewBox();
             }
-            applyViewBox();
             isDown = true;
             panDragged = false;
             startX = e.clientX;
@@ -1066,6 +1256,10 @@
             if (e.pointerType === 'touch' || !isDown) return;
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
+            if (!navActive) {
+                if (Math.hypot(dx, dy) > 6) panDragged = true;
+                return;
+            }
             if (!panDragged && Math.hypot(dx, dy) > 5) {
                 panDragged = true;
                 hasPanned = true;
@@ -1083,7 +1277,7 @@
 
         const endPointer = function (e) {
             if (e.pointerType === 'touch' || !isDown) return;
-            if (e.pointerId !== undefined && shield.releasePointerCapture) {
+            if (navActive && e.pointerId !== undefined && shield.releasePointerCapture) {
                 try { shield.releasePointerCapture(e.pointerId); } catch (err) { }
             }
             if (!panDragged && Date.now() - lastTouchEnd > 350) {
@@ -1108,14 +1302,23 @@
         rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
         if (!rawData) return;
 
-        if (window.kanjiHideTooltipHandlerC2) document.removeEventListener('click', window.kanjiHideTooltipHandlerC2);
-        window.kanjiHideTooltipHandlerC2 = e => {
-            if (!e.target.closest('.tree-children')) {
+        if (window._kanjiTreeOutsideHandlerC2) {
+            document.removeEventListener('touchstart', window._kanjiTreeOutsideHandlerC2, true);
+            document.removeEventListener('pointerdown', window._kanjiTreeOutsideHandlerC2, true);
+            document.removeEventListener('click', window._kanjiTreeOutsideHandlerC2, true);
+        }
+        window._kanjiTreeOutsideHandlerC2 = e => {
+            const t = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+            if (!t || !t.closest) return;
+            if (!t.closest('.tree-container')) {
+                if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
                 target.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
                 target.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
             }
         };
-        document.addEventListener('click', window.kanjiHideTooltipHandlerC2);
+        document.addEventListener('touchstart', window._kanjiTreeOutsideHandlerC2, true);
+        document.addEventListener('pointerdown', window._kanjiTreeOutsideHandlerC2, true);
+        document.addEventListener('click', window._kanjiTreeOutsideHandlerC2, true);
         try {
             window._kanjiRenderPrimitiveTree(rawData, target);
         } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Primitive konnten nicht geladen werden.</span>`; }
@@ -1762,6 +1965,13 @@
             if (st.idx >= st.n) { st.idx = 0; st.prog = 0; }
             st.playing = true; st.last = 0; st.waitUntil = 0;
             if (!st.raf) st.raf = requestAnimationFrame(tick);
+        if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
+        modal._kanjiScrollGuardFn = function (e) {
+            if (e.target && e.target.closest && e.target.closest('.tree-focused .tree-viewport')) return;
+            if (this.scrollHeight <= this.clientHeight) e.preventDefault();
+        };
+        modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
+   
             render();
         };
         var open = function () {

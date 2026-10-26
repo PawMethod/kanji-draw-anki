@@ -3771,7 +3771,7 @@ ruby rt {
 }
 
 /* --------------------------------------------------------------------------
-   7b. Kanji-Study-style Primitive Tree (Forest diorama card + woody branches + medallion nodes)
+   7b. Kanji-Study-style Primitive Tree (Clean stage + rounded orthogonal C2 connectors + medallion pills)
    -------------------------------------------------------------------------- */
 .tree-container.tree-graph-mode .tree-root-kanji {
     display: none;
@@ -3779,11 +3779,15 @@ ruby rt {
 
 .tree-container.tree-graph-mode {
     position: relative;
-    padding: 12px 8px 16px;
-    background: linear-gradient(180deg, var(--bg-main) 0%, var(--surface) 100%);
-    border: 2px solid var(--border-color);
-    border-bottom-width: 3.5px;
-    box-shadow: var(--shadow-soft);
+    padding: 0;
+    margin: 14px 0 22px 0;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(color-mix(in srgb, var(--border-color) 65%, transparent) 1.2px, transparent 1.2px);
+    background-size: 18px 18px;
+    background-position: center center;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-rad-main);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.06), var(--filter-soft);
     overflow: hidden;
 }
 
@@ -3799,9 +3803,9 @@ ruby rt {
 .tree-viewport {
     position: relative;
     width: 100%;
-    min-height: 220px;
+    min-height: 200px;
     overflow: hidden;
-    touch-action: none;
+    touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -3816,49 +3820,53 @@ ruby rt {
     width: 100%;
     height: 100%;
     z-index: 6;
-    touch-action: none;
+    touch-action: pan-y;
     pointer-events: auto;
     background: transparent;
-    cursor: pointer;
+    cursor: default;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
-.tree-container.tree-zoomed .tree-touch-shield {
+.tree-container.tree-graph-mode {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tree-container.tree-graph-mode.tree-focused {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--accent) 24%, transparent), inset 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.tree-container.tree-focused .tree-viewport,
+.tree-container.tree-focused .primitive-tree,
+.tree-container.tree-focused .tree-touch-shield {
+    touch-action: none;
+}
+
+.tree-container.tree-focused .tree-touch-shield {
     cursor: grab;
 }
 
-.tree-container.tree-zoomed.tree-panning .tree-touch-shield {
+.tree-container.tree-focused.tree-panning .tree-touch-shield {
     cursor: grabbing;
 }
 
+/* Compact rounded-square +/- zoom buttons in top-right corner */
 .tree-toolbar {
-    position: relative;
-    z-index: 12;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-    width: 100%;
-    margin: 0 0 8px 0;
-    padding: 0 2px;
-    box-sizing: border-box;
-    touch-action: manipulation;
-}
-
-.tree-zoom-hint {
-    margin-right: auto;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    opacity: 0.85;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 14;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding-left: 4px;
-    user-select: none;
-    -webkit-user-select: none;
+    gap: 5px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    box-sizing: border-box;
+    touch-action: manipulation;
 }
 
 .tree-zoom-btn {
@@ -3867,16 +3875,15 @@ ruby rt {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    height: 32px;
-    min-width: 36px;
-    padding: 0 11px;
-    border-radius: 999px;
-    background: var(--surface);
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--surface) 92%, var(--bg-main));
     color: var(--text-main);
     border: 1.5px solid var(--border-color);
     box-shadow: var(--filter-soft);
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 800;
     line-height: 1;
     cursor: pointer;
@@ -3884,7 +3891,12 @@ ruby rt {
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
+}
+
+.tree-zoom-btn.disabled {
+    opacity: 0.36;
+    pointer-events: none;
 }
 
 .tree-zoom-btn * {
@@ -3892,26 +3904,24 @@ ruby rt {
 }
 
 .tree-zoom-btn svg {
-    width: 15px;
-    height: 15px;
+    width: 13px;
+    height: 13px;
     stroke: currentColor;
-    stroke-width: 2.2;
+    stroke-width: 2.4;
     flex-shrink: 0;
 }
 
-.tree-zoom-btn.active {
+.tree-zoom-btn:active {
+    transform: scale(0.92);
     background: var(--accent-bg);
     color: var(--accent);
     border-color: var(--accent);
 }
 
-.tree-zoom-btn:active {
-    transform: scale(0.93);
-}
-
 @media (hover: hover),
 (any-hover: hover) {
     .tree-zoom-btn:hover {
+        background: var(--surface);
         color: var(--accent);
         border-color: var(--accent);
     }
@@ -3920,28 +3930,32 @@ ruby rt {
 .primitive-tree {
     display: block;
     width: 100%;
-    min-height: 220px;
+    min-height: 200px;
     height: 240px;
     margin: 0 auto;
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
+    touch-action: pan-y;
+    pointer-events: none;
 }
 
-.tree-container.tree-zoomed .primitive-tree {
+.tree-container.tree-focused .primitive-tree {
     cursor: grab;
     touch-action: none;
 }
 
-.tree-container.tree-zoomed.tree-panning .primitive-tree {
+.tree-container.tree-focused.tree-panning .primitive-tree {
     cursor: grabbing;
 }
 
+.primitive-tree .pt-edges path,
 .primitive-tree .pt-edges line {
-    stroke: var(--wood-branch);
-    stroke-width: 2.6;
+    fill: none;
+    stroke: color-mix(in srgb, var(--text-muted) 48%, var(--border-color));
+    stroke-width: 2.2;
     stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .primitive-tree .pt-node {
@@ -3952,15 +3966,23 @@ ruby rt {
     fill: var(--surface);
     stroke: var(--border-color);
     stroke-width: 2.2;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.14));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.14));
     transition: stroke 0.15s ease, filter 0.15s ease;
 }
 
 .primitive-tree .pt-root circle {
     fill: var(--surface);
-    stroke: var(--border-color);
+    stroke: color-mix(in srgb, var(--accent) 62%, var(--border-color));
     stroke-width: 2.8;
-    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+    filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.18));
+}
+
+.primitive-tree .pt-label-pill {
+    fill: var(--surface);
+    stroke: var(--border-color);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.10));
+    transition: stroke 0.15s ease, fill 0.15s ease;
 }
 
 @media (hover: hover),
@@ -3968,7 +3990,11 @@ ruby rt {
     .primitive-tree .pt-node:hover circle {
         stroke: var(--accent);
         stroke-width: 2.4;
-        filter: drop-shadow(0 4px 0 var(--accent));
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+    }
+
+    .primitive-tree .pt-node:hover .pt-label-pill {
+        stroke: var(--accent);
     }
 
     .primitive-tree .pt-node:hover .pt-label {
@@ -3978,8 +4004,12 @@ ruby rt {
 
 .primitive-tree .pt-node.pt-active circle {
     stroke: var(--accent) !important;
-    stroke-width: 1.5 !important;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+    stroke-width: 2.5 !important;
+    filter: drop-shadow(0 3px 7px rgba(0, 0, 0, 0.18));
+}
+
+.primitive-tree .pt-node.pt-active .pt-label-pill {
+    stroke: var(--accent) !important;
 }
 
 .primitive-tree .pt-node.pt-active .pt-label {
@@ -3988,12 +4018,16 @@ ruby rt {
 
 .primitive-tree .pt-node.pt-dismissed circle {
     stroke: var(--border-color) !important;
-    stroke-width: 1 !important;
-    filter: none !important;
+    stroke-width: 2 !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) !important;
+}
+
+.primitive-tree .pt-node.pt-dismissed .pt-label-pill {
+    stroke: var(--border-color) !important;
 }
 
 .primitive-tree .pt-node.pt-dismissed .pt-label {
-    fill: var(--text-muted) !important;
+    fill: var(--text-main) !important;
 }
 
 .primitive-tree .pt-glyph {
@@ -4003,14 +4037,14 @@ ruby rt {
 .primitive-tree .pt-glyph path {
     fill: none;
     stroke: var(--text-main);
-    stroke-width: 2.4px;
+    stroke-width: 2.5px;
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
 }
 
 .primitive-tree .pt-root .pt-glyph path {
-    stroke-width: 2.8px;
+    stroke-width: 2.9px;
 }
 
 .primitive-tree .pt-leaf .pt-glyph path {
@@ -4030,20 +4064,17 @@ ruby rt {
 }
 
 .primitive-tree .pt-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     fill: var(--text-main);
     text-anchor: middle;
-    paint-order: stroke fill;
-    stroke: var(--bg-main);
-    stroke-width: 3.5px;
-    stroke-linejoin: round;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.15px;
 }
 
 .primitive-tree .pt-label-primitive {
     font-style: italic;
     font-weight: 700;
+    fill: var(--text-muted);
 }
 
 .answer-fallback {
@@ -5014,8 +5045,12 @@ html.is-ankiweb .back-actions {
 
 .primitive-tree .pt-node:not(.pt-dismissed).spen-hover circle {
     stroke: var(--accent);
-    stroke-width: 1.5;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.14));
+    stroke-width: 2.4;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+}
+
+.primitive-tree .pt-node:not(.pt-dismissed).spen-hover .pt-label-pill {
+    stroke: var(--accent);
 }
 
 .primitive-tree .pt-node:not(.pt-dismissed).spen-hover .pt-label {
