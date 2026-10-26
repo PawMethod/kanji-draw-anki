@@ -684,7 +684,7 @@
             n.lines = (!n.isRoot && n.keyword) ? wrapLabel(n.rawKeyword || n.keyword) : [];
             if (n.lines.length) {
                 const maxChars = Math.max.apply(null, n.lines.map(l => l.length));
-                let measuredW = maxChars * 6.3;
+                let measuredW = maxChars * 6.8;
                 try {
                     const t = document.createElementNS(NS, 'text');
                     t.setAttribute('style', 'font-size:11px;font-weight:800;font-family:sans-serif');
@@ -697,9 +697,9 @@
                     });
                     scratch.appendChild(t);
                     const tb = t.getBBox();
-                    if (tb && tb.width > 8) measuredW = Math.max(tb.width, maxChars * 5.6);
+                    if (tb && tb.width > 8) measuredW = Math.max(tb.width, maxChars * 6.4);
                 } catch (e) { }
-                n.pillW = Math.max(44, Math.ceil(measuredW + 16));
+                n.pillW = Math.max(44, Math.ceil(measuredW + 18));
                 n.pillH = 19 + (n.lines.length - 1) * 12;
             } else {
                 n.pillW = 0;
@@ -753,8 +753,7 @@
         placeSubtree(root);
 
         // Spread narrow trees horizontally and adapt vertical step so the tree fills the box cleanly without button overlap
-        const boxH = maxDepth >= 3 ? 305 : (maxDepth === 2 ? 265 : 210);
-        const targetAspect = 350 / boxH;
+        const boxH = maxDepth >= 3 ? 320 : (maxDepth === 2 ? 280 : 225);
 
         let minEdge = Infinity, maxEdge = -Infinity, minCenter = Infinity, maxCenter = -Infinity;
         const scanX = (n) => {
@@ -770,33 +769,11 @@
         const rawSpan = maxEdge - minEdge;
         const centerSpan = maxCenter > minCenter ? (maxCenter - minCenter) : 0;
 
-        const padTop = 16;
-        const padBottom = 44;
-        const padX = 18;
-        const baseHStep = maxDepth === 1 ? 94 : (maxDepth === 2 ? 96 : 98);
-        const neededH = (rawSpan + padX * 2) / targetAspect;
-        const H_STEP = maxDepth > 0
-            ? Math.min(168, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - padTop - padBottom) / maxDepth)))
-            : baseHStep;
-
-        let maxBottomY = 0;
-        const assignY = (n) => {
-            const r = n.isRoot ? R_ROOT : R;
-            n.y = padTop + R_ROOT + n.depth * H_STEP;
-            n.topY = n.y - r;
-            n.bottomY = n.lines.length ? (n.y + r - 4 + n.pillH) : (n.y + r);
-            maxBottomY = Math.max(maxBottomY, n.bottomY);
-            n.children.forEach(assignY);
-        };
-        assignY(root);
-        const height = Math.ceil(maxBottomY + padBottom);
-
-        const desiredWidth = Math.max(290, Math.round(height * targetAspect));
-        const idealSpan = desiredWidth - padX * 2;
+        const idealSpan = maxDepth === 1 ? 230 : (maxDepth === 2 ? 275 : 300);
         if (rawSpan < idealSpan && centerSpan > 10) {
             const midC = (minCenter + maxCenter) / 2;
             const outerPad = Math.max(52, rawSpan - centerSpan);
-            const stretch = Math.min(2.2, Math.max(1, (idealSpan - outerPad) / centerSpan));
+            const stretch = Math.min(2.0, Math.max(1, (idealSpan - outerPad) / centerSpan));
             if (stretch > 1.02) {
                 const applyStretch = (n) => {
                     n.x = midC + (n.x - midC) * stretch;
@@ -808,11 +785,32 @@
             }
         }
 
+        const padX = 12;
         const contentW = Math.ceil(maxEdge - minEdge);
-        const width = Math.max(280, contentW + padX * 2);
+        const width = Math.max(260, contentW + padX * 2);
         const shiftToPositive = (width - contentW) / 2 - minEdge;
         const finalizeX = (n) => { n.x += shiftToPositive; n.children.forEach(finalizeX); };
         finalizeX(root);
+
+        const innerRatio = 310 / Math.max(140, boxH - 52);
+        const neededH = width / innerRatio;
+        const baseHStep = maxDepth === 1 ? 94 : (maxDepth === 2 ? 96 : 98);
+        const H_STEP = maxDepth > 0
+            ? Math.min(165, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - 28) / maxDepth)))
+            : baseHStep;
+
+        const padTop = 6;
+        let maxBottomY = 0;
+        const assignY = (n) => {
+            const r = n.isRoot ? R_ROOT : R;
+            n.y = padTop + R_ROOT + n.depth * H_STEP;
+            n.topY = n.y - r;
+            n.bottomY = n.lines.length ? (n.y + r - 4 + n.pillH) : (n.y + r);
+            maxBottomY = Math.max(maxBottomY, n.bottomY);
+            n.children.forEach(assignY);
+        };
+        assignY(root);
+        const height = Math.ceil(maxBottomY + 6);
 
         const svg = document.createElementNS(NS, 'svg');
         svg.setAttribute('class', 'primitive-tree');
@@ -1045,12 +1043,19 @@
         const getBaseBox = () => {
             const cW = viewport.clientWidth || svg.clientWidth || 0;
             const cH = viewport.clientHeight || svg.clientHeight || 0;
-            const bW = cW > 40 ? cW : 350;
+            const bW = cW > 40 ? cW : 320;
             const bH = cH > 40 ? cH : boxH;
-            const aspect = bW / bH;
-            const bVw = Math.max(width, height * aspect);
-            const bVh = bVw / aspect;
-            return { bVw: bVw, bVh: bVh };
+            const leftSafePx = 10, rightSafePx = 10;
+            const botSafePx = isFullscreen ? 46 : 38;
+            const topSafePx = isFullscreen ? 46 : (((root.x + root.halfW) / width > 0.72) ? 36 : 12);
+            const innerW = Math.max(120, bW - leftSafePx - rightSafePx);
+            const innerH = Math.max(100, bH - topSafePx - botSafePx);
+            const unitsPerPx = Math.max(width / innerW, height / innerH);
+            const bVw = bW * unitsPerPx;
+            const bVh = bH * unitsPerPx;
+            const baseVx = (width - bVw) / 2;
+            const baseVy = height / 2 - (topSafePx + innerH / 2) * unitsPerPx;
+            return { bVw: bVw, bVh: bVh, baseVx: baseVx, baseVy: baseVy };
         };
 
         const clientToSvg = (clientX, clientY) => {
@@ -1066,7 +1071,7 @@
         };
 
         const clampPan = () => {
-            const padFactor = isFullscreen ? 0.35 : 0.22;
+            const padFactor = 0.35;
             const marginX = Math.max(48, vw * padFactor);
             const minX = Math.min(0, width - vw) - marginX;
             const maxX = Math.max(0, width - vw) + marginX;
@@ -1084,8 +1089,8 @@
             vh = base.bVh / zoom;
             if (zoom <= 1.02 && !hasPanned) {
                 zoom = 1;
-                vx = (width - vw) / 2;
-                vy = (height - vh) / 2;
+                vx = base.baseVx;
+                vy = base.baseVy;
                 if (container) container.classList.remove('tree-zoomed');
             } else {
                 if (container) container.classList.toggle('tree-zoomed', zoom > 1.02 || hasPanned);

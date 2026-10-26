@@ -2136,7 +2136,7 @@ html.is-ankidesktop .info-overlay {
     border-radius: var(--border-rad-main);
     border: 2px solid var(--border-color);
     width: 90%;
-    max-height: calc(100dvh - 48px - 48px);
+    max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     overflow-x: clip;
