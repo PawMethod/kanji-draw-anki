@@ -527,6 +527,7 @@
         var im = ol.querySelector('.info-modal');
         if (im) im.scrollTop = 0;
         ol.classList.add('active');
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
         if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
         if (window._kanjiRefreshTreeViewport) window._kanjiRefreshTreeViewport();
         if (window._initModalScrollbars) window._initModalScrollbars();
@@ -621,6 +622,7 @@
         if (e && e.target === ol && !ol._bgPointerDown) return;
         ol._bgPointerDown = false;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
         if (window._kanjiOrder) window._kanjiOrder.close();
         ol.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
@@ -908,13 +910,16 @@
         svg.appendChild(edges); svg.appendChild(nodes);
 
         const allNodes = [];
-        const draw = (n) => {
+        const draw = (n, parentNode, branchColor) => {
+            n.parent = parentNode || null;
+            n.branchColor = branchColor || 'var(--accent)';
             const r = n.isRoot ? R_ROOT : R;
             if (n.children.length) {
                 const startY = n.bottomY;
                 const endY = n.children[0].topY;
                 const midY = startY + (endY - startY) * 0.5;
-                n.children.forEach(c => {
+                n.children.forEach((c, ci) => {
+                    const childColor = PALETTE[ci % PALETTE.length];
                     const p = document.createElementNS(NS, 'path');
                     const dx = c.x - n.x;
                     let dStr;
@@ -926,8 +931,9 @@
                         dStr = `M ${n.x.toFixed(1)} ${startY.toFixed(1)} V ${(midY - cr).toFixed(1)} Q ${n.x.toFixed(1)} ${midY.toFixed(1)} ${(n.x + dir * cr).toFixed(1)} ${midY.toFixed(1)} H ${(c.x - dir * cr).toFixed(1)} Q ${c.x.toFixed(1)} ${midY.toFixed(1)} ${c.x.toFixed(1)} ${(midY + cr).toFixed(1)} V ${endY.toFixed(1)}`;
                     }
                     p.setAttribute('d', dStr);
+                    c.edgeFromParent = p;
                     edges.appendChild(p);
-                    draw(c);
+                    draw(c, n, childColor);
                 });
             }
 
@@ -942,6 +948,8 @@
             glyph.setAttribute('x', (n.x - gs / 2).toFixed(2)); glyph.setAttribute('y', (n.y - gs / 2).toFixed(2));
             glyph.setAttribute('width', gs.toFixed(2)); glyph.setAttribute('height', gs.toFixed(2));
             glyph.setAttribute('class', 'pt-glyph');
+            n.glyphEl = glyph;
+            n.glyphPaths = [];
             const box = n.strokes && n.strokes.length ? unionBox(n.strokes) : null;
             if (box) {
                 const colorOf = {};
@@ -953,6 +961,7 @@
                     p.setAttribute('d', ds[s]);
                     if (colorOf[s]) p.style.stroke = colorOf[s];
                     glyph.appendChild(p);
+                    n.glyphPaths.push({ idx: s, pathEl: p, defaultColor: colorOf[s] || '' });
                 });
             } else if (/<path/i.test(n.value)) {
                 glyph.setAttribute('class', 'pt-glyph pt-glyph-fill');
@@ -995,20 +1004,21 @@
                 g.appendChild(title);
                 g.appendChild(label);
             }
+            n.el = g;
             nodes.appendChild(g);
-            allNodes.push({ x: n.x, y: n.y, r: r, el: g });
+            allNodes.push({ x: n.x, y: n.y, r: r, el: g, node: n });
         };
-        draw(root);
+        draw(root, null, 'var(--accent)');
         scratch.remove();
 
         target.innerHTML = '';
         const container = target.closest('.tree-container');
         if (container) {
             container.classList.add('tree-graph-mode');
-            container.classList.remove('tree-zoomed', 'tree-focused', 'tree-panning');
+            container.classList.remove('tree-zoomed', 'tree-focused', 'tree-panning', 'tree-fullscreen');
         }
 
-        // --- Interactive +/- Zoom & Focus-Gated Pan (Double-Tap to Navigate, Tap Outside to Scroll) ---
+        // --- Interactive +/- Zoom, Fullscreen & Focus-Gated Pan (Double-Tap to Navigate, Tap Outside to Scroll) ---
         let zoom = 1;
         const minZoom = 1;
         const maxZoom = 3.0;
@@ -1016,6 +1026,10 @@
         let panDragged = false;
         let hasPanned = false;
         let navActive = false;
+        let isFullscreen = false;
+
+        const ICON_EXPAND = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+        const ICON_COLLAPSE = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
 
         const toolbar = document.createElement('div');
         toolbar.className = 'tree-toolbar';
@@ -1034,8 +1048,15 @@
         btnIn.setAttribute('aria-label', 'Vergrößern');
         btnIn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
 
+        const btnFs = document.createElement('button');
+        btnFs.type = 'button';
+        btnFs.className = 'tree-zoom-btn tree-fullscreen-btn tappable';
+        btnFs.title = 'Vollbild umschalten';
+        btnFs.setAttribute('aria-label', 'Vollbild umschalten');
+        btnFs.innerHTML = ICON_EXPAND;
+
         const updateZoomBtns = () => {
-            btnOut.classList.toggle('disabled', zoom <= 1.02 && !hasPanned && !navActive);
+            btnOut.classList.toggle('disabled', zoom <= 1.02);
             btnIn.classList.toggle('disabled', zoom >= maxZoom - 0.02);
         };
 
@@ -1051,6 +1072,7 @@
         viewport.appendChild(svg);
         viewport.appendChild(shield);
         viewport.appendChild(toolbar);
+        viewport.appendChild(btnFs);
 
         target.appendChild(viewport);
 
@@ -1067,6 +1089,46 @@
             updateZoomBtns();
         };
         window._kanjiSetTreeNavActive = setNavActive;
+
+        let savedModalScroll = 0;
+        const setFullscreen = (fs) => {
+            const nextFs = !!fs;
+            if (nextFs === isFullscreen) return;
+            isFullscreen = nextFs;
+            const modalEl = container ? container.closest('.info-modal') : document.querySelector('.info-modal');
+            const overlayEl = modalEl ? modalEl.closest('.info-overlay') : document.getElementById('info-overlay');
+            if (isFullscreen) {
+                if (overlayEl) overlayEl.classList.add('tree-fs-overlay');
+                if (modalEl) {
+                    savedModalScroll = modalEl.scrollTop;
+                    modalEl.scrollTop = 0;
+                    modalEl.classList.add('tree-fs-active');
+                }
+                if (container) container.classList.add('tree-fullscreen');
+                viewport.style.height = '100%';
+                svg.style.height = '100%';
+                btnFs.innerHTML = ICON_COLLAPSE;
+                if (zoom <= 1.02) hasPanned = false;
+                setNavActive(true);
+            } else {
+                if (container) container.classList.remove('tree-fullscreen');
+                if (modalEl) {
+                    modalEl.classList.remove('tree-fs-active');
+                    modalEl.scrollTop = savedModalScroll;
+                }
+                if (overlayEl) overlayEl.classList.remove('tree-fs-overlay');
+                viewport.style.height = boxH + 'px';
+                svg.style.height = boxH + 'px';
+                btnFs.innerHTML = ICON_EXPAND;
+                if (zoom <= 1.02) {
+                    hasPanned = false;
+                    setNavActive(false);
+                }
+            }
+            applyViewBox();
+            requestAnimationFrame(() => applyViewBox());
+        };
+        window._kanjiSetTreeFullscreen = setFullscreen;
 
         const getBaseBox = () => {
             const cW = viewport.clientWidth || svg.clientWidth || 0;
@@ -1092,14 +1154,15 @@
         };
 
         const clampPan = () => {
-            const marginX = Math.max(24, vw * 0.16);
-            const minX = Math.min((width - vw) / 2, -marginX);
-            const maxX = Math.max((width - vw) / 2, width - vw + marginX);
+            const padFactor = isFullscreen ? 0.35 : 0.22;
+            const marginX = Math.max(48, vw * padFactor);
+            const minX = Math.min(0, width - vw) - marginX;
+            const maxX = Math.max(0, width - vw) + marginX;
             if (vx < minX) vx = minX; else if (vx > maxX) vx = maxX;
 
-            const marginY = Math.max(20, vh * 0.16);
-            const minY = Math.min((height - vh) / 2, -marginY);
-            const maxY = Math.max((height - vh) / 2, height - vh + marginY);
+            const marginY = Math.max(48, vh * padFactor);
+            const minY = Math.min(0, height - vh) - marginY;
+            const maxY = Math.max(0, height - vh) + marginY;
             if (vy < minY) vy = minY; else if (vy > maxY) vy = maxY;
         };
 
@@ -1194,12 +1257,141 @@
             const next = Math.round((zoom - 0.25) * 4) / 4;
             if (next <= 1.02) {
                 setZoomAround(1, null, null, true);
-                setNavActive(false);
+                if (!isFullscreen) setNavActive(false);
             } else {
                 setNavActive(true);
                 setZoomAround(next, null, null, false);
             }
         });
+        bindTreeBtn(btnFs, () => {
+            setFullscreen(!isFullscreen);
+        });
+
+        let selectedNode = null;
+        const applyNodeSelection = (selNode) => {
+            allNodes.forEach(item => {
+                const nd = item.node;
+                nd.el.classList.remove('pt-active', 'pt-parent-focus', 'pt-ancestor-focus', 'pt-descendant-focus', 'pt-dimmed', 'pt-dismissed');
+                nd.el.style.removeProperty('--pt-hl-color');
+                if (nd.edgeFromParent) {
+                    nd.edgeFromParent.classList.remove('pt-edge-active', 'pt-edge-ancestor', 'pt-edge-descendant', 'pt-edge-dimmed');
+                    nd.edgeFromParent.style.removeProperty('stroke');
+                }
+                if (nd.glyphPaths && nd.glyphEl) {
+                    nd.glyphPaths.forEach(gp => {
+                        gp.pathEl.classList.remove('pt-stroke-focus', 'pt-stroke-dim');
+                        if (gp.defaultColor) gp.pathEl.style.stroke = gp.defaultColor;
+                        else gp.pathEl.style.removeProperty('stroke');
+                        nd.glyphEl.appendChild(gp.pathEl);
+                    });
+                }
+            });
+
+            if (!selNode) {
+                selectedNode = null;
+                return;
+            }
+            selectedNode = selNode;
+
+            if (selNode.isRoot) {
+                selNode.el.classList.add('pt-active');
+                selNode.el.style.setProperty('--pt-hl-color', 'var(--accent)');
+                allNodes.forEach(item => {
+                    const nd = item.node;
+                    if (nd === selNode) return;
+                    if (nd.parent === selNode) {
+                        nd.el.classList.add('pt-descendant-focus');
+                        nd.el.style.setProperty('--pt-hl-color', nd.branchColor);
+                        if (nd.edgeFromParent) {
+                            nd.edgeFromParent.classList.add('pt-edge-active');
+                            nd.edgeFromParent.style.stroke = nd.branchColor;
+                            edges.appendChild(nd.edgeFromParent);
+                        }
+                    } else {
+                        nd.el.classList.add('pt-dimmed');
+                        if (nd.edgeFromParent) nd.edgeFromParent.classList.add('pt-edge-dimmed');
+                    }
+                });
+                return;
+            }
+
+            const hlColor = selNode.branchColor || 'var(--accent)';
+            const strokeSet = new Set(selNode.strokes || []);
+            const ancestorSet = new Set();
+            const ancestorList = [];
+            for (let p = selNode.parent; p; p = p.parent) {
+                ancestorSet.add(p);
+                ancestorList.push(p);
+            }
+            const descendantSet = new Set();
+            const walkDesc = (n) => {
+                n.children.forEach(c => { descendantSet.add(c); walkDesc(c); });
+            };
+            walkDesc(selNode);
+
+            // 1. Highlight tapped node & its own strokes
+            selNode.el.classList.add('pt-active');
+            selNode.el.style.setProperty('--pt-hl-color', hlColor);
+            if (selNode.glyphPaths && selNode.glyphPaths.length) {
+                selNode.glyphPaths.forEach(gp => {
+                    gp.pathEl.classList.add('pt-stroke-focus');
+                    if (!selNode.children.length) gp.pathEl.style.stroke = hlColor;
+                });
+            }
+
+            // 2. Highlight upward connecting line(s) (bring to front of edges group so shared trunks glow cleanly)
+            for (let i = ancestorList.length - 1; i >= 0; i--) {
+                const anc = ancestorList[i];
+                if (anc.edgeFromParent) {
+                    anc.edgeFromParent.classList.add('pt-edge-ancestor');
+                    anc.edgeFromParent.style.stroke = hlColor;
+                    edges.appendChild(anc.edgeFromParent);
+                }
+            }
+            if (selNode.edgeFromParent) {
+                selNode.edgeFromParent.classList.add('pt-edge-active');
+                selNode.edgeFromParent.style.stroke = hlColor;
+                edges.appendChild(selNode.edgeFromParent);
+            }
+
+            // 3. In parent & ancestor kanjis: spotlight the primitive's strokes & softly dim the rest
+            ancestorList.forEach(anc => {
+                const isDirectParent = (anc === selNode.parent);
+                anc.el.classList.add(isDirectParent ? 'pt-parent-focus' : 'pt-ancestor-focus');
+                anc.el.style.setProperty('--pt-hl-color', hlColor);
+                if (anc.glyphPaths && anc.glyphEl && strokeSet.size > 0) {
+                    anc.glyphPaths.forEach(gp => {
+                        if (!strokeSet.has(gp.idx)) {
+                            gp.pathEl.classList.add('pt-stroke-dim');
+                        }
+                    });
+                    anc.glyphPaths.forEach(gp => {
+                        if (strokeSet.has(gp.idx)) {
+                            gp.pathEl.classList.add('pt-stroke-focus');
+                            gp.pathEl.style.stroke = hlColor;
+                            anc.glyphEl.appendChild(gp.pathEl);
+                        }
+                    });
+                }
+            });
+
+            // 4. Dim unrelated nodes & edges; keep direct subtree readable
+            allNodes.forEach(item => {
+                const nd = item.node;
+                if (nd === selNode || ancestorSet.has(nd)) return;
+                if (descendantSet.has(nd)) {
+                    nd.el.classList.add('pt-descendant-focus');
+                    if (nd.edgeFromParent) {
+                        nd.edgeFromParent.classList.add('pt-edge-descendant');
+                        edges.appendChild(nd.edgeFromParent);
+                    }
+                } else {
+                    nd.el.classList.add('pt-dimmed');
+                    if (nd.edgeFromParent) nd.edgeFromParent.classList.add('pt-edge-dimmed');
+                }
+            });
+        };
+        window._kanjiClearTreeSelection = () => applyNodeSelection(null);
 
         let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
         const handleTapAt = (clientX, clientY) => {
@@ -1208,25 +1400,30 @@
                 lastTapTime = 0;
                 setNavActive(!navActive);
                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-                svg.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
-                svg.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
+                applyNodeSelection(null);
                 return;
             }
             lastTapTime = now;
             lastTapX = clientX;
             lastTapY = clientY;
             const pt = clientToSvg(clientX, clientY);
-            let hitNode = null, bestD = Infinity;
+            let hitItem = null, bestD = Infinity;
             allNodes.forEach(nd => {
                 const d = Math.hypot(pt.x - nd.x, pt.y - nd.y);
-                if (d <= nd.r + 10 && d < bestD) { bestD = d; hitNode = nd.el; }
+                const onCircle = d <= nd.r + 10;
+                const onPill = nd.node.pillW > 0 && Math.abs(pt.x - nd.x) <= (nd.node.pillW / 2 + 6) && pt.y >= nd.y && pt.y <= (nd.node.bottomY + 6);
+                if ((onCircle || onPill) && d < bestD) { bestD = d; hitItem = nd; }
             });
-            const wasActive = hitNode && hitNode.classList.contains('pt-active');
-            svg.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
-            svg.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
-            if (hitNode) {
-                if (wasActive) hitNode.classList.add('pt-dismissed');
-                else hitNode.classList.add('pt-active');
+            if (hitItem) {
+                if (selectedNode === hitItem.node) {
+                    applyNodeSelection(null);
+                    hitItem.el.classList.add('pt-dismissed');
+                } else {
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
+                    applyNodeSelection(hitItem.node);
+                }
+            } else {
+                applyNodeSelection(null);
             }
         };
 
@@ -1402,8 +1599,7 @@
             if (!t || !t.closest) return;
             if (!t.closest('.tree-container')) {
                 if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
-                target.querySelectorAll('.pt-node.pt-active').forEach(n => n.classList.remove('pt-active'));
-                target.querySelectorAll('.pt-node.pt-dismissed').forEach(n => n.classList.remove('pt-dismissed'));
+                if (window._kanjiClearTreeSelection) window._kanjiClearTreeSelection();
             }
         };
         document.addEventListener('touchstart', window._kanjiTreeOutsideHandler, true);
