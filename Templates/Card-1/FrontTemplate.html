@@ -8,8 +8,8 @@
     </svg>
 </button>
 
-<div class="settings-overlay" id="settings-overlay" onclick="closeSettings(event)">
-    <div class="settings-modal" data-tab="c1" onclick="event.stopPropagation()">
+<div class="settings-overlay tappable" id="settings-overlay" onclick="closeSettings(event)">
+    <div class="settings-modal tappable" data-tab="c1" onclick="event.stopPropagation()">
 
         <!-- ═══ Main Page: Category Overview ═══ -->
         <div class="settings-page active" id="settings-main">
@@ -24,13 +24,13 @@
                 Einstellungen
             </div>
             <div class="settings-segment">
-                <div role="button" tabindex="0" class="segment-btn active" data-tab="c1"
+                <div role="button" tabindex="0" class="segment-btn active tappable" data-tab="c1"
                     onclick="switchSettingsTab('c1', event)">Zeichnen</div>
-                <div role="button" tabindex="0" class="segment-btn" data-tab="c2"
+                <div role="button" tabindex="0" class="segment-btn tappable" data-tab="c2"
                     onclick="switchSettingsTab('c2', event)">Erkennen</div>
             </div>
             <div class="category-list">
-                <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-grid', this)">
+                <div role="button" tabindex="0" class="category-card tappable" onclick="navigateToPage('page-grid', this, event)">
                     <div class="category-icon cat-grid">
                         <svg viewBox="0 0 24 24">
                             <path d="M7.5 3.5H12v8.5H3.5V7.5a4 4 0 0 1 4-4z" class="fi-coral"></path>
@@ -51,8 +51,8 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </div>
-                <div role="button" tabindex="0" class="category-card c1-only-setting"
-                    onclick="navigateToPage('page-front', this)">
+                <div role="button" tabindex="0" class="category-card c1-only-setting tappable"
+                    onclick="navigateToPage('page-front', this, event)">
                     <div class="category-icon cat-front">
                         <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="9.2" class="fi-tan" />
@@ -70,8 +70,8 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </div>
-                <div role="button" tabindex="0" class="category-card c2-only-setting" style="display:none"
-                    onclick="navigateToPage('page-front-c2', this)">
+                <div role="button" tabindex="0" class="category-card c2-only-setting tappable" style="display:none"
+                    onclick="navigateToPage('page-front-c2', this, event)">
                     <div class="category-icon cat-front">
                         <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="9.2" class="fi-tan" />
@@ -89,7 +89,7 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </div>
-                <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-back', this)">
+                <div role="button" tabindex="0" class="category-card tappable" onclick="navigateToPage('page-back', this, event)">
                     <div class="category-icon cat-back">
                         <svg viewBox="0 0 24 24">
                             <rect x="9.5" y="5.5" width="11" height="14.5" rx="2.2" class="fi-cream"></rect>
@@ -111,7 +111,7 @@
             </div>
             <div class="setting-group-title">Allgemein</div>
             <div class="category-list">
-                <div role="button" tabindex="0" class="category-card" onclick="navigateToPage('page-theme', this)">
+                <div role="button" tabindex="0" class="category-card tappable" onclick="navigateToPage('page-theme', this, event)">
                     <div class="category-icon cat-theme">
                         <svg viewBox="0 0 24 24">
                             <path
@@ -133,7 +133,7 @@
                     </svg>
                 </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="closeSettings(event)">Schließen</div>
         </div>
 
         <!-- ═══ Sub-Page: Hilfslinien ═══ -->
@@ -2324,7 +2324,8 @@
         }
     };
 
-    function navigateToPage(pageId, sourceCard) {
+    function navigateToPage(pageId, sourceCard, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
         var mainEl = document.getElementById(_currentSettingsPage);
         var pageEl = document.getElementById(pageId);
         if (!mainEl || !pageEl) return;
@@ -2353,7 +2354,8 @@
         }
     }
 
-    function navigateBack() {
+    function navigateBack(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
         if (_currentSettingsPage === 'settings-main') return;
         var pageEl = document.getElementById(_currentSettingsPage);
         var mainEl = document.getElementById('settings-main');
@@ -4785,29 +4787,152 @@
         addPenHandler(document.getElementById('button-reset'), 'btn');
     })();
 
-    // --- Scroll Guards [SHARED with c2-front] ---
+    // --- Scroll Guards & AnkiMobile Tappable Isolation [SHARED with c2-front] ---
 
-    // Register modal scroll guards synchronously to prevent flicker
-    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => {
-        if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
-        modal._kanjiScrollGuardFn = function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); };
-        modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
-    });
-    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => {
-        if (overlay._kanjiScrollGuardFn) overlay.removeEventListener('touchmove', overlay._kanjiScrollGuardFn);
-        overlay._kanjiScrollGuardFn = function (e) { if (e.target === this) e.preventDefault(); };
-        overlay.addEventListener('touchmove', overlay._kanjiScrollGuardFn, { passive: false });
-    });
+    window._kanjiSetupModalTouchGuards = function () {
+        document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
+            ol.classList.add('tappable');
+            ol.querySelectorAll('*').forEach(function (el) { el.classList.add('tappable'); });
+        });
+
+        document.querySelectorAll('.settings-modal, .info-modal').forEach(function (modal) {
+            if (!modal._kanjiTouchStartGuarded) {
+                modal._kanjiTouchStartGuarded = true;
+                modal.addEventListener('touchstart', function (e) {
+                    if (e.touches && e.touches.length === 1) {
+                        this._tsX = e.touches[0].clientX;
+                        this._tsY = e.touches[0].clientY;
+                    }
+                }, { passive: true });
+            }
+            if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
+            modal._kanjiScrollGuardFn = function (e) {
+                if (e.target && e.target.closest && e.target.closest('.tree-viewport')) return;
+                if (e.touches && e.touches.length === 1 && this._tsX !== undefined) {
+                    var dx = Math.abs(e.touches[0].clientX - this._tsX);
+                    var dy = Math.abs(e.touches[0].clientY - this._tsY);
+                    if (dx > dy * 1.3 && dx > 10) {
+                        if (e.cancelable !== false) e.preventDefault();
+                        return;
+                    }
+                }
+                if (document.documentElement.classList.contains('is-ankimobile') && this.scrollHeight <= this.clientHeight) {
+                    if (e.cancelable !== false) e.preventDefault();
+                }
+            };
+            modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
+        });
+
+        document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (overlay) {
+            if (overlay._kanjiScrollGuardFn) overlay.removeEventListener('touchmove', overlay._kanjiScrollGuardFn);
+            overlay._kanjiScrollGuardFn = function (e) {
+                if (e.target === this && e.cancelable !== false) e.preventDefault();
+            };
+            overlay.addEventListener('touchmove', overlay._kanjiScrollGuardFn, { passive: false });
+
+            if (!overlay._kanjiAmTouchBound) {
+                overlay._kanjiAmTouchBound = true;
+                var amStartX = 0, amStartY = 0, amLastY = 0, amLastT = 0, amVelY = 0;
+                var amMoved = false, amActive = false, amModal = null, amStartScroll = 0, amMomentumRaf = null;
+                var stopMomentum = function () {
+                    if (amMomentumRaf) { cancelAnimationFrame(amMomentumRaf); amMomentumRaf = null; }
+                };
+                overlay.addEventListener('touchstart', function (e) {
+                    if (!document.documentElement.classList.contains('is-ankimobile')) return;
+                    stopMomentum();
+                    var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+                    if (el && el.closest && el.closest('a[href]')) {
+                        amActive = false;
+                        return;
+                    }
+                    if (e.cancelable !== false) e.preventDefault();
+                    if (el && el.closest && el.closest('.tree-viewport, .tree-touch-shield, .tree-zoom-btn, .custom-scroll-thumb')) {
+                        amActive = false;
+                        return;
+                    }
+                    if (!e.touches || e.touches.length !== 1) { amActive = false; return; }
+                    amActive = true;
+                    amMoved = false;
+                    amStartX = e.touches[0].clientX;
+                    amStartY = e.touches[0].clientY;
+                    amLastY = amStartY;
+                    amLastT = performance.now();
+                    amVelY = 0;
+                    amModal = el && el.closest ? el.closest('.settings-modal, .info-modal') : null;
+                    amStartScroll = amModal ? amModal.scrollTop : 0;
+                }, { passive: false });
+
+                overlay.addEventListener('touchmove', function (e) {
+                    if (!document.documentElement.classList.contains('is-ankimobile') || !amActive) return;
+                    if (e.cancelable !== false) e.preventDefault();
+                    if (!e.touches || e.touches.length !== 1) return;
+                    var cx = e.touches[0].clientX;
+                    var cy = e.touches[0].clientY;
+                    var dx = cx - amStartX;
+                    var dy = cy - amStartY;
+                    if (Math.hypot(dx, dy) > 10) amMoved = true;
+                    if (amModal && amModal.scrollHeight > amModal.clientHeight) {
+                        var now = performance.now();
+                        var dt = now - amLastT;
+                        if (dt > 0) amVelY = (amLastY - cy) / dt;
+                        amLastY = cy;
+                        amLastT = now;
+                        amModal.scrollTop = amStartScroll - dy;
+                    }
+                }, { passive: false });
+
+                overlay.addEventListener('touchend', function (e) {
+                    if (!document.documentElement.classList.contains('is-ankimobile') || !amActive) return;
+                    if (e.cancelable !== false) e.preventDefault();
+                    amActive = false;
+                    if (amMoved) {
+                        if (amModal && Math.abs(amVelY) > 0.15) {
+                            var v = Math.max(-2.8, Math.min(2.8, amVelY)) * 16;
+                            var mTarget = amModal;
+                            var stepMomentum = function () {
+                                if (!mTarget || Math.abs(v) < 0.5) { amMomentumRaf = null; return; }
+                                var prev = mTarget.scrollTop;
+                                mTarget.scrollTop = prev + v;
+                                if (mTarget.scrollTop === prev) { amMomentumRaf = null; return; }
+                                v *= 0.92;
+                                amMomentumRaf = requestAnimationFrame(stepMomentum);
+                            };
+                            amMomentumRaf = requestAnimationFrame(stepMomentum);
+                        }
+                        return;
+                    }
+                    if (Date.now() - (window._kanjiLastModalPenTap || 0) < 350) return;
+                    var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+                    if (e.target === overlay && overlay._bgPointerDown) {
+                        if (overlay.id === 'info-overlay' && typeof closeInfoModal === 'function') closeInfoModal(e);
+                        else if (typeof closeSettings === 'function') closeSettings(e);
+                        return;
+                    }
+                    var ctrl = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .segment-btn, .category-card, .close-settings, .back-btn, .info-tool-btn, .order-ctrl, .pitfall-filter-btn, .pitfall-card, .word-example-item') : null;
+                    if (!ctrl || ctrl === overlay || ctrl === amModal) return;
+                    var inp = ctrl.tagName === 'LABEL' ? ctrl.querySelector('input[type="radio"], input[type="checkbox"]') : null;
+                    if (inp && typeof inp.click === 'function') {
+                        inp.click();
+                    } else if (typeof ctrl.click === 'function') {
+                        ctrl.click();
+                    } else {
+                        ctrl.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                    }
+                }, { passive: false });
+
+                overlay.addEventListener('touchcancel', function () {
+                    amActive = false;
+                    amMoved = false;
+                }, { passive: true });
+            }
+        });
+    };
+    window._kanjiSetupModalTouchGuards();
 
     // --- Apple Pencil: pen-to-click for modal controls [SHARED with c2-front] ---
     // The addPenHandler() above only covers top-level buttons (gear, reveal, etc.).
     // Inside modals, radio buttons / links / close buttons need pen support too.
     if (typeof PointerEvent !== 'undefined') {
-        // Shared eatClick: using a named reference so the next pen tap can
-        // remove the previous one before calling target.click().  Without
-        // this, the stale eatClick (still active because preventDefault on
-        // pointerup suppresses the browser's delayed click) would eat the
-        // synthetic click from the next pen tap.
         window._kanjiModalEatClick = null;
         window._kanjiModalEatTimer = null;
         document.querySelectorAll('.settings-modal, .info-modal').forEach(function (modal) {
@@ -4822,16 +4947,21 @@
                 if (e.pointerType !== 'pen') return;
                 if (modal._penDownX !== undefined && Math.hypot(e.clientX - modal._penDownX, e.clientY - modal._penDownY) > 14) return;
                 var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
-                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .tree-node, .pt-node, .word-example-item, .tappable') : null;
-                if (!target) return;
+                if (el && el.closest && el.closest('.tree-touch-shield, .tree-zoom-btn')) return;
+                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .segment-btn, .category-card, .close-settings, .back-btn, .info-tool-btn, .order-ctrl, .pitfall-filter-btn, .pitfall-card, .tree-node, .pt-node, .word-example-item') : null;
+                if (!target || target === modal) return;
                 e.preventDefault();
                 e.stopPropagation();
+                window._kanjiLastModalPenTap = Date.now();
                 // Remove stale eatClick from previous pen tap first
                 if (window._kanjiModalEatClick) {
                     document.removeEventListener('click', window._kanjiModalEatClick, true);
                     clearTimeout(window._kanjiModalEatTimer);
                 }
-                if (typeof target.click === 'function') {
+                var inp = target.tagName === 'LABEL' ? target.querySelector('input[type="radio"], input[type="checkbox"]') : null;
+                if (inp && typeof inp.click === 'function') {
+                    inp.click();
+                } else if (typeof target.click === 'function') {
                     target.click();
                 } else {
                     target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));

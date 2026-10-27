@@ -2121,6 +2121,7 @@ html.is-ankidesktop .info-overlay {
 .is-ankimobile .info-modal {
     max-height: calc(100dvh - 48px - 80px);
     max-height: calc(var(--am-vh, 100dvh) - 48px - 80px);
+    touch-action: none !important;
 }
 
 .order-overlay {
@@ -2136,12 +2137,14 @@ html.is-ankidesktop .info-overlay {
     border-radius: var(--border-rad-main);
     border: 2px solid var(--border-color);
     width: 90%;
-    max-height: 100%;
+    max-height: calc(100vh - 96px);
+    max-height: calc(100dvh - 48px - 48px);
     overflow-y: auto;
     overflow-x: hidden;
     overflow-x: clip;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
     box-shadow: 0 22px 48px rgba(0, 0, 0, 0.34), 0 6px 16px rgba(0, 0, 0, 0.18);
@@ -2866,6 +2869,21 @@ html.is-ankidesktop .info-overlay {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
+}
+
+/* Ensure hit-testing (AnkiMobile elementFromPoint / tappable check) always lands on the control itself */
+.back-btn *,
+.close-settings *,
+.segment-btn *,
+.category-card *,
+.info-tool-btn *,
+.visual-option *,
+.accent-option *,
+.order-ctrl *,
+.pitfall-filter-btn *,
+.pitfall-card *,
+.word-example-item * {
+    pointer-events: none;
 }
 
 .back-btn:active {
@@ -3818,7 +3836,7 @@ ruby rt {
     width: 100%;
     min-height: 200px;
     overflow: hidden;
-    touch-action: pan-y;
+    touch-action: none !important;
     user-select: none;
     -webkit-user-select: none;
 }
@@ -3833,7 +3851,7 @@ ruby rt {
     width: 100%;
     height: 100%;
     z-index: 6;
-    touch-action: pan-y;
+    touch-action: none !important;
     pointer-events: auto;
     background: transparent;
     cursor: default;
@@ -3843,6 +3861,7 @@ ruby rt {
 }
 
 .tree-container.tree-graph-mode {
+    touch-action: none !important;
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -3854,7 +3873,7 @@ ruby rt {
 .tree-container.tree-focused .tree-viewport,
 .tree-container.tree-focused .primitive-tree,
 .tree-container.tree-focused .tree-touch-shield {
-    touch-action: none;
+    touch-action: none !important;
 }
 
 .tree-container.tree-focused .tree-touch-shield {
@@ -3879,7 +3898,7 @@ ruby rt {
     border: none;
     box-shadow: none;
     box-sizing: border-box;
-    touch-action: manipulation;
+    touch-action: none !important;
 }
 
 .tree-zoom-btn {
@@ -3900,7 +3919,7 @@ ruby rt {
     font-weight: 800;
     line-height: 1;
     cursor: pointer;
-    touch-action: manipulation;
+    touch-action: none !important;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -3932,11 +3951,18 @@ ruby rt {
 .info-modal.tree-fs-active {
     width: 100% !important;
     max-width: min(94vw, 960px) !important;
-    height: 100% !important;
-    max-height: 100% !important;
+    height: calc(100vh - 40px) !important;
+    height: calc(100dvh - 40px) !important;
+    max-height: calc(100vh - 40px) !important;
+    max-height: calc(100dvh - 40px) !important;
     margin: auto !important;
     padding: 0 !important;
     overflow: hidden !important;
+}
+
+.is-ankimobile .info-modal.tree-fs-active {
+    height: calc(var(--am-vh, 100dvh) - 94px) !important;
+    max-height: calc(var(--am-vh, 100dvh) - 94px) !important;
 }
 
 .info-modal.tree-fs-active .custom-scroll-rail,
@@ -4040,7 +4066,7 @@ ruby rt {
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: pan-y;
+    touch-action: none !important;
     pointer-events: none;
 }
 

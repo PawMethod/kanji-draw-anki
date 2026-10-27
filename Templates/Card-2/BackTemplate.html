@@ -82,8 +82,8 @@
     </button>
 </div>
 
-<div class="info-overlay" id="info-overlay" onclick="closeInfoModal(event)">
-    <div class="info-modal" onclick="event.stopPropagation()">
+<div class="info-overlay tappable" id="info-overlay" onclick="closeInfoModal(event)">
+    <div class="info-modal tappable" onclick="event.stopPropagation()">
 
         <div class="settings-page active" id="info-page-main">
             <div class="info-modal-header">
@@ -464,6 +464,8 @@
         var pPit = document.getElementById('info-page-pitfalls');
         if (!pMain || !pOrder) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
         var im = pMain.closest('.info-modal');
         var doNav = function () {
             pMain.classList.remove('active');
@@ -494,6 +496,8 @@
         var pPit = document.getElementById('info-page-pitfalls');
         if (!pMain || !pPit) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
         var im = pMain.closest('.info-modal');
         var doNav = function () {
             if (window._kanjiOrder) window._kanjiOrder.close();
@@ -524,6 +528,8 @@
         var pPit = document.getElementById('info-page-pitfalls');
         if (!pMain) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
         if (window._kanjiOrder) window._kanjiOrder.close();
         var im = pMain.closest('.info-modal');
         if (pOrder) { pOrder.classList.remove('active', 'slide-in-right', 'slide-in-left'); pOrder.style.display = 'none'; }
@@ -546,6 +552,7 @@
         ol._bgPointerDown = false;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
         if (window._kanjiOrder) window._kanjiOrder.close();
         ol.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
@@ -974,11 +981,11 @@
         toolbar.appendChild(btnIn);
 
         const viewport = document.createElement('div');
-        viewport.className = 'tree-viewport';
+        viewport.className = 'tree-viewport tappable';
         viewport.style.height = boxH + 'px';
         svg.style.height = boxH + 'px';
         const shield = document.createElement('div');
-        shield.className = 'tree-touch-shield';
+        shield.className = 'tree-touch-shield tappable';
         viewport.appendChild(svg);
         viewport.appendChild(shield);
         viewport.appendChild(toolbar);
@@ -987,11 +994,15 @@
         target.appendChild(viewport);
 
         const setNavActive = (active) => {
-            navActive = !!active;
-            const ta = navActive ? 'none' : 'pan-y';
-            viewport.style.touchAction = ta;
-            shield.style.touchAction = ta;
-            svg.style.touchAction = ta;
+            const nextActive = !!active;
+            viewport.style.touchAction = 'none';
+            shield.style.touchAction = 'none';
+            svg.style.touchAction = 'none';
+            if (nextActive === navActive) {
+                updateZoomBtns();
+                return;
+            }
+            navActive = nextActive;
             if (container) {
                 container.classList.toggle('tree-focused', navActive);
                 if (!navActive) container.classList.remove('tree-panning');
@@ -1128,22 +1139,25 @@
         applyViewBox();
 
         const bindTreeBtn = (btn, fn) => {
-            let tStartX = 0, tStartY = 0, lastFire = 0;
+            let tStartX = 0, tStartY = 0, lastTouchFire = 0;
             btn.addEventListener('touchstart', function (e) {
-                e.stopPropagation();
+                if (e.cancelable !== false) e.preventDefault();
                 if (e.touches && e.touches.length === 1) {
                     tStartX = e.touches[0].clientX;
                     tStartY = e.touches[0].clientY;
                 }
-            }, { passive: true });
+            }, { passive: false });
+            btn.addEventListener('touchmove', function (e) {
+                if (e.cancelable !== false) e.preventDefault();
+            }, { passive: false });
             btn.addEventListener('touchend', function (e) {
-                e.stopPropagation();
+                if (e.cancelable !== false) e.preventDefault();
                 if (e.changedTouches && e.changedTouches.length === 1) {
                     const dx = e.changedTouches[0].clientX - tStartX;
                     const dy = e.changedTouches[0].clientY - tStartY;
-                    if (Math.hypot(dx, dy) < 18) {
-                        if (e.cancelable !== false) e.preventDefault();
-                        lastFire = Date.now();
+                    if (Math.hypot(dx, dy) < 24) {
+                        if (Date.now() - lastTouchFire < 80) return;
+                        lastTouchFire = Date.now();
                         fn();
                     }
                 }
@@ -1152,15 +1166,14 @@
                 if (e.pointerType !== 'pen') return;
                 e.preventDefault();
                 e.stopPropagation();
-                if (Date.now() - lastFire < 320) return;
-                lastFire = Date.now();
+                if (Date.now() - lastTouchFire < 260) return;
+                lastTouchFire = Date.now();
                 fn();
             });
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (Date.now() - lastFire < 320) return;
-                lastFire = Date.now();
+                if (Date.now() - lastTouchFire < 400) return;
                 fn();
             });
         };
@@ -1186,6 +1199,7 @@
 
         let selectedNode = null;
         const applyNodeSelection = (selNode) => {
+            if (!selNode && !selectedNode) return;
             allNodes.forEach(item => {
                 const nd = item.node;
                 nd.el.classList.remove('pt-active', 'pt-parent-focus', 'pt-ancestor-focus', 'pt-descendant-focus', 'pt-dimmed', 'pt-dismissed');
@@ -1310,19 +1324,32 @@
         };
         window._kanjiClearTreeSelection = () => applyNodeSelection(null);
 
-        let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
-        const handleTapAt = (clientX, clientY) => {
+        let prevTapEndTime = 0, prevTapEndX = 0, prevTapEndY = 0;
+        let prevGestureStartTime = 0, prevGestureStartX = 0, prevGestureStartY = 0;
+        let curGestureStartTime = 0, curGestureStartX = 0, curGestureStartY = 0;
+        let lastNavToggleTime = 0, lastPenTime = 0;
+
+        const toggleTreeNavByDoubleTap = () => {
             const now = Date.now();
-            if (now - lastTapTime < 340 && Math.hypot(clientX - lastTapX, clientY - lastTapY) < 34) {
-                lastTapTime = 0;
-                setNavActive(!navActive);
-                if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
-                applyNodeSelection(null);
-                return;
-            }
-            lastTapTime = now;
-            lastTapX = clientX;
-            lastTapY = clientY;
+            if (now - lastNavToggleTime < 340) return;
+            lastNavToggleTime = now;
+            prevTapEndTime = 0;
+            prevGestureStartTime = 0;
+            curGestureStartTime = 0;
+            setNavActive(!navActive);
+            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+            applyNodeSelection(null);
+            if (navActive) applyViewBox();
+        };
+
+        const isSecondTap = (x, y, now) => {
+            if (now - lastNavToggleTime < 340) return false;
+            const byEnd = prevTapEndTime > 0 && (now - prevTapEndTime) < 500 && Math.hypot(x - prevTapEndX, y - prevTapEndY) < 68;
+            const byStart = prevGestureStartTime > 0 && (now - prevGestureStartTime) >= 40 && (now - prevGestureStartTime) < 550 && Math.hypot(x - prevGestureStartX, y - prevGestureStartY) < 68;
+            return byEnd || byStart;
+        };
+
+        const selectNodeAt = (clientX, clientY) => {
             const pt = clientToSvg(clientX, clientY);
             let hitItem = null, bestD = Infinity;
             allNodes.forEach(nd => {
@@ -1344,22 +1371,32 @@
             }
         };
 
-        // Block AnkiMobile native swipe gestures on the HTML shield when panning/zooming
-        const blockAppGesture = e => {
-            e.stopPropagation();
-            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        // Call preventDefault without stopPropagation so AnkiMobile's document-level
+        // .tappable check receives the bubbled touch and suppresses native OS commands
+        const preventTreeDefault = e => {
             if (e.cancelable !== false) e.preventDefault();
         };
 
-        let isDown = false, startX = 0, startY = 0, startVx = 0, startVy = 0, lastTouchEnd = 0;
+        let isDown = false, startX = 0, startY = 0, startVx = 0, startVy = 0, lastTouchEnd = 0, lastPointerUp = 0;
+        let maxTapMove = 0, doubleTapToggled = false, startModalScroll = 0;
+        let lastMoveY = 0, lastMoveT = 0, scrollVelY = 0, treeScrollRaf = null;
         let pinchDist0 = 0, pinchZoom0 = 1, pinchSvgX = root.x, pinchSvgY = root.y;
+        const treeModalEl = container ? container.closest('.info-modal') : document.querySelector('.info-modal');
+        const stopTreeScrollMomentum = () => {
+            if (treeScrollRaf) { cancelAnimationFrame(treeScrollRaf); treeScrollRaf = null; }
+        };
 
         shield.addEventListener('touchstart', function (e) {
+            preventTreeDefault(e);
+            stopTreeScrollMomentum();
             if (e.touches.length === 2) {
-                blockAppGesture(e);
                 setNavActive(true);
                 isDown = false;
                 panDragged = true;
+                doubleTapToggled = false;
+                prevTapEndTime = 0;
+                prevGestureStartTime = 0;
+                curGestureStartTime = 0;
                 pinchDist0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 pinchZoom0 = zoom;
                 const mid = clientToSvg((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2);
@@ -1368,40 +1405,67 @@
                 return;
             }
             if (e.touches.length === 1) {
+                const now = Date.now();
+                if (now - lastPenTime < 120) return;
+                const tx = e.touches[0].clientX;
+                const ty = e.touches[0].clientY;
                 isDown = true;
                 panDragged = false;
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
+                maxTapMove = 0;
+                startX = tx;
+                startY = ty;
+                lastMoveY = ty;
+                lastMoveT = performance.now();
+                scrollVelY = 0;
                 startVx = vx;
                 startVy = vy;
-                if (navActive) {
-                    blockAppGesture(e);
-                    applyViewBox();
+                startModalScroll = treeModalEl ? treeModalEl.scrollTop : 0;
+                if (isSecondTap(tx, ty, now)) {
+                    doubleTapToggled = true;
+                    toggleTreeNavByDoubleTap();
+                    startVx = vx;
+                    startVy = vy;
+                    return;
                 }
+                doubleTapToggled = false;
+                curGestureStartTime = now;
+                curGestureStartX = tx;
+                curGestureStartY = ty;
+                if (navActive) applyViewBox();
             }
         }, { passive: false });
 
         shield.addEventListener('touchmove', function (e) {
+            preventTreeDefault(e);
             if (e.touches.length === 2 && pinchDist0 > 10) {
-                blockAppGesture(e);
                 const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 panDragged = true;
+                curGestureStartTime = 0;
                 setZoomAround(pinchZoom0 * (d / pinchDist0), pinchSvgX, pinchSvgY, false);
                 return;
             }
+            if (Date.now() - lastPenTime < 120) return;
             if (!isDown || e.touches.length !== 1) return;
-            const dx = e.touches[0].clientX - startX;
-            const dy = e.touches[0].clientY - startY;
+            const cx = e.touches[0].clientX;
+            const cy = e.touches[0].clientY;
+            const dx = cx - startX;
+            const dy = cy - startY;
+            const moveDist = Math.hypot(dx, dy);
+            if (moveDist > maxTapMove) maxTapMove = moveDist;
+            if (moveDist > 22) curGestureStartTime = 0;
             if (!navActive) {
-                // Unfocused: let vertical swipes scroll the pop-up modal naturally without interference
-                if (Math.hypot(dx, dy) > 8) panDragged = true;
-                if (Math.abs(dx) > Math.abs(dy) * 1.4 && Math.abs(dx) > 10) {
-                    blockAppGesture(e);
+                if (moveDist > 12) panDragged = true;
+                if (panDragged && treeModalEl && treeModalEl.scrollHeight > treeModalEl.clientHeight) {
+                    const pNow = performance.now();
+                    const dt = pNow - lastMoveT;
+                    if (dt > 0) scrollVelY = (lastMoveY - cy) / dt;
+                    lastMoveY = cy;
+                    lastMoveT = pNow;
+                    treeModalEl.scrollTop = startModalScroll - dy;
                 }
                 return;
             }
-            blockAppGesture(e);
-            if (!panDragged && Math.hypot(dx, dy) > 6) {
+            if (!panDragged && moveDist > 6) {
                 panDragged = true;
                 hasPanned = true;
                 if (container) container.classList.add('tree-panning');
@@ -1417,12 +1481,35 @@
         }, { passive: false });
 
         shield.addEventListener('touchend', function (e) {
-            lastTouchEnd = Date.now();
-            if (isDown && !panDragged && e.changedTouches && e.changedTouches.length === 1) {
-                blockAppGesture(e);
-                handleTapAt(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-            } else if (navActive) {
-                blockAppGesture(e);
+            preventTreeDefault(e);
+            const now = Date.now();
+            if (now - lastPenTime < 120) return;
+            lastTouchEnd = now;
+            if (doubleTapToggled) {
+                doubleTapToggled = false;
+            } else if (isDown && !panDragged && e.changedTouches && e.changedTouches.length === 1) {
+                const ex = e.changedTouches[0].clientX;
+                const ey = e.changedTouches[0].clientY;
+                if (curGestureStartTime > 0) {
+                    prevGestureStartTime = curGestureStartTime;
+                    prevGestureStartX = curGestureStartX;
+                    prevGestureStartY = curGestureStartY;
+                }
+                prevTapEndTime = now;
+                prevTapEndX = ex;
+                prevTapEndY = ey;
+                selectNodeAt(ex, ey);
+            } else if (panDragged && !navActive && treeModalEl && Math.abs(scrollVelY) > 0.15) {
+                let v = Math.max(-2.8, Math.min(2.8, scrollVelY)) * 16;
+                const step = () => {
+                    if (!treeModalEl || Math.abs(v) < 0.5) { treeScrollRaf = null; return; }
+                    const prev = treeModalEl.scrollTop;
+                    treeModalEl.scrollTop = prev + v;
+                    if (treeModalEl.scrollTop === prev) { treeScrollRaf = null; return; }
+                    v *= 0.92;
+                    treeScrollRaf = requestAnimationFrame(step);
+                };
+                treeScrollRaf = requestAnimationFrame(step);
             }
             isDown = false;
             pinchDist0 = 0;
@@ -1430,7 +1517,13 @@
             setTimeout(() => { panDragged = false; }, 40);
         }, { passive: false });
 
-        shield.addEventListener('touchcancel', function (e) {
+        shield.addEventListener('touchcancel', function () {
+            if (isDown && !panDragged && maxTapMove < 22 && curGestureStartTime > 0) {
+                prevGestureStartTime = curGestureStartTime;
+                prevGestureStartX = curGestureStartX;
+                prevGestureStartY = curGestureStartY;
+            }
+            doubleTapToggled = false;
             isDown = false;
             pinchDist0 = 0;
             if (container) container.classList.remove('tree-panning');
@@ -1440,31 +1533,61 @@
         shield.addEventListener('pointerdown', function (e) {
             if (e.pointerType === 'touch') return;
             if (e.button !== undefined && e.button !== 0) return;
+            stopTreeScrollMomentum();
+            const now = Date.now();
+            if (e.pointerType === 'pen') lastPenTime = now;
+            const px = e.clientX;
+            const py = e.clientY;
+            isDown = true;
+            panDragged = false;
+            maxTapMove = 0;
+            startX = px;
+            startY = py;
+            startVx = vx;
+            startVy = vy;
+            startModalScroll = treeModalEl ? treeModalEl.scrollTop : 0;
+            if (isSecondTap(px, py, now)) {
+                doubleTapToggled = true;
+                e.preventDefault();
+                toggleTreeNavByDoubleTap();
+                startVx = vx;
+                startVy = vy;
+                if (navActive && e.pointerId !== undefined && shield.setPointerCapture) {
+                    try { shield.setPointerCapture(e.pointerId); } catch (err) { }
+                }
+                return;
+            }
+            doubleTapToggled = false;
+            curGestureStartTime = now;
+            curGestureStartX = px;
+            curGestureStartY = py;
             if (navActive) {
                 e.preventDefault();
-                e.stopPropagation();
                 if (e.pointerId !== undefined && shield.setPointerCapture) {
                     try { shield.setPointerCapture(e.pointerId); } catch (err) { }
                 }
                 applyViewBox();
+            } else if (e.pointerType === 'pen') {
+                e.preventDefault();
             }
-            isDown = true;
-            panDragged = false;
-            startX = e.clientX;
-            startY = e.clientY;
-            startVx = vx;
-            startVy = vy;
         });
 
         shield.addEventListener('pointermove', function (e) {
             if (e.pointerType === 'touch' || !isDown) return;
+            if (e.pointerType === 'pen') lastPenTime = Date.now();
             const dx = e.clientX - startX;
             const dy = e.clientY - startY;
+            const moveDist = Math.hypot(dx, dy);
+            if (moveDist > maxTapMove) maxTapMove = moveDist;
+            if (moveDist > 22) curGestureStartTime = 0;
             if (!navActive) {
-                if (Math.hypot(dx, dy) > 6) panDragged = true;
+                if (moveDist > 14) panDragged = true;
+                if (panDragged && e.pointerType === 'pen' && treeModalEl && treeModalEl.scrollHeight > treeModalEl.clientHeight) {
+                    treeModalEl.scrollTop = startModalScroll - dy;
+                }
                 return;
             }
-            if (!panDragged && Math.hypot(dx, dy) > 5) {
+            if (!panDragged && moveDist > 6) {
                 panDragged = true;
                 hasPanned = true;
                 if (container) container.classList.add('tree-panning');
@@ -1479,20 +1602,56 @@
             }
         });
 
-        const endPointer = function (e) {
+        shield.addEventListener('pointerup', function (e) {
             if (e.pointerType === 'touch' || !isDown) return;
+            const now = Date.now();
+            lastPointerUp = now;
+            if (e.pointerType === 'pen') {
+                lastPenTime = now;
+                e.preventDefault();
+                window._kanjiLastModalPenTap = now;
+            }
             if (navActive && e.pointerId !== undefined && shield.releasePointerCapture) {
                 try { shield.releasePointerCapture(e.pointerId); } catch (err) { }
             }
-            if (!panDragged && Date.now() - lastTouchEnd > 350) {
-                handleTapAt(e.clientX, e.clientY);
+            if (doubleTapToggled) {
+                doubleTapToggled = false;
+            } else if (!panDragged && (e.pointerType === 'pen' || now - lastTouchEnd > 350)) {
+                if (curGestureStartTime > 0) {
+                    prevGestureStartTime = curGestureStartTime;
+                    prevGestureStartX = curGestureStartX;
+                    prevGestureStartY = curGestureStartY;
+                }
+                prevTapEndTime = now;
+                prevTapEndX = e.clientX;
+                prevTapEndY = e.clientY;
+                selectNodeAt(e.clientX, e.clientY);
             }
             isDown = false;
             if (container) container.classList.remove('tree-panning');
             setTimeout(() => { panDragged = false; }, 40);
-        };
-        shield.addEventListener('pointerup', endPointer);
-        shield.addEventListener('pointercancel', endPointer);
+        });
+
+        shield.addEventListener('pointercancel', function (e) {
+            if (e.pointerType === 'touch') return;
+            if (isDown && !panDragged && maxTapMove < 22 && curGestureStartTime > 0) {
+                prevGestureStartTime = curGestureStartTime;
+                prevGestureStartX = curGestureStartX;
+                prevGestureStartY = curGestureStartY;
+            }
+            doubleTapToggled = false;
+            isDown = false;
+            if (container) container.classList.remove('tree-panning');
+            panDragged = false;
+        });
+
+        shield.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const now = Date.now();
+            if (now - lastTouchEnd < 450 || now - lastPointerUp < 450 || now - lastNavToggleTime < 450) return;
+            if (!panDragged) selectNodeAt(e.clientX, e.clientY);
+        });
+        if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
     };
 
     // --- Radical Tree Renderer [SHARED with c1-back] ---
@@ -1777,6 +1936,7 @@
             });
 
             renderPreview(items[activeIdx] || items[0]);
+            if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
         };
 
         // Category pills (without "Alle" button; hidden if only 1 category exists)
@@ -2169,13 +2329,6 @@
             if (st.idx >= st.n) { st.idx = 0; st.prog = 0; }
             st.playing = true; st.last = 0; st.waitUntil = 0;
             if (!st.raf) st.raf = requestAnimationFrame(tick);
-        if (modal._kanjiScrollGuardFn) modal.removeEventListener('touchmove', modal._kanjiScrollGuardFn);
-        modal._kanjiScrollGuardFn = function (e) {
-            if (e.target && e.target.closest && e.target.closest('.tree-focused .tree-viewport')) return;
-            if (this.scrollHeight <= this.clientHeight) e.preventDefault();
-        };
-        modal.addEventListener('touchmove', modal._kanjiScrollGuardFn, { passive: false });
-   
             render();
         };
         var open = function () {
@@ -2223,9 +2376,8 @@
     // checkScrollability + resize already managed by FrontSide script
     checkScrollability();
 
-    // Scroll guards for info modal (settings modal already guarded by FrontSide)
-    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (e.target && e.target.closest && e.target.closest('.tree-zoomed .primitive-tree')) return; if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
-    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+    // Scroll guards & AnkiMobile tappable isolation for info modal
+    if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
 
     // Apple Pencil: pen-to-click for modal controls
     if (typeof PointerEvent !== 'undefined') {
@@ -2243,8 +2395,9 @@
                 if (e.pointerType !== 'pen') return;
                 if (modal._penDownX !== undefined && Math.hypot(e.clientX - modal._penDownX, e.clientY - modal._penDownY) > 14) return;
                 var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
-                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .tree-node, .pt-node, .word-example-item, .tappable') : null;
-                if (!target) {
+                if (el && el.closest && el.closest('.tree-touch-shield, .tree-zoom-btn')) return;
+                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .segment-btn, .category-card, .close-settings, .back-btn, .info-tool-btn, .order-ctrl, .pitfall-filter-btn, .pitfall-card, .tree-node, .pt-node, .word-example-item') : null;
+                if (!target || target === modal) {
                     if (!el || !el.closest || !el.closest('.tree-children')) {
                         modal.querySelectorAll('.pt-node.pt-active').forEach(function (n) { n.classList.remove('pt-active'); });
                         modal.querySelectorAll('.pt-node.pt-dismissed').forEach(function (n) { n.classList.remove('pt-dismissed'); });
@@ -2253,11 +2406,15 @@
                 }
                 e.preventDefault();
                 e.stopPropagation();
+                window._kanjiLastModalPenTap = Date.now();
                 if (window._kanjiModalEatClick) {
                     document.removeEventListener('click', window._kanjiModalEatClick, true);
                     clearTimeout(window._kanjiModalEatTimer);
                 }
-                if (typeof target.click === 'function') {
+                var inp = target.tagName === 'LABEL' ? target.querySelector('input[type="radio"], input[type="checkbox"]') : null;
+                if (inp && typeof inp.click === 'function') {
+                    inp.click();
+                } else if (typeof target.click === 'function') {
                     target.click();
                 } else {
                     target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
@@ -2308,9 +2465,9 @@
     document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
         if (ol._kanjiPointerDown) return;
         ol._kanjiPointerDown = true;
-        ol.addEventListener('pointerdown', function (e) {
-            this._bgPointerDown = (e.target === this);
-        });
+        var _trackBg = function (e) { ol._bgPointerDown = (e.target === ol); };
+        ol.addEventListener('pointerdown', _trackBg);
+        ol.addEventListener('touchstart', _trackBg, { passive: true });
     });
 
     // --- Global S-Pen defense ---
