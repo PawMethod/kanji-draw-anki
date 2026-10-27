@@ -195,18 +195,20 @@
             <script id="raw-pitfalls-data" type="text/plain">{{Stolperfallen}}</script>
             {{/Stolperfallen}}
             <div class="info-tools-grid">
-                <div role="button" tabindex="0" class="info-tool-btn tappable" onclick="navigateInfoToOrder(this, event)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                        stroke-linecap="round" stroke-linejoin="round">
+                <div role="button" tabindex="0" class="info-tool-btn tappable"
+                    onclick="navigateInfoToOrder(this, event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <circle cx="12" cy="12" r="9.5" class="fi-cream"></circle>
                         <polygon points="9.8,7.4 17.4,12 9.8,16.6" class="fi-coral"></polygon>
                     </svg>
                     <span>Strichfolge</span>
                 </div>
                 {{#Stolperfallen}}
-                <div role="button" tabindex="0" class="info-tool-btn tappable" onclick="navigateInfoToPitfalls(this, event)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                        stroke-linecap="round" stroke-linejoin="round">
+                <div role="button" tabindex="0" class="info-tool-btn tappable"
+                    onclick="navigateInfoToPitfalls(this, event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                        stroke-linejoin="round">
                         <circle cx="12" cy="12" r="9.5" class="fi-cream" />
                         <circle cx="12" cy="12" r="5.6" class="fi-coral" />
                         <circle cx="12" cy="12" r="2.2" class="fi-gold" />
@@ -301,29 +303,34 @@
                 Externe Links
             </div>
             <div class="link-grid" data-kanji="{{Kanji}}">
-                <a class="link-btn tappable" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank" rel="noopener">
-                    Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                <a class="link-btn tappable" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank"
+                    rel="noopener">
+                    Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                         <line x1="7" y1="17" x2="17" y2="7" />
                         <polyline points="7 7 17 7 17 17" />
                     </svg>
                 </a>
-                <a class="link-btn tappable" href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de"
-                    target="_blank" rel="noopener">
+                <a class="link-btn tappable"
+                    href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de" target="_blank"
+                    rel="noopener">
                     Tatoeba <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                         <line x1="7" y1="17" x2="17" y2="7" />
                         <polyline points="7 7 17 7 17 17" />
                     </svg>
                 </a>
-                <a class="link-btn tappable link-btn-wk" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank" rel="noopener">
-                    <span class="link-btn-label">WaniKani</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                <a class="link-btn tappable link-btn-wk" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank"
+                    rel="noopener">
+                    <span class="link-btn-label">WaniKani</span> <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="width:14px; height:14px; opacity:0.6;">
                         <line x1="7" y1="17" x2="17" y2="7" />
                         <polyline points="7 7 17 7 17 17" />
                     </svg>
                 </a>
-                <a class="link-btn tappable" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank" rel="noopener">
+                <a class="link-btn tappable" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank"
+                    rel="noopener">
                     Koohii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                         <line x1="7" y1="17" x2="17" y2="7" />
@@ -332,7 +339,8 @@
                 </a>
             </div>
 
-            <div role="button" tabindex="0" class="close-settings tappable" onclick="closeInfoModal(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="closeInfoModal(event)">Schließen
+            </div>
         </div>
 
         <div class="settings-page" id="info-page-order">
@@ -355,8 +363,9 @@
                         <polyline points="15 18 9 12 15 6"></polyline>
                     </svg>
                 </button>
-                <button class="order-ctrl order-ctrl-main tappable" id="order-toggle" onclick="strokeOrderAction('toggle', event)"
-                    title="Abspielen / Pause" aria-label="Abspielen / Pause"></button>
+                <button class="order-ctrl order-ctrl-main tappable" id="order-toggle"
+                    onclick="strokeOrderAction('toggle', event)" title="Abspielen / Pause"
+                    aria-label="Abspielen / Pause"></button>
                 <button class="order-ctrl tappable" onclick="strokeOrderAction('next', event)" title="Nächster Strich"
                     aria-label="Nächster Strich">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
@@ -367,7 +376,8 @@
                 <button class="order-ctrl tappable" id="order-speed" onclick="strokeOrderAction('speed', event)"
                     title="Geschwindigkeit" aria-label="Geschwindigkeit">1×</button>
             </div>
-            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur
+                Übersicht</div>
         </div>
 
         {{#Stolperfallen}}
@@ -390,7 +400,8 @@
 
             <div class="pitfalls-list" id="pitfalls-list-target"></div>
 
-            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur
+                Übersicht</div>
         </div>
         {{/Stolperfallen}}
     </div>
@@ -1784,9 +1795,9 @@
         const NS = 'http://www.w3.org/2000/svg';
         const CAT_META = {
             order: { label: 'Reihenfolge', color: '#e8625c' },
-            dir:   { label: 'Strichrichtung', color: '#2aa7e0' },
-            bend:  { label: 'In einem Zug', color: '#f0a030' },
-            form:  { label: 'Form & Proportion', color: '#3fbf86' }
+            dir: { label: 'Strichrichtung', color: '#2aa7e0' },
+            bend: { label: 'In einem Zug', color: '#f0a030' },
+            form: { label: 'Form & Proportion', color: '#3fbf86' }
         };
 
         const parseRange = spec => {

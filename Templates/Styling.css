@@ -61,7 +61,7 @@
     /* Akzentfarbe: 'green' (Grün), 'blue' (Blau), 'purple' (Lila), 'orange' (Orange), 'red' (Rot), 'teal' (Türkis) */
     --default-theme-accent: green;
 
-    /* Primärfarbe: 'neutral' (Neutral), 'warm' (Warm), 'cool' (Kühl), 'sepia' (Sepia), 'rose' (Rosé), 'sage' (Salbei) */
+    /* Primärfarbe: 'neutral' (Fuji), 'warm' (Kinkaku), 'cool' (Onsen), 'sepia' (Momiji), 'rose' (Sakura), 'sage' (Bambus), 'hokkaido' (Hokkaidō), 'tokyo' (Tokyo), 'okinawa' (Okinawa) */
     --default-theme-primary: sage;
 
     /* Schriftgröße: 'small' (Klein), 'normal' (Normal), 'large' (Groß) */
@@ -813,6 +813,18 @@ html[data-jp-theme="sage"] .forest-scenery .jp-scene-sage {
     display: inline;
 }
 
+html[data-jp-theme="hokkaido"] .forest-scenery .jp-scene-hokkaido {
+    display: inline;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .jp-scene-tokyo {
+    display: inline;
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .jp-scene-okinawa {
+    display: inline;
+}
+
 /* Shared multi-scene palette classes (Water, Kinkaku Gold, Zen Sand, Momiji, Ginkgo, Steam) */
 .forest-scenery .fs-water {
     fill: #78c8dc;
@@ -861,11 +873,15 @@ html[data-jp-theme="sage"] .forest-scenery .jp-scene-sage {
 }
 
 .forest-scenery .fs-ginkgo-light {
-    fill: #ffd84a;
+    fill: #ffe055;
+}
+
+.forest-scenery .fs-ginkgo-mid {
+    fill: #f0be28;
 }
 
 .forest-scenery .fs-ginkgo-dark {
-    fill: #e0ac1c;
+    fill: #d49c14;
 }
 
 .forest-scenery .fs-steam {
@@ -927,12 +943,17 @@ html[data-jp-theme="sage"] .forest-scenery .jp-scene-sage {
 
 .nightMode .forest-scenery .fs-ginkgo-light,
 .night_mode .forest-scenery .fs-ginkgo-light {
-    fill: #ccaa2c;
+    fill: #d4b030;
+}
+
+.nightMode .forest-scenery .fs-ginkgo-mid,
+.night_mode .forest-scenery .fs-ginkgo-mid {
+    fill: #b59220;
 }
 
 .nightMode .forest-scenery .fs-ginkgo-dark,
 .night_mode .forest-scenery .fs-ginkgo-dark {
-    fill: #9e7e16;
+    fill: #8f7012;
 }
 
 .nightMode .forest-scenery .fs-steam,
@@ -988,14 +1009,62 @@ html[data-jp-theme="rose"] .forest-scenery .fs-hill-near {
     fill: rgba(196, 108, 144, 0.30);
 }
 
+html[data-jp-theme="rose"] .forest-scenery .fs-grass-top {
+    fill: #e394b2;
+}
+
+html[data-jp-theme="rose"] .forest-scenery .fs-grass-overhang {
+    fill: #c47090;
+}
+
+html[data-jp-theme="rose"] .forest-scenery .fs-earth {
+    fill: #754656;
+}
+
+html[data-jp-theme="rose"] .forest-scenery .fs-pebbles {
+    fill: #57313e;
+}
+
 html[data-jp-theme="rose"].nightMode .forest-scenery .fs-hill-far,
-html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-hill-far {
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-hill-far {
     fill: rgba(96, 44, 68, 0.42);
 }
 
 html[data-jp-theme="rose"].nightMode .forest-scenery .fs-hill-near,
-html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-hill-near {
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-hill-near {
     fill: rgba(74, 32, 52, 0.54);
+}
+
+html[data-jp-theme="rose"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #824660;
+}
+
+html[data-jp-theme="rose"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #613046;
+}
+
+html[data-jp-theme="rose"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-earth {
+    fill: #3d202d;
+}
+
+html[data-jp-theme="rose"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="rose"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="rose"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #29131c;
 }
 
 /* Theme: Fuji & Wald (neutral) — Mt. Fuji & pine forest default */
@@ -1103,11 +1172,19 @@ html[data-jp-theme="sepia"] .forest-scenery .fs-petal {
 }
 
 html[data-jp-theme="sepia"] .forest-scenery .fs-grass-top {
-    fill: #c9a42e;
+    fill: #d49b2a;
 }
 
 html[data-jp-theme="sepia"] .forest-scenery .fs-grass-overhang {
-    fill: #9e7818;
+    fill: #a87216;
+}
+
+html[data-jp-theme="sepia"] .forest-scenery .fs-earth {
+    fill: #6e401c;
+}
+
+html[data-jp-theme="sepia"] .forest-scenery .fs-pebbles {
+    fill: #4f2b10;
 }
 
 html[data-jp-theme="sepia"] .forest-scenery .fs-hill-far {
@@ -1119,28 +1196,66 @@ html[data-jp-theme="sepia"] .forest-scenery .fs-hill-near {
 }
 
 html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-sakura-light,
-html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-light {
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-sakura-light,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-light,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-sakura-light {
     fill: #cc6d28;
 }
 
 html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-sakura-mid,
-html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-mid {
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-sakura-mid,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-mid,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-sakura-mid {
     fill: #a8421e;
 }
 
 html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-sakura-dark,
-html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-dark {
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-sakura-dark,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-sakura-dark,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-sakura-dark {
     fill: #7d2812;
 }
 
+html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(92, 52, 24, 0.45);
+}
+
+html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(72, 38, 16, 0.58);
+}
+
 html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-grass-top,
-html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-grass-top {
-    fill: #8c6e1e;
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #8c641c;
 }
 
 html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-grass-overhang,
-html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-grass-overhang {
-    fill: #664e12;
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #664610;
+}
+
+html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-earth {
+    fill: #3d2210;
+}
+
+html[data-jp-theme="sepia"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sepia"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sepia"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #261408;
 }
 
 /* Theme: Onsen-Nebel (cool) — Serene blue-teal misty mountain springs */
@@ -1191,6 +1306,64 @@ html[data-jp-theme="cool"] .forest-scenery .fs-hill-near {
     fill: rgba(56, 146, 168, 0.32);
 }
 
+html[data-jp-theme="cool"] .forest-scenery .fs-grass-top {
+    fill: #52ab9e;
+}
+
+html[data-jp-theme="cool"] .forest-scenery .fs-grass-overhang {
+    fill: #38897d;
+}
+
+html[data-jp-theme="cool"] .forest-scenery .fs-earth {
+    fill: #4d666e;
+}
+
+html[data-jp-theme="cool"] .forest-scenery .fs-pebbles {
+    fill: #364a50;
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(24, 72, 86, 0.46);
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(18, 54, 66, 0.58);
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #2e665e;
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #1f4a44;
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-earth {
+    fill: #26363b;
+}
+
+html[data-jp-theme="cool"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="cool"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="cool"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #182428;
+}
+
 /* Theme: Goldener Tempel (warm) — Kinkaku-ji golden sunlit glow */
 html[data-jp-theme="warm"] {
     --sky-top: #fdfce8;
@@ -1239,6 +1412,72 @@ html[data-jp-theme="warm"] .forest-scenery .fs-torii-shade {
     fill: #b07812;
 }
 
+html[data-jp-theme="warm"] .forest-scenery .fs-hill-far {
+    fill: rgba(190, 175, 82, 0.26);
+}
+
+html[data-jp-theme="warm"] .forest-scenery .fs-hill-near {
+    fill: rgba(166, 152, 58, 0.34);
+}
+
+html[data-jp-theme="warm"] .forest-scenery .fs-grass-top {
+    fill: #9ab838;
+}
+
+html[data-jp-theme="warm"] .forest-scenery .fs-grass-overhang {
+    fill: #789422;
+}
+
+html[data-jp-theme="warm"] .forest-scenery .fs-earth {
+    fill: #7d5828;
+}
+
+html[data-jp-theme="warm"] .forest-scenery .fs-pebbles {
+    fill: #5c3e18;
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(78, 74, 28, 0.45);
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(58, 56, 20, 0.58);
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #5c7022;
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #425216;
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-earth {
+    fill: #3b2a12;
+}
+
+html[data-jp-theme="warm"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="warm"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="warm"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="warm"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #261a0a;
+}
+
 /* Theme: Arashiyama (sage) — Deep Kyoto bamboo grove & Matcha */
 html[data-jp-theme="sage"] {
     --sky-top: #eff9eb;
@@ -1277,6 +1516,432 @@ html[data-jp-theme="sage"] .night_mode {
     --wood-branch: #96784e;
     --tag-on-bg: #264a30;
     --tag-on-text: #d2ebd6;
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-hill-far {
+    fill: rgba(82, 168, 104, 0.25);
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-hill-near {
+    fill: rgba(62, 146, 84, 0.32);
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-grass-top {
+    fill: #52ad56;
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-grass-overhang {
+    fill: #38873c;
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-earth {
+    fill: #5c4024;
+}
+
+html[data-jp-theme="sage"] .forest-scenery .fs-pebbles {
+    fill: #402b16;
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(22, 66, 38, 0.46);
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(16, 50, 28, 0.58);
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #326b34;
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #224d24;
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-earth {
+    fill: #332312;
+}
+
+html[data-jp-theme="sage"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sage"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sage"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #21150a;
+}
+
+/* Theme: Hokkaidō-Winter (hokkaido) — Otaru Canal, Mt. Yōtei & Snow Lanterns */
+html[data-jp-theme="hokkaido"] {
+    --sky-top: #e8f3fc;
+    --meadow-tint: #b8d8f0;
+    --text-main: #162e42;
+    --text-muted: #456885;
+    --text-faint: #7598b5;
+    --grid-color: #96bad6;
+    --title-bg: #1e4b6e;
+    --title-border: #a3c6e0;
+    --title-lip: #102e47;
+    --forest-header-bg: #1e4b6e;
+    --speech-bg: #1e4b6e;
+    --speech-border: #a3c6e0;
+    --wood-branch: #6b5344;
+    --tag-on-bg: #d9eaf7;
+    --tag-on-text: #184363;
+}
+
+html[data-jp-theme="hokkaido"].nightMode,
+html[data-jp-theme="hokkaido"].night_mode,
+html[data-jp-theme="hokkaido"] .nightMode,
+html[data-jp-theme="hokkaido"] .night_mode {
+    --sky-top: #0d1926;
+    --meadow-tint: #16283b;
+    --text-main: #eaf3fa;
+    --text-muted: #94b6d1;
+    --text-faint: #5b7e9c;
+    --grid-color: #3a5d7c;
+    --title-bg: #1c4466;
+    --title-border: #34628a;
+    --title-lip: #0c2236;
+    --forest-header-bg: #1c4466;
+    --speech-bg: #1c4466;
+    --speech-border: #34628a;
+    --wood-branch: #8c7260;
+    --tag-on-bg: #1f3d57;
+    --tag-on-text: #d0e6f8;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-fuji-light {
+    fill: #5c8ab0;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-fuji-dark {
+    fill: #457094;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-fuji-snow {
+    fill: #ffffff;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-fuji-snow-shade {
+    fill: #94bee0;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-hill-far {
+    fill: rgba(112, 162, 204, 0.32);
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-hill-near {
+    fill: rgba(88, 140, 184, 0.40);
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-grass-top {
+    fill: #ffffff;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-grass-overhang {
+    fill: #9ec6e6;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-earth {
+    fill: #6490b5;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-pebbles {
+    fill: #477094;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-fuji-snow,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-fuji-snow,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-fuji-snow,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-fuji-snow {
+    fill: #e6f4ff;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-fuji-snow-shade,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-fuji-snow-shade,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-fuji-snow-shade,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-fuji-snow-shade {
+    fill: #88b4d8;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(34, 68, 102, 0.46);
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(24, 52, 82, 0.58);
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #dceefa;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #88b2d4;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-earth {
+    fill: #385975;
+}
+
+html[data-jp-theme="hokkaido"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="hokkaido"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="hokkaido"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="hokkaido"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #243d54;
+}
+
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-firefly-glow,
+html[data-jp-theme="hokkaido"] .forest-scenery .fs-firefly-core,
+html[data-jp-theme="tokyo"] .forest-scenery .fs-firefly-glow,
+html[data-jp-theme="tokyo"] .forest-scenery .fs-firefly-core {
+    display: none;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery path.fs-grass-overhang,
+html[data-jp-theme="okinawa"] .forest-scenery path.fs-grass-overhang {
+    display: none;
+}
+
+/* Theme: Tokyo-Metropole (tokyo) — Modern Skyline, Tokyo Tower & Shinkansen */
+html[data-jp-theme="tokyo"] {
+    --sky-top: #f2f3fc;
+    --meadow-tint: #cbd0ed;
+    --text-main: #1d213b;
+    --text-muted: #50567a;
+    --text-faint: #8087ad;
+    --grid-color: #a2a8cc;
+    --title-bg: #2b325c;
+    --title-border: #bcc1e3;
+    --title-lip: #181d38;
+    --forest-header-bg: #2b325c;
+    --speech-bg: #2b325c;
+    --speech-border: #bcc1e3;
+    --wood-branch: #5c6285;
+    --tag-on-bg: #dfe2f5;
+    --tag-on-text: #252b52;
+}
+
+html[data-jp-theme="tokyo"].nightMode,
+html[data-jp-theme="tokyo"].night_mode,
+html[data-jp-theme="tokyo"] .nightMode,
+html[data-jp-theme="tokyo"] .night_mode {
+    --sky-top: #101224;
+    --meadow-tint: #1a1e38;
+    --text-main: #eceefa;
+    --text-muted: #9da4cc;
+    --text-faint: #646b94;
+    --grid-color: #464d75;
+    --title-bg: #282e54;
+    --title-border: #454d80;
+    --title-lip: #12152b;
+    --forest-header-bg: #282e54;
+    --speech-bg: #282e54;
+    --speech-border: #454d80;
+    --wood-branch: #7e85ad;
+    --tag-on-bg: #262b4d;
+    --tag-on-text: #d6dafb;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-hill-far {
+    fill: rgba(118, 128, 184, 0.24);
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-hill-near {
+    fill: rgba(94, 104, 162, 0.30);
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-grass-top {
+    fill: #8c96b8;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-grass-overhang {
+    fill: #6a7496;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-earth {
+    fill: #49506b;
+}
+
+html[data-jp-theme="tokyo"] .forest-scenery .fs-pebbles {
+    fill: #343a50;
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(42, 48, 92, 0.45);
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(30, 35, 72, 0.58);
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #444b6e;
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #313754;
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-earth {
+    fill: #20243a;
+}
+
+html[data-jp-theme="tokyo"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="tokyo"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="tokyo"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #151828;
+}
+
+/* Theme: Okinawa-Lagune (okinawa) — Subtropical Ryūkyū Island, Shisa & Coral Sea */
+html[data-jp-theme="okinawa"] {
+    --sky-top: #fff5ee;
+    --meadow-tint: #f0d0be;
+    --text-main: #3b2219;
+    --text-muted: #754c3e;
+    --text-faint: #a67b6c;
+    --grid-color: #cfa999;
+    --title-bg: #803824;
+    --title-border: #e0c2b0;
+    --title-lip: #522012;
+    --forest-header-bg: #803824;
+    --speech-bg: #803824;
+    --speech-border: #e0c2b0;
+    --wood-branch: #8c5438;
+    --tag-on-bg: #f5dfd3;
+    --tag-on-text: #662a18;
+}
+
+html[data-jp-theme="okinawa"].nightMode,
+html[data-jp-theme="okinawa"].night_mode,
+html[data-jp-theme="okinawa"] .nightMode,
+html[data-jp-theme="okinawa"] .night_mode {
+    --sky-top: #261612;
+    --meadow-tint: #36201a;
+    --text-main: #f7ebe6;
+    --text-muted: #c7a296;
+    --text-faint: #8c685c;
+    --grid-color: #6b4c42;
+    --title-bg: #6b3020;
+    --title-border: #874836;
+    --title-lip: #36150c;
+    --forest-header-bg: #6b3020;
+    --speech-bg: #5e2a1b;
+    --speech-border: #874836;
+    --wood-branch: #a8745e;
+    --tag-on-bg: #4a2c24;
+    --tag-on-text: #f0d6cc;
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-hill-far {
+    fill: rgba(224, 134, 104, 0.25);
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-hill-near {
+    fill: rgba(72, 188, 184, 0.30);
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-grass-top {
+    fill: #f5deb8;
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-grass-overhang {
+    fill: #dec092;
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-earth {
+    fill: #a68256;
+}
+
+html[data-jp-theme="okinawa"] .forest-scenery .fs-pebbles {
+    fill: #85643c;
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-hill-far,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-hill-far,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-hill-far {
+    fill: rgba(96, 48, 38, 0.44);
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-hill-near,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-hill-near,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-hill-near {
+    fill: rgba(28, 82, 86, 0.52);
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-grass-top,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-grass-top,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-grass-top {
+    fill: #8c7658;
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-grass-overhang,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-grass-overhang {
+    fill: #6e5a40;
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-earth,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-earth,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-earth {
+    fill: #4a3b28;
+}
+
+html[data-jp-theme="okinawa"].nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="okinawa"].night_mode .forest-scenery .fs-pebbles,
+html[data-jp-theme="okinawa"] .nightMode .forest-scenery .fs-pebbles,
+html[data-jp-theme="okinawa"] .night_mode .forest-scenery .fs-pebbles {
+    fill: #33271a;
 }
 
 /* Reset Anki's global button styles (webview.css sets button backgrounds
