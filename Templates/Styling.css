@@ -2932,6 +2932,17 @@ html.is-ankidesktop .info-overlay {
     font-weight: 800;
 }
 
+.setting-hint {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-muted);
+    margin: 6px 4px 0;
+}
+
+.setting-hint:empty {
+    display: none;
+}
+
 .visual-options-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
