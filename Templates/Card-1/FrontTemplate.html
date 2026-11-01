@@ -4363,7 +4363,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '1.1.0';
+        var VERSION = '1.2.0';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4397,8 +4397,8 @@
             warm: { d: { water: 0.3, wind: 0.2, ev: { chirp: 3, furin: 2, bell: 0.4, drip: 1 } }, n: { water: 0.25, ev: { frog: 5, cricket: 4, bell: 0.3 } } },
             cool: { d: { water: 0.3, ev: { drip: 6, chirp: 1.5 } }, n: { water: 0.28, ev: { drip: 5, cricket: 4 } } },
             sepia: { d: { wind: 0.68, leaves: 0.5, ev: { chirp: 1.5, bell: 0.3 } }, n: { wind: 0.5, leaves: 0.35, ev: { cricket: 14 } } },
-            rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4 } }, n: { wind: 0.42, ev: { frog: 5, cricket: 2 } } },
-            sage: { d: { wind: 0.68, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3 } } },
+            rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4 } }, n: { wind: 0.55, ev: { frog: 5, cricket: 2 } } },
+            sage: { d: { wind: 0.55, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3 } } },
             hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
             tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4 } } },
             okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8 } }, n: { waves: 0.45, ev: { cricket: 6 } } }
@@ -4446,7 +4446,7 @@
         var ctx = null, G = null, NB = null, PW = null;
         var scenes = [], timer = null, sceneT = null, idleIv = null, disposed = false;
         var OFF = false, TO = null, lastAct = 0, SV = null, sTok = 0, lastStyle = 'standard', lastX = 54.5;
-        var flow = 0, flowT = 0, lastIn = -1e9, bloomUntil = 0, flowFix = null;
+        var flow = 0, flowT = 0, lastIn = -1e9, bloomUntil = 0, flowFix = null, NOEV = false;
         var SS = 'kdAudioState';
 
         function now() { return TO !== null ? TO : (ctx ? ctx.currentTime : 0); }
@@ -4474,12 +4474,14 @@
         function setup(c) { NB = makeNoise(c); PW = makeWaves(c); G = buildGraph(c); }
 
         function makeNoise(c) {
-            var sr = c.sampleRate, n = Math.floor(sr * 3), F = Math.floor(sr * 0.05), out = {};
-            ['white', 'pink', 'brown', 'crackle'].forEach(function (k) { out[k] = c.createBuffer(1, n, sr); });
+            var sr = c.sampleRate, n = Math.floor(sr * 3), nl = Math.floor(sr * 8), F = Math.floor(sr * 0.05), out = {};
+            out.white = c.createBuffer(1, n, sr); out.crackle = c.createBuffer(1, n, sr);
+            // Beds loop pink/brown: a 3 s loop is audible as a repeating pattern
+            out.pink = c.createBuffer(1, nl, sr); out.brown = c.createBuffer(1, nl, sr);
             var w = out.white.getChannelData(0), cr = out.crackle.getChannelData(0);
-            var p = new Float32Array(n + F), b = new Float32Array(n + F);
+            var p = new Float32Array(nl + F), b = new Float32Array(nl + F);
             var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, br = 0, hs = 0;
-            for (var i = 0; i < n + F; i++) {
+            for (var i = 0; i < nl + F; i++) {
                 var x = Math.random() * 2 - 1;
                 if (i < n) { w[i] = x; hs += (x - hs) * 0.3; cr[i] = hs * 0.03; }
                 b0 = 0.99886 * b0 + x * 0.0555179; b1 = 0.99332 * b1 + x * 0.0750759; b2 = 0.969 * b2 + x * 0.153852;
@@ -4490,7 +4492,7 @@
             // Seamless loops: crossfade the overhang back into the head
             [[p, out.pink], [b, out.brown]].forEach(function (pr) {
                 var s = pr[0], d = pr[1].getChannelData(0);
-                for (var j = 0; j < n; j++) d[j] = j < F ? s[j] * (j / F) + s[n + j] * (1 - j / F) : s[j];
+                for (var j = 0; j < nl; j++) d[j] = j < F ? s[j] * (j / F) + s[nl + j] * (1 - j / F) : s[j];
             });
             // Vinyl crackle: sparse decaying clicks of random polarity
             var clicks = Math.floor(n / sr * 6);
@@ -4516,7 +4518,9 @@
         function makeWaves(c) {
             var amps = [0, 1, 0.42, 0.24, 0.14, 0.09, 0.06, 0.035, 0.02, 0.012], re = new Float32Array(amps.length), im = new Float32Array(amps.length);
             for (var i = 1; i < amps.length; i++) im[i] = amps[i];
-            return { piano: c.createPeriodicWave(re, im) };
+            var sh = [0, 1, 0.32, 0.16, 0.07, 0.05, 0.025, 0.015], sre = new Float32Array(sh.length), sim = new Float32Array(sh.length);
+            for (var j = 1; j < sh.length; j++) sim[j] = sh[j];
+            return { piano: c.createPeriodicWave(re, im), shaku: c.createPeriodicWave(sre, sim) };
         }
         function buildGraph(c) {
             var g = {};
@@ -4526,7 +4530,15 @@
             g.comp.threshold.value = -18; g.comp.knee.value = 12; g.comp.ratio.value = 4; g.comp.attack.value = 0.005; g.comp.release.value = 0.3;
             g.master.connect(g.comp); g.comp.connect(c.destination);
             g.music = gn(MLEVEL[cfg.musicLevel] || 0.7); g.duck = gn(1);
-            g.music.connect(g.duck); g.duck.connect(g.master);
+            var ls = c.createBiquadFilter(), hs = c.createBiquadFilter();
+            ls.type = 'lowshelf'; ls.frequency.value = 170; ls.gain.value = 1.5; hs.type = 'highshelf'; hs.frequency.value = 7000; hs.gain.value = -2.5;
+            g.music.connect(ls); ls.connect(hs); hs.connect(g.duck); g.duck.connect(g.master);
+            // Stereo chorus: slowly moving delay lines widen and soften the synthesized voices
+            var ci = gn(0.35), dlL = c.createDelay(0.05), dlR = c.createDelay(0.05), lL = c.createOscillator(), lR = c.createOscillator(), mL = gn(0.0022), mR = gn(0.0022), cm = c.createChannelMerger(2);
+            dlL.delayTime.value = 0.013; dlR.delayTime.value = 0.019; lL.frequency.value = 0.19; lR.frequency.value = 0.26;
+            lL.connect(mL); mL.connect(dlL.delayTime); lR.connect(mR); mR.connect(dlR.delayTime);
+            g.duck.connect(ci); ci.connect(dlL); ci.connect(dlR); dlL.connect(cm, 0, 0); dlR.connect(cm, 0, 1); cm.connect(g.master);
+            lL.start(); lR.start();
             g.stroke = gn(1); g.stroke.connect(g.master);
             g.fx = gn(1); g.fx.connect(g.master);
             g.verbIn = gn(1); g.verb = c.createConvolver(); g.verb.buffer = makeIR(c, 3.2); g.verbOut = gn(0.5);
@@ -4546,7 +4558,7 @@
         // ── Node helpers ────────────────────────────────────────────────
         function gainN(v) { var g = ctx.createGain(); g.gain.value = v; return g; }
         function filt(type, f, q) { var b = ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q != null) b.Q.value = q; return b; }
-        function oscN(type, f) { var o = ctx.createOscillator(); if (type === 'piano') o.setPeriodicWave(PW.piano); else o.type = type; o.frequency.value = f; return o; }
+        function oscN(type, f) { var o = ctx.createOscillator(); if (type === 'piano' || type === 'shaku') o.setPeriodicWave(PW[type]); else o.type = type; o.frequency.value = f; return o; }
         function noiseN(kind) { var s = ctx.createBufferSource(); s.buffer = NB[kind]; s.loop = true; return s; }
         function startNoise(s, t) { s.start(t, Math.random() * (s.buffer.duration - 0.5)); }
         function send(node, dst, wet, echo, pan) {
@@ -4565,21 +4577,95 @@
         }
 
         // ── Instruments ─────────────────────────────────────────────────
+        // Rendered instrument notes: computed once in code per 4-semitone zone, then cached
+        var SMP = {}, WQ = [], wT = null;
+        function zoneOf(m) { return 4 * Math.round(m / 4); }
+        function sampleBuf(kind, z) {
+            var k = kind + z;
+            if (!SMP[k]) {
+                var sr = 22050, d = kind === 'piano' ? renderPiano(sr, z) : renderString(sr, z, kind), b = ctx.createBuffer(1, d.length, sr);
+                b.getChannelData(0).set(d); SMP[k] = b;
+            }
+            return SMP[k];
+        }
+        // Pre-render the zones a genre needs, one per timer slice, so the UI never stalls
+        function warm(kind, lo, hi) {
+            if (OFF) return;
+            for (var m = zoneOf(lo); m <= hi; m += 4) if (!SMP[kind + m]) WQ.push([kind, m]);
+            if (!wT && WQ.length) wT = setTimeout(warmStep, 40);
+        }
+        function warmStep() {
+            wT = null; var it = WQ.shift();
+            if (it && ctx && !disposed) { try { sampleBuf(it[0], it[1]); } catch (e) { } }
+            if (WQ.length) wT = setTimeout(warmStep, 30);
+        }
+        function finish(d, sr, att, rel) {
+            var a = Math.floor(sr * att), r = Math.floor(sr * rel), n = d.length, pk = 0, i;
+            for (i = 0; i < a; i++) d[i] *= i / a;
+            for (i = 0; i < r; i++) d[n - 1 - i] *= i / r;
+            for (i = 0; i < n; i++) if (Math.abs(d[i]) > pk) pk = Math.abs(d[i]);
+            if (pk > 0) for (i = 0; i < n; i++) d[i] *= 0.9 / pk;
+            return d;
+        }
+        // Piano: stretched (inharmonic) partials, two slightly detuned strings, two-stage decay, hammer knock
+        function renderPiano(sr, m) {
+            var f = mtof(m), n = Math.floor(sr * clamp(5.5 - (m - 36) * 0.06, 1.8, 5.5)), d = new Float32Array(n);
+            var Bi = 0.00006 * Math.pow(2, (m - 48) / 15), tau = clamp(1.5 - (m - 36) * 0.02, 0.3, 1.5), np = Math.min(20, Math.floor(8000 / f));
+            for (var k = 1; k <= np; k++) {
+                var fk = f * k * Math.sqrt(1 + Bi * k * k);
+                if (fk > sr * 0.45) break;
+                var amp = Math.abs(Math.sin(Math.PI * k / 7.3)) / Math.pow(k, 0.85), t1 = tau / (1 + 0.28 * (k - 1)), d1 = Math.exp(-1 / (sr * t1)), d2 = Math.exp(-1 / (sr * t1 * 4)), ns = k <= 6 ? 2 : 1;
+                for (var s = 0; s < ns; s++) {
+                    var w = 2 * Math.PI * fk * (1 + (ns > 1 ? (s ? 1 : -1) * 0.0005 : 0)) / sr, cw = Math.cos(w), sw = Math.sin(w), ph = Math.random() * 6.283;
+                    var x = Math.cos(ph), y = Math.sin(ph), e1 = 0.72 * amp / ns, e2 = 0.28 * amp / ns;
+                    for (var i = 0; i < n; i++) {
+                        var nx = x * cw - y * sw; y = x * sw + y * cw; x = nx;
+                        d[i] += (e1 + e2) * y; e1 *= d1; e2 *= d2;
+                        if (e1 + e2 < 5e-5) break;
+                    }
+                }
+            }
+            var hn = Math.floor(sr * 0.025), lpn = 0;
+            for (var h = 0; h < hn; h++) { lpn += 0.25 * ((Math.random() * 2 - 1) - lpn); d[h] += lpn * 0.12 * (1 - h / hn); }
+            return finish(d, sr, 0.003, 0.3);
+        }
+        // Plucked strings (Karplus-Strong with fractional-delay tuning): koto, sanshin, upright bass
+        function renderString(sr, m, kind) {
+            var f = mtof(m), K2 = kind === 'sanshin' ? { dur: 1.6, t60: 1.1, S: 0.32, ex: 0.85, pk: 0.13 }
+                : kind === 'bass' ? { dur: 2.2, t60: 2.4, S: 0.5, ex: 0.22, pk: 0.25 }
+                    : { dur: 2.8, t60: clamp(3.4 - (m - 55) * 0.05, 1.2, 3.4), S: 0.45, ex: 0.6, pk: 0.18 };
+            var n = Math.floor(sr * K2.dur), d = new Float32Array(n), D = sr / f - K2.S, N = Math.max(2, Math.floor(D - 0.1)), fr = D - N, C = (1 - fr) / (1 + fr);
+            var ln = new Float32Array(N), ex = new Float32Array(N), lp = 0, i;
+            for (i = 0; i < N; i++) { lp += K2.ex * ((Math.random() * 2 - 1) - lp); ex[i] = lp; }
+            var pN = Math.max(1, Math.round(N * K2.pk));
+            for (i = 0; i < N; i++) ln[i] = ex[i] - ex[(i - pN + N) % N];
+            var rho = Math.pow(0.001, 1 / (f * K2.t60)), idx = 0, px = 0, ax = 0, ay = 0;
+            for (i = 0; i < n; i++) {
+                var x = ln[idx], l = (1 - K2.S) * x + K2.S * px; px = x;
+                var a = C * l + ax - C * ay; ax = l; ay = a;
+                ln[idx] = a * rho; d[i] = x;
+                if (++idx === N) idx = 0;
+            }
+            return finish(d, sr, 0.001, 0.15);
+        }
+        // Ensemble pad: three detuned voices per note spread in stereo, slowly breathing filter
         function pad(dst, t, notes, dur, o) {
-            var att = o.att, hold = Math.max(att, dur), end = t + hold + o.rel * 1.3 + 0.1;
-            var f = filt('lowpass', o.cut * 0.45, 0.7), a = gainN(0);
+            var att = o.att, hold = Math.max(att, dur), end = t + hold + o.rel * 1.3 + 0.1, gv = o.gain * 0.8;
+            var f = filt('lowpass', o.cut * 0.45, 0.7), a = gainN(0), lfo = oscN('sine', rnd(0.06, 0.14)), lg = gainN(o.cut * 0.12);
             f.frequency.setValueAtTime(o.cut * 0.45, t);
             f.frequency.linearRampToValueAtTime(o.cut, t + att * 1.2);
             f.frequency.setTargetAtTime(o.cut * 0.6, t + att * 1.2, Math.max(0.5, dur * 0.5));
-            a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(o.gain, t + att);
-            a.gain.setValueAtTime(o.gain, t + hold); a.gain.setTargetAtTime(0, t + hold, o.rel / 3.5);
+            lfo.connect(lg); lg.connect(f.frequency); lfo.start(t); lfo.stop(end);
+            a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(gv, t + att);
+            a.gain.setValueAtTime(gv, t + hold); a.gain.setTargetAtTime(0, t + hold, o.rel / 3.5);
             f.connect(a); send(a, dst, o.wet, o.echo || 0, 0);
+            var types = [o.type || 'sawtooth', o.type2 || 'triangle', o.type || 'sawtooth'], dets = [1, -1, 0.35];
             for (var i = 0; i < notes.length; i++) {
-                var fr = mtof(notes[i]), tgt = f;
-                if (notes.length > 1 && ctx.createStereoPanner) { tgt = ctx.createStereoPanner(); tgt.pan.value = (i / (notes.length - 1) - 0.5) * (o.spread || 0.7); tgt.connect(f); }
-                for (var k = 0; k < 2; k++) {
-                    var x = oscN(k ? (o.type2 || 'triangle') : (o.type || 'sawtooth'), fr);
-                    x.detune.value = (k ? -1 : 1) * (o.det || 6) + rnd(-2, 2);
+                var fr = mtof(notes[i]), base = notes.length > 1 ? (i / (notes.length - 1) - 0.5) * (o.spread || 0.7) : 0;
+                for (var k = 0; k < 3; k++) {
+                    var x = oscN(types[k], fr), tgt = f;
+                    x.detune.value = dets[k] * (o.det || 6) + rnd(-3, 3);
+                    if (ctx.createStereoPanner) { tgt = ctx.createStereoPanner(); tgt.pan.value = clamp(base + (k - 1) * 0.25, -0.9, 0.9); tgt.connect(f); }
                     x.connect(tgt); x.start(t); x.stop(end);
                 }
             }
@@ -4622,6 +4708,17 @@
             noiseHit(dst, t, { type: 'bandpass', f: f * 2.2, q: 3, dur: 0.012, vel: vel * 0.5, pan: o.pan || 0 });
         }
         function pluck(dst, t, m, vel, o) {
+            o = o || {};
+            if (o.synth) return synthPluck(dst, t, m, vel, o);
+            var kind = o.wave === 'square' ? 'sanshin' : 'koto', z = zoneOf(m), b = sampleBuf(kind, z), r = Math.pow(2, (m - z) / 12), f = mtof(m), dec = o.decay || 1.4;
+            var s = ctx.createBufferSource(), lp = filt('lowpass', Math.min(15000, f * (o.bright || 7) * 1.6), 0.6), g = gainN(0);
+            s.buffer = b; s.playbackRate.setValueAtTime(r, t);
+            if (o.bend) { s.playbackRate.setValueAtTime(r, t + o.bendAt); s.playbackRate.linearRampToValueAtTime(r * Math.pow(2, o.bend / 12), t + o.bendAt + 0.14); }
+            g.gain.setValueAtTime(vel * 1.3, t); g.gain.setTargetAtTime(0, t + 0.02, dec * 0.9);
+            s.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            s.start(t); s.stop(t + Math.min(b.duration / r, dec * 4 + 0.1));
+        }
+        function synthPluck(dst, t, m, vel, o) {
             o = o || {}; var f = mtof(m), dec = o.decay || 1.4, end = t + dec * 4 + 0.05, br = Math.min(16000, f * (o.bright || 7));
             var a = oscN(o.wave || 'sawtooth', f), b = oscN('triangle', f), lp = filt('lowpass', br, o.q || 1.4), g = gainN(0);
             b.detune.value = 5;
@@ -4637,30 +4734,29 @@
         // Shakuhachi: breathy attack (muraiki), slide into pitch (meri→kari), late vibrato
         function flute(dst, t, m, dur, vel, o) {
             o = o || {}; var f = mtof(m), end = t + dur + 1.2;
-            var a = oscN('sine', f), h = oscN('triangle', f * 2), hg = gainN(0.08), vib = oscN('sine', rnd(4.6, 5.4)), vg = gainN(0), g = gainN(0), lp = filt('lowpass', f * 4, 0.5);
+            var a = oscN('shaku', f), vib = oscN('sine', rnd(4.6, 5.4)), vg = gainN(0), g = gainN(0), lp = filt('lowpass', f * 5, 0.5);
             a.frequency.setValueAtTime(f * 0.955, t); a.frequency.exponentialRampToValueAtTime(f, t + 0.22);
-            h.frequency.setValueAtTime(f * 1.91, t); h.frequency.exponentialRampToValueAtTime(f * 2, t + 0.22);
             vg.gain.setValueAtTime(0, t + dur * 0.45); vg.gain.linearRampToValueAtTime(f * 0.011, t + dur);
             vib.connect(vg); vg.connect(a.frequency);
             g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.18); g.gain.linearRampToValueAtTime(vel * 0.85, t + dur * 0.6);
             g.gain.linearRampToValueAtTime(vel, t + dur); g.gain.setTargetAtTime(0, t + dur, 0.18);
-            a.connect(lp); h.connect(hg); hg.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
-            var n = noiseN('white'), bp = filt('bandpass', f * 1.5, 1.1), ng = gainN(0);
-            ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(vel * 0.5, t + 0.06); ng.gain.setTargetAtTime(vel * 0.1, t + 0.08, 0.15);
-            ng.gain.setValueAtTime(vel * 0.1, t + dur); ng.gain.setTargetAtTime(0, t + dur, 0.12);
+            a.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            // Breath: a narrow noise band on the pitch (sustained) plus a broad chiff on the attack
+            var n = noiseN('pink'), bp = filt('bandpass', f, 9), ng = gainN(0), n2 = noiseN('white'), bp2 = filt('bandpass', f * 2.5, 0.9), cg = gainN(0);
+            ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(vel * 1.6, t + 0.15); ng.gain.setValueAtTime(vel * 1.6, t + dur); ng.gain.setTargetAtTime(0, t + dur, 0.15);
+            cg.gain.setValueAtTime(0, t); cg.gain.linearRampToValueAtTime(vel * 0.45, t + 0.04); cg.gain.setTargetAtTime(0, t + 0.05, 0.07);
             n.connect(bp); bp.connect(ng); send(ng, dst, o.wet || 0, 0, o.pan || 0);
-            a.start(t); h.start(t); vib.start(t); startNoise(n, t);
-            a.stop(end); h.stop(end); vib.stop(end); n.stop(end);
+            n2.connect(bp2); bp2.connect(cg); send(cg, dst, o.wet || 0, 0, o.pan || 0);
+            a.start(t); vib.start(t); startNoise(n, t); startNoise(n2, t);
+            a.stop(end); vib.stop(end); n.stop(end); n2.stop(t + 0.6);
         }
         function piano(dst, t, m, vel, dur, o) {
-            o = o || {}; var f = mtof(m), dec = clamp(3.2 - (m - 48) * 0.05, 0.9, 3.6), rt = t + Math.max(0.15, dur), end = rt + 1;
-            var a = oscN('piano', f), b = oscN('piano', f), lp = filt('lowpass', 1000, 0.4), g = gainN(0), A = vel * 0.32;
-            b.detune.value = rnd(1.5, 3.5);
-            lp.frequency.setValueAtTime(Math.min(15000, f * (3 + 10 * vel)), t); lp.frequency.setTargetAtTime(f * 1.8, t + 0.01, dec * 0.35);
-            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(A, t + 0.004); g.gain.setTargetAtTime(A * 0.4, t + 0.004, 0.22);
-            g.gain.setTargetAtTime(0, Math.min(t + 0.35, rt - 0.001), dec); g.gain.setTargetAtTime(0, rt, 0.16);
-            a.connect(lp); b.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, 0, o.pan || 0);
-            a.start(t); b.start(t); a.stop(end); b.stop(end);
+            o = o || {}; var z = zoneOf(m), b = sampleBuf('piano', z), r = Math.pow(2, (m - z) / 12), f = mtof(m), A = vel * 0.92, rt = t + Math.max(0.15, dur), end = Math.min(t + b.duration / r, rt + 0.8);
+            var s = ctx.createBufferSource(), lp = filt('lowpass', Math.min(16000, f * (4 + 26 * vel)), 0.5), g = gainN(0);
+            s.buffer = b; s.playbackRate.value = r;
+            g.gain.setValueAtTime(A, t); g.gain.setValueAtTime(A, rt); g.gain.setTargetAtTime(0, rt, 0.16);
+            s.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, 0, o.pan || 0);
+            s.start(t); s.stop(end);
         }
         // Rhodes-style electric piano (2-op FM + tine ping)
         function ep(dst, t, m, vel, dur, o) {
@@ -4676,11 +4772,13 @@
             c.start(t); md.start(t); tn.start(t); c.stop(end); md.stop(end); tn.stop(t + 0.3);
         }
         function bass(dst, t, m, vel, dur) {
-            var f = mtof(m), rt = t + dur, end = rt + 0.4;
-            var a = oscN('sine', f), b = oscN('triangle', f), bg = gainN(0.35), lp = filt('lowpass', 520, 0.7), g = gainN(0);
-            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.012); g.gain.setTargetAtTime(vel * 0.6, t + 0.012, 0.3); g.gain.setTargetAtTime(0, rt, 0.07);
-            a.connect(g); b.connect(bg); bg.connect(lp); lp.connect(g); send(g, dst, 0.05, 0, 0);
-            a.start(t); b.start(t); a.stop(end); b.stop(end);
+            var z = zoneOf(m), b = sampleBuf('bass', z), r = Math.pow(2, (m - z) / 12), rt = t + dur, end = Math.min(t + b.duration / r, rt + 0.4);
+            var s = ctx.createBufferSource(), lp = filt('lowpass', 1000, 0.7), g = gainN(0), x = oscN('sine', mtof(m)), sg = gainN(0), sum = gainN(1);
+            s.buffer = b; s.playbackRate.value = r;
+            g.gain.setValueAtTime(vel * 0.9, t); g.gain.setValueAtTime(vel * 0.9, rt); g.gain.setTargetAtTime(0, rt, 0.07);
+            sg.gain.setValueAtTime(0, t); sg.gain.linearRampToValueAtTime(vel * 0.55, t + 0.01); sg.gain.setTargetAtTime(vel * 0.3, t + 0.01, 0.3); sg.gain.setTargetAtTime(0, rt, 0.07);
+            s.connect(lp); lp.connect(g); g.connect(sum); x.connect(sg); sg.connect(sum); send(sum, dst, 0.05, 0, 0);
+            s.start(t); x.start(t); s.stop(end); x.stop(rt + 0.4);
         }
         function kick(dst, t, vel) {
             var o = oscN('sine', 115), g = gainN(0);
@@ -4722,7 +4820,7 @@
         function chime(style, dst, t, m, vel) {
             if (style === 'ink') pluck(dst, t, m, vel * 1.3, { decay: 1.2, bright: 6, q: 1.3, wet: 0.35, pick: true });
             else if (style === 'gel') bell(dst, t, m, vel, { decay: 1, ratio: 2, index: 0.55, wet: 0.4 });
-            else if (style === 'neon') pluck(dst, t, m, vel * 0.8, { wave: 'square', decay: 0.5, bright: 12, q: 5, wet: 0.25, echo: 0.4 });
+            else if (style === 'neon') pluck(dst, t, m, vel * 0.8, { synth: true, wave: 'square', decay: 0.5, bright: 12, q: 5, wet: 0.25, echo: 0.4 });
             else marimba(dst, t, m, vel * 1.2);
         }
 
@@ -4815,6 +4913,9 @@
         Scene.prototype.start = function (t, dur) {
             this.nextT = t; this.bar = this.bar0 = 0; this.forcePad = true;
             natureStart(this, t);
+            if (this.genre === 'piano') warm('piano', 40, 96);
+            else if (this.genre === 'zen') warm(this.theme === 'okinawa' ? 'sanshin' : 'koto', 52, 92);
+            else if (this.genre === 'lofi') warm('bass', 24, 60);
             if (this.gn.start) this.gn.start(this, t);
             this.fade(1, t, dur);
         };
@@ -4856,7 +4957,7 @@
             var B = s.B;
             if (cs) {
                 var ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 52, 74); s.prevVoice = v;
-                pad(s.d, t0, v, span(s, rel), { type: 'sawtooth', type2: 'triangle', cut: 1100 * s.bright, att: 2.4, rel: 3.2, gain: 0.03, det: 7, wet: 0.55 });
+                pad(s.d, t0, v, span(s, rel), { type: 'sawtooth', type2: 'sawtooth', cut: 1100 * s.bright, att: 2.4, rel: 3.2, gain: 0.03, det: 8, wet: 0.55 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.07);
             }
             var E = s.E, bells = scaleNotes(s, 72, 91), n = s.dark ? (chance(0.55) ? 1 : 0) : (chance(0.7) ? (chance(0.35) ? 2 : 1) : 0), used = {};
@@ -4868,7 +4969,7 @@
             }
             if (E >= 1 && rel % 4 === 2 && chance(E >= 3 ? 0.8 : 0.5)) {
                 var hi = voiceChord(chordNotes(s, s.ci), null, 79, 91).slice(-2);
-                pad(s.d, t0 + B, hi, s.barDur * 1.5, { type: 'sine', type2: 'triangle', cut: 5000, att: 3, rel: 4, gain: 0.012, det: 4, wet: 0.9 });
+                pad(s.d, t0 + B, hi, s.barDur * 1.5, { type: 'sine', type2: 'sine', cut: 5000, att: 3, rel: 4, gain: 0.014, det: 6, wet: 0.9 });
             }
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
         }
@@ -4880,7 +4981,7 @@
             var B = s.B, oki = s.theme === 'okinawa';
             if (cs) {
                 var ch = chordNotes(s, s.ci), cl = voiceChord(ch.concat([s.k + s.scale[1], s.k + s.scale[3]]), s.hiVoice, 67, 86).slice(0, 5); s.hiVoice = cl;
-                pad(s.d, t0, cl, span(s, rel), { type: 'triangle', type2: 'sine', cut: 3200 * s.bright, att: 3, rel: 3.5, gain: 0.011, det: 5, wet: 0.7 });
+                pad(s.d, t0, cl, span(s, rel), { type: 'sawtooth', type2: 'sine', cut: 1700 * s.bright, att: 3, rel: 3.5, gain: 0.011, det: 5, wet: 0.7 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
             }
             // Shakuhachi phrase (not in Okinawa — sanshin carries the melody there)
@@ -4975,40 +5076,47 @@
 
         // ── Nature soundscapes ──────────────────────────────────────────
         function loopLayer(s, kind, t) { var x = noiseN(kind); startNoise(x, t); s.cont.push(x); return x; }
+        // Decorrelated stereo pair: a mono noise bed in the centre sounds like flat hiss
+        function bed(s, kind, t, width) {
+            var g = gainN(1);
+            [-width, width].forEach(function (pn) {
+                var x = loopLayer(s, kind, t), o = x;
+                if (ctx.createStereoPanner) { o = ctx.createStereoPanner(); o.pan.value = pn; x.connect(o); }
+                o.connect(g);
+            });
+            return g;
+        }
         function natureStart(s, t) {
             var p = (NAT[s.theme] || NAT.neutral)[s.dark ? 'n' : 'd'];
             s.np = p; s.L = {};
             if (p.wind) {
-                var w = loopLayer(s, 'pink', t), bp = filt('bandpass', 520, 0.6), lp = filt('lowpass', 1700, 0.5), g = gainN(0);
+                var w = bed(s, 'pink', t, 0.6), bp = filt('bandpass', 420, 0.8), lp = filt('lowpass', 1100, 0.5), g = gainN(0);
                 w.connect(bp); bp.connect(lp); lp.connect(g); g.connect(s.nat);
                 g.gain.setTargetAtTime(p.wind * K.wind * 0.6, t, 0.8);
                 s.L.wind = { g: g, bp: bp, lvl: p.wind * K.wind };
-                if (p.leaves) {
-                    var l = loopLayer(s, 'white', t), hp = filt('highpass', 2800, 0.5), lg = gainN(0), am = loopLayer(s, 'white', t), amf = filt('lowpass', 10, 0.5), amg = gainN(0);
-                    l.connect(hp); hp.connect(lg); lg.connect(s.nat); am.connect(amf); amf.connect(amg); amg.connect(lg.gain);
-                    s.L.leaves = { g: lg, am: amg, lvl: p.leaves * K.leaves };
-                }
+                if (p.leaves) s.L.leaves = { lvl: p.leaves };
             }
             if (p.water) {
-                var st = loopLayer(s, 'white', t), sbp = filt('bandpass', 2100, 0.45), slp = filt('lowpass', 5500, 0.5), sg = gainN(0), mod = loopLayer(s, 'white', t), mf = filt('lowpass', 12, 0.5), mg = gainN(p.water * K.water * 25);
-                st.connect(sbp); sbp.connect(slp); slp.connect(sg); sg.connect(s.nat); mod.connect(mf); mf.connect(mg); mg.connect(sg.gain);
-                sg.gain.setTargetAtTime(p.water * K.water * 0.6, t, 0.8);
-                var gu = loopLayer(s, 'brown', t), gbp = filt('bandpass', 380, 1.2), gg = gainN(0);
-                gu.connect(gbp); gbp.connect(gg); gg.connect(s.nat); gg.gain.setTargetAtTime(p.water * K.gurgle, t, 0.8);
+                // Brook: low bed + smooth rush; the babble comes from discrete bubbles in natureBar
+                var wb = bed(s, 'brown', t, 0.4), wlp = filt('lowpass', 600, 0.5), wg = gainN(0);
+                wb.connect(wlp); wlp.connect(wg); wg.connect(s.nat); wg.gain.setTargetAtTime(p.water * K.gurgle, t, 1);
+                var ru = bed(s, 'pink', t, 0.5), rbp = filt('bandpass', 1300, 0.7), rlp = filt('lowpass', 3500, 0.5), rg = gainN(0);
+                ru.connect(rbp); rbp.connect(rlp); rlp.connect(rg); rg.connect(s.nat); rg.gain.setTargetAtTime(p.water * K.water, t, 1);
+                s.L.water = { lvl: p.water, pan: rnd(-0.35, 0.35), rg: rg };
             }
             if (p.waves) {
-                var wv = loopLayer(s, 'pink', t), wlp = filt('lowpass', 600, 0.5), wg = gainN(0);
-                wv.connect(wlp); wlp.connect(wg); wg.connect(s.nat);
-                s.L.waves = { g: wg, lp: wlp, lvl: p.waves * K.waves, next: t + 0.3 };
+                var wv = bed(s, 'pink', t, 0.7), wlp2 = filt('lowpass', 600, 0.5), wg2 = gainN(0);
+                wv.connect(wlp2); wlp2.connect(wg2); wg2.connect(s.nat);
+                s.L.waves = { g: wg2, lp: wlp2, lvl: p.waves * K.waves, next: t + 0.3 };
             }
             if (p.rain) {
-                var r1 = loopLayer(s, 'white', t), rbp = filt('bandpass', 3000, 0.35), rg = gainN(0), r2 = loopLayer(s, 'pink', t), rlp = filt('lowpass', 900, 0.5), rg2 = gainN(0);
-                r1.connect(rbp); rbp.connect(rg); rg.connect(s.nat); r2.connect(rlp); rlp.connect(rg2); rg2.connect(s.nat);
-                rg.gain.setTargetAtTime(p.rain * K.rain, t, 1); rg2.gain.setTargetAtTime(p.rain * K.rain * 0.8, t, 1);
+                var r1 = bed(s, 'white', t, 0.8), rbp2 = filt('bandpass', 3000, 0.35), rg1 = gainN(0), r2 = bed(s, 'pink', t, 0.6), rlp2 = filt('lowpass', 900, 0.5), rg2 = gainN(0);
+                r1.connect(rbp2); rbp2.connect(rg1); rg1.connect(s.nat); r2.connect(rlp2); rlp2.connect(rg2); rg2.connect(s.nat);
+                rg1.gain.setTargetAtTime(p.rain * K.rain, t, 1); rg2.gain.setTargetAtTime(p.rain * K.rain * 0.8, t, 1);
                 s.L.rain = { lvl: p.rain };
             }
             if (p.city) {
-                var c1 = loopLayer(s, 'brown', t), clp = filt('lowpass', 200, 0.5), cg = gainN(0), c2 = loopLayer(s, 'pink', t), cbp = filt('bandpass', 650, 0.5), cg2 = gainN(0);
+                var c1 = bed(s, 'brown', t, 0.5), clp = filt('lowpass', 200, 0.5), cg = gainN(0), c2 = bed(s, 'pink', t, 0.7), cbp = filt('bandpass', 650, 0.5), cg2 = gainN(0);
                 c1.connect(clp); clp.connect(cg); cg.connect(s.nat); c2.connect(cbp); cbp.connect(cg2); cg2.connect(s.nat);
                 cg.gain.setTargetAtTime(p.city * K.city, t, 1); cg2.gain.setTargetAtTime(p.city * K.city * 0.06, t, 1);
                 s.L.city = { g: cg, lvl: p.city * K.city };
@@ -5018,8 +5126,14 @@
             var bd = s.barDur, L = s.L, p = s.np;
             if (L.wind) {
                 var gt = t0 + rnd(0, bd * 0.5), v = L.wind.lvl * rnd(0.35, 1);
-                L.wind.g.gain.setTargetAtTime(v, gt, rnd(0.8, 1.8)); L.wind.bp.frequency.setTargetAtTime(rnd(360, 900), gt, 1.5);
-                if (L.leaves) { var lv = L.leaves.lvl * (v / L.wind.lvl); L.leaves.g.gain.setTargetAtTime(lv, gt, 1); L.leaves.am.gain.setTargetAtTime(lv * 35, gt, 1); }
+                L.wind.g.gain.setTargetAtTime(v, gt, rnd(1.2, 2.4)); L.wind.bp.frequency.setTargetAtTime(rnd(300, 700), gt, 2);
+                // Foliage only stirs with a stronger gust: one soft swell instead of constant crackle
+                if (L.leaves && v > L.wind.lvl * 0.65) noiseHit(s.nd, gt + rnd(0.3, 0.9), { kind: 'pink', type: 'bandpass', f: 1700, f2: 2600, q: 0.6, dur: rnd(2, 3.2), att: rnd(0.9, 1.5), vel: L.leaves.lvl * 0.05, wet: 0.35, pan: rnd(-0.6, 0.6) });
+            }
+            if (L.water) {
+                var Wt = L.water;
+                Wt.rg.gain.setTargetAtTime(Wt.lvl * K.water * rnd(0.75, 1.1), t0 + rnd(0, bd), 2);
+                for (var bb = poisson(bd * 9 * Wt.lvl / 0.3); bb > 0; bb--) bubble(s.nd, t0 + rnd(0, bd), Wt);
             }
             if (L.waves) {
                 var w = L.waves;
@@ -5033,11 +5147,18 @@
             }
             if (L.city) L.city.g.gain.setTargetAtTime(L.city.lvl * rnd(0.7, 1), t0 + rnd(0, bd), 2);
             if (L.rain) for (var r = poisson(10 * L.rain.lvl); r > 0; r--) noiseHit(s.nd, t0 + rnd(0, bd), { f: rnd(2500, 6000), q: 3, dur: 0.015, vel: rnd(0.01, 0.03), pan: rnd(-0.8, 0.8) });
-            var ev = p.ev || {}, mul = (s.genre === 'nature' ? 1.4 : 1) * EVMUL[s.E === null ? 2 : s.E];
+            var ev = p.ev || {}, mul = (s.genre === 'nature' ? 1.4 : 1) * EVMUL[s.E === null ? 2 : s.E] * (NOEV ? 0 : 1);
             for (var k in ev) {
                 if (!EV.hasOwnProperty(k)) continue;
                 for (var n = poisson(ev[k] * mul * bd / 60); n > 0; n--) EV[k](s.nd, t0 + rnd(0, bd), s);
             }
+        }
+        // Brook bubble: tiny sine whose pitch jumps up as the air pocket collapses
+        function bubble(d, t, w) {
+            var f = rnd(450, 1300), du = rnd(0.025, 0.07), x = oscN('sine', f), g = gainN(0), v = w.lvl * rnd(0.012, 0.04);
+            x.frequency.setValueAtTime(f, t); x.frequency.exponentialRampToValueAtTime(f * rnd(1.4, 2.1), t + du);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.004); g.gain.setTargetAtTime(0, t + du * 0.4, du / 3);
+            x.connect(g); send(g, d, 0.25, 0, clamp(w.pan + rnd(-0.25, 0.25), -0.8, 0.8)); x.start(t); x.stop(t + du * 2 + 0.03);
         }
         function birdCall(d, t, lvl) {
             var x = oscN('sine', 3000), g = gainN(0), n = 2 + Math.floor(Math.random() * 5), tt = t, base = rnd(2400, 4200), type = Math.floor(Math.random() * 3);
@@ -5415,7 +5536,7 @@
                 var s = ks(), base = rootNear(s, 72), n = scaleNotes(s, base, base + 26);
                 for (var i = 0; i < 6; i++) chime(lastStyle, FXD(), t + i * 0.075, n[Math.min(n.length - 1, i)], 0.034 + i * 0.004);
                 bell(FXD(), t + 0.5, base + 24, 0.02, { decay: 2.4, ratio: 3.5, index: 0.9, wet: 0.7, echo: 0.3 });
-                pad(FXD(), t + 0.05, voiceChord(chordNotes(s, s.ci), null, 60, 79), 0.9, { type: 'triangle', type2: 'sine', cut: 3200, att: 0.3, rel: 1.6, gain: 0.012, det: 5, wet: 0.6 });
+                pad(FXD(), t + 0.05, voiceChord(chordNotes(s, s.ci), null, 60, 79), 0.9, { type: 'sawtooth', type2: 'sine', cut: 2400, att: 0.3, rel: 1.6, gain: 0.012, det: 5, wet: 0.6 });
             }, 0.12);
         }
 
@@ -5573,7 +5694,7 @@
                 OFF = true; ctx = off; scenes = []; SV = null;
                 cfg = { level: o.level || 'mid', music: o.music || 'off', musicLevel: o.musicLevel || 'mid', stroke: o.stroke || 'on', fx: o.fx || 'on', immersion: o.immersion || 'off' };
                 flow = 0; flowT = 0; lastIn = -1e9; bloomUntil = o.bloom ? 1e9 : 0; lastX = 54.5; cBase = 0;
-                flowFix = o.flow != null ? o.flow : null; eFix = o.E != null ? o.E : null;
+                flowFix = o.flow != null ? o.flow : null; eFix = o.E != null ? o.E : null; NOEV = !!o.noEvents;
                 cur = { theme: o.theme || 'neutral', dark: !!o.dark };
                 setup(off);
                 if (o.muteMusic) G.music.gain.value = 0;
@@ -5586,7 +5707,7 @@
             } finally {
                 OFF = false; TO = null;
                 ctx = sv.ctx; G = sv.G; NB = sv.NB; PW = sv.PW; scenes = sv.scenes; cfg = sv.cfg; cur = sv.cur; SV = sv.SV; sTok = sv.sTok; lastStyle = sv.lastStyle;
-                flow = sv.fl[0]; flowT = sv.fl[1]; lastIn = sv.fl[2]; bloomUntil = sv.fl[3]; flowFix = sv.fl[4]; eFix = sv.fl[5]; lastX = sv.fl[6]; cBase = sv.fl[7];
+                flow = sv.fl[0]; flowT = sv.fl[1]; lastIn = sv.fl[2]; bloomUntil = sv.fl[3]; flowFix = sv.fl[4]; eFix = sv.fl[5]; lastX = sv.fl[6]; cBase = sv.fl[7]; NOEV = false;
             }
             return off.startRendering();
         }
@@ -5613,7 +5734,7 @@
             },
             dispose: dispose,
             _offline: offline,
-            _t: { THEMES: THEMES, GENRES: GENRES, NAT: NAT, CH: CH, SK: SK, FX: FX, EV: EV, chordPcs: chordPcs, pivotIndex: pivotIndex, scaleNotes: scaleNotes, voiceChord: voiceChord, rootNear: rootNear }
+            _t: { THEMES: THEMES, GENRES: GENRES, NAT: NAT, CH: CH, SK: SK, FX: FX, EV: EV, chordPcs: chordPcs, pivotIndex: pivotIndex, scaleNotes: scaleNotes, voiceChord: voiceChord, rootNear: rootNear, renderPiano: renderPiano, renderString: renderString }
         };
         W.__kdAudio = api;
     })();
