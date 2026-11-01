@@ -4371,7 +4371,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '1.3.0';
+        var VERSION = '1.3.1';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4434,7 +4434,7 @@
         };
         // Stroke voices: base hum, speed gain, filter range, release
         var SK = {
-            standard: { base: 0, k: 0.2, f0: 2600, f1: 5600, rel: 0.025 },
+            standard: { base: 0, k: 0.5, f0: 1300, f1: 2500, rel: 0.035 },
             gel: { base: 0, k: 0.5, f0: 1300, f1: 2400, rel: 0.04 },
             ink: { base: 0, k: 0.48, f0: 650, f1: 2100, rel: 0.06 },
             neon: { base: 0.016, k: 0.05, f0: 380, f1: 2600, rel: 0.09 }
@@ -4458,7 +4458,7 @@
         // Register of the answering voice per genre
         var LEADR = { ambient: [72, 93], zen: [62, 86], piano: [67, 88], lofi: [62, 84], nature: [79, 98] };
         // Pen resonance: chord-tone register and makeup gain per stroke style
-        var RES = { standard: { lo: 86, hi: 100, k: 2.2 }, gel: { lo: 79, hi: 93, k: 1.6 }, ink: { lo: 69, hi: 84, k: 1.2 }, neon: { lo: 74, hi: 89, k: 1 } };
+        var RES = { standard: { lo: 76, hi: 91, k: 1.4 }, gel: { lo: 79, hi: 93, k: 1.6 }, ink: { lo: 69, hi: 84, k: 1.2 }, neon: { lo: 74, hi: 89, k: 1 } };
 
         // ── State ───────────────────────────────────────────────────────
         var cfg = { level: 'off', music: 'off', musicLevel: 'mid', stroke: 'on', fx: 'on', immersion: 'low' };
@@ -5717,11 +5717,13 @@
                 zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.025, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.04, 0.03);
                 z.connect(zg); zg.connect(out); z.start(t); z.stop(t + 0.3);
             } else {
-                // Pencil: grainy graphite scratch on paper
-                var ps = src('white'), php = filt('highpass', 1100, 0.7), pbp = filt('bandpass', c.f0, 0.9), gr = gainN(0.6), gm = src('white'), gmf = filt('lowpass', 70, 0.5), gmg = gainN(6);
-                ps.connect(php); php.connect(pbp); pbp.connect(gr); gr.connect(amp); gm.connect(gmf); gmf.connect(gmg); gmg.connect(gr.gain);
+                // Soft pencil on smooth paper: warm friction band, slow fine graphite grain (no hiss, no crackle)
+                var ps = src('pink'), pbp = filt('bandpass', c.f0, 0.7), plp = filt('lowpass', 4200, 0.5), gr = gainN(0.7), gm = src('pink'), gmf = filt('lowpass', 28, 0.5), gmg = gainN(1.6);
+                ps.connect(pbp); pbp.connect(plp); plp.connect(gr); gr.connect(amp); gm.connect(gmf); gmf.connect(gmg); gmg.connect(gr.gain);
+                var body = src('brown'), bbp = filt('bandpass', 480, 0.8), bg = gainN(0.5);
+                body.connect(bbp); bbp.connect(bg); bg.connect(amp);
                 v.f = pbp;
-                noiseHit(d, t, { type: 'highpass', f: 2200, dur: 0.008, vel: 0.03 });
+                noiseHit(d, t, { kind: 'pink', type: 'lowpass', f: 1600, q: 0.6, dur: 0.018, att: 0.003, vel: 0.02 });
             }
             if (ch) {
                 // Pen resonance: the stroke texture rings in the current chord tones
