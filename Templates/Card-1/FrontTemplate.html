@@ -1281,6 +1281,44 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title">Flow (Musik reagiert auf dein Zeichnen)</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <label><input type="radio" name="sound-immersion" value="off"
+                        onchange="updateSoundSetting('immersion', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="3.2" class="fi-cream" />
+                            <path d="M6.5 12h11" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-immersion" value="low"
+                        onchange="updateSoundSetting('immersion', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="3.2" class="fi-teal" />
+                            <path d="M5.5 12c2-2.6 4-2.6 6.5 0s4.5 2.6 6.5 0" />
+                        </svg>
+                        <span>Dezent</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-immersion" value="high"
+                        onchange="updateSoundSetting('immersion', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="3.2" class="fi-lavender" />
+                            <path d="M5 13.5c1.6-3.4 3.4-3.4 5 0s3.4 3.4 5 0 2.5-2.4 3.5-1.5" />
+                            <circle cx="16.5" cy="8.3" r="1.4" class="fi-gold" />
+                            <circle cx="8.5" cy="8" r="1" class="fi-gold" />
+                        </svg>
+                        <span>Voll</span>
+                    </div>
+                </label>
+            </div>
             <div class="setting-group-title">Musik-Lautstärke</div>
             <div class="visual-options-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <label><input type="radio" name="sound-music-level" value="low"
@@ -4315,6 +4353,9 @@
        · Strichgeräusche je Strichstil (Bleistift, Gelstift, Tusche, Neon),
          gesteuert von Geschwindigkeit und Stiftdruck
        · Dezente UI-Effekte (Aufdecken, Tasten, Einstellungen, Fortschritt)
+       · Flow (nach dem Vorbild von Tetris Effect): Treffer-Töne landen im Takt
+         und in der Tonart, der Stift klingt in den Akkordtönen mit, das
+         Arrangement wächst mit dem Lernfluss und wird in Denkpausen ruhig
        Singleton window.__kdAudio überlebt Kartenwechsel (Anki Desktop und
        AnkiMobile ersetzen nur #qa); bei Seiten-Reloads (AnkiDroid) setzt die
        Harmonie über sessionStorage fort.
@@ -4322,7 +4363,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '1.0.0';
+        var VERSION = '1.1.0';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4378,13 +4419,34 @@
             ink: { base: 0, k: 0.48, f0: 650, f1: 2100, rel: 0.06 },
             neon: { base: 0.016, k: 0.05, f0: 380, f1: 2600, rel: 0.09 }
         };
+        // Acoustic space per theme: reverb send, reverb damping (Hz), echo send
+        var SPACE = {
+            neutral: { verb: 1, damp: 6500, echo: 1 },
+            warm: { verb: 0.85, damp: 4800, echo: 0.8 },
+            cool: { verb: 1.25, damp: 7500, echo: 1.2 },
+            sepia: { verb: 1.35, damp: 3800, echo: 0.9 },
+            rose: { verb: 0.95, damp: 8000, echo: 1 },
+            sage: { verb: 1.15, damp: 5200, echo: 0.9 },
+            hokkaido: { verb: 0.75, damp: 3200, echo: 0.7 },
+            tokyo: { verb: 0.9, damp: 6000, echo: 1.4 },
+            okinawa: { verb: 0.65, damp: 9000, echo: 0.8 }
+        };
+        // Flow (interactive music): off = static arrangement, low = gentle, high = full range
+        var IMM = { off: 0, low: 1, high: 2 };
+        // Melodic contour over the strokes of a kanji (indices into the chord tones)
+        var CONTOUR = [0, 1, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 3, 4, 2, 3];
+        // Register of the answering voice per genre
+        var LEADR = { ambient: [72, 93], zen: [62, 86], piano: [67, 88], lofi: [62, 84], nature: [79, 98] };
+        // Pen resonance: chord-tone register and makeup gain per stroke style
+        var RES = { standard: { lo: 86, hi: 100, k: 2.2 }, gel: { lo: 79, hi: 93, k: 1.6 }, ink: { lo: 69, hi: 84, k: 1.2 }, neon: { lo: 74, hi: 89, k: 1 } };
 
         // ── State ───────────────────────────────────────────────────────
-        var cfg = { level: 'off', music: 'off', musicLevel: 'mid', stroke: 'on', fx: 'on' };
+        var cfg = { level: 'off', music: 'off', musicLevel: 'mid', stroke: 'on', fx: 'on', immersion: 'low' };
         var cur = { theme: 'neutral', dark: false };
         var ctx = null, G = null, NB = null, PW = null;
         var scenes = [], timer = null, sceneT = null, idleIv = null, disposed = false;
-        var OFF = false, TO = null, lastAct = 0, SV = null, sTok = 0, lastStyle = 'standard';
+        var OFF = false, TO = null, lastAct = 0, SV = null, sTok = 0, lastStyle = 'standard', lastX = 54.5;
+        var flow = 0, flowT = 0, lastIn = -1e9, bloomUntil = 0, flowFix = null;
         var SS = 'kdAudioState';
 
         function now() { return TO !== null ? TO : (ctx ? ctx.currentTime : 0); }
@@ -4493,6 +4555,13 @@
             o.connect(dst.dry);
             if (wet > 0 && dst.wet) { var w = gainN(wet); o.connect(w); w.connect(dst.wet); }
             if (echo > 0 && dst.echo) { var e = gainN(echo); o.connect(e); e.connect(dst.echo); }
+        }
+        // Like send(), with the source travelling across the stereo field
+        function sendMove(node, dst, wet, p0, p1, t, dur) {
+            var o = node;
+            if (ctx.createStereoPanner) { var p = ctx.createStereoPanner(); p.pan.setValueAtTime(p0, t); p.pan.linearRampToValueAtTime(p1, t + dur); node.connect(p); o = p; }
+            o.connect(dst.dry);
+            if (wet > 0 && dst.wet) { var w = gainN(wet); o.connect(w); w.connect(dst.wet); }
         }
 
         // ── Instruments ─────────────────────────────────────────────────
@@ -4713,12 +4782,14 @@
             this.B = 60 / (gn.bpm * (this.dark ? 0.94 : 1)); this.barDur = this.B * 4; this.cpb = gn.cpb;
             this.offset = 0; this.bar0 = 0; this.bar = 0; this.nextT = 0; this.endT = null; this.ending = false; this.ci = 0; this.forcePad = true;
             this.prevVoice = null; this.hiVoice = null; this.lastMel = null; this.lastFl = null; this.lastKoto = null; this.busyUntil = 0; this.motif = null; this.lhPat = null;
-            this.cont = []; this.fv = null;
-            this.dry = gainN(gn.trim); this.nat = gainN(gn.nat); this.wet = gainN(1); this.nwet = gainN(gn.nat); this.echo = gainN(1);
-            this.tone = filt('lowpass', Math.min(18000, gn.tone * this.bright), 0.5);
+            this.cont = []; this.fv = null; this.hist = []; this.E = null; this.accent = false;
+            var sp = this.sp = SPACE[theme] || SPACE.neutral;
+            this.dry = gainN(gn.trim); this.nat = gainN(gn.nat); this.wet = gainN(sp.verb); this.nwet = gainN(gn.nat); this.echo = gainN(sp.echo);
+            this.toneF = Math.min(18000, gn.tone * this.bright);
+            this.tone = filt('lowpass', this.toneF, 0.5); this.damp = filt('lowpass', sp.damp, 0.5);
             this.fd = gainN(0); this.fw = gainN(0); this.fe = gainN(0);
             this.dry.connect(this.tone); this.nat.connect(this.tone); this.tone.connect(this.fd); this.fd.connect(G.music);
-            this.nwet.connect(this.wet); this.wet.connect(this.fw); this.fw.connect(G.verbIn);
+            this.nwet.connect(this.wet); this.wet.connect(this.damp); this.damp.connect(this.fw); this.fw.connect(G.verbIn);
             this.echo.connect(this.fe); this.fe.connect(G.echoIn);
             this.d = { dry: this.dry, wet: this.wet, echo: this.echo };
             this.nd = { dry: this.nat, wet: this.nwet, echo: null };
@@ -4762,13 +4833,19 @@
         };
         Scene.prototype.save = function () {
             if (OFF) return;
-            try { sessionStorage.setItem(SS, JSON.stringify({ key: this.key, idx: this.ci, pcs: chordPcs(this), ts: Date.now() })); } catch (e) { }
+            try { sessionStorage.setItem(SS, JSON.stringify({ key: this.key, idx: this.ci, pcs: chordPcs(this), ts: Date.now(), flow: Math.round(flowNow() * 100) / 100 })); } catch (e) { }
         };
         Scene.prototype.scheduleBar = function (b, t0) {
             var rel = b - this.bar0, chordBar = rel % this.cpb === 0;
             this.ci = (this.offset + Math.floor(rel / this.cpb)) % this.prog.length;
+            this.hist.push({ t: t0, ci: this.ci }); if (this.hist.length > 4) this.hist.shift();
+            var tgt = energy(t0);
+            // ±1 step per bar keeps the build-up gradual; the bloom may jump
+            this.E = this.E === null || tgt >= 4 || this.E >= 4 ? tgt : clamp(tgt, this.E - 1, this.E + 1);
+            this.tone.frequency.setTargetAtTime(Math.min(18000, this.toneF * TONEMUL[this.E]), t0, 1.2);
             if (chordBar) this.save();
             this.gn.bar(this, rel, t0, chordBar || this.forcePad);
+            if (this.accent) { this.accent = false; accentBar(this, t0); }
             this.forcePad = false;
             natureBar(this, t0);
         };
@@ -4782,16 +4859,18 @@
                 pad(s.d, t0, v, span(s, rel), { type: 'sawtooth', type2: 'triangle', cut: 1100 * s.bright, att: 2.4, rel: 3.2, gain: 0.03, det: 7, wet: 0.55 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.07);
             }
-            var bells = scaleNotes(s, 72, 91), n = s.dark ? (chance(0.55) ? 1 : 0) : (chance(0.7) ? (chance(0.35) ? 2 : 1) : 0), used = {};
+            var E = s.E, bells = scaleNotes(s, 72, 91), n = s.dark ? (chance(0.55) ? 1 : 0) : (chance(0.7) ? (chance(0.35) ? 2 : 1) : 0), used = {};
+            n = E <= 0 ? (chance(0.3) ? 1 : 0) : E === 1 ? Math.min(n, 1) : E >= 3 ? n + 1 : n;
             for (var i = 0; i < n; i++) {
                 var pos = pick([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5]); if (used[pos]) continue; used[pos] = 1;
                 s.lastMel = walk(s, bells, s.lastMel, pos % 2 === 0);
                 bell(s.d, t0 + pos * B + rnd(0, 0.03), s.lastMel, rnd(0.022, 0.04), { decay: 2.4, ratio: 3.5, index: 0.8, wet: 0.8, echo: 0.35, pan: rnd(-0.6, 0.6) });
             }
-            if (rel % 4 === 2 && chance(0.5)) {
+            if (E >= 1 && rel % 4 === 2 && chance(E >= 3 ? 0.8 : 0.5)) {
                 var hi = voiceChord(chordNotes(s, s.ci), null, 79, 91).slice(-2);
                 pad(s.d, t0 + B, hi, s.barDur * 1.5, { type: 'sine', type2: 'triangle', cut: 5000, att: 3, rel: 4, gain: 0.012, det: 4, wet: 0.9 });
             }
+            if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
         }
         var KOTO = [[[0, 0], [1, 1], [1.5, 1], [2, -1], [3, 0]], [[0, 0], [0.5, 2], [1, -1], [2, -2]], [[0, 0], [2, 1], [2.5, 1], [3, 2]],
             [[1, 0], [1.5, -1], [2, -1], [3.5, 1]], [[0, 0], [0.75, 1], [1, 1], [3, -3]], [[0, 0], [1.5, 2], [2, -1], [2.5, -1], [3, -1]]];
@@ -4805,7 +4884,7 @@
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
             }
             // Shakuhachi phrase (not in Okinawa — sanshin carries the melody there)
-            if (!oki && t0 >= s.busyUntil && rel % 2 === 0 && chance(s.dark ? 0.35 : 0.45)) {
+            if (!oki && s.E >= 2 && t0 >= s.busyUntil && rel % 2 === 0 && chance((s.dark ? 0.35 : 0.45) + (s.E >= 3 ? 0.15 : 0))) {
                 var fl = scaleNotes(s, 62, 81), m = s.lastFl, tt = t0 + B * pick([0, 0.5, 1]), cnt = 2 + Math.floor(Math.random() * 2);
                 for (var i = 0; i < cnt; i++) {
                     m = walk(s, fl, m, i === cnt - 1);
@@ -4816,7 +4895,7 @@
                 s.lastFl = m; s.busyUntil = tt;
             }
             var notes = scaleNotes(s, oki ? 62 : 57, oki ? 84 : 79);
-            if (chance(t0 < s.busyUntil ? 0.3 : (oki ? 0.85 : 0.65))) {
+            if (s.E >= 1 && chance((t0 < s.busyUntil ? 0.3 : (oki ? 0.85 : 0.65)) * (s.E === 1 ? 0.5 : s.E >= 3 ? 1.15 : 1))) {
                 var pat = pick(oki ? SANSHIN : KOTO), cts = notes.filter(function (x) { return chordPcs(s).indexOf(pc(x)) >= 0; });
                 var mk = s.lastKoto != null && chance(0.6) ? s.lastKoto : pick(cts.length ? cts : notes), pan = rnd(-0.35, 0.35);
                 pat.forEach(function (p, j) {
@@ -4828,11 +4907,12 @@
                 });
                 s.lastKoto = mk;
             }
-            if (!oki && rel % 8 === 0 && chance(0.4)) { // sararin: quick upward sweep at phrase start
+            if (!oki && s.E >= 2 && ((rel % 8 === 0 && chance(0.4)) || (s.E >= 4 && rel % 2 === 0))) { // sararin: quick upward sweep at phrase start
                 var i0 = Math.floor(Math.random() * 3);
                 for (var g = 0; g < 6 && i0 + g < notes.length; g++) pluck(s.d, t0 + g * 0.06, notes[i0 + g], 0.045, { decay: 1.2, bright: 6, wet: 0.5, pan: -0.3 + g * 0.12 });
             }
             if (rel % 4 === 0 && chance(0.5)) rin(s.d, t0 + rnd(0, 0.1), rootNear(s, 79), 0.035, { wet: 0.8, pan: rnd(-0.4, 0.4) });
+            if (s.E >= 4 || (s.E >= 3 && rel % 2 === 1)) arpLayer(s, t0, s.E);
         }
         var LH = [[[0, 0, 0.32], [0.5, 1, 0.2], [1, 2, 0.22], [1.5, 1, 0.18], [2, 3, 0.22], [2.5, 1, 0.18], [3, 2, 0.2], [3.5, 1, 0.16]],
             [[0, 0, 0.32], [1, 1, 0.2], [1.5, 2, 0.2], [2, 3, 0.2], [3, 2, 0.18]], [[0, 0, 0.3], [0.5, 2, 0.2], [1, 3, 0.2], [2, 0, 0.24], [2.5, 2, 0.18], [3, 3, 0.18]]];
@@ -4843,13 +4923,13 @@
             var up = function (m) { return R + 12 + pc(m - R); };
             var lh = [R, R + 7, up(ch[1]), up(ch[3] != null ? ch[3] : ch[2])];
             if (rel % 8 === 0 || !s.lhPat) s.lhPat = pick(LH);
-            (s.dark ? LH_SPARSE : s.lhPat).forEach(function (p) {
-                piano(s.d, t0 + p[0] * B + rnd(0, 0.012), lh[p[1]], p[2] * rnd(0.85, 1.05) * (s.dark ? 0.85 : 1), (4 - p[0]) * B + B, { wet: 0.4 });
+            (s.E <= 1 || (s.dark && s.E < 3) ? LH_SPARSE : s.lhPat).forEach(function (p) {
+                piano(s.d, t0 + p[0] * B + rnd(0, 0.012), lh[p[1]], p[2] * rnd(0.85, 1.05) * (s.dark ? 0.85 : 1) * (s.E <= 0 ? 0.8 : 1), (4 - p[0]) * B + B, { wet: 0.4 });
             });
             if (rel % 4 === 0 || !s.motif) {
                 s.motif = pick(RHYTHMS).map(function (r) { return { beat: r[0], dur: r[1], step: pick([-2, -1, 1, 2, 1, -1, 3]), vel: rnd(0.22, 0.32) }; });
             }
-            if (chance(s.dark ? 0.55 : 0.8)) {
+            if (s.E >= 1 && chance(s.E === 1 ? 0.4 : s.E >= 3 ? 0.95 : (s.dark ? 0.55 : 0.8))) {
                 var notes = scaleNotes(s, 64, 86), m = s.lastMel;
                 s.motif.forEach(function (n, j) {
                     m = j === 0 ? walk(s, notes, m, true) : notes[clamp(nearestIdx(notes, m) + n.step, 0, notes.length - 1)];
@@ -4858,25 +4938,32 @@
                 });
                 s.lastMel = m;
             }
+            if (s.E >= 4 || (s.E >= 3 && rel % 2 === 1)) arpLayer(s, t0, s.E);
         }
         function lofiStart(s, t) {
             var c = noiseN('crackle'), g = gainN(0.9);
             c.connect(g); g.connect(s.dry); startNoise(c, t); s.cont.push(c);
         }
         function lofiBar(s, rel, t0) {
-            var B = s.B, sw = B * 0.14, ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 55, 76), R = low(ch[0], 36), dk = s.dark ? 0.75 : 1;
+            var B = s.B, sw = B * 0.14, ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 55, 76), R = low(ch[0], 36), dk = s.dark ? 0.75 : 1, E = s.E;
             s.prevVoice = v;
             v.forEach(function (m, i) { ep(s.d, t0 + 0.02 + i * 0.012, m, 0.05 * dk, B * 1.9, { wet: 0.35 }); });
             if (chance(0.5)) v.forEach(function (m, i) { ep(s.d, t0 + 2.5 * B + sw + i * 0.01, m, 0.032 * dk, B * 0.9, { wet: 0.35 }); });
-            bass(s.d, t0, R, 0.12, B * 1.6);
-            if (chance(0.6)) bass(s.d, t0 + 2.5 * B + sw, R + pick([7, 12]), 0.09, B * 0.8);
-            if (chance(0.3)) bass(s.d, t0 + 3.5 * B + sw, R + pick([-2, -1, 2]), 0.07, B * 0.45);
-            kick(s.d, t0, 0.5 * dk);
-            if (chance(0.65)) kick(s.d, t0 + 2.5 * B + sw, 0.38 * dk); else kick(s.d, t0 + 2 * B, 0.4 * dk);
-            brush(s.d, t0 + B, 0.3 * dk); brush(s.d, t0 + 3 * B, 0.32 * dk);
-            if (chance(0.25)) brush(s.d, t0 + 3.75 * B, 0.12 * dk);
-            for (var i = 0; i < 8; i++) shaker(s.d, t0 + i * B / 2 + (i % 2 ? sw : 0), (i % 2 ? 0.1 : 0.16) * dk);
-            if (chance(s.dark ? 0.25 : 0.38)) {
+            if (E >= 1) {
+                bass(s.d, t0, R, 0.12, B * 1.6);
+                if (chance(0.6)) bass(s.d, t0 + 2.5 * B + sw, R + pick([7, 12]), 0.09, B * 0.8);
+                if (chance(E >= 3 ? 0.45 : 0.3)) bass(s.d, t0 + 3.5 * B + sw, R + pick([-2, -1, 2]), 0.07, B * 0.45);
+                kick(s.d, t0, 0.5 * dk);
+                if (chance(0.65)) kick(s.d, t0 + 2.5 * B + sw, 0.38 * dk); else kick(s.d, t0 + 2 * B, 0.4 * dk);
+            }
+            if (E >= 2) {
+                brush(s.d, t0 + B, 0.3 * dk); brush(s.d, t0 + 3 * B, 0.32 * dk);
+                if (chance(0.25)) brush(s.d, t0 + 3.75 * B, 0.12 * dk);
+                for (var i = 0; i < 8; i++) shaker(s.d, t0 + i * B / 2 + (i % 2 ? sw : 0), (i % 2 ? 0.1 : 0.16) * dk);
+                if (E >= 3) for (var h = 0; h < 8; h++) if (chance(0.6)) shaker(s.d, t0 + (h * 2 + 1) * B / 4 + sw * 0.5, 0.05 * dk);
+            }
+            if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
+            if (E >= 1 && chance((s.dark ? 0.25 : 0.38) * (E >= 3 ? 1.5 : 1))) {
                 var notes = scaleNotes(s, 67, 84), m = s.lastMel, pos = [1.5, 2, 2.5, 3, 3.5].slice(Math.floor(Math.random() * 3));
                 for (var j = 0; j < 3 && j < pos.length; j++) {
                     m = walk(s, notes, m, j === 0);
@@ -4946,7 +5033,7 @@
             }
             if (L.city) L.city.g.gain.setTargetAtTime(L.city.lvl * rnd(0.7, 1), t0 + rnd(0, bd), 2);
             if (L.rain) for (var r = poisson(10 * L.rain.lvl); r > 0; r--) noiseHit(s.nd, t0 + rnd(0, bd), { f: rnd(2500, 6000), q: 3, dur: 0.015, vel: rnd(0.01, 0.03), pan: rnd(-0.8, 0.8) });
-            var ev = p.ev || {}, mul = s.genre === 'nature' ? 1.4 : 1;
+            var ev = p.ev || {}, mul = (s.genre === 'nature' ? 1.4 : 1) * EVMUL[s.E === null ? 2 : s.E];
             for (var k in ev) {
                 if (!EV.hasOwnProperty(k)) continue;
                 for (var n = poisson(ev[k] * mul * bd / 60); n > 0; n--) EV[k](s.nd, t0 + rnd(0, bd), s);
@@ -4961,7 +5048,10 @@
                 g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.008); g.gain.linearRampToValueAtTime(0, tt + du);
                 tt += du + rnd(0.03, 0.09);
             }
-            x.connect(g); send(g, d, 0.45, 0, rnd(-0.8, 0.8)); x.start(t); x.stop(tt + 0.05);
+            var p0 = rnd(-0.8, 0.8);
+            x.connect(g);
+            if (chance(0.35)) sendMove(g, d, 0.45, p0, clamp(p0 + rnd(-0.9, 0.9), -0.9, 0.9), t, tt - t); else send(g, d, 0.45, 0, p0);
+            x.start(t); x.stop(tt + 0.05);
         }
         // Japanese bush warbler (uguisu): "hōō — hokekyo"
         function uguisu(d, t, lvl) {
@@ -4984,7 +5074,8 @@
                 g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.03); g.gain.linearRampToValueAtTime(0, tt + 0.22);
                 tt += rnd(0.3, 0.45);
             }
-            x.connect(lp); lp.connect(g); send(g, d, 0.8, 0, rnd(-0.7, 0.7)); x.start(t); x.stop(tt + 0.1);
+            var p0 = rnd(-0.8, 0.8);
+            x.connect(lp); lp.connect(g); sendMove(g, d, 0.8, p0, clamp(p0 + (p0 < 0 ? 0.5 : -0.5), -0.9, 0.9), t, tt - t); x.start(t); x.stop(tt + 0.1);
         }
         // Bell cricket (suzumushi)
         function cricket(d, t, lvl) {
@@ -5065,6 +5156,88 @@
             train: function (d, t) { train(d, t, 0.07); }
         };
 
+        // ── Flow: adaptive arrangement + beat-quantized, in-key responses ───
+        var TONEMUL = [0.62, 0.8, 1, 1.12, 1.45], EVMUL = [0.55, 0.8, 1, 1.15, 1.3];
+        var eFix = null, cBase = 0;
+        function imm() { return cfg.level === 'off' ? 0 : (IMM[cfg.immersion] || 0); }
+        function flowNow() { return flowFix !== null ? flowFix : flow * Math.exp(-Math.max(0, now() - flowT) / 45); }
+        function addFlow(x) { if (!ctx) return; flow = clamp(flowNow() + x, 0, 1); flowT = lastIn = now(); }
+        // Arrangement density 0..4: calm in thinking pauses, fuller while drawing, bloom after a kanji
+        function energy(t0) {
+            var m = imm();
+            if (!m) return 2;
+            if (eFix !== null) return eFix;
+            var f = flowNow(), e = f < 0.15 ? 1 : f < 0.5 ? 2 : 3;
+            if (flowFix === null && now() - lastIn > 40) e = 0;
+            if (t0 < bloomUntil) e = 4;
+            return clamp(e, m > 1 ? 0 : 1, m > 1 ? 4 : 3);
+        }
+        function nextGrid(s, div, t) { var st = s.B / div; return s.nextT + Math.ceil((t - s.nextT) / st - 1e-6) * st; }
+        // Bars are scheduled ahead, so look up the chord that actually sounds at t
+        function chordAt(s, t) {
+            var h = s.hist, ci = h.length ? h[0].ci : s.ci;
+            for (var i = h.length - 1; i >= 0; i--) if (h[i].t <= t + 0.01) { ci = h[i].ci; break; }
+            return chordNotes(s, ci);
+        }
+        function chordTones(ch, lo, hi) {
+            var pcs = ch.map(pc), r = [];
+            for (var m = lo; m <= hi; m++) if (pcs.indexOf(pc(m)) >= 0) r.push(m);
+            return r;
+        }
+        function spot() { return clamp(panOf(lastX) * 1.6, -0.6, 0.6); }
+        // Answering voice of the active genre, routed through the scene (same room, tone and fades)
+        function answer(s, t, m, k) {
+            var d = s.d, g = s.genre, pan = spot();
+            if (g === 'piano') piano(d, t, m, 0.26 * k, 0.9, { wet: 0.5, pan: pan });
+            else if (g === 'lofi') ep(d, t, m, 0.045 * k, 0.5, { wet: 0.4, echo: 0.3, pan: pan });
+            else if (g === 'zen') pluck(d, t, m, 0.075 * k, s.theme === 'okinawa'
+                ? { wave: 'square', decay: 0.8, bright: 9, q: 2.5, wet: 0.35, pan: pan, pick: true }
+                : { decay: 1.5, bright: 7, q: 1.5, wet: 0.45, echo: 0.2, pan: pan, pick: true });
+            else bell(d, t, m, (g === 'nature' ? 0.03 : 0.035) * k, { decay: g === 'nature' ? 1.1 : 1.8, ratio: g === 'nature' ? 2.4 : 3.5, index: 0.7, wet: 0.6, echo: 0.3, pan: pan });
+        }
+        // The strokes of a kanji trace a melody over the chord tones
+        function contourNote(s, t, idx) {
+            var r = LEADR[s.genre] || LEADR.ambient, tones = chordTones(chordAt(s, t), r[0], r[1]);
+            return tones[clamp(cBase + CONTOUR[(idx || 0) % CONTOUR.length], 0, tones.length - 1)];
+        }
+        // Mistake: a muted note on the chord root — part of the groove, never a buzzer
+        function ghost(s, t) {
+            var d = s.d, g = s.genre, r = low(chordAt(s, t)[0], 43);
+            if (g === 'piano') piano(d, t, r, 0.13, 0.12, { wet: 0.25 });
+            else if (g === 'lofi') bass(d, t, low(r, 36), 0.06, 0.18);
+            else if (g === 'zen') pluck(d, t, r + 12, 0.045, { decay: 0.3, bright: 3, q: 1, wet: 0.3 });
+            else thock(d, t, r + 12, 0.04);
+        }
+        function penTick(s, t) {
+            var d = s.d, g = s.genre, pan = spot(), r = LEADR[g] || LEADR.ambient;
+            if (g === 'lofi') wood(d, t, 1700, 0.02, { dec: 0.015, pan: pan });
+            else if (g === 'zen') wood(d, t, 900, 0.025, { dec: 0.03, wet: 0.3, pan: pan });
+            else bell(d, t, pick(chordTones(chordAt(s, t), r[0] + 12, r[1] + 12)), 0.008, { decay: 0.35, ratio: 2, index: 0.3, wet: 0.4, pan: pan });
+        }
+        // Landing on the downbeat after a completed kanji or a theme change
+        function accentBar(s, t0) {
+            var ch = chordNotes(s, s.ci);
+            sub(s.d, t0, low(ch[0], 36), s.barDur * 1.5, 0.05);
+            bell(s.d, t0 + 0.01, rootNear(s, 84), 0.024, { decay: 2.6, ratio: 3.5, index: 0.9, wet: 0.8, echo: 0.3 });
+            noiseHit(s.d, t0, { type: 'highpass', f: 6500, dur: 1.4, att: 0.01, vel: 0.01, wet: 0.7 });
+            if (s.genre === 'lofi') kick(s.d, t0, 0.4);
+        }
+        // Shimmer layer at high energy: soft chord arpeggio, wide stereo
+        function arpLayer(s, t0, E) {
+            var B = s.B, g = s.genre, full = E >= 4, tones = chordTones(chordNotes(s, s.ci), g === 'zen' ? 67 : 76, g === 'zen' ? 86 : 96);
+            if (tones.length < 3) return;
+            var pat = full ? [0, 1, 2, 3, 2, 1, 2, 3] : [0, 2, 1, 3], st = full ? B / 2 : B;
+            pat.forEach(function (p, i) {
+                var t = t0 + i * st + (g === 'lofi' && i % 2 ? B * 0.07 : 0), m = tones[p % tones.length], pan = i % 2 ? 0.5 : -0.5, v = i % 2 ? 0.7 : 1;
+                if (g === 'zen') pluck(s.d, t, m, 0.028 * v, { decay: 1, bright: 6, wet: 0.5, echo: 0.2, pan: pan });
+                else if (g === 'piano') piano(s.d, t, m, 0.1 * v, st * 1.5, { wet: 0.55, pan: pan });
+                else bell(s.d, t, m, (full ? 0.013 : 0.01) * v, { decay: 0.9, ratio: 2, index: 0.4, wet: 0.6, echo: 0.35, pan: pan });
+            });
+        }
+        function riser(t, dur) {
+            noiseHit({ dry: G.music, wet: G.verbIn, echo: null }, t, { kind: 'pink', type: 'bandpass', f: 350, f2: 3200, q: 1.1, dur: dur, att: dur * 0.92, vel: 0.022, wet: 0.5 });
+        }
+
         // ── Music control ───────────────────────────────────────────────
         function musicOn() { return cfg.level !== 'off' && GENRES.hasOwnProperty(cfg.music); }
         function live() { for (var i = scenes.length - 1; i >= 0; i--) if (!scenes[i].ending) return scenes[i]; return null; }
@@ -5078,14 +5251,18 @@
             if (!OFF && ctx.state !== 'running') { if (!D.hidden) { try { ctx.resume(); } catch (e) { } } return; }
             var key = sceneKeyOf(cur.theme, cur.dark, cfg.music), top = live();
             if (top && top.key === key) return;
-            var s = new Scene(cur.theme, cur.dark, cfg.music), t = now() + 0.06, dur;
+            var s = new Scene(cur.theme, cur.dark, cfg.music), t = now() + 0.06, dur, m = imm();
             if (top) {
                 s.offset = pivotIndex(chordPcs(top), s);
+                if (m) t += 1.2;
                 if (top.genre === s.genre) { t = Math.max(t, top.nextT + Math.ceil((t - top.nextT) / top.B) * top.B); dur = 6; }
                 else dur = 3.5;
                 top.fadeOut(t, dur);
+                // Stage change: swell into the new scene's first downbeat
+                if (m) { riser(t - 1.2, 1.2); s.accent = true; }
             } else {
                 var st = OFF ? null : loadState();
+                if (st && st.recent && st.flow != null) { flow = st.flow; flowT = lastIn = now(); }
                 if (st && st.recent && st.key === key) { s.offset = (st.idx + 1) % s.prog.length; dur = 1.2; }
                 else if (st && st.recent && st.pcs) { s.offset = pivotIndex(st.pcs, s); dur = 2; }
                 else dur = 3.5;
@@ -5124,7 +5301,8 @@
                 music: (o.music === 'off' || GENRES.hasOwnProperty(o.music)) ? o.music : cfg.music,
                 musicLevel: MLEVEL.hasOwnProperty(o.musicLevel) ? o.musicLevel : cfg.musicLevel,
                 stroke: (o.stroke === 'on' || o.stroke === 'off') ? o.stroke : cfg.stroke,
-                fx: (o.fx === 'on' || o.fx === 'off') ? o.fx : cfg.fx
+                fx: (o.fx === 'on' || o.fx === 'off') ? o.fx : cfg.fx,
+                immersion: IMM.hasOwnProperty(o.immersion) ? o.immersion : cfg.immersion
             };
             if (ctx && G) { var t = now(); setParam(G.master.gain, LEVEL[cfg.level], t, 0.08); setParam(G.music.gain, MLEVEL[cfg.musicLevel], t, 0.25); }
             if (cfg.stroke === 'off' || cfg.level === 'off') strokeEnd();
@@ -5152,6 +5330,13 @@
             touch();
             if (cfg.level === 'off') return;
             if (musicOn()) syncMusic();
+            if (!isBack) cBase = Math.floor(Math.random() * 3);
+            var s = live();
+            if (s && imm()) {
+                if (isBack) addFlow(0.05);
+                if (fxOn()) play(function (tn) { FX[isBack ? 'cardBack' : 'cardFront'](isBack ? nextGrid(s, 4, tn + 0.02) : tn + 0.05); });
+                return;
+            }
             if (fxOn()) play(FX[isBack ? 'cardBack' : 'cardFront'], isBack ? 0.02 : 0.05);
         }
         function ks() {
@@ -5198,6 +5383,12 @@
         };
         function strokeResult(ok, idx) {
             if (!fxOn()) return;
+            var sc = live();
+            if (sc && imm()) {
+                addFlow(ok ? 0.08 : 0.02);
+                play(function (tn) { var t = nextGrid(sc, 8, tn); if (ok) answer(sc, t, contourNote(sc, t, idx), 1); else ghost(sc, t); });
+                return;
+            }
             play(function (t) {
                 var s = ks();
                 if (ok) { var base = rootNear(s, 72), n = scaleNotes(s, base, base + 26); chime(lastStyle, FXD(), t, n[(idx || 0) % n.length], 0.04); }
@@ -5206,6 +5397,20 @@
         }
         function complete() {
             if (!fxOn()) return;
+            var sc = live();
+            if (sc && imm()) {
+                addFlow(0.25);
+                play(function (tn) {
+                    // Run in 16ths that lands on the tonic on the next beat, then the arrangement blooms
+                    var st = sc.B / 4, land = nextGrid(sc, 1, tn + 4 * st), r = LEADR[sc.genre] || LEADR.ambient;
+                    var tonic = rootNear(sc, r[1] - 5), run = chordTones(chordAt(sc, land), tonic - 14, tonic - 1).slice(-4);
+                    run.push(tonic);
+                    run.forEach(function (m, i) { answer(sc, land - (run.length - 1 - i) * st, m, 0.8 + i * 0.08); });
+                    bell(sc.d, land, tonic + 12, 0.016, { decay: 2.4, ratio: 3.5, index: 0.9, wet: 0.8, echo: 0.35 });
+                    bloomUntil = sc.nextT + sc.barDur * 2; sc.accent = true;
+                });
+                return;
+            }
             play(function (t) {
                 var s = ks(), base = rootNear(s, 72), n = scaleNotes(s, base, base + 26);
                 for (var i = 0; i < 6; i++) chime(lastStyle, FXD(), t + i * 0.075, n[Math.min(n.length - 1, i)], 0.034 + i * 0.004);
@@ -5217,7 +5422,12 @@
         // ── Stroke sounds ───────────────────────────────────────────────
         function panOf(x) { return clamp((x - 54.5) / 54.5, -1, 1) * 0.35; }
         function strokeStart(style, x, y, pressure, ptype) {
-            lastStyle = SK.hasOwnProperty(style) ? style : 'standard';
+            lastStyle = SK.hasOwnProperty(style) ? style : 'standard'; lastX = +x || 54.5;
+            var sc = live();
+            if (sc && imm()) {
+                addFlow(0.03);
+                if (imm() > 1 && fxOn()) play(function (tn) { penTick(sc, nextGrid(sc, 4, tn)); });
+            }
             if (cfg.level === 'off' || cfg.stroke !== 'on') return;
             touch();
             var tok = ++sTok, st = lastStyle;
@@ -5227,6 +5437,10 @@
             if (SV) releaseStroke(SV);
             var t = now(), c = SK[style], v = { style: style, c: c, x: x, y: y, ms: clockMs(), sp: 0, upd: 0, m: 0, pen: ptype === 'pen', pr: +pressure || 0, src: [] };
             var amp = gainN(0), out = amp, d = { dry: G.stroke, wet: G.verbIn, echo: null };
+            var sc = imm() ? live() : null, ch = sc ? chordAt(sc, t) : null;
+            // Neon hum sits on the chord root and rises towards the fifth with speed
+            if (ch && style === 'neon') v.root = mtof(low(ch[0], 38));
+            var hz0 = v.root || 92;
             v.amp = amp;
             if (ctx.createStereoPanner) { v.pan = ctx.createStereoPanner(); v.pan.pan.value = panOf(x); amp.connect(v.pan); out = v.pan; }
             out.connect(G.stroke);
@@ -5245,7 +5459,7 @@
                 thock(d, t, 45, 0.035);
             } else if (style === 'neon') {
                 // Electric tube hum that brightens and rises with speed
-                var o1 = oscN('sawtooth', 92), o2 = oscN('sawtooth', 92.6), o3 = oscN('sine', 184), nlp = filt('lowpass', c.f0, 5), o3g = gainN(0.5);
+                var o1 = oscN('sawtooth', hz0), o2 = oscN('sawtooth', hz0 * 1.007), o3 = oscN('sine', hz0 * 2), nlp = filt('lowpass', c.f0, 5), o3g = gainN(0.5);
                 o1.connect(nlp); o2.connect(nlp); o3.connect(o3g); o3g.connect(nlp); nlp.connect(amp);
                 [o1, o2, o3].forEach(function (o) { o.start(t); v.src.push(o); });
                 var cs = src('white'), cbp = filt('bandpass', 5200, 2), cg = gainN(0.02);
@@ -5262,6 +5476,13 @@
                 v.f = pbp;
                 noiseHit(d, t, { type: 'highpass', f: 2200, dur: 0.008, vel: 0.03 });
             }
+            if (ch) {
+                // Pen resonance: the stroke texture rings in the current chord tones
+                var r = RES[style], tones = chordTones(ch, r.lo, r.hi), rb = gainN(r.k * (imm() > 1 ? 1.4 : 1)), rw = gainN(0.7);
+                if (tones.length > 3) tones = [tones[0], tones[Math.floor(tones.length / 2)], tones[tones.length - 1]];
+                tones.forEach(function (m) { var bp = filt('bandpass', mtof(m), 40); amp.connect(bp); bp.connect(rb); });
+                rb.connect(v.pan || G.stroke); rb.connect(rw); rw.connect(G.verbIn);
+            }
             amp.gain.setValueAtTime(0, t); amp.gain.setTargetAtTime(c.base, t, 0.02);
             if (!OFF) v.iv = setInterval(function () { if (SV === v && clockMs() - v.ms > 45) { v.sp *= 0.5; applyStroke(v); } }, 40);
             duck(true);
@@ -5275,12 +5496,12 @@
             v.f.frequency.setTargetAtTime(c.f0 + (c.f1 - c.f0) * m, t, 0.05);
             if (v.pan) v.pan.pan.setTargetAtTime(panOf(v.x), t, 0.1);
             if (v.tg) v.tg.gain.setTargetAtTime(0.012 * loud, t, 0.05);
-            if (v.o1) { var hz = 92 + 46 * m; v.o1.frequency.setTargetAtTime(hz, t, 0.06); v.o2.frequency.setTargetAtTime(hz * 1.007, t, 0.06); v.o3.frequency.setTargetAtTime(hz * 2, t, 0.06); }
+            if (v.o1) { var hz = v.root ? v.root * (1 + 0.5 * m) : 92 + 46 * m; v.o1.frequency.setTargetAtTime(hz, t, 0.06); v.o2.frequency.setTargetAtTime(hz * 1.007, t, 0.06); v.o3.frequency.setTargetAtTime(hz * 2, t, 0.06); }
         }
         function strokeMove(x, y, pressure) {
             var v = SV; if (!v || !ctx) return;
             var ms = clockMs(), dt = Math.max(1, ms - v.ms) / 1000, dist = Math.sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
-            v.x = x; v.y = y; v.ms = ms; if (pressure > 0) v.pr = pressure;
+            v.x = x; v.y = y; v.ms = ms; lastX = x; if (pressure > 0) v.pr = pressure;
             v.sp += (dist / dt - v.sp) * Math.min(1, dt / 0.06);
             if (ms - v.upd < 25) return;
             v.upd = ms; applyStroke(v);
@@ -5290,7 +5511,7 @@
             var t = now(), c = v.c, d = { dry: G.stroke, wet: G.verbIn, echo: null };
             v.amp.gain.cancelScheduledValues(t); v.amp.gain.setTargetAtTime(0, t, c.rel);
             if (v.style === 'ink' && v.m > 0.4) noiseHit(d, t, { kind: 'pink', type: 'bandpass', f: 1400, f2: 3800, q: 1.4, dur: 0.14, att: 0.02, vel: 0.05 * v.m, pan: v.pan ? panOf(v.x) : 0 });
-            if (v.o1) { v.o1.frequency.setTargetAtTime(55, t, 0.12); v.o2.frequency.setTargetAtTime(55.4, t, 0.12); v.o3.frequency.setTargetAtTime(110, t, 0.12); }
+            if (v.o1) { var lo = v.root ? v.root / 2 : 55; v.o1.frequency.setTargetAtTime(lo, t, 0.12); v.o2.frequency.setTargetAtTime(lo * 1.007, t, 0.12); v.o3.frequency.setTargetAtTime(lo * 2, t, 0.12); }
             var end = t + c.rel * 8 + 0.05;
             v.src.forEach(function (s) { try { s.stop(end); } catch (e) { } });
             duck(false);
@@ -5298,8 +5519,8 @@
         function strokeEnd() { sTok++; var v = SV; SV = null; if (v && ctx) releaseStroke(v); }
         function duck(on) {
             if (!G || !musicOn()) return;
-            var p = G.duck.gain, t = now();
-            p.cancelScheduledValues(t); p.setTargetAtTime(on ? 0.62 : 1, t + (on ? 0 : 0.25), on ? 0.12 : 0.7);
+            var p = G.duck.gain, t = now(), depth = imm() && live() ? 0.8 : 0.62;
+            p.cancelScheduledValues(t); p.setTargetAtTime(on ? depth : 1, t + (on ? 0 : 0.25), on ? 0.12 : 0.7);
         }
         function demoStroke(style) {
             if (cfg.level === 'off') return;
@@ -5347,12 +5568,15 @@
         function offline(o) {
             var OAC = W.OfflineAudioContext || W.webkitOfflineAudioContext, sr = o.sr || 44100;
             var off = new OAC(2, Math.ceil(sr * o.seconds), sr);
-            var sv = { ctx: ctx, G: G, NB: NB, PW: PW, scenes: scenes, cfg: cfg, cur: cur, SV: SV, sTok: sTok, lastStyle: lastStyle };
+            var sv = { ctx: ctx, G: G, NB: NB, PW: PW, scenes: scenes, cfg: cfg, cur: cur, SV: SV, sTok: sTok, lastStyle: lastStyle, fl: [flow, flowT, lastIn, bloomUntil, flowFix, eFix, lastX, cBase] };
             try {
                 OFF = true; ctx = off; scenes = []; SV = null;
-                cfg = { level: o.level || 'mid', music: o.music || 'off', musicLevel: o.musicLevel || 'mid', stroke: o.stroke || 'on', fx: o.fx || 'on' };
+                cfg = { level: o.level || 'mid', music: o.music || 'off', musicLevel: o.musicLevel || 'mid', stroke: o.stroke || 'on', fx: o.fx || 'on', immersion: o.immersion || 'off' };
+                flow = 0; flowT = 0; lastIn = -1e9; bloomUntil = o.bloom ? 1e9 : 0; lastX = 54.5; cBase = 0;
+                flowFix = o.flow != null ? o.flow : null; eFix = o.E != null ? o.E : null;
                 cur = { theme: o.theme || 'neutral', dark: !!o.dark };
                 setup(off);
+                if (o.muteMusic) G.music.gain.value = 0;
                 TO = 0; syncMusic();
                 (o.events || []).slice().sort(function (a, b) { return a.at - b.at; }).forEach(function (ev) {
                     TO = ev.at; pump(ev.at + 1.4);
@@ -5362,6 +5586,7 @@
             } finally {
                 OFF = false; TO = null;
                 ctx = sv.ctx; G = sv.G; NB = sv.NB; PW = sv.PW; scenes = sv.scenes; cfg = sv.cfg; cur = sv.cur; SV = sv.SV; sTok = sv.sTok; lastStyle = sv.lastStyle;
+                flow = sv.fl[0]; flowT = sv.fl[1]; lastIn = sv.fl[2]; bloomUntil = sv.fl[3]; flowFix = sv.fl[4]; eFix = sv.fl[5]; lastX = sv.fl[6]; cBase = sv.fl[7];
             }
             return off.startRendering();
         }
@@ -5384,7 +5609,7 @@
             fx: safe(function (name, delay) { if (fxOn() && FX.hasOwnProperty(name)) play(FX[name], delay); }),
             demoStroke: safe(demoStroke),
             state: function () {
-                return { ctx: ctx ? ctx.state : 'none', scenes: scenes.map(function (s) { return s.key + (s.ending ? ' (fading)' : ''); }), cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark };
+                return { ctx: ctx ? ctx.state : 'none', scenes: scenes.map(function (s) { return s.key + (s.ending ? ' (fading)' : '') + ' E' + s.E; }), cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark, flow: Math.round(flowNow() * 100) / 100 };
             },
             dispose: dispose,
             _offline: offline,
@@ -5791,7 +6016,8 @@
             'sound-music': safeGetItem('kanjiSoundMusic', 'off'),
             'sound-music-level': safeGetItem('kanjiSoundMusicLevel', 'mid'),
             'sound-stroke': safeGetItem('kanjiSoundStroke', 'on'),
-            'sound-fx': safeGetItem('kanjiSoundFx', 'on')
+            'sound-fx': safeGetItem('kanjiSoundFx', 'on'),
+            'sound-immersion': safeGetItem('kanjiSoundImmersion', 'low')
         };
         _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
@@ -6253,7 +6479,8 @@
             music: safeGetItem('kanjiSoundMusic', 'off'),
             musicLevel: safeGetItem('kanjiSoundMusicLevel', 'mid'),
             stroke: safeGetItem('kanjiSoundStroke', 'on'),
-            fx: safeGetItem('kanjiSoundFx', 'on')
+            fx: safeGetItem('kanjiSoundFx', 'on'),
+            immersion: safeGetItem('kanjiSoundImmersion', 'low')
         };
     }
 
@@ -6265,7 +6492,7 @@
     }
 
     function updateSoundSetting(category, val) {
-        var keyMap = { level: 'kanjiSoundLevel', music: 'kanjiSoundMusic', musicLevel: 'kanjiSoundMusicLevel', stroke: 'kanjiSoundStroke', fx: 'kanjiSoundFx' };
+        var keyMap = { level: 'kanjiSoundLevel', music: 'kanjiSoundMusic', musicLevel: 'kanjiSoundMusicLevel', stroke: 'kanjiSoundStroke', fx: 'kanjiSoundFx', immersion: 'kanjiSoundImmersion' };
         if (!keyMap[category]) return;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
         safeSetItem(keyMap[category], val);
