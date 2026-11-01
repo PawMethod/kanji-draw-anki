@@ -3781,6 +3781,12 @@ html.is-ankidesktop .info-overlay {
     stroke: #2b180e;
 }
 
+.visuell-hinweis-text {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.6;
+}
+
 .visuell-hinweis::after {
     content: '';
     position: absolute;
