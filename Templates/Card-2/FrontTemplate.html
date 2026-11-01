@@ -4026,16 +4026,19 @@
     }
     if (location.protocol === 'https:' && !_isIOS && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
         document.documentElement.classList.add('is-ankiweb');
-        var _awH = window.innerHeight;
-        var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
-        if (_awSize < 200) _awSize = 200;
-        var _awPx = _awSize + 'px';
-        document.documentElement.style.setProperty('--ankiweb-modal-max-h', (_awH - 200) + 'px');
-        document.documentElement.style.setProperty('--dynamic-size', _awPx);
-        var _kc = document.querySelector('.kanji-container');
-        if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
-        var _ab = document.querySelector('.action-buttons');
-        if (_ab) _ab.style.width = _awPx;
+        var _applyAwSize = function () {
+            var _awH = window.innerHeight;
+            var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
+            if (_awSize < 200) _awSize = 200;
+            var _awPx = _awSize + 'px';
+            document.documentElement.style.setProperty('--ankiweb-modal-max-h', (_awH - 200) + 'px');
+            document.documentElement.style.setProperty('--dynamic-size', _awPx);
+            var _kc = document.querySelector('.kanji-container');
+            if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
+            var _ab = document.querySelector('.action-buttons');
+            if (_ab) _ab.style.width = _awPx;
+        };
+        _applyAwSize();
 
         // Strip Bootstrap .card / #qa_box borders & backgrounds on intermediate wrappers
         // so there is no rectangular box in AnkiWeb, while body/html carry the full-bleed theme.
@@ -4058,6 +4061,9 @@
         };
         _measureAwBar();
         setTimeout(_measureAwBar, 60);
+        if (window._kanjiAwResize) window.removeEventListener('resize', window._kanjiAwResize);
+        window._kanjiAwResize = function () { _applyAwSize(); _measureAwBar(); };
+        window.addEventListener('resize', window._kanjiAwResize);
     }
 
     // --- AnkiDroid Legacy swipe-gesture warning ---
@@ -4302,15 +4308,18 @@
                     rail.appendChild(thumb);
                     modal.insertBefore(rail, modal.firstChild);
 
-                    var updateThumb = function () {
+                    var topInset = 2;
+                    var updateThumb = function (remeasure) {
                         var sh = modal.scrollHeight;
                         var ch = modal.clientHeight;
                         if (sh <= ch + 2) {
                             thumb.classList.remove('visible');
                             return;
                         }
-                        var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
-                        var topInset = (hdr ? hdr.offsetHeight : 0) + 2;
+                        if (remeasure !== false) {
+                            var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                            topInset = (hdr ? hdr.offsetHeight : 0) + 2;
+                        }
                         var bottomInset = 10;
                         var trackLen = ch - topInset - bottomInset;
                         if (trackLen <= 24) {
@@ -4361,8 +4370,7 @@
                         window.addEventListener('pointercancel', onUp);
                     });
 
-                    modal.addEventListener('scroll', updateThumb, { passive: true });
-                    window.addEventListener('resize', updateThumb);
+                    modal.addEventListener('scroll', function () { updateThumb(false); }, { passive: true });
                     modal._updateCustomScroll = updateThumb;
                 }
                 if (modal._updateCustomScroll) {
@@ -4372,6 +4380,12 @@
             })(modals[i]);
         }
     };
+    // One window listener per render: the WebView is reused while modal DOM nodes are replaced per card.
+    if (window._kanjiScrollbarResize) window.removeEventListener('resize', window._kanjiScrollbarResize);
+    window._kanjiScrollbarResize = function () {
+        document.querySelectorAll('.settings-modal, .info-modal').forEach(function (m) { if (m._updateCustomScroll) m._updateCustomScroll(); });
+    };
+    window.addEventListener('resize', window._kanjiScrollbarResize);
 
     function navigateToPage(pageId, sourceCard, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
@@ -5485,5 +5499,7 @@
     } // end guard
 
     // --- userJs: Gesture / Shortcut hooks for AnkiDroid & AnkiMobile ---
-    var userJs1 = function () { openSettings(new Event('userJs')); };
+    var userJs1 = function () { if (!_settingsReady) _settingsReady = true; openSettings(new Event('userJs')); };
+    // Same slot as Card-1 so one "open settings" gesture works on both card types.
+    var userJs3 = userJs1;
 </script>

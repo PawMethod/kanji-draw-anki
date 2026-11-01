@@ -434,11 +434,11 @@ test('applyThemeSettings uses window._kanjiAddGelHaloToPath (not local ref)', ()
     'Must use window._kanjiAddGelHaloToPath for cross-scope access');
 });
 
-test('applyThemeSettings nuclear cleanup removes ink groups from draw-layer', () => {
+test('applyThemeSettings nuclear cleanup removes gel halos from draw-layer', () => {
   const themeSection = c1f.match(/function applyThemeSettings[\s\S]*?finally/);
   assert(themeSection, 'Must have applyThemeSettings');
-  assert(themeSection[0].includes("querySelectorAll('g').forEach"),
-    'Must remove <g> ink groups from draw-layer during style switch');
+  assert(themeSection[0].includes("drawLay.querySelectorAll('.gel-halo').forEach"),
+    'Must remove gel halos from draw-layer during style switch');
 });
 
 test('applyThemeSettings resets opacity on svg-bg/svg-guide paths', () => {

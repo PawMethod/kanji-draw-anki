@@ -215,7 +215,7 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 |---|:---:|:---:|---|
 | `userJs1` | ✓ | ✓ | Referenzstrich einblenden/ausblenden (C1) · Einstellungen (C2) |
 | `userJs2` | ✓ | — | Zeichenfläche zurücksetzen |
-| `userJs3` | ✓ | — | Einstellungen öffnen |
+| `userJs3` | ✓ | ✓ | Einstellungen öffnen |
 
 **AnkiDroid:** *Einstellungen → Gesten → JavaScript-Funktion 1/2/3*  
 **AnkiMobile:** *Einstellungen → Gesten → Eigene Aktion → JavaScript ausführen*

@@ -893,7 +893,22 @@
                 });
             } else if (/<path/i.test(n.value)) {
                 glyph.setAttribute('class', 'pt-glyph pt-glyph-fill');
-                glyph.innerHTML = '<g transform="scale(1,-1)">' + n.value.replace(/<\/?svg[^>]*>/gi, '') + '</g>';
+                // Rebuild from an inert DOMParser document, keeping only g/path and geometry attributes.
+                const flip = document.createElementNS(NS, 'g');
+                flip.setAttribute('transform', 'scale(1,-1)');
+                const copySafe = (src, dst) => {
+                    Array.prototype.forEach.call(src.children, el => {
+                        const tag = el.localName;
+                        if (tag === 'svg') { copySafe(el, dst); return; }
+                        if (tag !== 'g' && tag !== 'path') return;
+                        const out = document.createElementNS(NS, tag);
+                        ['d', 'transform', 'fill-rule', 'clip-rule'].forEach(a => { if (el.hasAttribute(a)) out.setAttribute(a, el.getAttribute(a)); });
+                        if (tag === 'g') copySafe(el, out);
+                        dst.appendChild(out);
+                    });
+                };
+                copySafe(new DOMParser().parseFromString('<svg>' + n.value + '</svg>', 'text/html').body, flip);
+                glyph.appendChild(flip);
                 const mb = markupBox(glyph.innerHTML);
                 if (mb) glyph.setAttribute('viewBox', squareViewBox(mb, 0.16));
             } else {
@@ -2007,14 +2022,15 @@
         const targetWordsEl = document.getElementById('formatted-hint-words');
         if (rawWordsEl && targetWordsEl) {
             let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
-            const _wesc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            // innerHTML is already entity-escaped; keep only furigana/basic formatting tags, attribute-free.
+            const _wsafe = s => s.replace(/<(\/?)([a-z]+)\b[^>]*>/gi, (m, sl, tag) => /^(ruby|rb|rt|rp|b|i|u|br)$/i.test(tag) ? '<' + sl + tag.toLowerCase() + '>' : '');
             targetWordsEl.innerHTML = words.map(word => {
                 word = word.trim();
                 if (!word) return '';
                 let match = word.match(/^(.*?)\s*\((.*?)\)$/);
                 return match
-                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
-                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsafe(match[1])}</div><div class="word-de">${_wsafe(match[2])}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsafe(word)}</div></div></div>`;
             }).join('');
             targetWordsEl.addEventListener('click', function (e) {
                 var item = e.target.closest('.word-example-item');
@@ -2369,10 +2385,6 @@
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         if (window._kanjiOrder) window._kanjiOrder.open();
     }
-    function closeStrokeOrder(e) {
-        if (e) { e.stopPropagation(); e.preventDefault(); }
-        if (window._kanjiOrder) window._kanjiOrder.close(e);
-    }
     function strokeOrderAction(act, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
@@ -2533,7 +2545,7 @@
             if (link._ankiLinkFixed) return;
             link._ankiLinkFixed = true;
             link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener');
+            link.setAttribute('rel', 'noopener noreferrer');
             link.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
                 this.classList.add('link-btn-pressed');

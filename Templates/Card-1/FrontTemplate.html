@@ -4088,16 +4088,19 @@
     }
     if (location.protocol === 'https:' && !_isIOS && typeof pycmd === 'undefined' && typeof AnkiDroidJS === 'undefined') {
         document.documentElement.classList.add('is-ankiweb');
-        var _awH = window.innerHeight;
-        var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
-        if (_awSize < 200) _awSize = 200;
-        var _awPx = _awSize + 'px';
-        document.documentElement.style.setProperty('--ankiweb-modal-max-h', (_awH - 200) + 'px');
-        document.documentElement.style.setProperty('--dynamic-size', _awPx);
-        var _kc = document.querySelector('.kanji-container');
-        if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
-        var _ab = document.querySelector('.action-buttons');
-        if (_ab) _ab.style.width = _awPx;
+        var _applyAwSize = function () {
+            var _awH = window.innerHeight;
+            var _awSize = Math.min(_awH - 390, 550, document.documentElement.clientWidth * 0.9);
+            if (_awSize < 200) _awSize = 200;
+            var _awPx = _awSize + 'px';
+            document.documentElement.style.setProperty('--ankiweb-modal-max-h', (_awH - 200) + 'px');
+            document.documentElement.style.setProperty('--dynamic-size', _awPx);
+            var _kc = document.querySelector('.kanji-container');
+            if (_kc) { _kc.style.width = _awPx; _kc.style.height = _awPx; }
+            var _ab = document.querySelector('.action-buttons');
+            if (_ab) _ab.style.width = _awPx;
+        };
+        _applyAwSize();
 
         // Strip Bootstrap .card / #qa_box borders & backgrounds on intermediate wrappers
         // so there is no rectangular box in AnkiWeb, while body/html carry the full-bleed theme.
@@ -4121,6 +4124,9 @@
         };
         _measureAwBar();
         setTimeout(_measureAwBar, 60);
+        if (window._kanjiAwResize) window.removeEventListener('resize', window._kanjiAwResize);
+        window._kanjiAwResize = function () { _applyAwSize(); _measureAwBar(); };
+        window.addEventListener('resize', window._kanjiAwResize);
     }
 
     // --- AnkiDroid Legacy swipe-gesture warning ---
@@ -4286,15 +4292,18 @@
                     rail.appendChild(thumb);
                     modal.insertBefore(rail, modal.firstChild);
 
-                    var updateThumb = function () {
+                    var topInset = 2;
+                    var updateThumb = function (remeasure) {
                         var sh = modal.scrollHeight;
                         var ch = modal.clientHeight;
                         if (sh <= ch + 2) {
                             thumb.classList.remove('visible');
                             return;
                         }
-                        var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
-                        var topInset = (hdr ? hdr.offsetHeight : 0) + 2;
+                        if (remeasure !== false) {
+                            var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                            topInset = (hdr ? hdr.offsetHeight : 0) + 2;
+                        }
                         var bottomInset = 10;
                         var trackLen = ch - topInset - bottomInset;
                         if (trackLen <= 24) {
@@ -4345,8 +4354,7 @@
                         window.addEventListener('pointercancel', onUp);
                     });
 
-                    modal.addEventListener('scroll', updateThumb, { passive: true });
-                    window.addEventListener('resize', updateThumb);
+                    modal.addEventListener('scroll', function () { updateThumb(false); }, { passive: true });
                     modal._updateCustomScroll = updateThumb;
                 }
                 if (modal._updateCustomScroll) {
@@ -4356,6 +4364,12 @@
             })(modals[i]);
         }
     };
+    // One window listener per render: the WebView is reused while modal DOM nodes are replaced per card.
+    if (window._kanjiScrollbarResize) window.removeEventListener('resize', window._kanjiScrollbarResize);
+    window._kanjiScrollbarResize = function () {
+        document.querySelectorAll('.settings-modal, .info-modal').forEach(function (m) { if (m._updateCustomScroll) m._updateCustomScroll(); });
+    };
+    window.addEventListener('resize', window._kanjiScrollbarResize);
 
     function navigateToPage(pageId, sourceCard, e) {
         if (e) { e.stopPropagation(); e.preventDefault(); }
@@ -4758,9 +4772,8 @@
             // Re-apply stroke style to already-drawn paths on draw-layer
             var drawLay = document.getElementById('draw-layer');
             if (drawLay) {
-                // Nuclear cleanup: remove gel halos AND ink groups
+                // Nuclear cleanup: remove gel halos
                 drawLay.querySelectorAll('.gel-halo').forEach(function (h) { h.parentNode.removeChild(h); });
-                drawLay.querySelectorAll('g').forEach(function (g) { g.parentNode.removeChild(g); });
                 // Re-apply style to remaining master paths
                 if (window._kanjiApplyPathStyle) {
                     drawLay.querySelectorAll('path').forEach(function (p) { window._kanjiApplyPathStyle(p); });
@@ -5553,7 +5566,6 @@
         // SVG elements are built on pointerup for grading, snap animation, and persistence.
         const _useCanvas = _isWK;
         let _ctx = null, _canvasEl = null, _canvasPath = null;
-        let _lastCanvasX = 0, _lastCanvasY = 0;
         let _canvasRafId = null, _canvasDirty = false;
 
         const _initCanvas = () => {
@@ -5583,19 +5595,6 @@
             if (!_ctx || !_canvasEl) return;
             const dpr = _canvasEl._dpr || window.devicePixelRatio || 1;
             _ctx.clearRect(0, 0, _canvasEl.width / dpr, _canvasEl.height / dpr);
-        };
-        const _setupCanvasStyle = () => {
-            if (!_ctx) return;
-            var style = _activeDrawStyle;
-            var color = getCSSVar('--stroke-active') || '#333';
-            var sx = _ctx._scaleX;
-            _ctx.strokeStyle = color;
-            _ctx.lineCap = 'round';
-            _ctx.lineJoin = 'round';
-            _ctx.lineWidth = (style === 'gel' || style === 'ink' ? 4.5 : 4) * sx * _swf();
-            _ctx.shadowBlur = 0;
-            _ctx.shadowColor = 'transparent';
-            _ctx.globalAlpha = 1;
         };
         const _finalizeCanvasToSVG = () => {
             if (!_useCanvas || !_ctx) return;
@@ -5715,10 +5714,6 @@
         };
         window._kanjiAddGelHaloToPath = _addGelHaloToPath;
         window._kanjiInvalidateGelCache = (path) => { _gelColorCache.delete(path); };
-
-        // Tusche (Ink): multi-segment variable-width brush.
-        // A hidden master <path> tracks the full d-attribute for evaluation/snap.
-        // A visible <g> group holds short segments with individual stroke-widths.
 
         // Smooth snap animation: morph user's drawn stroke toward the reference SVG path
         let _snapRafId = null;
@@ -5972,9 +5967,6 @@
                 _canvasEl.style.display = 'block';
                 _canvasPath = new Path2D();
                 _canvasPath.moveTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
-                _lastCanvasX = pos.x;
-                _lastCanvasY = pos.y;
-                _setupCanvasStyle();
                 _gelHalo = null;
             } else {
                 // SVG mode: existing DOM manipulation
@@ -6050,8 +6042,6 @@
                 _canvasPath.lineTo(pos.x * _ctx._scaleX, pos.y * _ctx._scaleY);
                 _canvasDirty = true;
                 if (!_canvasRafId) _canvasRafId = requestAnimationFrame(_renderCanvasFrame);
-                _lastCanvasX = pos.x;
-                _lastCanvasY = pos.y;
             } else {
                 // SVG: batch setAttribute to one frame via rAF — avoids 120+ reflows/sec on
                 // high-refresh touchscreens where pointermove fires faster than display refresh.
@@ -6538,12 +6528,12 @@
             if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
             // Snapshot state at reset time so cleanup only undoes what existed then.
             const _strokeCountAtReset = currentStroke; // guided-mode progress at reset
+            // Not drawnPaths.length: a stroke still fading out from undo is in the DOM but already popped.
+            const _freeCountAtReset = freeSVGPaths.length;
             // Snapshot which paths exist NOW (before reset) so we only remove these later.
             const drawnPaths = Array.from(drawLayer.querySelectorAll('path:not(.gel-halo)'));
             const drawnHalos = Array.from(drawLayer.querySelectorAll('.gel-halo'));
             const drawnNodes = new Set(Array.from(drawLayer.childNodes)); // all current children
-            // Fade ink groups immediately
-            drawLayer.querySelectorAll('g').forEach(g => { g.style.transition = 'opacity 0.25s ease-out'; g.style.opacity = '0'; });
             drawnPaths.forEach(p => {
                 const len = p.getTotalLength ? (p._cachedTotalLength !== undefined ? p._cachedTotalLength : (p._cachedTotalLength = p.getTotalLength())) : 200;
                 p.style.strokeDasharray = len + '';
@@ -6632,9 +6622,8 @@
                 drawnNodes.forEach(n => { if (n.parentNode === drawLayer) drawLayer.removeChild(n); });
                 // Drop only the free-stroke entries that were present at reset time.
                 // (new strokes appended during the animation are at the end of the arrays)
-                const resetCount = drawnPaths.length; // # of user paths snapshotted
-                freeStrokes.splice(0, resetCount);
-                freeSVGPaths.splice(0, resetCount);
+                freeStrokes.splice(0, _freeCountAtReset);
+                freeSVGPaths.splice(0, _freeCountAtReset);
                 // Reset state only when no new strokes have been drawn in the meantime
                 if (freeStrokes.length === 0) {
                     userPoints = []; problemStrokes.fill(0); _kanjiSkippedAny = false;
