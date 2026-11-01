@@ -320,7 +320,8 @@
                     </label>
                 </div>
             </div><!-- /grid-sub-options -->
-            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Vorderseite (c1-only) ═══ -->
@@ -523,7 +524,8 @@
                     </div>
                 </label>
             </div>
-            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Rückseite ═══ -->
@@ -670,7 +672,8 @@
                     </label>
                 </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Vorderseite Erkennen (c2-only) ═══ -->
@@ -748,7 +751,8 @@
                     </label>
                 </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Erscheinungsbild ═══ -->
@@ -1177,7 +1181,8 @@
                     </div>
                 </label>
             </div>
-            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
         </div>
         <!-- [KD-SOUND-PAGE] -->
         <!-- ═══ Sub-Page: Klang & Musik [SHARED c1-front/c2-front] ═══ -->
@@ -1257,7 +1262,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="ambient"
-                        data-hint="Japanische Umgebungsmusik: schwebende Flächen und Shō, darüber das Instrument der Landschaft (Koto, Shakuhachi, Shinobue, Shamisen, Biwa oder Sanshin) – sehr ruhig, mit viel Raum."
+                        data-hint="Ein japanischer Garten: Tropfen im Suikinkutsu (Wasserharfe), Shō und weiche Flächen, Koto-Flageoletts und von fern das Instrument der Landschaft – sehr ruhig, mit viel Raum."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1271,7 +1276,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="zen"
-                        data-hint="Japanisch und meditativ: Shō, Klangschalen und Tempelholzblock, die Melodie spielt das Instrument der Landschaft (z. B. Koto in Sakura, Shakuhachi im Wald, Biwa in Sepia, Sanshin auf Okinawa)."
+                        data-hint="Tempelstimmung: angeschlagene und singende Klangschalen, Shō, nachts die Tempelglocke; die Melodie spielt Koto, Shakuhachi, Shinobue, Biwa oder Sanshin – je nach Landschaft wechselnd."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1285,7 +1290,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="piano"
-                        data-hint="Sanftes Klavier mit japanischen Melodien, im Mittelteil übernimmt das Instrument der Landschaft. Wechselt mit Landschaft und Tageszeit."
+                        data-hint="Konzertflügel mit Pedal: ruhige Akkorde und japanische Melodien, im Mittelteil singt das Instrument der Landschaft. Wechselt mit Landschaft und Tageszeit."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1313,7 +1318,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="nature"
-                        data-hint="Keine Melodien – nur die Klänge der Landschaft: Wind, Wasser, Vögel, Grillen, Regen."
+                        data-hint="Keine Melodien – nur die Landschaft: Zikaden, Kuckuck, Uguisu, Krähen, Frösche, Grillen, Wasserharfe, Windspiel, Tempelglocke, Bach, Meer oder Stadt."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -4417,7 +4422,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '1.5.0';
+        var VERSION = '2.0.0';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4462,15 +4467,15 @@
         var STACKS = [[0, 2, 3, 4], [0, 2, 4, 5], [0, 2, 3]];
         // Soundscape per theme: continuous layers (0..1) + events per minute
         var NAT = {
-            neutral: { d: { wind: 0.5, ev: { chirp: 4, crane: 0.6 } }, n: { wind: 0.55, ev: { cricket: 9, owl: 0.5 } } },
-            warm: { d: { water: 0.3, wind: 0.2, ev: { chirp: 3, furin: 2, bell: 0.4, drip: 1 } }, n: { water: 0.25, ev: { frog: 5, cricket: 4, bell: 0.3 } } },
-            cool: { d: { water: 0.3, ev: { drip: 6, chirp: 1.5 } }, n: { water: 0.28, ev: { drip: 5, cricket: 4 } } },
-            sepia: { d: { wind: 0.68, leaves: 0.5, ev: { chirp: 1.5, bell: 0.3 } }, n: { wind: 0.5, leaves: 0.35, ev: { cricket: 14 } } },
-            rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4 } }, n: { wind: 0.55, ev: { frog: 5, cricket: 2 } } },
-            sage: { d: { wind: 0.55, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3 } } },
-            hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
-            tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4 } } },
-            okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8 } }, n: { waves: 0.45, ev: { cricket: 6 } } }
+            neutral: { d: { wind: 0.5, ev: { chirp: 4, crane: 0.6, kakko: 0.8, karasu: 0.4 } }, n: { wind: 0.55, ev: { cricket: 9, owl: 0.5, higurashi: 0.8 } } },
+            warm: { d: { water: 0.3, wind: 0.2, ev: { chirp: 3, furin: 2, bell: 0.4, minmin: 1.2, suikin: 2 } }, n: { water: 0.25, ev: { frog: 5, cricket: 4, bell: 0.3, higurashi: 1.5 } } },
+            cool: { d: { water: 0.3, ev: { drip: 4, chirp: 1.5, suikin: 3, kakko: 0.5 } }, n: { water: 0.28, ev: { drip: 4, cricket: 4, kajika: 2.5 } } },
+            sepia: { d: { wind: 0.68, leaves: 0.5, ev: { chirp: 1.5, bell: 0.3, karasu: 0.8, higurashi: 1 } }, n: { wind: 0.5, leaves: 0.35, ev: { cricket: 14, higurashi: 1, bell: 0.3 } } },
+            rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4, hototogisu: 0.6 } }, n: { wind: 0.55, ev: { frog: 5, cricket: 2, hototogisu: 0.5 } } },
+            sage: { d: { wind: 0.55, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2, kakko: 0.8, suikin: 1.5 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3, bell: 0.3 } } },
+            hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6, karasu: 0.5, crane: 0.5 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
+            tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1, karasu: 1.2, fumikiri: 0.4, minmin: 0.6 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4, fumikiri: 0.3 } } },
+            okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8, minmin: 1 } }, n: { waves: 0.45, ev: { cricket: 6, frog: 2 } } }
         };
         // Continuous-layer calibration (pre-scene gain)
         var K = { wind: 0.9, leaves: 0.06, water: 0.5, gurgle: 0.5, waves: 0.75, foam: 0.05, rain: 0.15, city: 0.8 };
@@ -4479,7 +4484,7 @@
             zen: { bpm: 60, cpb: 2, tone: 11000, nat: 0.6, trim: 1, bar: zenBar },
             piano: { bpm: 66, cpb: 2, tone: 9000, nat: 0.35, trim: 1, bar: pianoBar },
             lofi: { bpm: 74, cpb: 1, tone: 3400, nat: 0.45, trim: 1, bar: lofiBar, start: lofiStart },
-            nature: { bpm: 60, cpb: 2, tone: 16000, nat: 1, trim: 1, bar: function () { } }
+            nature: { bpm: 60, cpb: 2, tone: 16000, nat: 1.5, trim: 1, bar: function () { } }
         };
         // Stroke voices: base hum, speed gain, filter range, release
         var SK = {
@@ -4506,8 +4511,18 @@
         var CONTOUR = [0, 1, 2, 1, 3, 2, 4, 3, 5, 4, 6, 5, 3, 4, 2, 3];
         // Register of the answering voice per genre
         var LEADR = { ambient: [72, 93], zen: [62, 86], piano: [67, 88], lofi: [62, 84], nature: [79, 98] };
-        // Lead instrument of each landscape and its partner (B sections, bridges)
-        var VOICES = { neutral: ['koto', 'shaku'], warm: ['fue', 'shamisen'], cool: ['koto', 'shaku'], sepia: ['biwa', 'shaku'], rose: ['koto', 'fue'], sage: ['shaku', 'koto'], hokkaido: ['shaku', 'shamisen'], tokyo: ['koto', 'shamisen'], okinawa: ['sanshin', 'fue'] };
+        // Lead instrument and partner per landscape; each scene picks one pairing (the first is the most likely)
+        var VOPT = {
+            neutral: [['koto', 'shaku'], ['koto', 'fue'], ['shaku', 'koto'], ['koto', 'shamisen']],
+            warm: [['fue', 'shamisen'], ['shamisen', 'fue'], ['koto', 'fue']],
+            cool: [['koto', 'shaku'], ['shaku', 'koto'], ['koto', 'fue']],
+            sepia: [['biwa', 'shaku'], ['shaku', 'biwa'], ['koto', 'shaku']],
+            rose: [['koto', 'fue'], ['fue', 'koto'], ['koto', 'shaku']],
+            sage: [['shaku', 'koto'], ['koto', 'shaku'], ['shaku', 'biwa']],
+            hokkaido: [['shaku', 'shamisen'], ['shamisen', 'shaku'], ['fue', 'shamisen']],
+            tokyo: [['koto', 'shamisen'], ['shamisen', 'koto'], ['koto', 'shaku']],
+            okinawa: [['sanshin', 'fue'], ['sanshin', 'koto'], ['fue', 'sanshin']]
+        };
         var VREG = { koto: [62, 86], shamisen: [60, 81], biwa: [50, 72], sanshin: [60, 81], shaku: [62, 81], fue: [74, 93], piano: [64, 86] };
         var VK = { koto: 1, shamisen: 0.85, biwa: 0.9, sanshin: 1, shaku: 0.8, fue: 0.6, piano: 1 };
         var STR = { koto: 1, shamisen: 1, biwa: 1, sanshin: 1 };
@@ -4685,30 +4700,40 @@
             if (pk > 0) for (i = 0; i < n; i++) d[i] *= 0.9 / pk;
             return d;
         }
-        // Piano: stretched (inharmonic) partials, two slightly detuned strings, two-stage decay, hammer knock
+        // Piano: three detuned strings per note (the beating gives the piano shimmer), stretched partials, two-stage
+        // decay that loses the upper partials first, a felt-hammer thump and the knock of the soundboard
         function renderPiano(sr, m) {
-            var f = mtof(m), n = Math.floor(sr * clamp(5.5 - (m - 36) * 0.06, 1.8, 5.5)), d = new Float32Array(n);
-            var Bi = 0.00006 * Math.pow(2, (m - 48) / 15), tau = clamp(1.5 - (m - 36) * 0.02, 0.3, 1.5), np = Math.min(20, Math.floor(8000 / f));
+            var f = mtof(m), n = Math.floor(sr * clamp(9 - (m - 36) * 0.1, 2.5, 9)), d = new Float32Array(n);
+            var Bi = 0.00005 * Math.pow(2, (m - 48) / 14), tau = clamp(2.4 - (m - 36) * 0.035, 0.35, 2.4), np = Math.min(32, Math.floor(9500 / f));
             for (var k = 1; k <= np; k++) {
                 var fk = f * k * Math.sqrt(1 + Bi * k * k);
                 if (fk > sr * 0.45) break;
-                var amp = Math.abs(Math.sin(Math.PI * k / 7.3)) / Math.pow(k, 0.85), t1 = tau / (1 + 0.28 * (k - 1)), d1 = Math.exp(-1 / (sr * t1)), d2 = Math.exp(-1 / (sr * t1 * 4)), ns = k <= 6 ? 2 : 1;
+                var amp = (0.25 + Math.abs(Math.sin(Math.PI * k / 8.2))) / Math.pow(k, 0.95), t1 = tau / (1 + 0.22 * Math.pow(k - 1, 1.15)), d1 = Math.exp(-1 / (sr * t1)), d2 = Math.exp(-1 / (sr * t1 * 5)), ns = k <= 12 ? 3 : 1;
                 for (var s = 0; s < ns; s++) {
-                    var w = 2 * Math.PI * fk * (1 + (ns > 1 ? (s ? 1 : -1) * 0.0005 : 0)) / sr, cw = Math.cos(w), sw = Math.sin(w), ph = Math.random() * 6.283;
-                    var x = Math.cos(ph), y = Math.sin(ph), e1 = 0.72 * amp / ns, e2 = 0.28 * amp / ns;
+                    var w = 2 * Math.PI * fk * (1 + (ns > 1 ? [-0.0006, 0.00005, 0.0007][s] : 0)) / sr, cw = Math.cos(w), sw = Math.sin(w), ph = Math.random() * 6.283;
+                    var x = Math.cos(ph), y = Math.sin(ph), e1 = 0.7 * amp / ns, e2 = 0.3 * amp / ns;
                     for (var i = 0; i < n; i++) {
                         var nx = x * cw - y * sw; y = x * sw + y * cw; x = nx;
                         d[i] += (e1 + e2) * y; e1 *= d1; e2 *= d2;
-                        if (e1 + e2 < 5e-5) break;
+                        if (e1 + e2 < 3e-5) break;
                     }
                 }
             }
-            var hn = Math.floor(sr * 0.025), lpn = 0;
-            for (var h = 0; h < hn; h++) { lpn += 0.25 * ((Math.random() * 2 - 1) - lpn); d[h] += lpn * 0.12 * (1 - h / hn); }
-            return finish(d, sr, 0.003, 0.3);
+            var hn = Math.floor(sr * 0.2), lpn = 0;
+            for (var h = 0; h < hn; h++) {
+                var tt = h / sr;
+                lpn += 0.15 * ((Math.random() * 2 - 1) - lpn);
+                d[h] += lpn * 0.3 * Math.exp(-tt / 0.008) + 0.05 * Math.sin(597 * tt) * Math.exp(-tt / 0.05) + 0.035 * Math.sin(1319 * tt) * Math.exp(-tt / 0.035) + 0.02 * Math.sin(2639 * tt) * Math.exp(-tt / 0.02);
+            }
+            return finish(d, sr, 0.002, 0.4);
         }
         // Tuned percussion as modal partials [frequency ratio, amplitude, T60 s]; decay shortens with pitch above ref
         var MODAL = {
+            // Singing bowl and temple bell: close partial pairs beat slowly (the typical wobble)
+            bowl: { dur: 16, ref: 60, click: 0.015, att: 0.004, parts: [[1, 1, 24], [1.0035, 0.7, 21], [2.76, 0.5, 12], [2.768, 0.35, 11], [5.4, 0.22, 6.5], [5.42, 0.15, 6], [8.93, 0.08, 3.5], [13.3, 0.03, 2]] },
+            kane: { dur: 20, ref: 48, click: 0.06, att: 0.006, parts: [[0.5, 0.9, 26], [0.503, 0.6, 24], [1, 1, 16], [1.006, 0.6, 15], [1.19, 0.4, 9], [1.5, 0.35, 7], [2, 0.3, 5], [2.62, 0.2, 3.5], [3.3, 0.1, 2]] },
+            // Suikinkutsu: a drop rings the buried clay jar
+            suikin: { dur: 5, ref: 84, click: 0.05, att: 0.002, parts: [[1, 1, 4.5], [1.006, 0.4, 4], [2.27, 0.35, 2.2], [3.9, 0.15, 1.2], [5.6, 0.06, 0.6]] },
             celesta: { dur: 3, ref: 72, click: 0.08, parts: [[1, 1, 2.6], [2, 0.14, 1.2], [3.01, 0.05, 0.7], [5.42, 0.04, 0.25]] },
             vibes: { dur: 3.5, ref: 72, click: 0.04, parts: [[1, 1, 4], [4, 0.22, 1.3], [10.1, 0.05, 0.35]] },
             glass: { dur: 4, ref: 79, click: 0.02, att: 0.012, parts: [[1, 1, 4.5], [2.32, 0.32, 2.6], [4.25, 0.12, 1.5], [6.63, 0.05, 0.8]] },
@@ -4905,10 +4930,10 @@
             a.stop(end); vib.stop(end); n.stop(end); n2.stop(t + 0.6);
         }
         function piano(dst, t, m, vel, dur, o) {
-            o = o || {}; var z = zoneOf(m), b = sampleBuf('piano', z), r = Math.pow(2, (m - z) / 12), f = mtof(m), A = vel * 0.92, rt = t + Math.max(0.15, dur), end = Math.min(t + b.duration / r, rt + 0.8);
+            o = o || {}; var z = zoneOf(m), b = sampleBuf('piano', z), r = Math.pow(2, (m - z) / 12), f = mtof(m), A = vel * 0.92, rt = t + Math.max(0.15, dur), rel = o.ped ? 0.7 : 0.16, end = Math.min(t + b.duration / r, rt + rel * 5);
             var s = ctx.createBufferSource(), lp = filt('lowpass', Math.min(16000, f * (4 + 26 * vel)), 0.5), g = gainN(0);
             s.buffer = b; s.playbackRate.value = r;
-            g.gain.setValueAtTime(A, t); g.gain.setValueAtTime(A, rt); g.gain.setTargetAtTime(0, rt, 0.16);
+            g.gain.setValueAtTime(A, t); g.gain.setValueAtTime(A, rt); g.gain.setTargetAtTime(0, rt, rel);
             s.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, 0, o.pan || 0);
             s.start(t); s.stop(end);
         }
@@ -4934,21 +4959,38 @@
         }
         function brush(dst, t, vel) { noiseHit(dst, t, { type: 'bandpass', f: 3200, f2: 1800, q: 0.8, dur: 0.16, vel: vel * 0.12, att: 0.006, wet: 0.2 }); }
         function shaker(dst, t, vel) { noiseHit(dst, t, { type: 'highpass', f: 7000, q: 0.7, dur: 0.045, vel: vel * 0.08, att: 0.004, pan: 0.25 }); }
-        // Singing bowl (rin) / temple bell (kane, big)
-        function rin(dst, t, m, vel, o) {
-            o = o || {}; var f = mtof(m), big = !!o.big, g = gainN(vel), end = t + (big ? 12 : 8);
-            var parts = big ? [[0.5, 0.5, 9], [1, 1, 7], [1.19, 0.35, 4], [1.5, 0.25, 3.5], [2, 0.3, 3], [2.74, 0.15, 2]] : [[1, 1, 6], [2.71, 0.45, 3.5], [5.15, 0.18, 2], [8.9, 0.07, 1]];
-            parts.forEach(function (p) {
-                for (var k = 0; k < 2; k++) {
-                    var x = oscN('sine', f * p[0] + (k ? rnd(0.4, 1.2) : 0)), a = gainN(0);
-                    a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(p[1] * 0.5, t + 0.006); a.gain.setTargetAtTime(0, t + 0.006, p[2] / 3);
-                    x.connect(a); a.connect(g); x.start(t); x.stop(end);
-                }
-            });
-            send(g, dst, o.wet || 0.6, o.echo || 0, o.pan || 0);
-            noiseHit(dst, t, { f: Math.min(9000, f * 3), q: 2, dur: 0.02, vel: vel * 0.2, pan: o.pan || 0 });
-        }
         function marimba(dst, t, m, vel) { tone('marimba', dst, t, m, vel * 1.9, { wet: 0.3, bright: 14 }); }
+        // Singing bowl struck with a padded mallet
+        function bowl(dst, t, m, vel, o) {
+            o = o || {};
+            tone('bowl', dst, t, m, vel, { wet: o.wet || 0.55, echo: o.echo || 0, pan: o.pan || 0, bright: 24 });
+            noiseHit(dst, t, { kind: 'pink', type: 'lowpass', f: 380, q: 0.7, dur: 0.05, vel: vel * 0.25, pan: o.pan || 0 });
+        }
+        // Rubbed singing bowl: the stick circling the rim makes the tone swell and wobble
+        function singBowl(dst, t, m, dur, vel, o) {
+            o = o || {}; var f = mtof(m), end = t + dur + 8, g = gainN(0), am = gainN(1), lfo = oscN('sine', rnd(1.2, 2.4)), lg = gainN(0.3);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + dur * 0.45); g.gain.setValueAtTime(vel, t + dur); g.gain.setTargetAtTime(0, t + dur, 2.2);
+            lfo.connect(lg); lg.connect(am.gain); am.connect(g); send(g, dst, o.wet || 0.6, 0, o.pan || 0);
+            [[1, 1, 0], [1, 0.8, rnd(0.6, 1.4)], [2.76, 0.18, 0], [2.76, 0.12, rnd(1, 2.5)]].forEach(function (p) {
+                var x = oscN('sine', f * p[0] + p[2]), a = gainN(p[1] * 0.5);
+                x.connect(a); a.connect(am); x.start(t); x.stop(end);
+            });
+            lfo.start(t); lfo.stop(end);
+        }
+        // Temple bell (bonshō), struck with a wooden beam
+        function kane(dst, t, m, vel, o) {
+            o = o || {};
+            tone('kane', dst, t, m, vel, { wet: o.wet || 0.75, pan: o.pan || 0, bright: 18 });
+            noiseHit(dst, t, { kind: 'brown', type: 'lowpass', f: 260, q: 0.7, dur: 0.12, vel: vel * 0.6, wet: 0.6, pan: o.pan || 0 });
+        }
+        // Suikinkutsu: a little splash, then the jar rings
+        function suikin(dst, t, m, vel, pan) {
+            var f = rnd(1800, 3200), x = oscN('sine', f), g = gainN(0);
+            x.frequency.setValueAtTime(f, t); x.frequency.exponentialRampToValueAtTime(f * 1.6, t + 0.03);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel * 0.25, t + 0.003); g.gain.setTargetAtTime(0, t + 0.01, 0.012);
+            x.connect(g); send(g, dst, 0.4, 0, pan); x.start(t); x.stop(t + 0.12);
+            tone('suikin', dst, t + 0.015, m, vel, { wet: 0.85, echo: 0.3, pan: pan, bright: 10 });
+        }
         // Frame drum / small taiko: marks section starts in the zen genre
         function taiko(dst, t, vel) {
             var o = oscN('sine', 95), g = gainN(0);
@@ -5023,7 +5065,8 @@
             this.baseA = this.prog = this.dark ? th.night : th.day; this.baseB = (ALT[theme] || ALT.neutral)[this.dark ? 1 : 0];
             this.form = pick(FORMS); this.mod = pick([0, 0, 5, -2]); this.grooveB = pick([1, 2]); this.sec = null; this.secBar = 0; this.secLast = false; this.ph = {};
             this.bright = th.bright * (this.dark ? 0.72 : 1);
-            this.B = 60 / (gn.bpm * (this.dark ? 0.94 : 1)); this.barDur = this.B * 4; this.cpb = gn.cpb;
+            var vo = VOPT[theme] || VOPT.neutral; this.V = chance(0.4) ? vo[0] : pick(vo);
+            this.B = 60 / (gn.bpm * (this.dark ? 0.94 : 1) * rnd(0.95, 1.05)); this.barDur = this.B * 4; this.cpb = gn.cpb;
             this.offset = 0; this.bar0 = 0; this.bar = 0; this.nextT = 0; this.endT = null; this.ending = false; this.ci = 0; this.forcePad = true;
             this.prevVoice = null; this.hiVoice = null; this.lastMel = null; this.lastKoto = null; this.busyUntil = 0; this.motif = null; this.lhPat = null;
             this.cont = []; this.fv = null; this.hist = []; this.E = null; this.Ee = null; this.accent = false;
@@ -5060,11 +5103,11 @@
             this.nextT = t; this.bar = this.bar0 = 0; this.forcePad = true;
             natureStart(this, t);
             var wl = {
-                ambient: [['glass', 64, 96], ['koto', 64, 92]], zen: [[this.theme === 'okinawa' ? 'sanshin' : 'koto', 52, 96], ['glass', 76, 96]],
-                piano: [['piano', 40, 96], ['koto', 64, 96], ['celesta', 72, 96]], lofi: [['bass', 24, 60], ['ep', 52, 80], ['koto', 60, 88], ['shamisen', 60, 88], ['vibes', 60, 90]], nature: [['koto', 64, 98]]
+                ambient: [['suikin', 72, 98], ['glass', 76, 96], ['koto', 76, 100]], zen: [[this.theme === 'okinawa' ? 'sanshin' : 'koto', 52, 96], ['bowl', 52, 78], ['kane', 40, 56]],
+                piano: [['piano', 36, 96], ['celesta', 76, 96]], lofi: [['bass', 24, 60], ['ep', 52, 80], ['vibes', 60, 90]], nature: [['koto', 64, 98], ['suikin', 76, 98], ['kane', 40, 56]]
             }[this.genre] || [];
             wl.forEach(function (w) { warm(w[0], w[1], w[2]); });
-            (VOICES[this.theme] || VOICES.neutral).forEach(function (v) { if (STR[v]) warm(v, VREG[v][0] - (v === 'koto' ? 12 : 2), VREG[v][1] + 4); });
+            this.V.forEach(function (v) { if (STR[v]) warm(v, VREG[v][0] - (v === 'koto' ? 12 : 2), VREG[v][1] + 4); });
             if (this.gn.start) this.gn.start(this, t);
             this.fade(1, t, dur);
         };
@@ -5124,17 +5167,30 @@
 
         // ── Genres ──────────────────────────────────────────────────────
         function ambientBar(s, rel, t0, cs) {
-            var B = s.B, E = s.Ee, sec = s.sec, V = VOICES[s.theme] || VOICES.neutral;
+            var B = s.B, E = s.Ee, sec = s.sec, V = s.V, bd = s.barDur;
             if (cs) {
                 var ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 52, 74); s.prevVoice = v;
                 pad(s.d, t0, v, span(s, rel), { type: 'triangle', type2: 'sine', cut: (sec === 'B' ? 1600 : 1300) * s.bright, att: 2.6, rel: 3.4, gain: 0.03, det: 6, wet: 0.6 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.07);
+                if (chance(sec === 'C' ? 0.9 : 0.5)) sho(s.d, t0 + B * pick([0, 1]), shoVoice(s, ch), span(s, rel), 0.014, { wet: 0.85 });
             }
-            // Lead: the landscape's instrument (A) and its partner (B); the bridge (C) keeps to shō and glass
-            if (sec !== 'C' && E >= 1 && rel % 2 === 0 && chance(E === 1 ? 0.5 : E >= 3 ? 0.95 : s.dark ? 0.65 : 0.8)) lead(s, sec === 'B' ? V[1] : V[0], 'amb' + sec, rel, t0, 0.055);
-            if (E >= 1 && rel % 4 === 2 && chance(E >= 3 || sec === 'C' ? 0.8 : 0.5)) sho(s.d, t0 + B, shoVoice(s, chordNotes(s, s.ci)), s.barDur * 1.5, 0.016, { wet: 0.85 });
+            // Suikinkutsu: drops ring the buried jar, always within the scale
+            var drops = scaleNotes(s, 74, 96), nd = poisson([0.6, 1.2, 1.8, 2.6, 3.5][E] * (sec === 'C' ? 0.6 : 1));
+            for (var i = 0; i < nd; i++) {
+                var tt = t0 + rnd(0, bd), pn = rnd(-0.6, 0.6);
+                suikin(s.d, tt, pick(drops), rnd(0.02, 0.035), pn);
+                if (chance(0.25)) suikin(s.d, tt + rnd(0.12, 0.3), pick(drops), 0.014, pn);
+            }
+            // Far-off phrases: the landscape's instrument (A), its partner (B)
+            if (sec !== 'C' && E >= 1 && rel % 2 === 0 && chance(E === 1 ? 0.35 : E >= 3 ? 0.8 : 0.55)) lead(s, sec === 'B' ? V[1] : V[0], 'amb' + sec, rel, t0, 0.05, 0, true);
+            // Koto harmonics: soft high tones with long echoes
+            if (sec !== 'C' && rel % 2 === 1 && chance(0.4)) {
+                var hn = chordTones(chordNotes(s, s.ci), 79, 98);
+                for (var h = 0; h < 2 && hn.length; h++) pluck(s.d, t0 + B * (h * 1.5 + rnd(0, 0.5)), pick(hn), 0.03, { decay: 2, bright: 3, wet: 0.85, echo: 0.45, pan: rnd(-0.5, 0.5) });
+            }
+            // Bridge: a singing bowl under shō and glass
+            if (sec === 'C' && s.secBar === 0) singBowl(s.d, t0, low(s.k, 57), bd * 4, 0.028, { wet: 0.7 });
             if (sec === 'C' && rel % 2 === 0) tone('glass', s.d, t0 + B * pick([0, 1, 2]), pick(voiceChord(chordNotes(s, s.ci), null, 79, 96)), 0.02, { wet: 0.9, echo: 0.4, pan: rnd(-0.6, 0.6) });
-            if (sec === 'C' && rel % 4 === 1 && chance(0.6)) flute(s.d, t0 + B * 0.5, pick(scaleNotes(s, 62, 76)), s.barDur * 0.7, 0.045, { wet: 0.75, echo: 0.3, pan: rnd(-0.2, 0.2) });
             if (s.secLast) noiseHit(s.d, t0 + B * 2, { kind: 'pink', type: 'bandpass', f: 500, f2: 2600, q: 1, dur: B * 2, att: B * 1.9, vel: 0.008, wet: 0.6 });
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
         }
@@ -5150,7 +5206,7 @@
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
             }
             // Lead: the landscape's instrument (A), its partner (B), a bamboo flute alone in the bridge; Okinawa's A is the sanshin pattern
-            var V = VOICES[s.theme] || VOICES.neutral, lv = sec === 'C' ? (oki ? 'fue' : 'shaku') : sec === 'B' ? V[1] : oki ? null : V[0], wind = lv === 'shaku' || lv === 'fue';
+            var V = s.V, lv = sec === 'C' ? (oki ? 'fue' : 'shaku') : sec === 'B' ? V[1] : oki ? null : V[0], wind = lv === 'shaku' || lv === 'fue';
             if (lv && E >= 1 && rel % 2 === 0 && chance(sec === 'C' ? 0.7 : E === 1 ? 0.5 : E >= 3 ? 0.95 : s.dark ? 0.6 : 0.75)) { lead(s, lv, 'zen' + sec + lv, rel, t0, 0.075); s.busyUntil = t0 + 2 * s.barDur; }
             var notes = scaleNotes(s, oki ? 62 : 57, oki ? 84 : 79);
             // Koto (sanshin) patterns accompany a wind lead
@@ -5184,13 +5240,25 @@
                 var i0 = Math.floor(Math.random() * 3);
                 for (var g = 0; g < 6 && i0 + g < notes.length; g++) pluck(s.d, t0 + g * 0.06, notes[i0 + g], 0.045, { decay: 1.2, bright: 6, wet: 0.5, pan: -0.3 + g * 0.12 });
             }
-            if (rel % 4 === 0 && chance(sec === 'C' ? 0.8 : 0.5)) rin(s.d, t0 + rnd(0, 0.1), rootNear(s, 79), 0.035, { wet: 0.8, pan: rnd(-0.4, 0.4) });
+            // Singing bowls: a struck bowl opens each section and answers now and then; in the bridge one is rubbed and sings
+            var bw = scaleNotes(s, 55, 76).filter(function (x) { return [0, 5, 7].indexOf(pc(x - s.k)) >= 0; }), b0 = low(s.k, 55);
+            if (s.secBar === 0) bowl(s.d, t0, b0, 0.075, { pan: -0.15 });
+            else if (rel % 2 === 0 && chance(sec === 'C' ? 0.5 : 0.35)) bowl(s.d, t0 + B * pick([0, 1, 2]), pick(bw.length ? bw : [b0 + 12]), 0.05, { pan: rnd(-0.5, 0.5) });
+            if (sec === 'C' && s.secBar === 0) singBowl(s.d, t0 + B, b0, s.barDur * 5, 0.04, { wet: 0.6 });
+            else if (sec === 'A' && s.secBar === 4 && chance(0.35)) singBowl(s.d, t0, b0 + 12, s.barDur * 3, 0.025, { wet: 0.65, pan: 0.3 });
+            // Temple bell at night (and in the forest), opening the bridge
+            if (sec === 'C' && s.secBar === 0 && (s.dark || s.theme === 'sage')) kane(s.d, t0 + B * 2, low(s.k, 43), 0.05, { pan: 0.3 });
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
         }
-        var LH = [[[0, 0, 0.32], [0.5, 1, 0.2], [1, 2, 0.22], [1.5, 1, 0.18], [2, 3, 0.22], [2.5, 1, 0.18], [3, 2, 0.2], [3.5, 1, 0.16]],
-            [[0, 0, 0.32], [1, 1, 0.2], [1.5, 2, 0.2], [2, 3, 0.2], [3, 2, 0.18]], [[0, 0, 0.3], [0.5, 2, 0.2], [1, 3, 0.2], [2, 0, 0.24], [2.5, 2, 0.18], [3, 3, 0.18]]];
-        var LH_SPARSE = [[0, 0, 0.28], [1, 2, 0.18], [2, 3, 0.18], [3, 1, 0.15]];
-        var LH_ARP = [[0, 0, 0.3], [0.5, 2, 0.18], [1, 3, 0.2], [1.5, 2, 0.16], [2, 1, 0.24], [2.5, 2, 0.17], [3, 3, 0.19], [3.5, 2, 0.15]];
+        // Left hand under the sustain pedal: [beat, voices (0 root, 1 fifth, 2/3 chord tones above, 4 octave), velocity]
+        var LHP = [
+            [[0, [0, 4], 0.3], [1, [2, 3], 0.15], [2.5, [1], 0.13], [3, [2, 3], 0.13]],
+            [[0, [0], 0.3], [1, [1], 0.17], [2, [2], 0.19], [3, [3], 0.15]],
+            [[0, [0, 4], 0.32], [2, [1, 2, 3], 0.16]],
+            [[0, [0], 0.3], [0.5, [1], 0.15], [1, [4], 0.17], [2, [3], 0.16], [3, [2], 0.14]],
+            [[0, [0, 1], 0.3], [1.5, [2], 0.15], [2, [3, 4], 0.15]]
+        ];
+        var LHP_SPARSE = [[0, [0, 4], 0.28], [2, [2, 3], 0.13]];
         // Two-bar phrase cells: [beat, scale step from the goal tone, beats, ornament], leaving space (ma) at the end.
         // Ornaments: g grace from above, o push up and release (oshi-hanashi), y vibrato (yuri), f falling release
         var JP = [
@@ -5203,7 +5271,15 @@
             [[0, 3, 1, 'g'], [1, 2, 1], [2, 0, 1], [3, -1, 1], [4, 0, 3, 'y']],
             [[0, 2, 3, 'o'], [3, 0, 1], [4, -2, 3, 'f']],
             [[0, 0, 1.5], [1.5, 2, 0.5], [2, 3, 2, 'o'], [4, 2, 1], [5, 1, 2.5, 'y']],
-            [[0.5, 2, 0.5], [1, 1, 0.5], [1.5, 0, 2.5, 'y'], [4.5, 1, 0.5], [5, 0, 2, 'f']]
+            [[0.5, 2, 0.5], [1, 1, 0.5], [1.5, 0, 2.5, 'y'], [4.5, 1, 0.5], [5, 0, 2, 'f']],
+            [[0, 0, 0.5], [0.5, 1, 0.5], [1, 0, 0.5], [1.5, -1, 0.5], [2, 0, 2, 'y'], [5, 2, 0.5], [5.5, 1, 0.5], [6, 0, 2]],
+            [[0, 3, 0.5, 'g'], [0.5, 2, 0.5], [1, 1, 0.5], [1.5, 2, 0.5], [2, 1, 0.5], [2.5, 0, 3.5, 'y']],
+            [[0, -1, 1], [1, 0, 1], [2, 2, 2, 'o'], [4, 1, 0.5], [4.5, 0, 0.5], [5, -1, 0.5], [5.5, 0, 2.5, 'f']],
+            [[0, 4, 2, 'y'], [2, 3, 0.5], [2.5, 2, 0.5], [3, 1, 1, 'g'], [4, 0, 4, 'y']],
+            [[0, 0, 0.75], [0.75, 0, 0.25], [1, 1, 1], [2, 0, 0.75], [2.75, 0, 0.25], [3, -1, 1], [4, 0, 2, 'y']],
+            [[1, 2, 1, 'g'], [2, 1, 2, 'o'], [4, 0, 1], [5, -2, 3, 'f']],
+            [[0, 1, 0.33], [0.33, 2, 0.33], [0.67, 1, 0.33], [1, 0, 3, 'y'], [4.5, 2, 0.5], [5, 1, 1], [6, 0, 2]],
+            [[0, -2, 2, 'o'], [2, 0, 2, 'y'], [4, 1, 1], [5, 0, 3, 'f']]
         ];
         // Phrases resolve onto the nuclear tones (kakuon: tonic, fourth, fifth). Per 8-bar section: call, answer,
         // the call again (thinned out) and a closing on the tonic; the motif returns with its section letter.
@@ -5226,19 +5302,21 @@
             return out;
         }
         // One phrase note on a Japanese instrument, with its idiomatic ornament
-        function jvoice(s, v, t, n, vel, pan) {
-            var d = s.d, dur = n.dur * s.B, m = n.m, tg = Math.max(now(), t - 0.07), o;
+        function jvoice(s, v, t, n, vel, pan, far) {
+            var d = s.d, dur = n.dur * s.B, m = n.m, tg = Math.max(now(), t - 0.07), wet = far ? 0.8 : 0.4, o;
             vel *= VK[v] * rnd(0.85, 1.05);
             if (v === 'piano') {
                 if (n.orn === 'g') piano(d, tg, m + n.up, vel * 0.55, 0.12, { wet: 0.45, pan: pan });
-                piano(d, t, m, vel, dur + s.B * 0.5, { wet: 0.45, pan: pan });
+                piano(d, t, m, vel, dur + s.B * 0.5, { wet: 0.45, pan: pan, ped: true });
+                // Long notes in octaves
+                if (n.dur >= 1.5 && chance(0.4)) piano(d, t + 0.006, m - 12, vel * 0.5, dur + s.B * 0.5, { wet: 0.45, pan: pan, ped: true });
                 return;
             }
             if (v === 'shaku' || v === 'fue') {
-                flute(d, t, m, Math.max(0.3, dur * 0.9), vel, { wet: 0.65, echo: 0.25, pan: pan, fue: v === 'fue', grace: n.orn === 'g' ? m + n.up : n.orn === 'o' ? m - n.dn : 0, vib: n.orn === 'y' ? 0.02 : 0, fall: n.orn === 'f' ? 1 : 0 });
+                flute(d, t, m, Math.max(0.3, dur * 0.9), vel, { wet: wet + 0.25, echo: far ? 0.35 : 0.25, pan: pan, fue: v === 'fue', grace: n.orn === 'g' ? m + n.up : n.orn === 'o' ? m - n.dn : 0, vib: n.orn === 'y' ? 0.02 : 0, fall: n.orn === 'f' ? 1 : 0 });
                 return;
             }
-            o = { kind: v === 'koto' ? null : v, decay: v === 'shamisen' || v === 'sanshin' ? 0.85 : 1.6, bright: v === 'koto' ? 7 : 9, wet: v === 'biwa' ? 0.5 : 0.4, echo: 0.15, pan: pan, pick: true };
+            o = { kind: v === 'koto' ? null : v, decay: v === 'shamisen' || v === 'sanshin' ? 0.85 : 1.6, bright: v === 'koto' ? 7 : 9, wet: v === 'biwa' ? wet + 0.1 : wet, echo: far ? 0.35 : 0.15, pan: pan, pick: true };
             if (n.orn === 'g') pluck(d, tg, m + n.up, vel * 0.5, o);
             if (n.orn === 'o' && dur > 0.5) { o.bend = n.up; o.bendAt = Math.min(0.3, dur * 0.3); o.release = dur * 0.35; }
             else if (n.orn === 'y' && dur > 0.6) o.yuri = true;
@@ -5247,28 +5325,32 @@
             // Koto: long notes doubled an octave below
             if (v === 'koto' && n.dur >= 2 && chance(0.3)) pluck(d, t + 0.012, m - 12, vel * 0.45, { decay: 1.6, bright: 6, wet: 0.45, pan: pan });
         }
-        function lead(s, v, slot, rel, t0, vel, sw) {
+        function lead(s, v, slot, rel, t0, vel, sw, far) {
             var r = VREG[v], pan = rnd(-0.3, 0.3);
-            jphrase(s, slot, rel, r[0], r[1]).forEach(function (n) { jvoice(s, v, t0 + n.beat * s.B + (sw && n.beat % 1 ? sw : 0) + rnd(0, 0.012), n, vel, pan); });
+            jphrase(s, slot, rel, r[0], r[1]).forEach(function (n) { jvoice(s, v, t0 + n.beat * s.B + (sw && n.beat % 1 ? sw : 0) + rnd(0, 0.012), n, vel, pan, far); });
         }
         function pianoBar(s, rel, t0, cs) {
-            var B = s.B, E = s.Ee, sec = s.sec, ch = chordNotes(s, s.ci), R = low(ch[0], 40), dk = s.dark ? 0.85 : 1, V = VOICES[s.theme] || VOICES.neutral;
+            var B = s.B, E = s.Ee, sec = s.sec, ch = chordNotes(s, s.ci), R = low(ch[0], 40), dk = s.dark ? 0.85 : 1, V = s.V;
             var up = function (m) { return R + 12 + pc(m - R); };
-            var lh = [R, R + 7, up(ch[1]), up(ch[3] != null ? ch[3] : ch[2])];
-            if (rel % 8 === 0 || !s.lhPat) s.lhPat = pick(LH);
+            var lh = [R, R + 7, up(ch[1]), up(ch[3] != null ? ch[3] : ch[2]), R + 12];
+            if (rel % 8 === 0 || !s.lhPat) s.lhPat = pick(LHP);
             if (sec === 'C') {
                 // Bridge: sustained chords and a few celesta sparkles
-                if (cs) voiceChord(ch, s.prevVoice, 55, 74).concat([R]).forEach(function (m, i) { piano(s.d, t0 + i * 0.015, m, 0.15 * dk, span(s, rel), { wet: 0.5 }); });
+                if (cs) voiceChord(ch, s.prevVoice, 55, 74).concat([R]).forEach(function (m, i) { piano(s.d, t0 + i * 0.015, m, 0.15 * dk, span(s, rel), { wet: 0.5, ped: true }); });
                 if (rel % 2 === 0 && chance(0.6)) lead(s, V[1], 'pnoC' + V[1], rel, t0, 0.065);
                 else if (chance(0.35)) tone('celesta', s.d, t0 + B * pick([1, 1.5, 2.5]), pick(scaleNotes(s, 79, 96)), 0.022, { wet: 0.6, echo: 0.3, pan: rnd(-0.4, 0.4) });
+            } else if (sec === 'B') {
+                // B: rolled chords under the pedal, the landscape's instrument sings above
+                if (cs) { var rv = voiceChord(ch, s.prevVoice, 55, 76); s.prevVoice = rv; [R, R + 12].concat(rv).forEach(function (m, i) { piano(s.d, t0 + i * 0.045, m, (i < 2 ? 0.26 : 0.16) * dk, span(s, rel), { wet: 0.45, ped: true }); }); }
+                else if (E >= 2) piano(s.d, t0 + 2 * B, R + 12, 0.14 * dk, 2 * B, { wet: 0.45, ped: true });
+                if (cs && E >= 2) sho(s.d, t0, shoVoice(s, ch), span(s, rel), 0.012, { wet: 0.7 });
+                if (E >= 1 && rel % 2 === 0 && chance(E === 1 ? 0.5 : E >= 3 ? 0.95 : (s.dark ? 0.65 : 0.85))) lead(s, V[0], 'pnoB' + V[0], rel, t0, 0.07);
             } else {
-                (E <= 1 || (s.dark && E < 3) ? LH_SPARSE : sec === 'B' ? LH_ARP : s.lhPat).forEach(function (p) {
-                    piano(s.d, t0 + p[0] * B + rnd(0, 0.012), lh[p[1]], p[2] * rnd(0.85, 1.05) * dk * (E <= 0 ? 0.8 : 1), (4 - p[0]) * B + B, { wet: 0.4 });
+                var hold = span(s, rel);
+                (E <= 1 || (s.dark && E < 3) ? LHP_SPARSE : s.lhPat).forEach(function (p) {
+                    p[1].forEach(function (ix, j) { piano(s.d, t0 + p[0] * B + j * 0.012 + rnd(0, 0.01), lh[ix], p[2] * rnd(0.88, 1.04) * dk * (E <= 0 ? 0.8 : 1), Math.max(B, hold - p[0] * B), { wet: 0.4, ped: true }); });
                 });
-                // B: a quiet shō under the piano
-                if (sec === 'B' && cs && E >= 2) sho(s.d, t0, shoVoice(s, ch), span(s, rel), 0.012, { wet: 0.7 });
-                // Melody: piano (A); in B the landscape's instrument takes over
-                if (E >= 1 && rel % 2 === 0 && chance(E === 1 ? 0.5 : E >= 3 ? 0.95 : (s.dark ? 0.65 : 0.85))) lead(s, sec === 'B' ? V[0] : 'piano', 'pno' + sec, rel, t0, sec === 'B' ? 0.07 : 0.27);
+                if (E >= 1 && rel % 2 === 0 && chance(E === 1 ? 0.5 : E >= 3 ? 0.95 : (s.dark ? 0.65 : 0.85))) lead(s, 'piano', 'pnoA', rel, t0, 0.27);
                 // Lead-in run into the next section
                 if (s.secLast && E >= 2) { var rn = scaleNotes(s, 64, 88), i0 = nearestIdx(rn, 72); for (var q = 0; q < 4; q++) piano(s.d, t0 + 3 * B + q * B / 4, rn[Math.min(rn.length - 1, i0 + q)], 0.15 + q * 0.02, B * 0.4, { wet: 0.45, pan: 0.15 }); }
             }
@@ -5304,7 +5386,7 @@
             }
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
             // Hook: the landscape's instrument (A), its partner (B), a bamboo flute in the bridge
-            var V = VOICES[s.theme] || VOICES.neutral, lv = sec === 'B' ? V[1] : sec === 'A' ? V[0] : V[0] === 'shaku' ? 'koto' : 'shaku';
+            var V = s.V, lv = sec === 'B' ? V[1] : sec === 'A' ? V[0] : V[0] === 'shaku' ? 'koto' : 'shaku';
             if (E >= 1 && rel % 2 === 0 && chance((s.dark ? 0.45 : 0.6) * (E >= 3 || sec === 'B' ? 1.4 : 1))) lead(s, lv, 'lofi' + sec + lv, rel, t0, 0.06 * dk, sw);
         }
 
@@ -5321,11 +5403,12 @@
             return g;
         }
         function natureStart(s, t) {
-            var p = (NAT[s.theme] || NAT.neutral)[s.dark ? 'n' : 'd'];
+            var p = (NAT[s.theme] || NAT.neutral)[s.dark ? 'n' : 'd'], bg = gainN(s.genre === 'nature' ? 0.6 : 1);
+            bg.connect(s.nat);
             s.np = p; s.L = {};
             if (p.wind) {
                 var w = bed(s, 'pink', t, 0.6), bp = filt('bandpass', 420, 0.8), lp = filt('lowpass', 1100, 0.5), g = gainN(0);
-                w.connect(bp); bp.connect(lp); lp.connect(g); g.connect(s.nat);
+                w.connect(bp); bp.connect(lp); lp.connect(g); g.connect(bg);
                 g.gain.setTargetAtTime(p.wind * K.wind * 0.6, t, 0.8);
                 s.L.wind = { g: g, bp: bp, lvl: p.wind * K.wind };
                 if (p.leaves) s.L.leaves = { lvl: p.leaves };
@@ -5333,25 +5416,25 @@
             if (p.water) {
                 // Brook: low bed + smooth rush; the babble comes from discrete bubbles in natureBar
                 var wb = bed(s, 'brown', t, 0.4), wlp = filt('lowpass', 600, 0.5), wg = gainN(0);
-                wb.connect(wlp); wlp.connect(wg); wg.connect(s.nat); wg.gain.setTargetAtTime(p.water * K.gurgle, t, 1);
+                wb.connect(wlp); wlp.connect(wg); wg.connect(bg); wg.gain.setTargetAtTime(p.water * K.gurgle, t, 1);
                 var ru = bed(s, 'pink', t, 0.5), rbp = filt('bandpass', 1300, 0.7), rlp = filt('lowpass', 3500, 0.5), rg = gainN(0);
-                ru.connect(rbp); rbp.connect(rlp); rlp.connect(rg); rg.connect(s.nat); rg.gain.setTargetAtTime(p.water * K.water, t, 1);
+                ru.connect(rbp); rbp.connect(rlp); rlp.connect(rg); rg.connect(bg); rg.gain.setTargetAtTime(p.water * K.water, t, 1);
                 s.L.water = { lvl: p.water, pan: rnd(-0.35, 0.35), rg: rg };
             }
             if (p.waves) {
                 var wv = bed(s, 'pink', t, 0.7), wlp2 = filt('lowpass', 600, 0.5), wg2 = gainN(0);
-                wv.connect(wlp2); wlp2.connect(wg2); wg2.connect(s.nat);
+                wv.connect(wlp2); wlp2.connect(wg2); wg2.connect(bg);
                 s.L.waves = { g: wg2, lp: wlp2, lvl: p.waves * K.waves, next: t + 0.3 };
             }
             if (p.rain) {
                 var r1 = bed(s, 'white', t, 0.8), rbp2 = filt('bandpass', 3000, 0.35), rg1 = gainN(0), r2 = bed(s, 'pink', t, 0.6), rlp2 = filt('lowpass', 900, 0.5), rg2 = gainN(0);
-                r1.connect(rbp2); rbp2.connect(rg1); rg1.connect(s.nat); r2.connect(rlp2); rlp2.connect(rg2); rg2.connect(s.nat);
+                r1.connect(rbp2); rbp2.connect(rg1); rg1.connect(bg); r2.connect(rlp2); rlp2.connect(rg2); rg2.connect(bg);
                 rg1.gain.setTargetAtTime(p.rain * K.rain, t, 1); rg2.gain.setTargetAtTime(p.rain * K.rain * 0.8, t, 1);
                 s.L.rain = { lvl: p.rain };
             }
             if (p.city) {
                 var c1 = bed(s, 'brown', t, 0.5), clp = filt('lowpass', 200, 0.5), cg = gainN(0), c2 = bed(s, 'pink', t, 0.7), cbp = filt('bandpass', 650, 0.5), cg2 = gainN(0);
-                c1.connect(clp); clp.connect(cg); cg.connect(s.nat); c2.connect(cbp); cbp.connect(cg2); cg2.connect(s.nat);
+                c1.connect(clp); clp.connect(cg); cg.connect(bg); c2.connect(cbp); cbp.connect(cg2); cg2.connect(bg);
                 cg.gain.setTargetAtTime(p.city * K.city, t, 1); cg2.gain.setTargetAtTime(p.city * K.city * 0.06, t, 1);
                 s.L.city = { g: cg, lvl: p.city * K.city };
             }
@@ -5381,7 +5464,7 @@
             }
             if (L.city) L.city.g.gain.setTargetAtTime(L.city.lvl * rnd(0.7, 1), t0 + rnd(0, bd), 2);
             if (L.rain) for (var r = poisson(10 * L.rain.lvl); r > 0; r--) noiseHit(s.nd, t0 + rnd(0, bd), { f: rnd(2500, 6000), q: 3, dur: 0.015, vel: rnd(0.01, 0.03), pan: rnd(-0.8, 0.8) });
-            var ev = p.ev || {}, mul = (s.genre === 'nature' ? 1.4 : 1) * EVMUL[s.E === null ? 2 : s.E] * (NOEV ? 0 : 1);
+            var ev = p.ev || {}, mul = (s.genre === 'nature' ? 2.4 : 1) * EVMUL[s.E === null ? 2 : s.E] * (NOEV ? 0 : 1);
             for (var k in ev) {
                 if (!EV.hasOwnProperty(k)) continue;
                 for (var n = poisson(ev[k] * mul * bd / 60); n > 0; n--) EV[k](s.nd, t0 + rnd(0, bd), s);
@@ -5495,7 +5578,85 @@
                 noiseHit(d, tt, { f: 1800, q: 4, dur: 0.02, vel: a }); noiseHit(d, tt + 0.11, { f: 1700, q: 4, dur: 0.02, vel: a * 0.8 });
             }
         }
+        // Raspy insect tone: a carrier chopped by a fast pulse train
+        function rasp(x, rate, depth) {
+            var am = gainN(1 - depth), lf = oscN('square', rate), lg = gainN(depth);
+            lf.connect(lg); lg.connect(am.gain); x.connect(am); return { out: am, lf: lf };
+        }
+        // Minmin-zemi (summer cicada): "miiin—min-min-min—" swell, pulses, fade
+        function minmin(d, t, lvl) {
+            var x = oscN('sine', rnd(3800, 4400)), r = rasp(x, rnd(90, 140), 0.6), g = gainN(0), du = rnd(5, 8), tt;
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl * 0.6, t + 1.2);
+            for (tt = t + 1.2; tt < t + du - 1; tt += 0.32) { g.gain.linearRampToValueAtTime(lvl, tt + 0.08); g.gain.linearRampToValueAtTime(lvl * 0.35, tt + 0.3); }
+            g.gain.linearRampToValueAtTime(0, t + du);
+            r.out.connect(g); send(g, d, 0.3, 0, rnd(-0.8, 0.8));
+            x.start(t); r.lf.start(t); x.stop(t + du + 0.1); r.lf.stop(t + du + 0.1);
+        }
+        // Higurashi (evening cicada): "kana-kana-kana…" falling in pitch and strength
+        function higurashi(d, t, lvl) {
+            var fc = rnd(4300, 4700), x = oscN('sine', fc), r = rasp(x, 160, 0.4), am = gainN(0), g = gainN(lvl), tt = t, n = 22 + Math.floor(Math.random() * 14);
+            for (var i = 0; i < n; i++) {
+                var a = Math.min(1, (i + 1) / 4) * (1 - i / n * 0.7);
+                am.gain.setValueAtTime(0, tt); am.gain.linearRampToValueAtTime(a, tt + 0.012); am.gain.linearRampToValueAtTime(a * 0.25, tt + 0.05); am.gain.linearRampToValueAtTime(0, tt + 0.085);
+                x.frequency.setValueAtTime(fc * (1 - i / n * 0.12), tt);
+                tt += 0.11;
+            }
+            r.out.connect(am); am.connect(g); send(g, d, 0.5, 0, rnd(-0.8, 0.8));
+            x.start(t); r.lf.start(t); x.stop(tt + 0.1); r.lf.stop(tt + 0.1);
+        }
+        // Sequence of whistled notes [Hz start, Hz end, s] with short gaps
+        function whistle(d, t, lvl, notes, wet, type) {
+            var x = oscN(type || 'sine', notes[0][0]), g = gainN(0), lp = filt('lowpass', 5000, 0.5), tt = t;
+            g.gain.setValueAtTime(0, t);
+            notes.forEach(function (n) {
+                x.frequency.setValueAtTime(n[0], tt); x.frequency.exponentialRampToValueAtTime(n[1], tt + n[2]);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl * (n[3] || 1), tt + Math.min(0.03, n[2] * 0.3)); g.gain.setValueAtTime(lvl * (n[3] || 1), tt + n[2] * 0.7); g.gain.linearRampToValueAtTime(0, tt + n[2]);
+                tt += n[2] + (n[4] || 0.04);
+            });
+            x.connect(lp); lp.connect(g); send(g, d, wet, 0, rnd(-0.7, 0.7)); x.start(t); x.stop(tt + 0.05);
+        }
+        // Hototogisu (lesser cuckoo): "tokkyo kyoka kyoku"
+        function hototogisu(d, t, lvl) {
+            var s = rnd(0.92, 1.08);
+            whistle(d, t, lvl, [[1750 * s, 1900 * s, 0.1], [2500 * s, 2300 * s, 0.16, 1, 0.05], [2150 * s, 2350 * s, 0.09], [2600 * s, 2400 * s, 0.14, 1, 0.05], [2100 * s, 1850 * s, 0.24, 0.9]], 0.55);
+        }
+        // Kakkō (cuckoo): "kak-ko", a falling third, a few times
+        function kakko(d, t, lvl) {
+            var s = rnd(0.95, 1.05), seq = [], n = 2 + Math.floor(Math.random() * 3);
+            for (var i = 0; i < n; i++) seq.push([760 * s, 740 * s, 0.16, 1, 0.08], [610 * s, 590 * s, 0.32, 0.85, 0.55]);
+            whistle(d, t, lvl, seq, 0.7);
+        }
+        // Kajika frog: a flute-like rising trill by the mountain stream
+        function kajika(d, t, lvl) {
+            var seq = [], n = 8 + Math.floor(Math.random() * 8), f = rnd(1700, 2000);
+            for (var i = 0; i < n; i++) { var fi = f * (1 + i / n * 0.35); seq.push([fi * 0.92, fi * 1.05, 0.05, 0.6 + 0.4 * i / n, 0.035]); }
+            whistle(d, t, lvl, seq, 0.45);
+        }
+        // Karasu (crow): two or three hoarse caws
+        function karasu(d, t, lvl) {
+            var n = 2 + Math.floor(Math.random() * 2), tt = t, pn = rnd(-0.8, 0.8), f = rnd(520, 620);
+            for (var i = 0; i < n; i++) {
+                var x = oscN('sawtooth', f), b1 = filt('bandpass', 1250, 1.8), b2 = filt('bandpass', 2500, 2.5), g = gainN(0), du = rnd(0.28, 0.4);
+                x.frequency.setValueAtTime(f * 1.05, tt); x.frequency.linearRampToValueAtTime(f * 0.88, tt + du);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.04); g.gain.setValueAtTime(lvl, tt + du * 0.6); g.gain.linearRampToValueAtTime(0, tt + du);
+                x.connect(b1); x.connect(b2); b1.connect(g); b2.connect(g); send(g, d, 0.6, 0, pn);
+                x.start(tt); x.stop(tt + du + 0.05); tt += du + rnd(0.25, 0.45);
+            }
+        }
+        // Railway crossing (fumikiri): the alternating "kan-kan" bell
+        function fumikiri(d, t, lvl) {
+            var du = rnd(5, 8), pn = rnd(-0.6, 0.6);
+            for (var tt = t, i = 0; tt < t + du; tt += 0.48, i++) bell(d, tt, i % 2 ? 83 : 84, lvl * (1 - (tt - t) / du * 0.4), { decay: 0.25, ratio: 2.76, index: 1.2, wet: 0.6, pan: pn });
+        }
         var EV = {
+            minmin: function (d, t) { minmin(d, t, 0.009); },
+            higurashi: function (d, t) { higurashi(d, t, 0.014); },
+            hototogisu: function (d, t) { hototogisu(d, t, 0.024); },
+            kakko: function (d, t) { kakko(d, t, 0.03); },
+            kajika: function (d, t) { kajika(d, t, 0.018); },
+            karasu: function (d, t) { karasu(d, t, 0.02); },
+            fumikiri: function (d, t) { fumikiri(d, t, 0.01); },
+            suikin: function (d, t, s) { var nt = scaleNotes(s, 79, 96), pn = rnd(-0.6, 0.6); suikin(d, t, pick(nt), rnd(0.015, 0.03), pn); if (chance(0.4)) suikin(d, t + rnd(0.15, 0.4), pick(nt), 0.012, pn); },
             chirp: function (d, t) { birdCall(d, t, 0.028); },
             uguisu: function (d, t) { uguisu(d, t, 0.03); },
             crane: function (d, t) { crane(d, t, 0.022); },
@@ -5505,7 +5666,7 @@
             drip: function (d, t) { drip(d, t, 0.035); },
             knock: function (d, t) { knock(d, t, 0.045); },
             shishi: function (d, t) { shishi(d, t, 0.06); },
-            bell: function (d, t, s) { rin(d, t, low(s.k, 45), 0.05, { big: true, wet: 0.9 }); },
+            bell: function (d, t, s) { kane(d, t, low(s.k, 43), 0.045, { wet: 0.95, pan: rnd(-0.5, 0.5) }); },
             furin: function (d, t, s) { chimes(d, t, 0.028, s, 86, 98, 1.1, 1 + Math.floor(Math.random() * 3)); },
             tinkle: function (d, t, s) { chimes(d, t, 0.012, s, 96, 108, 0.45, 2 + Math.floor(Math.random() * 4)); },
             train: function (d, t) { train(d, t, 0.07); }
@@ -5543,7 +5704,7 @@
         function spot() { return clamp(panOf(lastX) * 1.6, -0.6, 0.6); }
         // Answering voice of the active genre, routed through the scene (same room, tone and fades)
         function answer(s, t, m, k) {
-            var d = s.d, g = s.genre, pan = spot(), V = VOICES[s.theme] || VOICES.neutral, sv = STR[V[0]] ? V[0] : STR[V[1]] ? V[1] : 'koto';
+            var d = s.d, g = s.genre, pan = spot(), V = s.V, sv = STR[V[0]] ? V[0] : STR[V[1]] ? V[1] : 'koto';
             if (g === 'piano') piano(d, t, m, 0.26 * k, 0.9, { wet: 0.5, pan: pan });
             else if (g === 'lofi' || g === 'nature' || g === 'zen') pluck(d, t, m, 0.07 * k * VK[sv], { kind: sv === 'koto' ? null : sv, decay: sv === 'koto' || sv === 'biwa' ? 1.5 : 0.85, bright: 7, wet: g === 'nature' ? 0.55 : 0.4, echo: 0.2, pan: pan, pick: true });
             else tone('glass', d, t, m, 0.035 * k, { wet: 0.6, echo: 0.3, pan: pan });
