@@ -135,6 +135,25 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </div>
+                <div role="button" tabindex="0" class="category-card tappable"
+                    onclick="navigateToPage('page-sound', this, event)">
+                    <div class="category-icon cat-sound">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3.5 9.5h3.2L11 6v12l-4.3-3.5H3.5z" class="fi-cream"></path>
+                            <path d="M14.5 9.6a3.4 3.4 0 0 1 0 4.8M17 7.3a6.6 6.6 0 0 1 0 9.4"></path>
+                            <circle cx="19.6" cy="18.2" r="1.8" class="fi-gold"></circle>
+                            <path d="M21.4 18.2V12.6l-1.6.6"></path>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Klang &amp; Musik</span>
+                        <span class="category-desc">Musik, Naturklang, Strichgeräusche, Effekte</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </div>
             </div>
             <div role="button" tabindex="0" class="close-settings tappable" onclick="closeSettings(event)">Schließen
             </div>
@@ -1123,6 +1142,238 @@
             </div>
             <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
         </div>
+        <!-- [KD-SOUND-PAGE] -->
+        <!-- ═══ Sub-Page: Klang & Musik [SHARED c1-front/c2-front] ═══ -->
+        <div class="settings-page" id="page-sound">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Klang &amp; Musik</h3>
+            </div>
+            <div class="setting-group-title">Lautstärke</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <label><input type="radio" name="sound-level" value="off"
+                        onchange="updateSoundSetting('level', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3.5 9.5h3.2L11 6v12l-4.3-3.5H3.5z" class="fi-cream" />
+                            <path d="M15 9.5l5 5M20 9.5l-5 5" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-level" value="low"
+                        onchange="updateSoundSetting('level', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3.5 9.5h3.2L11 6v12l-4.3-3.5H3.5z" class="fi-teal" />
+                            <path d="M14.5 9.6a3.4 3.4 0 0 1 0 4.8" />
+                        </svg>
+                        <span>Leise</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-level" value="mid"
+                        onchange="updateSoundSetting('level', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3.5 9.5h3.2L11 6v12l-4.3-3.5H3.5z" class="fi-gold" />
+                            <path d="M14.5 9.6a3.4 3.4 0 0 1 0 4.8M17 7.3a6.6 6.6 0 0 1 0 9.4" />
+                        </svg>
+                        <span>Mittel</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-level" value="high"
+                        onchange="updateSoundSetting('level', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3.5 9.5h3.2L11 6v12l-4.3-3.5H3.5z" class="fi-coral" />
+                            <path d="M14.5 9.6a3.4 3.4 0 0 1 0 4.8M17 7.3a6.6 6.6 0 0 1 0 9.4M19.5 5a9.8 9.8 0 0 1 0 14" />
+                        </svg>
+                        <span>Laut</span>
+                    </div>
+                </label>
+            </div>
+            <div id="sound-sub-settings">
+            <div class="setting-group-title">Hintergrundmusik (folgt dem Japan-Theme)</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <label><input type="radio" name="sound-music" value="off"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 17.5V6.5l9-2V15" />
+                            <circle cx="6.8" cy="17.5" r="2.3" class="fi-cream" />
+                            <circle cx="15.8" cy="15" r="2.3" class="fi-cream" />
+                            <path d="M4 4l16 16" />
+                        </svg>
+                        <span>Keine</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music" value="ambient"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2.5" y="2.5" width="19" height="19" rx="4.2" class="fi-lavender" />
+                            <path d="M5.5 12.5c1.6-2.4 3.2-2.4 4.8 0s3.2 2.4 4.8 0 2.4-2.4 3.4-1.2" />
+                            <path d="M5.5 16.5c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0" />
+                            <circle cx="16.5" cy="7" r="1.6" class="fi-gold" />
+                        </svg>
+                        <span>Ambient</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music" value="zen"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4.5 12.5h15c0 4-3.4 6.5-7.5 6.5s-7.5-2.5-7.5-6.5z" class="fi-gold" />
+                            <path d="M15 4.8l-2.6 5.4" />
+                            <circle cx="15.6" cy="4.2" r="1.3" class="fi-tan" />
+                            <path d="M8 21.5h8" />
+                        </svg>
+                        <span>Zen</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music" value="piano"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2.4" class="fi-cream" />
+                            <path d="M7.5 12.5V19M12 12.5V19M16.5 12.5V19" />
+                            <rect x="6.3" y="5" width="2.4" height="7.5" rx="0.6" class="fi-teal" />
+                            <rect x="10.8" y="5" width="2.4" height="7.5" rx="0.6" class="fi-teal" />
+                            <rect x="15.3" y="5" width="2.4" height="7.5" rx="0.6" class="fi-teal" />
+                        </svg>
+                        <span>Klavier</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music" value="lofi"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 14.5V12a8 8 0 0 1 16 0v2.5" />
+                            <rect x="3" y="13.5" width="4.4" height="6.8" rx="1.6" class="fi-coral" />
+                            <rect x="16.6" y="13.5" width="4.4" height="6.8" rx="1.6" class="fi-coral" />
+                        </svg>
+                        <span>Lo-Fi</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music" value="nature"
+                        onchange="updateSoundSetting('music', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z" class="fi-mint" />
+                            <path d="M5 19c3-4 6-7 9.5-9.5" />
+                        </svg>
+                        <span>Nur Natur</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Musik-Lautstärke</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <label><input type="radio" name="sound-music-level" value="low"
+                        onchange="updateSoundSetting('musicLevel', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="4.5" width="17" height="15" rx="3.2" class="fi-cream" />
+                            <rect x="6.5" y="13" width="2.8" height="3.5" rx="0.8" class="fi-teal" />
+                        </svg>
+                        <span>Dezent</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music-level" value="mid"
+                        onchange="updateSoundSetting('musicLevel', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="4.5" width="17" height="15" rx="3.2" class="fi-cream" />
+                            <rect x="6.5" y="13" width="2.8" height="3.5" rx="0.8" class="fi-teal" />
+                            <rect x="10.6" y="10" width="2.8" height="6.5" rx="0.8" class="fi-gold" />
+                        </svg>
+                        <span>Mittel</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-music-level" value="high"
+                        onchange="updateSoundSetting('musicLevel', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="4.5" width="17" height="15" rx="3.2" class="fi-cream" />
+                            <rect x="6.5" y="13" width="2.8" height="3.5" rx="0.8" class="fi-teal" />
+                            <rect x="10.6" y="10" width="2.8" height="6.5" rx="0.8" class="fi-gold" />
+                            <rect x="14.7" y="7" width="2.8" height="9.5" rx="0.8" class="fi-coral" />
+                        </svg>
+                        <span>Präsent</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Strichgeräusche (je Strichstil)</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="sound-stroke" value="off"
+                        onchange="updateSoundSetting('stroke', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13.5 6.5l4 4-7.5 7.5-4.2 1 1-4.2 6.7-8.3z" class="fi-cream" />
+                            <path d="M4 4l16 16" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-stroke" value="on"
+                        onchange="updateSoundSetting('stroke', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11.5 8.5l4 4-6 6-4.2 1 1-4.2 5.2-6.8z" class="fi-gold" />
+                            <path d="M16 3.8a4.4 4.4 0 0 1 4.2 4.2M15.4 6.6a1.8 1.8 0 0 1 2 2" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+            <div class="setting-group-title">Effekt-Klänge (Tasten, Aufdecken)</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="sound-fx" value="off"
+                        onchange="updateSoundSetting('fx', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z" class="fi-cream" />
+                            <path d="M10 20.5h4M4 4l16 16" />
+                        </svg>
+                        <span>Aus</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="sound-fx" value="on"
+                        onchange="updateSoundSetting('fx', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z" class="fi-gold" />
+                            <path d="M10 20.5h4" />
+                        </svg>
+                        <span>An</span>
+                    </div>
+                </label>
+            </div>
+            </div>
+            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+        </div>
+        <!-- [/KD-SOUND-PAGE] -->
     </div>
 </div>
 
@@ -4055,6 +4306,1094 @@
     <small>(Karte umdrehen zum Bewerten)</small>
 </div>
 
+<!-- [KD-AUDIO-ENGINE] -->
+<script>
+    /* ═══════════════════════════════════════════════════════════════════
+       KanjiDraw Audio — prozedurale Klangwelt (Web Audio API, keine Dateien)
+       · Hintergrundmusik je Japan-Theme × Tag/Nacht × Genre (generativ;
+         Übergänge mit harmonischem Pivot-Akkord + Equal-Power-Crossfade)
+       · Strichgeräusche je Strichstil (Bleistift, Gelstift, Tusche, Neon),
+         gesteuert von Geschwindigkeit und Stiftdruck
+       · Dezente UI-Effekte (Aufdecken, Tasten, Einstellungen, Fortschritt)
+       Singleton window.__kdAudio überlebt Kartenwechsel (Anki Desktop und
+       AnkiMobile ersetzen nur #qa); bei Seiten-Reloads (AnkiDroid) setzt die
+       Harmonie über sessionStorage fort.
+       [SHARED c1-front/c2-front — beide Kopien identisch halten]
+       ═══════════════════════════════════════════════════════════════════ */
+    (function () {
+        'use strict';
+        var VERSION = '1.0.0';
+        var W = window, D = document;
+        var prior = W.__kdAudio;
+        if (prior && prior.version === VERSION) return;
+        if (prior && typeof prior.dispose === 'function') { try { prior.dispose(); } catch (e) { } }
+        var AC = W.AudioContext || W.webkitAudioContext;
+        if (!AC) { W.__kdAudio = null; return; }
+
+        // ── Tables ──────────────────────────────────────────────────────
+        var LEVEL = { off: 0, low: 0.4, mid: 0.7, high: 1 };
+        var MLEVEL = { low: 0.45, mid: 0.7, high: 1 };
+        var CH = {
+            add9: [0, 4, 7, 14], maj7: [0, 4, 7, 11], maj9: [0, 4, 11, 14], six9: [0, 4, 9, 14],
+            m7: [0, 3, 7, 10], m9: [0, 3, 10, 14], sus2: [0, 2, 7, 12], sus4: [0, 5, 7, 10], ms11: [0, 4, 11, 18]
+        };
+        // key = pitch class of the tonic, scale = melody scale (semitones),
+        // day/night = 4-chord progressions [offset from key, chord type]
+        var THEMES = {
+            neutral: { key: 2, scale: [0, 2, 4, 7, 9], bright: 1, day: [[0, 'add9'], [9, 'm7'], [5, 'maj9'], [7, 'sus2']], night: [[9, 'm9'], [5, 'maj7'], [0, 'add9'], [7, 'sus4']] },
+            warm: { key: 5, scale: [0, 2, 5, 7, 9], bright: 0.95, day: [[0, 'six9'], [5, 'add9'], [2, 'm7'], [7, 'sus4']], night: [[9, 'm7'], [5, 'maj7'], [0, 'add9'], [7, 'sus2']] },
+            cool: { key: 3, scale: [0, 2, 4, 7, 9], bright: 0.9, day: [[0, 'maj9'], [2, 'add9'], [9, 'm7'], [7, 'sus2']], night: [[9, 'm9'], [2, 'add9'], [0, 'maj9'], [7, 'sus2']] },
+            sepia: { key: 9, scale: [0, 1, 5, 7, 8], bright: 0.85, day: [[0, 'm7'], [8, 'maj7'], [5, 'm9'], [1, 'maj7']], night: [[5, 'm9'], [1, 'maj7'], [0, 'm7'], [8, 'maj7']] },
+            rose: { key: 7, scale: [0, 2, 4, 7, 9], bright: 1.05, day: [[0, 'maj9'], [9, 'm9'], [5, 'ms11'], [7, 'sus2']], night: [[9, 'm7'], [5, 'maj9'], [0, 'add9'], [2, 'm7']] },
+            sage: { key: 2, scale: [0, 3, 5, 7, 10], bright: 0.95, day: [[0, 'm9'], [10, 'add9'], [5, 'add9'], [7, 'm7']], night: [[7, 'm7'], [10, 'add9'], [0, 'm9'], [5, 'sus2']] },
+            hokkaido: { key: 4, scale: [0, 2, 4, 7, 9], bright: 1.15, day: [[0, 'maj9'], [2, 'add9'], [9, 'm9'], [7, 'sus2']], night: [[9, 'm9'], [5, 'ms11'], [0, 'maj7'], [7, 'sus4']] },
+            tokyo: { key: 5, scale: [0, 3, 5, 7, 10], bright: 0.9, day: [[8, 'maj9'], [7, 'm7'], [0, 'm9'], [10, 'sus2']], night: [[0, 'm9'], [8, 'maj7'], [5, 'm9'], [7, 'm7']] },
+            okinawa: { key: 0, scale: [0, 4, 5, 7, 11], bright: 1.05, day: [[0, 'maj7'], [5, 'maj9'], [4, 'm7'], [7, 'add9']], night: [[9, 'm7'], [5, 'maj7'], [0, 'maj7'], [7, 'sus4']] }
+        };
+        // Soundscape per theme: continuous layers (0..1) + events per minute
+        var NAT = {
+            neutral: { d: { wind: 0.5, ev: { chirp: 4, crane: 0.6 } }, n: { wind: 0.55, ev: { cricket: 9, owl: 0.5 } } },
+            warm: { d: { water: 0.3, wind: 0.2, ev: { chirp: 3, furin: 2, bell: 0.4, drip: 1 } }, n: { water: 0.25, ev: { frog: 5, cricket: 4, bell: 0.3 } } },
+            cool: { d: { water: 0.3, ev: { drip: 6, chirp: 1.5 } }, n: { water: 0.28, ev: { drip: 5, cricket: 4 } } },
+            sepia: { d: { wind: 0.68, leaves: 0.5, ev: { chirp: 1.5, bell: 0.3 } }, n: { wind: 0.5, leaves: 0.35, ev: { cricket: 14 } } },
+            rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4 } }, n: { wind: 0.42, ev: { frog: 5, cricket: 2 } } },
+            sage: { d: { wind: 0.68, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3 } } },
+            hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
+            tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4 } } },
+            okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8 } }, n: { waves: 0.45, ev: { cricket: 6 } } }
+        };
+        // Continuous-layer calibration (pre-scene gain)
+        var K = { wind: 0.9, leaves: 0.06, water: 0.5, gurgle: 0.5, waves: 0.75, foam: 0.05, rain: 0.15, city: 0.8 };
+        var GENRES = {
+            ambient: { bpm: 56, cpb: 2, tone: 9000, nat: 0.55, trim: 1, bar: ambientBar },
+            zen: { bpm: 60, cpb: 2, tone: 11000, nat: 0.6, trim: 1, bar: zenBar },
+            piano: { bpm: 66, cpb: 2, tone: 9000, nat: 0.35, trim: 1, bar: pianoBar },
+            lofi: { bpm: 74, cpb: 1, tone: 3400, nat: 0.45, trim: 1, bar: lofiBar, start: lofiStart },
+            nature: { bpm: 60, cpb: 2, tone: 16000, nat: 1, trim: 1, bar: function () { } }
+        };
+        // Stroke voices: base hum, speed gain, filter range, release
+        var SK = {
+            standard: { base: 0, k: 0.2, f0: 2600, f1: 5600, rel: 0.025 },
+            gel: { base: 0, k: 0.5, f0: 1300, f1: 2400, rel: 0.04 },
+            ink: { base: 0, k: 0.48, f0: 650, f1: 2100, rel: 0.06 },
+            neon: { base: 0.016, k: 0.05, f0: 380, f1: 2600, rel: 0.09 }
+        };
+
+        // ── State ───────────────────────────────────────────────────────
+        var cfg = { level: 'off', music: 'off', musicLevel: 'mid', stroke: 'on', fx: 'on' };
+        var cur = { theme: 'neutral', dark: false };
+        var ctx = null, G = null, NB = null, PW = null;
+        var scenes = [], timer = null, sceneT = null, idleIv = null, disposed = false;
+        var OFF = false, TO = null, lastAct = 0, SV = null, sTok = 0, lastStyle = 'standard';
+        var SS = 'kdAudioState';
+
+        function now() { return TO !== null ? TO : (ctx ? ctx.currentTime : 0); }
+        function clockMs() { return TO !== null ? TO * 1000 : (W.performance && performance.now ? performance.now() : Date.now()); }
+        function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+        function mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+        function rnd(a, b) { return a + Math.random() * (b - a); }
+        function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+        function chance(p) { return Math.random() < p; }
+        function poisson(l) { var L = Math.exp(-l), k = 0, p = 1; do { k++; p *= Math.random(); } while (p > L && k < 40); return k - 1; }
+        function pc(m) { return ((m % 12) + 12) % 12; }
+        function touch() { lastAct = Date.now(); }
+
+        // ── Context & master graph ──────────────────────────────────────
+        function ensureCtx() {
+            if (ctx) return ctx;
+            if (disposed || cfg.level === 'off') return null;
+            try { ctx = new AC({ latencyHint: 'interactive' }); } catch (e) { try { ctx = new AC(); } catch (e2) { ctx = null; return null; } }
+            // iOS 17+: mix with other audio and respect the silent switch
+            try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (e) { }
+            setup(ctx);
+            ctx.onstatechange = function () { if (ctx && ctx.state === 'running' && musicOn()) syncMusic(); };
+            return ctx;
+        }
+        function setup(c) { NB = makeNoise(c); PW = makeWaves(c); G = buildGraph(c); }
+
+        function makeNoise(c) {
+            var sr = c.sampleRate, n = Math.floor(sr * 3), F = Math.floor(sr * 0.05), out = {};
+            ['white', 'pink', 'brown', 'crackle'].forEach(function (k) { out[k] = c.createBuffer(1, n, sr); });
+            var w = out.white.getChannelData(0), cr = out.crackle.getChannelData(0);
+            var p = new Float32Array(n + F), b = new Float32Array(n + F);
+            var b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, br = 0, hs = 0;
+            for (var i = 0; i < n + F; i++) {
+                var x = Math.random() * 2 - 1;
+                if (i < n) { w[i] = x; hs += (x - hs) * 0.3; cr[i] = hs * 0.03; }
+                b0 = 0.99886 * b0 + x * 0.0555179; b1 = 0.99332 * b1 + x * 0.0750759; b2 = 0.969 * b2 + x * 0.153852;
+                b3 = 0.8665 * b3 + x * 0.3104856; b4 = 0.55 * b4 + x * 0.5329522; b5 = -0.7616 * b5 - x * 0.016898;
+                p[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + x * 0.5362) * 0.11; b6 = x * 0.115926;
+                br = (br + 0.02 * x) / 1.02; b[i] = br * 3.5;
+            }
+            // Seamless loops: crossfade the overhang back into the head
+            [[p, out.pink], [b, out.brown]].forEach(function (pr) {
+                var s = pr[0], d = pr[1].getChannelData(0);
+                for (var j = 0; j < n; j++) d[j] = j < F ? s[j] * (j / F) + s[n + j] * (1 - j / F) : s[j];
+            });
+            // Vinyl crackle: sparse decaying clicks of random polarity
+            var clicks = Math.floor(n / sr * 6);
+            for (var k = 0; k < clicks; k++) {
+                var at = Math.floor(Math.random() * (n - 300)), amp = (Math.random() < 0.5 ? -1 : 1) * (0.05 + Math.random() * Math.random() * 0.35), len = 20 + Math.floor(Math.random() * 120);
+                for (var q = 0; q < len; q++) cr[at + q] += amp * Math.exp(-q / (len / 5)) * (q % 2 ? -0.5 : 1);
+            }
+            return out;
+        }
+        function makeIR(c, sec) {
+            var sr = c.sampleRate, n = Math.floor(sr * sec), buf = c.createBuffer(2, n, sr), pre = Math.floor(sr * 0.018);
+            for (var ch = 0; ch < 2; ch++) {
+                var d = buf.getChannelData(ch), lp = 0;
+                for (var i = pre; i < n; i++) {
+                    var x = (i - pre) / (n - pre);
+                    lp += (0.62 - 0.55 * x) * ((Math.random() * 2 - 1) - lp);
+                    d[i] = lp * Math.pow(1 - x, 2.2);
+                }
+                for (var r = 0; r < 7; r++) d[pre + Math.floor(sr * rnd(0.004, 0.05))] += (chance(0.5) ? -1 : 1) * (0.5 - r * 0.05);
+            }
+            return buf;
+        }
+        function makeWaves(c) {
+            var amps = [0, 1, 0.42, 0.24, 0.14, 0.09, 0.06, 0.035, 0.02, 0.012], re = new Float32Array(amps.length), im = new Float32Array(amps.length);
+            for (var i = 1; i < amps.length; i++) im[i] = amps[i];
+            return { piano: c.createPeriodicWave(re, im) };
+        }
+        function buildGraph(c) {
+            var g = {};
+            function gn(v) { var x = c.createGain(); x.gain.value = v; return x; }
+            g.master = gn(LEVEL[cfg.level] || 0);
+            g.comp = c.createDynamicsCompressor();
+            g.comp.threshold.value = -18; g.comp.knee.value = 12; g.comp.ratio.value = 4; g.comp.attack.value = 0.005; g.comp.release.value = 0.3;
+            g.master.connect(g.comp); g.comp.connect(c.destination);
+            g.music = gn(MLEVEL[cfg.musicLevel] || 0.7); g.duck = gn(1);
+            g.music.connect(g.duck); g.duck.connect(g.master);
+            g.stroke = gn(1); g.stroke.connect(g.master);
+            g.fx = gn(1); g.fx.connect(g.master);
+            g.verbIn = gn(1); g.verb = c.createConvolver(); g.verb.buffer = makeIR(c, 3.2); g.verbOut = gn(0.5);
+            g.verbIn.connect(g.verb); g.verb.connect(g.verbOut); g.verbOut.connect(g.master);
+            // Ping-pong echo
+            g.echoIn = gn(1);
+            var dl = c.createDelay(2), dr = c.createDelay(2), fb = gn(0.3), lp = c.createBiquadFilter(), mg = c.createChannelMerger(2);
+            dl.delayTime.value = 0.43; dr.delayTime.value = 0.29; lp.type = 'lowpass'; lp.frequency.value = 2400;
+            g.echoIn.connect(dl); dl.connect(dr); dr.connect(lp); lp.connect(fb); fb.connect(dl);
+            dl.connect(mg, 0, 0); dr.connect(mg, 0, 1);
+            g.echoOut = gn(0.45); mg.connect(g.echoOut); g.echoOut.connect(g.master);
+            var es = gn(0.3); g.echoOut.connect(es); es.connect(g.verbIn);
+            return g;
+        }
+        function FXD() { return { dry: G.fx, wet: G.verbIn, echo: G.echoIn }; }
+
+        // ── Node helpers ────────────────────────────────────────────────
+        function gainN(v) { var g = ctx.createGain(); g.gain.value = v; return g; }
+        function filt(type, f, q) { var b = ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q != null) b.Q.value = q; return b; }
+        function oscN(type, f) { var o = ctx.createOscillator(); if (type === 'piano') o.setPeriodicWave(PW.piano); else o.type = type; o.frequency.value = f; return o; }
+        function noiseN(kind) { var s = ctx.createBufferSource(); s.buffer = NB[kind]; s.loop = true; return s; }
+        function startNoise(s, t) { s.start(t, Math.random() * (s.buffer.duration - 0.5)); }
+        function send(node, dst, wet, echo, pan) {
+            var o = node;
+            if (pan && ctx.createStereoPanner) { var p = ctx.createStereoPanner(); p.pan.value = clamp(pan, -0.95, 0.95); node.connect(p); o = p; }
+            o.connect(dst.dry);
+            if (wet > 0 && dst.wet) { var w = gainN(wet); o.connect(w); w.connect(dst.wet); }
+            if (echo > 0 && dst.echo) { var e = gainN(echo); o.connect(e); e.connect(dst.echo); }
+        }
+
+        // ── Instruments ─────────────────────────────────────────────────
+        function pad(dst, t, notes, dur, o) {
+            var att = o.att, hold = Math.max(att, dur), end = t + hold + o.rel * 1.3 + 0.1;
+            var f = filt('lowpass', o.cut * 0.45, 0.7), a = gainN(0);
+            f.frequency.setValueAtTime(o.cut * 0.45, t);
+            f.frequency.linearRampToValueAtTime(o.cut, t + att * 1.2);
+            f.frequency.setTargetAtTime(o.cut * 0.6, t + att * 1.2, Math.max(0.5, dur * 0.5));
+            a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(o.gain, t + att);
+            a.gain.setValueAtTime(o.gain, t + hold); a.gain.setTargetAtTime(0, t + hold, o.rel / 3.5);
+            f.connect(a); send(a, dst, o.wet, o.echo || 0, 0);
+            for (var i = 0; i < notes.length; i++) {
+                var fr = mtof(notes[i]), tgt = f;
+                if (notes.length > 1 && ctx.createStereoPanner) { tgt = ctx.createStereoPanner(); tgt.pan.value = (i / (notes.length - 1) - 0.5) * (o.spread || 0.7); tgt.connect(f); }
+                for (var k = 0; k < 2; k++) {
+                    var x = oscN(k ? (o.type2 || 'triangle') : (o.type || 'sawtooth'), fr);
+                    x.detune.value = (k ? -1 : 1) * (o.det || 6) + rnd(-2, 2);
+                    x.connect(tgt); x.start(t); x.stop(end);
+                }
+            }
+        }
+        function sub(dst, t, m, dur, vel) {
+            var hold = Math.max(1.6, dur), end = t + hold + 2.5, a = gainN(0), x = oscN('sine', mtof(m)), y = oscN('triangle', mtof(m) * 2), yg = gainN(0.18);
+            a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(vel, t + 1.6); a.gain.setValueAtTime(vel, t + hold); a.gain.setTargetAtTime(0, t + hold, 0.7);
+            x.connect(a); y.connect(yg); yg.connect(a); send(a, dst, 0.15, 0, 0);
+            x.start(t); y.start(t); x.stop(end); y.stop(end);
+        }
+        function bell(dst, t, m, vel, o) {
+            o = o || {}; var f = mtof(m), dec = o.decay || 1.5, end = t + dec * 5 + 0.05;
+            var c = oscN('sine', f), md = oscN('sine', f * (o.ratio || 3.5)), mg = gainN(0), a = gainN(0);
+            mg.gain.setValueAtTime(f * (o.index != null ? o.index : 1), t); mg.gain.setTargetAtTime(0, t, dec * 0.3);
+            md.connect(mg); mg.connect(c.frequency);
+            a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(vel, t + 0.004); a.gain.setTargetAtTime(0, t + 0.004, dec);
+            c.connect(a); send(a, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            c.start(t); md.start(t); c.stop(end); md.stop(end);
+        }
+        function noiseHit(dst, t, o) {
+            var s = noiseN(o.kind || 'white'), fl = filt(o.type || 'bandpass', o.f, o.q || 1), g = gainN(0), d = o.dur, a = o.att || 0.002;
+            if (o.f2) { fl.frequency.setValueAtTime(o.f, t); fl.frequency.exponentialRampToValueAtTime(o.f2, t + d); }
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(o.vel, t + a);
+            g.gain.setTargetAtTime(0, t + a, Math.max(0.004, (d - a) / 3));
+            s.connect(fl); fl.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            startNoise(s, t); s.stop(t + d * 2 + 0.1);
+        }
+        function swish(dst, t, f0, f1, dur, vel, pan) { noiseHit(dst, t, { kind: 'pink', type: 'bandpass', f: f0, f2: f1, q: 1.2, dur: dur, vel: vel, att: dur * 0.45, wet: 0.25, pan: pan || 0 }); }
+        function blip(dst, t, f0, f1, dur, vel) {
+            var x = oscN('sine', f0), g = gainN(0);
+            x.frequency.setValueAtTime(f0, t); x.frequency.exponentialRampToValueAtTime(f1, t + dur);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.005); g.gain.setTargetAtTime(0, t + dur * 0.5, dur / 3);
+            x.connect(g); send(g, dst, 0.15, 0, 0); x.start(t); x.stop(t + dur * 2.5 + 0.05);
+        }
+        function wood(dst, t, f, vel, o) {
+            o = o || {}; var x = oscN('sine', f * 1.6), g = gainN(0);
+            x.frequency.setValueAtTime(f * 1.6, t); x.frequency.exponentialRampToValueAtTime(f, t + 0.012);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.002); g.gain.setTargetAtTime(0, t + 0.002, o.dec || 0.035);
+            x.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0); x.start(t); x.stop(t + 0.5);
+            noiseHit(dst, t, { type: 'bandpass', f: f * 2.2, q: 3, dur: 0.012, vel: vel * 0.5, pan: o.pan || 0 });
+        }
+        function pluck(dst, t, m, vel, o) {
+            o = o || {}; var f = mtof(m), dec = o.decay || 1.4, end = t + dec * 4 + 0.05, br = Math.min(16000, f * (o.bright || 7));
+            var a = oscN(o.wave || 'sawtooth', f), b = oscN('triangle', f), lp = filt('lowpass', br, o.q || 1.4), g = gainN(0);
+            b.detune.value = 5;
+            lp.frequency.setValueAtTime(br, t); lp.frequency.setTargetAtTime(f * 1.3, t + 0.005, dec * 0.2);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.003); g.gain.setTargetAtTime(0, t + 0.003, dec * 0.4);
+            if (o.bend) {
+                [a, b].forEach(function (x) { x.frequency.setValueAtTime(f, t + o.bendAt); x.frequency.linearRampToValueAtTime(f * Math.pow(2, o.bend / 12), t + o.bendAt + 0.14); });
+            }
+            a.connect(lp); b.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            a.start(t); b.start(t); a.stop(end); b.stop(end);
+            if (o.pick) noiseHit(dst, t, { f: Math.min(9000, f * 6), q: 1.5, dur: 0.012, vel: vel * 0.35, pan: o.pan || 0 });
+        }
+        // Shakuhachi: breathy attack (muraiki), slide into pitch (meri→kari), late vibrato
+        function flute(dst, t, m, dur, vel, o) {
+            o = o || {}; var f = mtof(m), end = t + dur + 1.2;
+            var a = oscN('sine', f), h = oscN('triangle', f * 2), hg = gainN(0.08), vib = oscN('sine', rnd(4.6, 5.4)), vg = gainN(0), g = gainN(0), lp = filt('lowpass', f * 4, 0.5);
+            a.frequency.setValueAtTime(f * 0.955, t); a.frequency.exponentialRampToValueAtTime(f, t + 0.22);
+            h.frequency.setValueAtTime(f * 1.91, t); h.frequency.exponentialRampToValueAtTime(f * 2, t + 0.22);
+            vg.gain.setValueAtTime(0, t + dur * 0.45); vg.gain.linearRampToValueAtTime(f * 0.011, t + dur);
+            vib.connect(vg); vg.connect(a.frequency);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.18); g.gain.linearRampToValueAtTime(vel * 0.85, t + dur * 0.6);
+            g.gain.linearRampToValueAtTime(vel, t + dur); g.gain.setTargetAtTime(0, t + dur, 0.18);
+            a.connect(lp); h.connect(hg); hg.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            var n = noiseN('white'), bp = filt('bandpass', f * 1.5, 1.1), ng = gainN(0);
+            ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(vel * 0.5, t + 0.06); ng.gain.setTargetAtTime(vel * 0.1, t + 0.08, 0.15);
+            ng.gain.setValueAtTime(vel * 0.1, t + dur); ng.gain.setTargetAtTime(0, t + dur, 0.12);
+            n.connect(bp); bp.connect(ng); send(ng, dst, o.wet || 0, 0, o.pan || 0);
+            a.start(t); h.start(t); vib.start(t); startNoise(n, t);
+            a.stop(end); h.stop(end); vib.stop(end); n.stop(end);
+        }
+        function piano(dst, t, m, vel, dur, o) {
+            o = o || {}; var f = mtof(m), dec = clamp(3.2 - (m - 48) * 0.05, 0.9, 3.6), rt = t + Math.max(0.15, dur), end = rt + 1;
+            var a = oscN('piano', f), b = oscN('piano', f), lp = filt('lowpass', 1000, 0.4), g = gainN(0), A = vel * 0.32;
+            b.detune.value = rnd(1.5, 3.5);
+            lp.frequency.setValueAtTime(Math.min(15000, f * (3 + 10 * vel)), t); lp.frequency.setTargetAtTime(f * 1.8, t + 0.01, dec * 0.35);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(A, t + 0.004); g.gain.setTargetAtTime(A * 0.4, t + 0.004, 0.22);
+            g.gain.setTargetAtTime(0, Math.min(t + 0.35, rt - 0.001), dec); g.gain.setTargetAtTime(0, rt, 0.16);
+            a.connect(lp); b.connect(lp); lp.connect(g); send(g, dst, o.wet || 0, 0, o.pan || 0);
+            a.start(t); b.start(t); a.stop(end); b.stop(end);
+        }
+        // Rhodes-style electric piano (2-op FM + tine ping)
+        function ep(dst, t, m, vel, dur, o) {
+            o = o || {}; var f = mtof(m), rt = t + Math.max(0.12, dur), end = rt + 0.8;
+            var c = oscN('sine', f), md = oscN('sine', f), mg = gainN(0), tn = oscN('sine', f * 14), tg = gainN(0), g = gainN(0);
+            c.detune.value = rnd(-5, 5);
+            mg.gain.setValueAtTime(f * 1.6, t); mg.gain.setTargetAtTime(f * 0.25, t, 0.35);
+            md.connect(mg); mg.connect(c.frequency);
+            tg.gain.setValueAtTime(0.25, t); tg.gain.setTargetAtTime(0, t, 0.03);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.003); g.gain.setTargetAtTime(vel * 0.55, t + 0.003, 0.4);
+            g.gain.setTargetAtTime(0, Math.min(rt - 0.001, t + 0.8), 1.6); g.gain.setTargetAtTime(0, rt, 0.12);
+            c.connect(g); tn.connect(tg); tg.connect(g); send(g, dst, o.wet || 0, o.echo || 0, o.pan || 0);
+            c.start(t); md.start(t); tn.start(t); c.stop(end); md.stop(end); tn.stop(t + 0.3);
+        }
+        function bass(dst, t, m, vel, dur) {
+            var f = mtof(m), rt = t + dur, end = rt + 0.4;
+            var a = oscN('sine', f), b = oscN('triangle', f), bg = gainN(0.35), lp = filt('lowpass', 520, 0.7), g = gainN(0);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.012); g.gain.setTargetAtTime(vel * 0.6, t + 0.012, 0.3); g.gain.setTargetAtTime(0, rt, 0.07);
+            a.connect(g); b.connect(bg); bg.connect(lp); lp.connect(g); send(g, dst, 0.05, 0, 0);
+            a.start(t); b.start(t); a.stop(end); b.stop(end);
+        }
+        function kick(dst, t, vel) {
+            var o = oscN('sine', 115), g = gainN(0);
+            o.frequency.setValueAtTime(115, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.11);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel * 0.5, t + 0.004); g.gain.setTargetAtTime(0, t + 0.004, 0.09);
+            o.connect(g); send(g, dst, 0, 0, 0); o.start(t); o.stop(t + 0.6);
+        }
+        function brush(dst, t, vel) { noiseHit(dst, t, { type: 'bandpass', f: 3200, f2: 1800, q: 0.8, dur: 0.16, vel: vel * 0.12, att: 0.006, wet: 0.2 }); }
+        function shaker(dst, t, vel) { noiseHit(dst, t, { type: 'highpass', f: 7000, q: 0.7, dur: 0.045, vel: vel * 0.08, att: 0.004, pan: 0.25 }); }
+        // Singing bowl (rin) / temple bell (kane, big)
+        function rin(dst, t, m, vel, o) {
+            o = o || {}; var f = mtof(m), big = !!o.big, g = gainN(vel), end = t + (big ? 12 : 8);
+            var parts = big ? [[0.5, 0.5, 9], [1, 1, 7], [1.19, 0.35, 4], [1.5, 0.25, 3.5], [2, 0.3, 3], [2.74, 0.15, 2]] : [[1, 1, 6], [2.71, 0.45, 3.5], [5.15, 0.18, 2], [8.9, 0.07, 1]];
+            parts.forEach(function (p) {
+                for (var k = 0; k < 2; k++) {
+                    var x = oscN('sine', f * p[0] + (k ? rnd(0.4, 1.2) : 0)), a = gainN(0);
+                    a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(p[1] * 0.5, t + 0.006); a.gain.setTargetAtTime(0, t + 0.006, p[2] / 3);
+                    x.connect(a); a.connect(g); x.start(t); x.stop(end);
+                }
+            });
+            send(g, dst, o.wet || 0.6, o.echo || 0, o.pan || 0);
+            noiseHit(dst, t, { f: Math.min(9000, f * 3), q: 2, dur: 0.02, vel: vel * 0.2, pan: o.pan || 0 });
+        }
+        function marimba(dst, t, m, vel) {
+            var f = mtof(m), a = oscN('sine', f), b = oscN('sine', f * 3.93), ga = gainN(0), gb = gainN(0), o = gainN(1);
+            ga.gain.setValueAtTime(0, t); ga.gain.linearRampToValueAtTime(vel, t + 0.003); ga.gain.setTargetAtTime(0, t + 0.003, 0.22);
+            gb.gain.setValueAtTime(0, t); gb.gain.linearRampToValueAtTime(vel * 0.3, t + 0.002); gb.gain.setTargetAtTime(0, t + 0.002, 0.04);
+            a.connect(ga); b.connect(gb); ga.connect(o); gb.connect(o); send(o, dst, 0.3, 0, 0);
+            a.start(t); b.start(t); a.stop(t + 1.5); b.stop(t + 0.4);
+        }
+        function thock(dst, t, m, vel) {
+            var f = mtof(m), x = oscN('sine', f * 1.5), g = gainN(0), lp = filt('lowpass', 900, 0.7);
+            x.frequency.setValueAtTime(f * 1.5, t); x.frequency.exponentialRampToValueAtTime(f, t + 0.05);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.004); g.gain.setTargetAtTime(0, t + 0.004, 0.07);
+            x.connect(lp); lp.connect(g); send(g, dst, 0.15, 0, 0); x.start(t); x.stop(t + 0.6);
+            noiseHit(dst, t, { kind: 'pink', type: 'lowpass', f: 700, q: 0.7, dur: 0.05, vel: vel * 0.6 });
+        }
+        // Progress chime in the timbre of the active stroke style
+        function chime(style, dst, t, m, vel) {
+            if (style === 'ink') pluck(dst, t, m, vel * 1.3, { decay: 1.2, bright: 6, q: 1.3, wet: 0.35, pick: true });
+            else if (style === 'gel') bell(dst, t, m, vel, { decay: 1, ratio: 2, index: 0.55, wet: 0.4 });
+            else if (style === 'neon') pluck(dst, t, m, vel * 0.8, { wave: 'square', decay: 0.5, bright: 12, q: 5, wet: 0.25, echo: 0.4 });
+            else marimba(dst, t, m, vel * 1.2);
+        }
+
+        // ── Harmony ─────────────────────────────────────────────────────
+        function chordNotes(s, idx) { var c = s.prog[idx % s.prog.length], b = 60 + pc(s.k + c[0]); return CH[c[1]].map(function (i) { return b + i; }); }
+        function chordPcs(s, idx) {
+            var r = [];
+            chordNotes(s, idx == null ? s.ci : idx).forEach(function (m) { if (r.indexOf(pc(m)) < 0) r.push(pc(m)); });
+            return r;
+        }
+        function scaleNotes(s, lo, hi) { var r = []; for (var m = lo; m <= hi; m++) if (s.scale.indexOf(pc(m - s.k)) >= 0) r.push(m); return r; }
+        function low(m, base) { base = base || 36; return base + pc(m - base); }
+        function rootNear(s, m) { var r = m - pc(m - s.k); return m - r > 6 ? r + 12 : r; }
+        function nearestIdx(arr, m) { var bi = 0, bd = 1e9; for (var i = 0; i < arr.length; i++) { var d = Math.abs(arr[i] - m); if (d < bd) { bd = d; bi = i; } } return bi; }
+        function voiceChord(notes, prev, lo, hi) {
+            var out = [];
+            notes.forEach(function (n) {
+                var best = null, bd = 1e9;
+                for (var m = lo; m <= hi; m++) {
+                    if (pc(m) !== pc(n)) continue;
+                    var d = prev && prev.length ? Math.min.apply(null, prev.map(function (p) { return Math.abs(p - m); })) : Math.abs(m - (lo + hi) / 2);
+                    if (d < bd) { bd = d; best = m; }
+                }
+                if (best !== null && out.indexOf(best) < 0) out.push(best);
+            });
+            return out.sort(function (a, b) { return a - b; });
+        }
+        function walk(s, notes, prev, strong) {
+            var i = prev == null ? Math.floor(notes.length / 2) : nearestIdx(notes, prev);
+            var j = clamp(i + pick([-2, -1, -1, 1, 1, 2, 0, -3, 3]), 0, notes.length - 1);
+            if (strong) {
+                var pcs = chordPcs(s);
+                for (var k = 0; k < 4 && pcs.indexOf(pc(notes[j])) < 0; k++) j = clamp(j + (chance(0.5) ? 1 : -1), 0, notes.length - 1);
+            }
+            return notes[j];
+        }
+        function pivotIndex(prev, s) {
+            if (!prev || !prev.length) return 0;
+            var best = 0, bs = -1;
+            for (var i = 0; i < s.prog.length; i++) {
+                var p = chordPcs(s, i), sc = 0;
+                for (var j = 0; j < p.length; j++) if (prev.indexOf(p[j]) >= 0) sc++;
+                if (p[0] === prev[0]) sc += 0.5;
+                if (i === 0) sc += 0.2;
+                if (sc > bs) { bs = sc; best = i; }
+            }
+            return best;
+        }
+
+        // ── Scenes (theme × mood × genre) ───────────────────────────────
+        function sceneKeyOf(theme, dark, genre) { return theme + (dark ? '/n/' : '/d/') + genre; }
+        function Scene(theme, dark, genre) {
+            var th = THEMES[theme] || THEMES.neutral, gn = GENRES[genre] || GENRES.ambient;
+            this.theme = theme; this.dark = !!dark; this.genre = genre; this.key = sceneKeyOf(theme, dark, genre);
+            this.k = th.key; this.scale = th.scale; this.prog = this.dark ? th.night : th.day; this.gn = gn;
+            this.bright = th.bright * (this.dark ? 0.72 : 1);
+            this.B = 60 / (gn.bpm * (this.dark ? 0.94 : 1)); this.barDur = this.B * 4; this.cpb = gn.cpb;
+            this.offset = 0; this.bar0 = 0; this.bar = 0; this.nextT = 0; this.endT = null; this.ending = false; this.ci = 0; this.forcePad = true;
+            this.prevVoice = null; this.hiVoice = null; this.lastMel = null; this.lastFl = null; this.lastKoto = null; this.busyUntil = 0; this.motif = null; this.lhPat = null;
+            this.cont = []; this.fv = null;
+            this.dry = gainN(gn.trim); this.nat = gainN(gn.nat); this.wet = gainN(1); this.nwet = gainN(gn.nat); this.echo = gainN(1);
+            this.tone = filt('lowpass', Math.min(18000, gn.tone * this.bright), 0.5);
+            this.fd = gainN(0); this.fw = gainN(0); this.fe = gainN(0);
+            this.dry.connect(this.tone); this.nat.connect(this.tone); this.tone.connect(this.fd); this.fd.connect(G.music);
+            this.nwet.connect(this.wet); this.wet.connect(this.fw); this.fw.connect(G.verbIn);
+            this.echo.connect(this.fe); this.fe.connect(G.echoIn);
+            this.d = { dry: this.dry, wet: this.wet, echo: this.echo };
+            this.nd = { dry: this.nat, wet: this.nwet, echo: null };
+        }
+        Scene.prototype.valAt = function (t) {
+            var f = this.fv; if (!f) return 0;
+            if (t <= f.t) return f.a; if (t >= f.t + f.d) return f.b;
+            var x = (t - f.t) / f.d;
+            return f.a + (f.b - f.a) * (f.b > f.a ? Math.sin(x * Math.PI / 2) : 1 - Math.cos(x * Math.PI / 2));
+        };
+        // Equal-power fade on all three scene faders (dry, reverb, echo)
+        Scene.prototype.fade = function (to, t, dur) {
+            var from = this.valAt(t);
+            [this.fd, this.fw, this.fe].forEach(function (f) {
+                var p = f.gain; p.cancelScheduledValues(t); p.setValueAtTime(from, t);
+                for (var i = 1; i <= 16; i++) {
+                    var x = i / 16, y = to > from ? Math.sin(x * Math.PI / 2) : 1 - Math.cos(x * Math.PI / 2);
+                    p.linearRampToValueAtTime(from + (to - from) * y, t + dur * x);
+                }
+            });
+            this.fv = { a: from, b: to, t: t, d: dur };
+        };
+        Scene.prototype.start = function (t, dur) {
+            this.nextT = t; this.bar = this.bar0 = 0; this.forcePad = true;
+            natureStart(this, t);
+            if (this.gn.start) this.gn.start(this, t);
+            this.fade(1, t, dur);
+        };
+        Scene.prototype.fadeOut = function (t, dur, force) {
+            if (this.ending && !force) return;
+            var end = t + dur;
+            if (this.ending && this.endT !== null && this.endT <= end) return;
+            this.ending = true; this.endT = end;
+            this.fade(0, t, dur);
+            this.cont.forEach(function (s) { try { s.stop(end + 0.3); } catch (e) { } });
+        };
+        Scene.prototype.dispose = function () {
+            [this.fd, this.fw, this.fe].forEach(function (f) { try { f.disconnect(); } catch (e) { } });
+            this.cont.forEach(function (s) { try { s.stop(); } catch (e) { } });
+            this.cont = [];
+        };
+        Scene.prototype.save = function () {
+            if (OFF) return;
+            try { sessionStorage.setItem(SS, JSON.stringify({ key: this.key, idx: this.ci, pcs: chordPcs(this), ts: Date.now() })); } catch (e) { }
+        };
+        Scene.prototype.scheduleBar = function (b, t0) {
+            var rel = b - this.bar0, chordBar = rel % this.cpb === 0;
+            this.ci = (this.offset + Math.floor(rel / this.cpb)) % this.prog.length;
+            if (chordBar) this.save();
+            this.gn.bar(this, rel, t0, chordBar || this.forcePad);
+            this.forcePad = false;
+            natureBar(this, t0);
+        };
+        function span(s, rel) { return (s.cpb - (rel % s.cpb)) * s.barDur; }
+
+        // ── Genres ──────────────────────────────────────────────────────
+        function ambientBar(s, rel, t0, cs) {
+            var B = s.B;
+            if (cs) {
+                var ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 52, 74); s.prevVoice = v;
+                pad(s.d, t0, v, span(s, rel), { type: 'sawtooth', type2: 'triangle', cut: 1100 * s.bright, att: 2.4, rel: 3.2, gain: 0.03, det: 7, wet: 0.55 });
+                sub(s.d, t0, low(ch[0]), span(s, rel), 0.07);
+            }
+            var bells = scaleNotes(s, 72, 91), n = s.dark ? (chance(0.55) ? 1 : 0) : (chance(0.7) ? (chance(0.35) ? 2 : 1) : 0), used = {};
+            for (var i = 0; i < n; i++) {
+                var pos = pick([0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5]); if (used[pos]) continue; used[pos] = 1;
+                s.lastMel = walk(s, bells, s.lastMel, pos % 2 === 0);
+                bell(s.d, t0 + pos * B + rnd(0, 0.03), s.lastMel, rnd(0.022, 0.04), { decay: 2.4, ratio: 3.5, index: 0.8, wet: 0.8, echo: 0.35, pan: rnd(-0.6, 0.6) });
+            }
+            if (rel % 4 === 2 && chance(0.5)) {
+                var hi = voiceChord(chordNotes(s, s.ci), null, 79, 91).slice(-2);
+                pad(s.d, t0 + B, hi, s.barDur * 1.5, { type: 'sine', type2: 'triangle', cut: 5000, att: 3, rel: 4, gain: 0.012, det: 4, wet: 0.9 });
+            }
+        }
+        var KOTO = [[[0, 0], [1, 1], [1.5, 1], [2, -1], [3, 0]], [[0, 0], [0.5, 2], [1, -1], [2, -2]], [[0, 0], [2, 1], [2.5, 1], [3, 2]],
+            [[1, 0], [1.5, -1], [2, -1], [3.5, 1]], [[0, 0], [0.75, 1], [1, 1], [3, -3]], [[0, 0], [1.5, 2], [2, -1], [2.5, -1], [3, -1]]];
+        var SANSHIN = [[[0, 0], [0.5, 1], [1, 1], [1.5, -1], [2, -1], [2.5, 1], [3, 1], [3.5, -2]], [[0, 0], [1, 2], [1.5, -1], [2, -1], [3, 1], [3.5, 1]],
+            [[0, 0], [0.5, 0], [1, 1], [2, 0], [2.5, 2], [3, -1]]];
+        function zenBar(s, rel, t0, cs) {
+            var B = s.B, oki = s.theme === 'okinawa';
+            if (cs) {
+                var ch = chordNotes(s, s.ci), cl = voiceChord(ch.concat([s.k + s.scale[1], s.k + s.scale[3]]), s.hiVoice, 67, 86).slice(0, 5); s.hiVoice = cl;
+                pad(s.d, t0, cl, span(s, rel), { type: 'triangle', type2: 'sine', cut: 3200 * s.bright, att: 3, rel: 3.5, gain: 0.011, det: 5, wet: 0.7 });
+                sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
+            }
+            // Shakuhachi phrase (not in Okinawa — sanshin carries the melody there)
+            if (!oki && t0 >= s.busyUntil && rel % 2 === 0 && chance(s.dark ? 0.35 : 0.45)) {
+                var fl = scaleNotes(s, 62, 81), m = s.lastFl, tt = t0 + B * pick([0, 0.5, 1]), cnt = 2 + Math.floor(Math.random() * 2);
+                for (var i = 0; i < cnt; i++) {
+                    m = walk(s, fl, m, i === cnt - 1);
+                    var d = B * pick([1.5, 2, 2.5, 3]);
+                    flute(s.d, tt, m, d, rnd(0.05, 0.07), { wet: 0.65, echo: 0.25, pan: rnd(-0.2, 0.2) });
+                    tt += d + B * pick([0.25, 0.5, 1]);
+                }
+                s.lastFl = m; s.busyUntil = tt;
+            }
+            var notes = scaleNotes(s, oki ? 62 : 57, oki ? 84 : 79);
+            if (chance(t0 < s.busyUntil ? 0.3 : (oki ? 0.85 : 0.65))) {
+                var pat = pick(oki ? SANSHIN : KOTO), cts = notes.filter(function (x) { return chordPcs(s).indexOf(pc(x)) >= 0; });
+                var mk = s.lastKoto != null && chance(0.6) ? s.lastKoto : pick(cts.length ? cts : notes), pan = rnd(-0.35, 0.35);
+                pat.forEach(function (p, j) {
+                    mk = notes[clamp(nearestIdx(notes, mk) + p[1], 0, notes.length - 1)];
+                    var tt = t0 + p[0] * B + (oki && p[0] % 1 ? B * 0.08 : 0) + rnd(0, 0.015), last = j === pat.length - 1;
+                    pluck(s.d, tt, mk, rnd(0.06, 0.09) * (s.dark ? 0.8 : 1), oki
+                        ? { wave: 'square', decay: 0.8, bright: 9, q: 2.5, wet: 0.35, pan: pan, pick: true }
+                        : { decay: 1.6, bright: 7, q: 1.5, wet: 0.45, echo: 0.15, pan: pan, pick: true, bend: last && chance(0.3) ? 1 : 0, bendAt: 0.2 });
+                });
+                s.lastKoto = mk;
+            }
+            if (!oki && rel % 8 === 0 && chance(0.4)) { // sararin: quick upward sweep at phrase start
+                var i0 = Math.floor(Math.random() * 3);
+                for (var g = 0; g < 6 && i0 + g < notes.length; g++) pluck(s.d, t0 + g * 0.06, notes[i0 + g], 0.045, { decay: 1.2, bright: 6, wet: 0.5, pan: -0.3 + g * 0.12 });
+            }
+            if (rel % 4 === 0 && chance(0.5)) rin(s.d, t0 + rnd(0, 0.1), rootNear(s, 79), 0.035, { wet: 0.8, pan: rnd(-0.4, 0.4) });
+        }
+        var LH = [[[0, 0, 0.32], [0.5, 1, 0.2], [1, 2, 0.22], [1.5, 1, 0.18], [2, 3, 0.22], [2.5, 1, 0.18], [3, 2, 0.2], [3.5, 1, 0.16]],
+            [[0, 0, 0.32], [1, 1, 0.2], [1.5, 2, 0.2], [2, 3, 0.2], [3, 2, 0.18]], [[0, 0, 0.3], [0.5, 2, 0.2], [1, 3, 0.2], [2, 0, 0.24], [2.5, 2, 0.18], [3, 3, 0.18]]];
+        var LH_SPARSE = [[0, 0, 0.28], [1, 2, 0.18], [2, 3, 0.18], [3, 1, 0.15]];
+        var RHYTHMS = [[[0, 1.5], [1.5, 0.5], [2, 2]], [[0, 1], [1, 1], [2, 2]], [[1, 1], [2, 0.5], [2.5, 1.5]], [[0, 3]], [[0.5, 1], [1.5, 1], [3, 1]]];
+        function pianoBar(s, rel, t0, cs) {
+            var B = s.B, ch = chordNotes(s, s.ci), R = low(ch[0], 40);
+            var up = function (m) { return R + 12 + pc(m - R); };
+            var lh = [R, R + 7, up(ch[1]), up(ch[3] != null ? ch[3] : ch[2])];
+            if (rel % 8 === 0 || !s.lhPat) s.lhPat = pick(LH);
+            (s.dark ? LH_SPARSE : s.lhPat).forEach(function (p) {
+                piano(s.d, t0 + p[0] * B + rnd(0, 0.012), lh[p[1]], p[2] * rnd(0.85, 1.05) * (s.dark ? 0.85 : 1), (4 - p[0]) * B + B, { wet: 0.4 });
+            });
+            if (rel % 4 === 0 || !s.motif) {
+                s.motif = pick(RHYTHMS).map(function (r) { return { beat: r[0], dur: r[1], step: pick([-2, -1, 1, 2, 1, -1, 3]), vel: rnd(0.22, 0.32) }; });
+            }
+            if (chance(s.dark ? 0.55 : 0.8)) {
+                var notes = scaleNotes(s, 64, 86), m = s.lastMel;
+                s.motif.forEach(function (n, j) {
+                    m = j === 0 ? walk(s, notes, m, true) : notes[clamp(nearestIdx(notes, m) + n.step, 0, notes.length - 1)];
+                    piano(s.d, t0 + n.beat * B + rnd(0, 0.015), m, n.vel, n.dur * B + B * 0.5, { wet: 0.45, pan: 0.12 });
+                    if (j === 0 && chance(0.2)) piano(s.d, t0 + n.beat * B, notes[Math.max(0, nearestIdx(notes, m) - 2)], n.vel * 0.7, n.dur * B, { wet: 0.45, pan: 0.12 });
+                });
+                s.lastMel = m;
+            }
+        }
+        function lofiStart(s, t) {
+            var c = noiseN('crackle'), g = gainN(0.9);
+            c.connect(g); g.connect(s.dry); startNoise(c, t); s.cont.push(c);
+        }
+        function lofiBar(s, rel, t0) {
+            var B = s.B, sw = B * 0.14, ch = chordNotes(s, s.ci), v = voiceChord(ch, s.prevVoice, 55, 76), R = low(ch[0], 36), dk = s.dark ? 0.75 : 1;
+            s.prevVoice = v;
+            v.forEach(function (m, i) { ep(s.d, t0 + 0.02 + i * 0.012, m, 0.05 * dk, B * 1.9, { wet: 0.35 }); });
+            if (chance(0.5)) v.forEach(function (m, i) { ep(s.d, t0 + 2.5 * B + sw + i * 0.01, m, 0.032 * dk, B * 0.9, { wet: 0.35 }); });
+            bass(s.d, t0, R, 0.12, B * 1.6);
+            if (chance(0.6)) bass(s.d, t0 + 2.5 * B + sw, R + pick([7, 12]), 0.09, B * 0.8);
+            if (chance(0.3)) bass(s.d, t0 + 3.5 * B + sw, R + pick([-2, -1, 2]), 0.07, B * 0.45);
+            kick(s.d, t0, 0.5 * dk);
+            if (chance(0.65)) kick(s.d, t0 + 2.5 * B + sw, 0.38 * dk); else kick(s.d, t0 + 2 * B, 0.4 * dk);
+            brush(s.d, t0 + B, 0.3 * dk); brush(s.d, t0 + 3 * B, 0.32 * dk);
+            if (chance(0.25)) brush(s.d, t0 + 3.75 * B, 0.12 * dk);
+            for (var i = 0; i < 8; i++) shaker(s.d, t0 + i * B / 2 + (i % 2 ? sw : 0), (i % 2 ? 0.1 : 0.16) * dk);
+            if (chance(s.dark ? 0.25 : 0.38)) {
+                var notes = scaleNotes(s, 67, 84), m = s.lastMel, pos = [1.5, 2, 2.5, 3, 3.5].slice(Math.floor(Math.random() * 3));
+                for (var j = 0; j < 3 && j < pos.length; j++) {
+                    m = walk(s, notes, m, j === 0);
+                    bell(s.d, t0 + pos[j] * B + (pos[j] % 1 ? sw : 0), m, 0.022, { decay: 1, ratio: 2, index: 0.6, wet: 0.4, echo: 0.3, pan: 0.2 });
+                }
+                s.lastMel = m;
+            }
+        }
+
+        // ── Nature soundscapes ──────────────────────────────────────────
+        function loopLayer(s, kind, t) { var x = noiseN(kind); startNoise(x, t); s.cont.push(x); return x; }
+        function natureStart(s, t) {
+            var p = (NAT[s.theme] || NAT.neutral)[s.dark ? 'n' : 'd'];
+            s.np = p; s.L = {};
+            if (p.wind) {
+                var w = loopLayer(s, 'pink', t), bp = filt('bandpass', 520, 0.6), lp = filt('lowpass', 1700, 0.5), g = gainN(0);
+                w.connect(bp); bp.connect(lp); lp.connect(g); g.connect(s.nat);
+                g.gain.setTargetAtTime(p.wind * K.wind * 0.6, t, 0.8);
+                s.L.wind = { g: g, bp: bp, lvl: p.wind * K.wind };
+                if (p.leaves) {
+                    var l = loopLayer(s, 'white', t), hp = filt('highpass', 2800, 0.5), lg = gainN(0), am = loopLayer(s, 'white', t), amf = filt('lowpass', 10, 0.5), amg = gainN(0);
+                    l.connect(hp); hp.connect(lg); lg.connect(s.nat); am.connect(amf); amf.connect(amg); amg.connect(lg.gain);
+                    s.L.leaves = { g: lg, am: amg, lvl: p.leaves * K.leaves };
+                }
+            }
+            if (p.water) {
+                var st = loopLayer(s, 'white', t), sbp = filt('bandpass', 2100, 0.45), slp = filt('lowpass', 5500, 0.5), sg = gainN(0), mod = loopLayer(s, 'white', t), mf = filt('lowpass', 12, 0.5), mg = gainN(p.water * K.water * 25);
+                st.connect(sbp); sbp.connect(slp); slp.connect(sg); sg.connect(s.nat); mod.connect(mf); mf.connect(mg); mg.connect(sg.gain);
+                sg.gain.setTargetAtTime(p.water * K.water * 0.6, t, 0.8);
+                var gu = loopLayer(s, 'brown', t), gbp = filt('bandpass', 380, 1.2), gg = gainN(0);
+                gu.connect(gbp); gbp.connect(gg); gg.connect(s.nat); gg.gain.setTargetAtTime(p.water * K.gurgle, t, 0.8);
+            }
+            if (p.waves) {
+                var wv = loopLayer(s, 'pink', t), wlp = filt('lowpass', 600, 0.5), wg = gainN(0);
+                wv.connect(wlp); wlp.connect(wg); wg.connect(s.nat);
+                s.L.waves = { g: wg, lp: wlp, lvl: p.waves * K.waves, next: t + 0.3 };
+            }
+            if (p.rain) {
+                var r1 = loopLayer(s, 'white', t), rbp = filt('bandpass', 3000, 0.35), rg = gainN(0), r2 = loopLayer(s, 'pink', t), rlp = filt('lowpass', 900, 0.5), rg2 = gainN(0);
+                r1.connect(rbp); rbp.connect(rg); rg.connect(s.nat); r2.connect(rlp); rlp.connect(rg2); rg2.connect(s.nat);
+                rg.gain.setTargetAtTime(p.rain * K.rain, t, 1); rg2.gain.setTargetAtTime(p.rain * K.rain * 0.8, t, 1);
+                s.L.rain = { lvl: p.rain };
+            }
+            if (p.city) {
+                var c1 = loopLayer(s, 'brown', t), clp = filt('lowpass', 200, 0.5), cg = gainN(0), c2 = loopLayer(s, 'pink', t), cbp = filt('bandpass', 650, 0.5), cg2 = gainN(0);
+                c1.connect(clp); clp.connect(cg); cg.connect(s.nat); c2.connect(cbp); cbp.connect(cg2); cg2.connect(s.nat);
+                cg.gain.setTargetAtTime(p.city * K.city, t, 1); cg2.gain.setTargetAtTime(p.city * K.city * 0.06, t, 1);
+                s.L.city = { g: cg, lvl: p.city * K.city };
+            }
+        }
+        function natureBar(s, t0) {
+            var bd = s.barDur, L = s.L, p = s.np;
+            if (L.wind) {
+                var gt = t0 + rnd(0, bd * 0.5), v = L.wind.lvl * rnd(0.35, 1);
+                L.wind.g.gain.setTargetAtTime(v, gt, rnd(0.8, 1.8)); L.wind.bp.frequency.setTargetAtTime(rnd(360, 900), gt, 1.5);
+                if (L.leaves) { var lv = L.leaves.lvl * (v / L.wind.lvl); L.leaves.g.gain.setTargetAtTime(lv, gt, 1); L.leaves.am.gain.setTargetAtTime(lv * 35, gt, 1); }
+            }
+            if (L.waves) {
+                var w = L.waves;
+                while (w.next < t0 + bd) {
+                    var up = rnd(2.6, 3.6), down = rnd(4, 6), peak = w.lvl * rnd(0.6, 1), wt = Math.max(w.next, t0);
+                    w.g.gain.setTargetAtTime(peak, wt, up / 3); w.g.gain.setTargetAtTime(w.lvl * 0.18, wt + up, down / 3);
+                    w.lp.frequency.setTargetAtTime(rnd(1300, 1900), wt, up / 3); w.lp.frequency.setTargetAtTime(500, wt + up, down / 3);
+                    noiseHit(s.nd, wt + up * 0.8, { type: 'highpass', f: 2500, dur: 2.5, att: 0.6, vel: peak * K.foam, wet: 0.3, pan: rnd(-0.4, 0.4) });
+                    w.next = wt + up + down * rnd(0.7, 1);
+                }
+            }
+            if (L.city) L.city.g.gain.setTargetAtTime(L.city.lvl * rnd(0.7, 1), t0 + rnd(0, bd), 2);
+            if (L.rain) for (var r = poisson(10 * L.rain.lvl); r > 0; r--) noiseHit(s.nd, t0 + rnd(0, bd), { f: rnd(2500, 6000), q: 3, dur: 0.015, vel: rnd(0.01, 0.03), pan: rnd(-0.8, 0.8) });
+            var ev = p.ev || {}, mul = s.genre === 'nature' ? 1.4 : 1;
+            for (var k in ev) {
+                if (!EV.hasOwnProperty(k)) continue;
+                for (var n = poisson(ev[k] * mul * bd / 60); n > 0; n--) EV[k](s.nd, t0 + rnd(0, bd), s);
+            }
+        }
+        function birdCall(d, t, lvl) {
+            var x = oscN('sine', 3000), g = gainN(0), n = 2 + Math.floor(Math.random() * 5), tt = t, base = rnd(2400, 4200), type = Math.floor(Math.random() * 3);
+            g.gain.setValueAtTime(0, t);
+            for (var i = 0; i < n; i++) {
+                var du = rnd(0.04, 0.11), f0 = base * rnd(0.85, 1.2), f1 = f0 * (type === 0 ? rnd(1.2, 1.6) : type === 1 ? rnd(0.6, 0.85) : rnd(0.9, 1.1));
+                x.frequency.setValueAtTime(f0, tt); x.frequency.exponentialRampToValueAtTime(f1, tt + du);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.008); g.gain.linearRampToValueAtTime(0, tt + du);
+                tt += du + rnd(0.03, 0.09);
+            }
+            x.connect(g); send(g, d, 0.45, 0, rnd(-0.8, 0.8)); x.start(t); x.stop(tt + 0.05);
+        }
+        // Japanese bush warbler (uguisu): "hōō — hokekyo"
+        function uguisu(d, t, lvl) {
+            var x = oscN('sine', 1000), g = gainN(0), F = x.frequency, s = rnd(0.95, 1.08), t2 = t + 1.05, t3 = t2 + 0.16, t4 = t3 + 0.17;
+            F.setValueAtTime(980 * s, t); F.linearRampToValueAtTime(1080 * s, t + 0.8);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl * 0.8, t + 0.25); g.gain.setValueAtTime(lvl * 0.8, t + 0.7); g.gain.linearRampToValueAtTime(0, t + 0.9);
+            F.setValueAtTime(1500 * s, t2); F.exponentialRampToValueAtTime(2500 * s, t2 + 0.09);
+            g.gain.setValueAtTime(0, t2); g.gain.linearRampToValueAtTime(lvl, t2 + 0.02); g.gain.linearRampToValueAtTime(0, t2 + 0.11);
+            F.setValueAtTime(2300 * s, t3); F.exponentialRampToValueAtTime(1700 * s, t3 + 0.1);
+            g.gain.setValueAtTime(0, t3); g.gain.linearRampToValueAtTime(lvl * 0.9, t3 + 0.02); g.gain.linearRampToValueAtTime(0, t3 + 0.12);
+            F.setValueAtTime(2400 * s, t4); F.linearRampToValueAtTime(2900 * s, t4 + 0.08); F.exponentialRampToValueAtTime(2200 * s, t4 + 0.4);
+            g.gain.setValueAtTime(0, t4); g.gain.linearRampToValueAtTime(lvl, t4 + 0.03); g.gain.setValueAtTime(lvl, t4 + 0.28); g.gain.linearRampToValueAtTime(0, t4 + 0.42);
+            x.connect(g); send(g, d, 0.5, 0, rnd(-0.6, 0.6)); x.start(t); x.stop(t4 + 0.5);
+        }
+        function crane(d, t, lvl) {
+            var n = 2 + Math.floor(Math.random() * 2), tt = t, base = rnd(820, 1000), x = oscN('triangle', base), lp = filt('lowpass', 2600, 0.7), g = gainN(0);
+            g.gain.setValueAtTime(0, t);
+            for (var i = 0; i < n; i++) {
+                x.frequency.setValueAtTime(base * 0.92, tt); x.frequency.linearRampToValueAtTime(base * 1.08, tt + 0.06); x.frequency.linearRampToValueAtTime(base, tt + 0.2);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.03); g.gain.linearRampToValueAtTime(0, tt + 0.22);
+                tt += rnd(0.3, 0.45);
+            }
+            x.connect(lp); lp.connect(g); send(g, d, 0.8, 0, rnd(-0.7, 0.7)); x.start(t); x.stop(tt + 0.1);
+        }
+        // Bell cricket (suzumushi)
+        function cricket(d, t, lvl) {
+            var x = oscN('sine', rnd(4200, 4900)), g = gainN(0), reps = 2 + Math.floor(Math.random() * 3), pulses = 3 + Math.floor(Math.random() * 4), tt = t;
+            g.gain.setValueAtTime(0, t);
+            for (var r = 0; r < reps; r++) {
+                for (var q = 0; q < pulses; q++) { g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.008); g.gain.linearRampToValueAtTime(0, tt + 0.03); tt += 0.045; }
+                tt += rnd(0.25, 0.5);
+            }
+            x.connect(g); send(g, d, 0.3, 0, rnd(-0.9, 0.9)); x.start(t); x.stop(tt + 0.05);
+        }
+        function frog(d, t, lvl) {
+            var n = 3 + Math.floor(Math.random() * 4), tt = t, base = rnd(110, 170), x = oscN('sawtooth', base), bp = filt('bandpass', rnd(600, 900), 4), g = gainN(0);
+            g.gain.setValueAtTime(0, t);
+            for (var i = 0; i < n; i++) {
+                x.frequency.setValueAtTime(base * 1.1, tt); x.frequency.linearRampToValueAtTime(base * 0.9, tt + 0.08);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.015); g.gain.linearRampToValueAtTime(0, tt + 0.09);
+                tt += rnd(0.18, 0.3);
+            }
+            x.connect(bp); bp.connect(g); send(g, d, 0.35, 0, rnd(-0.8, 0.8)); x.start(t); x.stop(tt + 0.05);
+        }
+        function owl(d, t, lvl) {
+            var x = oscN('sine', 390), g = gainN(0);
+            g.gain.setValueAtTime(0, t);
+            [[0, 0.42], [0.95, 0.22], [1.25, 0.5]].forEach(function (n) {
+                var tt = t + n[0];
+                x.frequency.setValueAtTime(400, tt); x.frequency.linearRampToValueAtTime(360, tt + n[1]);
+                g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(lvl, tt + 0.08); g.gain.linearRampToValueAtTime(0, tt + n[1]);
+            });
+            x.connect(g); send(g, d, 0.7, 0, rnd(-0.7, 0.7)); x.start(t); x.stop(t + 2);
+        }
+        function drip(d, t, lvl) {
+            var f = rnd(900, 2000), x = oscN('sine', f), g = gainN(0);
+            x.frequency.setValueAtTime(f * 0.7, t); x.frequency.exponentialRampToValueAtTime(f * 1.35, t + 0.05);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl, t + 0.004); g.gain.setTargetAtTime(0, t + 0.01, 0.025);
+            x.connect(g); send(g, d, 0.8, 0, rnd(-0.8, 0.8)); x.start(t); x.stop(t + 0.25);
+        }
+        function knock(d, t, lvl) {
+            var f = rnd(420, 700), pan = rnd(-0.7, 0.7);
+            wood(d, t, f, lvl, { wet: 0.5, pan: pan, dec: 0.05 });
+            if (chance(0.5)) wood(d, t + rnd(0.1, 0.18), f * rnd(0.9, 1.15), lvl * 0.7, { wet: 0.5, pan: pan, dec: 0.05 });
+        }
+        // Shishi-odoshi: water trickles into the bamboo, then the tock
+        function shishi(d, t, lvl) {
+            noiseHit(d, t, { type: 'bandpass', f: 2600, q: 2.5, dur: 2.2, att: 1.8, vel: lvl * 0.18, pan: -0.2, wet: 0.3 });
+            wood(d, t + 2.3, 380, lvl, { wet: 0.75, pan: -0.2, dec: 0.07 });
+            noiseHit(d, t + 2.33, { type: 'bandpass', f: 1400, q: 1, dur: 0.3, vel: lvl * 0.15, pan: -0.25, wet: 0.4 });
+        }
+        function chimes(d, t, lvl, s, lo, hi, dec, n) {
+            var notes = scaleNotes(s, lo, hi), pan = rnd(-0.6, 0.6), tt = t;
+            for (var i = 0; i < n; i++) { bell(d, tt, pick(notes), lvl * rnd(0.6, 1), { decay: dec, ratio: 2.4, index: 0.7, wet: 0.5, pan: pan }); tt += rnd(0.06, 0.2); }
+        }
+        function train(d, t, lvl) {
+            var s = noiseN('pink'), bp = filt('bandpass', 280, 0.9), g = gainN(0), du = rnd(6, 9), out = g;
+            bp.frequency.setValueAtTime(260, t); bp.frequency.linearRampToValueAtTime(520, t + du * 0.45); bp.frequency.linearRampToValueAtTime(300, t + du);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl, t + du * 0.45); g.gain.linearRampToValueAtTime(0, t + du);
+            s.connect(bp); bp.connect(g);
+            if (ctx.createStereoPanner) { out = ctx.createStereoPanner(); out.pan.setValueAtTime(-0.8, t); out.pan.linearRampToValueAtTime(0.8, t + du); g.connect(out); }
+            out.connect(d.dry); startNoise(s, t); s.stop(t + du + 0.2);
+            for (var tt = t + du * 0.25; tt < t + du * 0.75; tt += 0.42) {
+                var a = lvl * 0.35 * (1 - Math.abs((tt - t) / du - 0.5) * 2);
+                noiseHit(d, tt, { f: 1800, q: 4, dur: 0.02, vel: a }); noiseHit(d, tt + 0.11, { f: 1700, q: 4, dur: 0.02, vel: a * 0.8 });
+            }
+        }
+        var EV = {
+            chirp: function (d, t) { birdCall(d, t, 0.028); },
+            uguisu: function (d, t) { uguisu(d, t, 0.03); },
+            crane: function (d, t) { crane(d, t, 0.022); },
+            cricket: function (d, t) { cricket(d, t, 0.011); },
+            frog: function (d, t) { frog(d, t, 0.03); },
+            owl: function (d, t) { owl(d, t, 0.03); },
+            drip: function (d, t) { drip(d, t, 0.035); },
+            knock: function (d, t) { knock(d, t, 0.045); },
+            shishi: function (d, t) { shishi(d, t, 0.06); },
+            bell: function (d, t, s) { rin(d, t, low(s.k, 45), 0.05, { big: true, wet: 0.9 }); },
+            furin: function (d, t, s) { chimes(d, t, 0.028, s, 86, 98, 1.1, 1 + Math.floor(Math.random() * 3)); },
+            tinkle: function (d, t, s) { chimes(d, t, 0.012, s, 96, 108, 0.45, 2 + Math.floor(Math.random() * 4)); },
+            train: function (d, t) { train(d, t, 0.07); }
+        };
+
+        // ── Music control ───────────────────────────────────────────────
+        function musicOn() { return cfg.level !== 'off' && GENRES.hasOwnProperty(cfg.music); }
+        function live() { for (var i = scenes.length - 1; i >= 0; i--) if (!scenes[i].ending) return scenes[i]; return null; }
+        function loadState() {
+            try { var st = JSON.parse(sessionStorage.getItem(SS) || 'null'); if (st) st.recent = Date.now() - (st.ts || 0) < 20000; return st; } catch (e) { return null; }
+        }
+        function syncMusic() {
+            if (disposed) return;
+            if (!musicOn()) { fadeOutAll(1.8); return; }
+            if (!ensureCtx()) return;
+            if (!OFF && ctx.state !== 'running') { if (!D.hidden) { try { ctx.resume(); } catch (e) { } } return; }
+            var key = sceneKeyOf(cur.theme, cur.dark, cfg.music), top = live();
+            if (top && top.key === key) return;
+            var s = new Scene(cur.theme, cur.dark, cfg.music), t = now() + 0.06, dur;
+            if (top) {
+                s.offset = pivotIndex(chordPcs(top), s);
+                if (top.genre === s.genre) { t = Math.max(t, top.nextT + Math.ceil((t - top.nextT) / top.B) * top.B); dur = 6; }
+                else dur = 3.5;
+                top.fadeOut(t, dur);
+            } else {
+                var st = OFF ? null : loadState();
+                if (st && st.recent && st.key === key) { s.offset = (st.idx + 1) % s.prog.length; dur = 1.2; }
+                else if (st && st.recent && st.pcs) { s.offset = pivotIndex(st.pcs, s); dur = 2; }
+                else dur = 3.5;
+            }
+            s.start(t, dur);
+            scenes.push(s);
+            if (scenes.length > 3) scenes[0].fadeOut(now() + 0.01, 0.3, true);
+            if (!OFF) { ensureTimer(); tick(); }
+        }
+        function fadeOutAll(dur) {
+            if (!ctx) return;
+            var t = now() + 0.02;
+            scenes.forEach(function (s) { s.fadeOut(t, dur); });
+            if (!OFF) { try { sessionStorage.removeItem(SS); } catch (e) { } }
+        }
+        function pump(horizon) {
+            var tn = now();
+            scenes.forEach(function (s) {
+                if (!OFF && s.nextT < tn - 0.2) { var k = Math.ceil((tn - s.nextT) / s.barDur); s.bar += k; s.nextT += k * s.barDur; s.forcePad = true; }
+                while (s.nextT < horizon && (s.endT === null || s.nextT < s.endT)) { s.scheduleBar(s.bar, s.nextT); s.bar++; s.nextT += s.barDur; }
+            });
+            if (OFF) return;
+            scenes = scenes.filter(function (s) { if (s.endT !== null && tn > s.endT + 7) { s.dispose(); return false; } return true; });
+            if (!scenes.length) stopTimer();
+        }
+        function tick() { if (!ctx || ctx.state !== 'running') return; try { pump(now() + 1.4); } catch (e) { if (W.__kdAudioDebug) console.error(e); } }
+        function ensureTimer() { if (!timer) timer = setInterval(tick, 250); }
+        function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
+
+        // ── Public operations ───────────────────────────────────────────
+        function setParam(p, v, t, tc) { p.cancelScheduledValues(t); p.setTargetAtTime(v, t, tc); }
+        function configure(o) {
+            o = o || {};
+            cfg = {
+                level: LEVEL.hasOwnProperty(o.level) ? o.level : cfg.level,
+                music: (o.music === 'off' || GENRES.hasOwnProperty(o.music)) ? o.music : cfg.music,
+                musicLevel: MLEVEL.hasOwnProperty(o.musicLevel) ? o.musicLevel : cfg.musicLevel,
+                stroke: (o.stroke === 'on' || o.stroke === 'off') ? o.stroke : cfg.stroke,
+                fx: (o.fx === 'on' || o.fx === 'off') ? o.fx : cfg.fx
+            };
+            if (ctx && G) { var t = now(); setParam(G.master.gain, LEVEL[cfg.level], t, 0.08); setParam(G.music.gain, MLEVEL[cfg.musicLevel], t, 0.25); }
+            if (cfg.stroke === 'off' || cfg.level === 'off') strokeEnd();
+            if (cfg.level === 'off') { fadeOutAll(0.4); return; }
+            syncMusic();
+        }
+        function setScene(theme, dark) {
+            theme = THEMES.hasOwnProperty(theme) ? theme : 'neutral'; dark = !!dark;
+            if (theme === cur.theme && dark === cur.dark) return;
+            cur = { theme: theme, dark: dark };
+            if (OFF) { syncMusic(); return; }
+            if (!musicOn() || !ctx) return;
+            clearTimeout(sceneT); sceneT = setTimeout(syncMusic, 350);
+        }
+        function withCtx(fn) {
+            if (!ensureCtx()) return;
+            if (OFF || ctx.state === 'running') { fn(); return; }
+            if (D.hidden) return;
+            var asked = Date.now();
+            try { var p = ctx.resume(); if (p && p.then) p.then(function () { if (ctx && ctx.state === 'running' && Date.now() - asked < 400) fn(); }, function () { }); } catch (e) { }
+        }
+        function fxOn() { return cfg.level !== 'off' && cfg.fx === 'on'; }
+        function play(fn, delay) { touch(); withCtx(function () { fn(now() + 0.01 + (delay || 0)); }); }
+        function cardShown(isBack) {
+            touch();
+            if (cfg.level === 'off') return;
+            if (musicOn()) syncMusic();
+            if (fxOn()) play(FX[isBack ? 'cardBack' : 'cardFront'], isBack ? 0.02 : 0.05);
+        }
+        function ks() {
+            var top = live(); if (top) return top;
+            var th = THEMES[cur.theme] || THEMES.neutral;
+            return { k: th.key, scale: th.scale, prog: cur.dark ? th.night : th.day, ci: 0 };
+        }
+        var FX = {
+            tap: function (t) { wood(FXD(), t, 1350, 0.035, { dec: 0.02 }); },
+            tick: function (t) { wood(FXD(), t, 1900, 0.022, { dec: 0.012 }); },
+            select: function (t) { bell(FXD(), t, pick(scaleNotes(ks(), 79, 91)), 0.02, { decay: 0.3, ratio: 2, index: 0.4, wet: 0.15 }); wood(FXD(), t, 1500, 0.018, { dec: 0.015 }); },
+            open: function (t) { swish(FXD(), t, 600, 2200, 0.22, 0.03); bell(FXD(), t + 0.06, rootNear(ks(), 84), 0.02, { decay: 0.7, ratio: 2, index: 0.5, wet: 0.35 }); },
+            close: function (t) { swish(FXD(), t, 2000, 650, 0.2, 0.026); wood(FXD(), t + 0.05, 820, 0.022, { dec: 0.025 }); },
+            nav: function (t) { blip(FXD(), t, 880, 1320, 0.06, 0.022); },
+            back: function (t) { blip(FXD(), t, 1320, 880, 0.06, 0.022); },
+            tab: function (t) { wood(FXD(), t, 1100, 0.03, { dec: 0.02 }); },
+            page: function (t) {
+                noiseHit(FXD(), t, { type: 'bandpass', f: 1800, f2: 3800, q: 0.9, dur: 0.12, att: 0.03, vel: 0.03 });
+                noiseHit(FXD(), t + 0.09, { type: 'bandpass', f: 3200, f2: 1500, q: 1, dur: 0.16, att: 0.02, vel: 0.022 });
+            },
+            play: function (t) { bell(FXD(), t, rootNear(ks(), 84), 0.02, { decay: 0.5, ratio: 2, index: 0.5, wet: 0.2 }); },
+            reveal: function (t) {
+                var n = scaleNotes(ks(), 76, 96), i0 = nearestIdx(n, 79);
+                for (var i = 0; i < 3; i++) bell(FXD(), t + i * 0.055, n[Math.min(n.length - 1, i0 + i)], 0.022 - i * 0.003, { decay: 0.9, ratio: 3.5, index: 0.7, wet: 0.45 });
+            },
+            hide: function (t) {
+                var n = scaleNotes(ks(), 76, 96), i0 = nearestIdx(n, 84);
+                for (var i = 0; i < 2; i++) bell(FXD(), t + i * 0.06, n[Math.max(0, i0 - i)], 0.016, { decay: 0.6, ratio: 3.5, index: 0.5, wet: 0.35 });
+            },
+            hint: function (t) { var r = rootNear(ks(), 79); bell(FXD(), t, r + 7, 0.024, { decay: 1.2, ratio: 3.5, index: 0.7, wet: 0.5 }); bell(FXD(), t + 0.14, r, 0.022, { decay: 1.4, ratio: 3.5, index: 0.7, wet: 0.5 }); },
+            reset: function (t) {
+                noiseHit(FXD(), t, { kind: 'pink', type: 'bandpass', f: 2600, f2: 500, q: 0.9, dur: 0.45, att: 0.05, vel: 0.03, wet: 0.3 });
+                pluck(FXD(), t + 0.3, rootNear(ks(), 55), 0.05, { decay: 0.6, bright: 4, wet: 0.3 });
+            },
+            undo: function (t) { blip(FXD(), t, 1000, 560, 0.09, 0.03); },
+            skip: function (t) { swish(FXD(), t, 500, 1900, 0.3, 0.028); bell(FXD(), t + 0.2, rootNear(ks(), 79), 0.018, { decay: 0.8, ratio: 3.5, index: 0.6, wet: 0.4 }); },
+            cardFront: function (t) { swish(FXD(), t, 800, 1700, 0.26, 0.05); },
+            cardBack: function (t) {
+                var s = ks(), r = rootNear(s, 76);
+                swish(FXD(), t, 500, 2100, 0.34, 0.016);
+                bell(FXD(), t + 0.07, r, 0.026, { decay: 1.6, ratio: 3.5, index: 0.8, wet: 0.6, echo: 0.2 });
+                bell(FXD(), t + 0.16, r + 7, 0.018, { decay: 1.4, ratio: 3.5, index: 0.8, wet: 0.6 });
+            }
+        };
+        function strokeResult(ok, idx) {
+            if (!fxOn()) return;
+            play(function (t) {
+                var s = ks();
+                if (ok) { var base = rootNear(s, 72), n = scaleNotes(s, base, base + 26); chime(lastStyle, FXD(), t, n[(idx || 0) % n.length], 0.04); }
+                else thock(FXD(), t, rootNear(s, 50), 0.05);
+            });
+        }
+        function complete() {
+            if (!fxOn()) return;
+            play(function (t) {
+                var s = ks(), base = rootNear(s, 72), n = scaleNotes(s, base, base + 26);
+                for (var i = 0; i < 6; i++) chime(lastStyle, FXD(), t + i * 0.075, n[Math.min(n.length - 1, i)], 0.034 + i * 0.004);
+                bell(FXD(), t + 0.5, base + 24, 0.02, { decay: 2.4, ratio: 3.5, index: 0.9, wet: 0.7, echo: 0.3 });
+                pad(FXD(), t + 0.05, voiceChord(chordNotes(s, s.ci), null, 60, 79), 0.9, { type: 'triangle', type2: 'sine', cut: 3200, att: 0.3, rel: 1.6, gain: 0.012, det: 5, wet: 0.6 });
+            }, 0.12);
+        }
+
+        // ── Stroke sounds ───────────────────────────────────────────────
+        function panOf(x) { return clamp((x - 54.5) / 54.5, -1, 1) * 0.35; }
+        function strokeStart(style, x, y, pressure, ptype) {
+            lastStyle = SK.hasOwnProperty(style) ? style : 'standard';
+            if (cfg.level === 'off' || cfg.stroke !== 'on') return;
+            touch();
+            var tok = ++sTok, st = lastStyle;
+            withCtx(function () { if (tok === sTok) buildStroke(st, x, y, pressure, ptype); });
+        }
+        function buildStroke(style, x, y, pressure, ptype) {
+            if (SV) releaseStroke(SV);
+            var t = now(), c = SK[style], v = { style: style, c: c, x: x, y: y, ms: clockMs(), sp: 0, upd: 0, m: 0, pen: ptype === 'pen', pr: +pressure || 0, src: [] };
+            var amp = gainN(0), out = amp, d = { dry: G.stroke, wet: G.verbIn, echo: null };
+            v.amp = amp;
+            if (ctx.createStereoPanner) { v.pan = ctx.createStereoPanner(); v.pan.pan.value = panOf(x); amp.connect(v.pan); out = v.pan; }
+            out.connect(G.stroke);
+            function src(kind) { var s = noiseN(kind); startNoise(s, t); v.src.push(s); return s; }
+            if (style === 'gel') {
+                // Rolling ball: smooth, narrow "ssss" plus a faint glide tone
+                var gs = src('pink'), gbp = filt('bandpass', c.f0, 1.3), glp = filt('lowpass', 3600, 0.5), tone = oscN('sine', 1200), tg = gainN(0);
+                gs.connect(gbp); gbp.connect(glp); glp.connect(amp); tone.connect(tg); tg.connect(amp); tone.start(t); v.src.push(tone);
+                v.f = gbp; v.tg = tg;
+                blip(d, t, 2600, 2300, 0.02, 0.01);
+            } else if (style === 'ink') {
+                // Brush: breathy low band with bristle flutter; soft "dab" on contact
+                var is = src('pink'), ilp = filt('lowpass', c.f0, 0.8), ihp = filt('highpass', 180, 0.5), ib = gainN(0.6), am = src('white'), amf = filt('lowpass', 14, 0.5), amg = gainN(20);
+                is.connect(ilp); ilp.connect(ihp); ihp.connect(ib); ib.connect(amp); am.connect(amf); amf.connect(amg); amg.connect(ib.gain);
+                v.f = ilp;
+                thock(d, t, 45, 0.035);
+            } else if (style === 'neon') {
+                // Electric tube hum that brightens and rises with speed
+                var o1 = oscN('sawtooth', 92), o2 = oscN('sawtooth', 92.6), o3 = oscN('sine', 184), nlp = filt('lowpass', c.f0, 5), o3g = gainN(0.5);
+                o1.connect(nlp); o2.connect(nlp); o3.connect(o3g); o3g.connect(nlp); nlp.connect(amp);
+                [o1, o2, o3].forEach(function (o) { o.start(t); v.src.push(o); });
+                var cs = src('white'), cbp = filt('bandpass', 5200, 2), cg = gainN(0.02);
+                cs.connect(cbp); cbp.connect(cg); cg.connect(amp);
+                v.f = nlp; v.o1 = o1; v.o2 = o2; v.o3 = o3;
+                var z = oscN('sine', 280), zg = gainN(0);
+                z.frequency.setValueAtTime(280, t); z.frequency.exponentialRampToValueAtTime(1500, t + 0.07);
+                zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.025, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.04, 0.03);
+                z.connect(zg); zg.connect(out); z.start(t); z.stop(t + 0.3);
+            } else {
+                // Pencil: grainy graphite scratch on paper
+                var ps = src('white'), php = filt('highpass', 1100, 0.7), pbp = filt('bandpass', c.f0, 0.9), gr = gainN(0.6), gm = src('white'), gmf = filt('lowpass', 70, 0.5), gmg = gainN(6);
+                ps.connect(php); php.connect(pbp); pbp.connect(gr); gr.connect(amp); gm.connect(gmf); gmf.connect(gmg); gmg.connect(gr.gain);
+                v.f = pbp;
+                noiseHit(d, t, { type: 'highpass', f: 2200, dur: 0.008, vel: 0.03 });
+            }
+            amp.gain.setValueAtTime(0, t); amp.gain.setTargetAtTime(c.base, t, 0.02);
+            if (!OFF) v.iv = setInterval(function () { if (SV === v && clockMs() - v.ms > 45) { v.sp *= 0.5; applyStroke(v); } }, 40);
+            duck(true);
+            SV = v;
+        }
+        function applyStroke(v) {
+            var t = now(), c = v.c, m = clamp((v.sp - 4) / 150, 0, 1), loud = Math.pow(m, 0.8);
+            var pf = v.pen && v.pr > 0 ? 0.55 + 0.9 * clamp(v.pr, 0, 1) : 1;
+            v.m = m;
+            v.amp.gain.setTargetAtTime((c.base + c.k * loud) * pf, t, 0.03);
+            v.f.frequency.setTargetAtTime(c.f0 + (c.f1 - c.f0) * m, t, 0.05);
+            if (v.pan) v.pan.pan.setTargetAtTime(panOf(v.x), t, 0.1);
+            if (v.tg) v.tg.gain.setTargetAtTime(0.012 * loud, t, 0.05);
+            if (v.o1) { var hz = 92 + 46 * m; v.o1.frequency.setTargetAtTime(hz, t, 0.06); v.o2.frequency.setTargetAtTime(hz * 1.007, t, 0.06); v.o3.frequency.setTargetAtTime(hz * 2, t, 0.06); }
+        }
+        function strokeMove(x, y, pressure) {
+            var v = SV; if (!v || !ctx) return;
+            var ms = clockMs(), dt = Math.max(1, ms - v.ms) / 1000, dist = Math.sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+            v.x = x; v.y = y; v.ms = ms; if (pressure > 0) v.pr = pressure;
+            v.sp += (dist / dt - v.sp) * Math.min(1, dt / 0.06);
+            if (ms - v.upd < 25) return;
+            v.upd = ms; applyStroke(v);
+        }
+        function releaseStroke(v) {
+            clearInterval(v.iv);
+            var t = now(), c = v.c, d = { dry: G.stroke, wet: G.verbIn, echo: null };
+            v.amp.gain.cancelScheduledValues(t); v.amp.gain.setTargetAtTime(0, t, c.rel);
+            if (v.style === 'ink' && v.m > 0.4) noiseHit(d, t, { kind: 'pink', type: 'bandpass', f: 1400, f2: 3800, q: 1.4, dur: 0.14, att: 0.02, vel: 0.05 * v.m, pan: v.pan ? panOf(v.x) : 0 });
+            if (v.o1) { v.o1.frequency.setTargetAtTime(55, t, 0.12); v.o2.frequency.setTargetAtTime(55.4, t, 0.12); v.o3.frequency.setTargetAtTime(110, t, 0.12); }
+            var end = t + c.rel * 8 + 0.05;
+            v.src.forEach(function (s) { try { s.stop(end); } catch (e) { } });
+            duck(false);
+        }
+        function strokeEnd() { sTok++; var v = SV; SV = null; if (v && ctx) releaseStroke(v); }
+        function duck(on) {
+            if (!G || !musicOn()) return;
+            var p = G.duck.gain, t = now();
+            p.cancelScheduledValues(t); p.setTargetAtTime(on ? 0.62 : 1, t + (on ? 0 : 0.25), on ? 0.12 : 0.7);
+        }
+        function demoStroke(style) {
+            if (cfg.level === 'off') return;
+            if (cfg.stroke !== 'on') { lastStyle = SK.hasOwnProperty(style) ? style : lastStyle; if (fxOn()) play(FX.select); return; }
+            var i = 0;
+            strokeStart(style, 20, 40, 0.5, 'mouse');
+            var iv = setInterval(function () {
+                i++; strokeMove(20 + i * 5, 40 + Math.sin(i / 14 * Math.PI) * 14, 0.5);
+                if (i >= 14) { clearInterval(iv); strokeEnd(); }
+            }, 30);
+        }
+
+        // ── Lifecycle ───────────────────────────────────────────────────
+        function onGesture() {
+            if (cfg.level === 'off' || disposed) return;
+            touch();
+            if (!ctx && !musicOn()) return;
+            if (!ensureCtx()) return;
+            if (ctx.state !== 'running') { try { ctx.resume(); } catch (e) { } }
+        }
+        function onVis() {
+            if (!ctx) return;
+            if (D.hidden) { var s = live(); if (s) s.save(); try { ctx.suspend(); } catch (e) { } }
+            else if (cfg.level !== 'off' && (musicOn() || SV)) { try { ctx.resume(); } catch (e) { } }
+        }
+        function onHide() { var s = live(); if (s) s.save(); }
+        var GEST = ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click'];
+        GEST.forEach(function (n) { D.addEventListener(n, onGesture, true); });
+        D.addEventListener('visibilitychange', onVis);
+        W.addEventListener('pagehide', onHide);
+        // Idle: release the audio device when nothing has played for a while
+        idleIv = setInterval(function () {
+            if (ctx && ctx.state === 'running' && !scenes.length && !SV && Date.now() - lastAct > 15000) { try { ctx.suspend(); } catch (e) { } }
+        }, 5000);
+        function dispose() {
+            disposed = true; stopTimer(); clearInterval(idleIv); clearTimeout(sceneT);
+            GEST.forEach(function (n) { D.removeEventListener(n, onGesture, true); });
+            D.removeEventListener('visibilitychange', onVis); W.removeEventListener('pagehide', onHide);
+            if (ctx) { try { ctx.close(); } catch (e) { } }
+            ctx = null; scenes = [];
+            if (W.__kdAudio === api) W.__kdAudio = null;
+        }
+
+        // ── Offline render (tests / sound design): deterministic timeline ──
+        function offline(o) {
+            var OAC = W.OfflineAudioContext || W.webkitOfflineAudioContext, sr = o.sr || 44100;
+            var off = new OAC(2, Math.ceil(sr * o.seconds), sr);
+            var sv = { ctx: ctx, G: G, NB: NB, PW: PW, scenes: scenes, cfg: cfg, cur: cur, SV: SV, sTok: sTok, lastStyle: lastStyle };
+            try {
+                OFF = true; ctx = off; scenes = []; SV = null;
+                cfg = { level: o.level || 'mid', music: o.music || 'off', musicLevel: o.musicLevel || 'mid', stroke: o.stroke || 'on', fx: o.fx || 'on' };
+                cur = { theme: o.theme || 'neutral', dark: !!o.dark };
+                setup(off);
+                TO = 0; syncMusic();
+                (o.events || []).slice().sort(function (a, b) { return a.at - b.at; }).forEach(function (ev) {
+                    TO = ev.at; pump(ev.at + 1.4);
+                    api[ev.fn].apply(null, ev.args || []);
+                });
+                TO = o.seconds; pump(o.seconds);
+            } finally {
+                OFF = false; TO = null;
+                ctx = sv.ctx; G = sv.G; NB = sv.NB; PW = sv.PW; scenes = sv.scenes; cfg = sv.cfg; cur = sv.cur; SV = sv.SV; sTok = sv.sTok; lastStyle = sv.lastStyle;
+            }
+            return off.startRendering();
+        }
+
+        function safe(fn) {
+            return function () {
+                try { return fn.apply(null, arguments); } catch (e) { if (OFF) throw e; if (W.__kdAudioDebug) console.error(e); }
+            };
+        }
+        var api = {
+            version: VERSION,
+            configure: safe(configure),
+            setScene: safe(setScene),
+            cardShown: safe(cardShown),
+            strokeStart: safe(strokeStart),
+            strokeMove: safe(strokeMove),
+            strokeEnd: safe(strokeEnd),
+            strokeResult: safe(strokeResult),
+            complete: safe(complete),
+            fx: safe(function (name, delay) { if (fxOn() && FX.hasOwnProperty(name)) play(FX[name], delay); }),
+            demoStroke: safe(demoStroke),
+            state: function () {
+                return { ctx: ctx ? ctx.state : 'none', scenes: scenes.map(function (s) { return s.key + (s.ending ? ' (fading)' : ''); }), cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark };
+            },
+            dispose: dispose,
+            _offline: offline,
+            _t: { THEMES: THEMES, GENRES: GENRES, NAT: NAT, CH: CH, SK: SK, FX: FX, EV: EV, chordPcs: chordPcs, pivotIndex: pivotIndex, scaleNotes: scaleNotes, voiceChord: voiceChord, rootNear: rootNear }
+        };
+        W.__kdAudio = api;
+    })();
+</script>
+<!-- [/KD-AUDIO-ENGINE] -->
 <script>
     // =======================================================================
     // FrontTemplate-Card-1 (Drawing Card)
@@ -4447,7 +5786,12 @@
             'theme-primary': safeGetItem('kanjiThemePrimary', globalConf.themePrimary || 'neutral'),
             'theme-stroke-color': safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black'),
             'theme-stroke-style': safeGetItem('kanjiThemeStrokeStyle', globalConf.themeStrokeStyle || 'standard'),
-            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal')
+            'theme-stroke-width': safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal'),
+            'sound-level': safeGetItem('kanjiSoundLevel', 'off'),
+            'sound-music': safeGetItem('kanjiSoundMusic', 'off'),
+            'sound-music-level': safeGetItem('kanjiSoundMusicLevel', 'mid'),
+            'sound-stroke': safeGetItem('kanjiSoundStroke', 'on'),
+            'sound-fx': safeGetItem('kanjiSoundFx', 'on')
         };
         _settingsRadios.forEach(r => {
             if (radioValues[r.name] !== undefined) r.checked = (r.value === radioValues[r.name]);
@@ -4717,6 +6061,9 @@
             var primary = (primaryPref === 'random') ? (_cardRandomTheme || _rollRandomTheme()) : primaryPref;
             if (!_primaryColors[primary]) primary = 'neutral';
             root.setAttribute('data-jp-theme', primary);
+            // Klang: Musik/Naturklang folgt Theme × Tag/Nacht (Überblendung in der Engine)
+            _kdSnd('setScene', primary, isDark);
+            applySoundSettings();
             var pColors = _primaryColors[primary] || _primaryColors.neutral;
             var pPalette = isDark && pColors.dark ? pColors.dark : pColors;
             for (var t = 0; t < accentTargets.length; t++) {
@@ -4892,6 +6239,74 @@
         if (category === 'mode') _scheduleDeferredThemeCheck();
     }
 
+    // --- Klang & Musik: Bridge zur Audio-Engine (window.__kdAudio) [SHARED c1-front/c2-front] ---
+    // Einstellungen sind global (nicht c1_/c2_-gescoped) wie die Theme-Keys. Standard: aus.
+    function _kdSnd(method) {
+        var a = window.__kdAudio;
+        if (!a || typeof a[method] !== 'function') return;
+        try { return a[method].apply(a, Array.prototype.slice.call(arguments, 1)); } catch (e) { }
+    }
+
+    function _kdSoundConf() {
+        return {
+            level: safeGetItem('kanjiSoundLevel', 'off'),
+            music: safeGetItem('kanjiSoundMusic', 'off'),
+            musicLevel: safeGetItem('kanjiSoundMusicLevel', 'mid'),
+            stroke: safeGetItem('kanjiSoundStroke', 'on'),
+            fx: safeGetItem('kanjiSoundFx', 'on')
+        };
+    }
+
+    function applySoundSettings() {
+        var c = _kdSoundConf();
+        _kdSnd('configure', c);
+        var sub = document.getElementById('sound-sub-settings');
+        if (sub) sub.classList.toggle('setting-disabled', c.level === 'off');
+    }
+
+    function updateSoundSetting(category, val) {
+        var keyMap = { level: 'kanjiSoundLevel', music: 'kanjiSoundMusic', musicLevel: 'kanjiSoundMusicLevel', stroke: 'kanjiSoundStroke', fx: 'kanjiSoundFx' };
+        if (!keyMap[category]) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+        safeSetItem(keyMap[category], val);
+        applySoundSettings();
+    }
+
+    // Effekt-Klänge per Delegation — einmal pro WebView gebunden (Anki Desktop
+    // behält das Dokument über Kartenwechsel hinweg, nur #qa wird ersetzt).
+    if (!window._kdSndUiBound) {
+        window._kdSndUiBound = true;
+        (function () {
+            var rules = [
+                ['#button-reveal', 'hint'], ['#button-undo', 'undo'], ['#button-skip', 'skip'], ['#button-reset', 'reset'],
+                ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.close-settings', 'close'], ['.back-btn', 'back'],
+                ['.category-card', 'nav'], ['.segment-btn', 'tab'], ['button, [role="button"]', 'tap']
+            ];
+            var down = null;
+            var match = function (el) {
+                if (!el || !el.closest) return null;
+                if (el.id === 'settings-overlay' || (el.classList && el.classList.contains('info-overlay'))) return 'close';
+                for (var i = 0; i < rules.length; i++) if (el.closest(rules[i][0])) return rules[i][1];
+                return null;
+            };
+            document.addEventListener('pointerdown', function (e) {
+                var fx = match(e.target);
+                down = fx ? { fx: fx, x: e.clientX, y: e.clientY } : null;
+            }, true);
+            document.addEventListener('pointerup', function (e) {
+                var d = down; down = null;
+                if (d && Math.abs(e.clientX - d.x) < 12 && Math.abs(e.clientY - d.y) < 12) _kdSnd('fx', d.fx);
+            }, true);
+            // Bubble phase: runs after the inline onchange, i.e. with the new setting applied
+            document.addEventListener('change', function (e) {
+                var t = e.target;
+                if (!t || t.type !== 'radio' || !t.closest || !t.closest('.settings-modal')) return;
+                if (t.name === 'theme-stroke-style') _kdSnd('demoStroke', t.value);
+                else _kdSnd('fx', 'select');
+            });
+        })();
+    }
+
     // --- Grid Rendering [SHARED with c2-front] ---
 
     function updateGridDisplay() {
@@ -5047,6 +6462,8 @@
     updateGridDisplay();
     // Deferred re-apply: Anki may re-set nightMode after our script runs.
     _scheduleDeferredThemeCheck();
+    // Klang: Karte aufgedeckt / neue Karte (Musik läuft über Kartenwechsel weiter)
+    _kdSnd('cardShown', !!document.getElementById('is-back-side-marker'));
 
     // Prevent Anki from overriding forced light/dark mode.
     // Store observer on window so previous card's observer is disconnected
@@ -5949,6 +7366,7 @@
             const pos = getMousePos(e);
             userPoints.push(pos);
             _activeDrawStyle = getActiveStrokeStyle();
+            _kdSnd('strokeStart', _activeDrawStyle, pos.x, pos.y, e.pressure, e.pointerType);
             _cachedStrokeColor = getCSSVar('--stroke-active') || '#333'; // cache once, reused in rAF
             const isGel = _activeDrawStyle === 'gel';
             // Always create SVG path for d-attribute accumulation and finalization
@@ -6035,6 +7453,7 @@
             if (!isDrawing) return;
             const pos = getMousePos(e);
             userPoints.push(pos);
+            _kdSnd('strokeMove', pos.x, pos.y, e.pressure);
             dSegments.push(' L ', pos.x, ' ', pos.y);
 
             if (_useCanvas && _ctx) {
@@ -6062,6 +7481,7 @@
             if (e && e.pointerId) { try { _evTarget.releasePointerCapture(e.pointerId); } catch (err) { } }
             if (e && e.cancelable !== false) { e.preventDefault(); e.stopPropagation(); }
             isDrawing = false;
+            _kdSnd('strokeEnd');
 
             // Flush any pending SVG rAF — write final path immediately before evaluation
             if (_svgRafId) { cancelAnimationFrame(_svgRafId); _svgRafId = null; }
@@ -6166,6 +7586,7 @@
                 paths[si].style.removeProperty('opacity');
                 _gelColorCache.delete(paths[si]);
                 currentStroke++; saveState(); currentSVGPath = null; _gelHalo = null;
+                if (currentStroke < paths.length) _kdSnd('strokeResult', true, si);
                 const afterSnapGen = _drawGen;
                 const afterSnap = () => {
                     // Always make the reference path visible — even when
@@ -6187,6 +7608,7 @@
                     if (currentStroke >= paths.length) {
                         _setSkipDisabled(true);
                         if (actionButtons) actionButtons.style.display = 'none';
+                        _kdSnd('complete');
                         playCompletionAnimation().then(() => triggerAutoFlip());
                     }
                 };
@@ -6194,9 +7616,10 @@
                     // Gel: pass halo to snap so it morphs in sync
                     snapToReference(dp, paths[si], up, afterSnap, gh);
                 }
-                else { paths[si].classList.add('stroke-complete'); paths[si].classList.remove('rewind-anim'); paths[si].style.removeProperty('stroke-dashoffset'); paths[si].style.removeProperty('stroke-dasharray'); paths[si].style.removeProperty('transition'); paths[si].style.removeProperty('stroke'); paths[si].style.removeProperty('opacity'); _addGelHaloToPath(paths[si]); clearDrawLayer(); if (currentStroke >= paths.length) { _setSkipDisabled(true); if (actionButtons) actionButtons.style.display = 'none'; playCompletionAnimation().then(() => triggerAutoFlip()); } }
+                else { paths[si].classList.add('stroke-complete'); paths[si].classList.remove('rewind-anim'); paths[si].style.removeProperty('stroke-dashoffset'); paths[si].style.removeProperty('stroke-dasharray'); paths[si].style.removeProperty('transition'); paths[si].style.removeProperty('stroke'); paths[si].style.removeProperty('opacity'); _addGelHaloToPath(paths[si]); clearDrawLayer(); if (currentStroke >= paths.length) { _setSkipDisabled(true); if (actionButtons) actionButtons.style.display = 'none'; _kdSnd('complete'); playCompletionAnimation().then(() => triggerAutoFlip()); } }
             } else {
                 mistakes++;
+                _kdSnd('strokeResult', false, mistakes);
                 if (mistakes > problemStrokes[currentStroke]) { problemStrokes[currentStroke] = mistakes; saveState(); }
 
                 const isAutoDrawOn = _cfgAutodraw;

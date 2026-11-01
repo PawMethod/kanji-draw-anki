@@ -3311,6 +3311,11 @@ html.is-ankidesktop .info-overlay {
     color: #2b180e;
 }
 
+.category-icon.cat-sound {
+    background: #b3a6c9;
+    color: #2b180e;
+}
+
 .nightMode .category-icon.cat-grid,
 .night_mode .category-icon.cat-grid {
     background: #c6d4be;
@@ -3332,6 +3337,12 @@ html.is-ankidesktop .info-overlay {
 .nightMode .category-icon.cat-theme,
 .night_mode .category-icon.cat-theme {
     background: #bd7c58;
+    color: #26150c;
+}
+
+.nightMode .category-icon.cat-sound,
+.night_mode .category-icon.cat-sound {
+    background: #a698bd;
     color: #26150c;
 }
 
