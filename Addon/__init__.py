@@ -16,6 +16,7 @@ The templates work fine without this add-on (settings just reset on restart).
 import json
 import logging
 import os
+import re
 import threading
 
 from aqt import gui_hooks
@@ -29,8 +30,24 @@ _SETTINGS_FILE = os.path.join(
 _MARKER_FIELD = "SVGPfade"
 # Real settings stay far below this (templates cap their cookie at ~3.8 KB).
 _MAX_MESSAGE_LEN = 64 * 1024
+# Template keys look like kanjiThemeMode, c1_kanjiGridType, c2f_kanjiOptNumbers.
+_KEY_RE = re.compile(r"^(?:c1_|c2_|c2f_)?kanji[A-Za-z]{1,40}$")
+_MAX_VALUE_LEN = 64
 _settings_cache = None
 _lock = threading.Lock()
+
+
+def _sanitize(data):
+    if not isinstance(data, dict):
+        return {}
+    return {
+        k: v
+        for k, v in data.items()
+        if isinstance(k, str)
+        and _KEY_RE.match(k)
+        and isinstance(v, str)
+        and len(v) <= _MAX_VALUE_LEN
+    }
 
 
 def _load():
@@ -41,14 +58,15 @@ def _load():
             return _settings_cache
         try:
             with open(_SETTINGS_FILE, "r", encoding="utf-8") as f:
-                _settings_cache = json.load(f)
+                _settings_cache = _sanitize(json.load(f))
                 return _settings_cache
         except FileNotFoundError:
             _settings_cache = {}
             return _settings_cache
         except (json.JSONDecodeError, OSError) as e:
             _log.warning("Failed to load settings: %s", e)
-            return {}
+            _settings_cache = {}
+            return _settings_cache
 
 
 def _save(data):
@@ -80,7 +98,7 @@ def _on_js_message(handled, message, context):
     try:
         data = json.loads(message[4:])
         if isinstance(data, dict):
-            _save(data)
+            _save(_sanitize(data))
     except (json.JSONDecodeError, TypeError) as e:
         _log.debug("Malformed kdp message: %s", e)
     return (True, None)
