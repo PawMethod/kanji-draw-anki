@@ -1,6 +1,6 @@
 <script>aFade = 0; qFade = 0; if (typeof anki !== "undefined") { anki.aFade = 0; anki.qFade = 0; }</script>
 <style id="kanji-anti-flicker">
-    /* Static rules – applied by the browser IMMEDIATELY on parse, even with innerHTML */
+    /* Static rules - applied by the browser IMMEDIATELY on parse, even with innerHTML */
 
     #svg-bg path {
         stroke-dashoffset: 0 !important;
@@ -98,7 +98,7 @@
     }
 </style>
 <script>
-    /* Dynamic stroke colors – requires localStorage access */
+    /* Dynamic stroke colors - requires localStorage access */
     (function () {
         try {
             var ps = JSON.parse(sessionStorage.getItem('kanjiErrors') || localStorage.getItem('kanjiErrors') || '[]');
@@ -409,7 +409,7 @@
 
 <script>
     // =======================================================================
-    // BackTemplate-Card-1 (Drawing Card – Back Side)
+    // BackTemplate-Card-1 (Drawing Card - Back Side)
     //
     // Anti-flicker <style> above renders stroke colors BEFORE FrontSide loads.
     // FrontSide injection provides: safeGetItem, getGlobalConfig, grid, scroll lock.
@@ -1836,7 +1836,7 @@
             for (let i = 1; i < strokes.length; i++) {
                 if (strokes[i] !== strokes[i - 1] + 1) { contiguous = false; break; }
             }
-            if (contiguous && strokes.length > 2) return 'Striche ' + strokes[0] + '–' + strokes[strokes.length - 1];
+            if (contiguous && strokes.length > 2) return 'Striche ' + strokes[0] + '-' + strokes[strokes.length - 1];
             if (strokes.length === 2) return 'Strich ' + strokes[0] + ' & ' + strokes[1];
             return 'Strich ' + strokes.join(', ');
         };
