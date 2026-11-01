@@ -3811,11 +3811,16 @@ html.is-ankidesktop .info-overlay {
     font-style: italic;
 }
 
-/* Same look as the tree's root node: surface fill with an accent ring */
+/* Same chip style as the components, in the theme accent; darkened for contrast on light surfaces */
 .kd-k {
-    color: var(--text-main);
-    background: var(--surface);
-    box-shadow: inset 0 0 0 1.5px var(--accent);
+    color: var(--accent-hover);
+    color: color-mix(in srgb, var(--accent) 70%, #000);
+    background: var(--accent-bg);
+}
+
+.nightMode .kd-k,
+.night_mode .kd-k {
+    color: var(--accent);
 }
 
 .kd-c1 { color: #13719e; background: rgba(42, 167, 224, 0.14); }
