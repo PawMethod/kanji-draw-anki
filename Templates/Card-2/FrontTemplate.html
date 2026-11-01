@@ -1258,7 +1258,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="ambient"
-                        data-hint="Schwebende Klänge mit Glasglocken und Kalimba – sehr ruhig. Wechselt mit Landschaft und Tageszeit."
+                        data-hint="Japanische Umgebungsmusik (Kankyō Ongaku): Shō-Klänge, Glasglocken, Koto und Shakuhachi – sehr ruhig. Tonleiter und Stimmung wechseln mit Landschaft und Tageszeit."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1272,7 +1272,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="zen"
-                        data-hint="Japanisch und meditativ: Koto, Shakuhachi und Klangschalen (Okinawa: Sanshin). Wechselt mit Landschaft und Tageszeit."
+                        data-hint="Japanisch und meditativ: Koto, Shō, Shakuhachi und Shinobue, Klangschalen und Tempelholzblock (Okinawa: Sanshin). Wechselt mit Landschaft und Tageszeit."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1286,7 +1286,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="piano"
-                        data-hint="Sanftes Klavier mit wiederkehrenden Melodien, im Mittelteil mit Streichern und Celesta. Wechselt mit Landschaft und Tageszeit."
+                        data-hint="Sanftes Klavier in japanischen Tonleitern, im Mittelteil übernimmt die Koto die Melodie. Wechselt mit Landschaft und Tageszeit."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -1301,7 +1301,7 @@
                     </div>
                 </label>
                 <label><input type="radio" name="sound-music" value="lofi"
-                        data-hint="Entspannte Beats mit E-Piano, Kontrabass und Vibraphon. Wechselt mit Landschaft und Tageszeit."
+                        data-hint="Japanischer Lo-Fi: entspannte Beats mit E-Piano und Kontrabass, Melodien auf Koto und Shamisen. Wechselt mit Landschaft und Tageszeit."
                         onchange="updateSoundSetting('music', this.value)">
                     <div class="visual-option">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -4371,7 +4371,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '1.3.1';
+        var VERSION = '1.4.0';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4383,34 +4383,37 @@
         var LEVEL = { off: 0, low: 0.4, mid: 0.7, high: 1 };
         var MLEVEL = { low: 0.45, mid: 0.7, high: 1 };
         var CH = {
-            add9: [0, 4, 7, 14], maj7: [0, 4, 7, 11], maj9: [0, 4, 11, 14], six9: [0, 4, 9, 14],
+            add9: [0, 4, 7, 14], maj7: [0, 4, 7, 11], maj9: [0, 4, 11, 14], six9: [0, 4, 9, 14], maj: [0, 4, 7, 12],
             m7: [0, 3, 7, 10], m9: [0, 3, 10, 14], sus2: [0, 2, 7, 12], sus4: [0, 5, 7, 10], ms11: [0, 4, 11, 18]
         };
-        // key = pitch class of the tonic, scale = melody scale (semitones),
-        // day/night = 4-chord progressions [offset from key, chord type]
+        // key = tonic pitch class, scale = Japanese pentatonic mode.
+        // Progression entries: [scale degree, stack] builds the chord from the scale itself (STACKS);
+        // [semitones, chord type] is Western harmony (Okinawan folk pop).
         var THEMES = {
-            neutral: { key: 2, scale: [0, 2, 4, 7, 9], bright: 1, day: [[0, 'add9'], [9, 'm7'], [5, 'maj9'], [7, 'sus2']], night: [[9, 'm9'], [5, 'maj7'], [0, 'add9'], [7, 'sus4']] },
-            warm: { key: 5, scale: [0, 2, 5, 7, 9], bright: 0.95, day: [[0, 'six9'], [5, 'add9'], [2, 'm7'], [7, 'sus4']], night: [[9, 'm7'], [5, 'maj7'], [0, 'add9'], [7, 'sus2']] },
-            cool: { key: 3, scale: [0, 2, 4, 7, 9], bright: 0.9, day: [[0, 'maj9'], [2, 'add9'], [9, 'm7'], [7, 'sus2']], night: [[9, 'm9'], [2, 'add9'], [0, 'maj9'], [7, 'sus2']] },
-            sepia: { key: 9, scale: [0, 1, 5, 7, 8], bright: 0.85, day: [[0, 'm7'], [8, 'maj7'], [5, 'm9'], [1, 'maj7']], night: [[5, 'm9'], [1, 'maj7'], [0, 'm7'], [8, 'maj7']] },
-            rose: { key: 7, scale: [0, 2, 4, 7, 9], bright: 1.05, day: [[0, 'maj9'], [9, 'm9'], [5, 'ms11'], [7, 'sus2']], night: [[9, 'm7'], [5, 'maj9'], [0, 'add9'], [2, 'm7']] },
-            sage: { key: 2, scale: [0, 3, 5, 7, 10], bright: 0.95, day: [[0, 'm9'], [10, 'add9'], [5, 'add9'], [7, 'm7']], night: [[7, 'm7'], [10, 'add9'], [0, 'm9'], [5, 'sus2']] },
-            hokkaido: { key: 4, scale: [0, 2, 4, 7, 9], bright: 1.15, day: [[0, 'maj9'], [2, 'add9'], [9, 'm9'], [7, 'sus2']], night: [[9, 'm9'], [5, 'ms11'], [0, 'maj7'], [7, 'sus4']] },
-            tokyo: { key: 5, scale: [0, 3, 5, 7, 10], bright: 0.9, day: [[8, 'maj9'], [7, 'm7'], [0, 'm9'], [10, 'sus2']], night: [[0, 'm9'], [8, 'maj7'], [5, 'm9'], [7, 'm7']] },
-            okinawa: { key: 0, scale: [0, 4, 5, 7, 11], bright: 1.05, day: [[0, 'maj7'], [5, 'maj9'], [4, 'm7'], [7, 'add9']], night: [[9, 'm7'], [5, 'maj7'], [0, 'maj7'], [7, 'sus4']] }
+            neutral: { key: 2, scale: [0, 2, 5, 7, 9], bright: 1, day: [[0, 0], [4, 0], [2, 0], [3, 0]], night: [[4, 0], [2, 0], [0, 1], [3, 0]] }, // Yo
+            warm: { key: 5, scale: [0, 2, 5, 7, 9], bright: 0.95, day: [[0, 0], [2, 0], [1, 0], [3, 0]], night: [[4, 0], [1, 0], [2, 0], [0, 1]] }, // Yo
+            cool: { key: 3, scale: [0, 2, 3, 7, 9], bright: 0.9, day: [[0, 0], [3, 0], [2, 0], [1, 0]], night: [[0, 1], [3, 0], [1, 0], [0, 0]] }, // Kumoi
+            sepia: { key: 9, scale: [0, 1, 5, 6, 10], bright: 0.85, day: [[0, 1], [4, 0], [2, 0], [1, 0]], night: [[4, 0], [1, 0], [2, 0], [0, 1]] }, // Iwato
+            rose: { key: 7, scale: [0, 1, 5, 7, 8], bright: 1.05, day: [[0, 0], [4, 0], [2, 0], [3, 1]], night: [[2, 0], [4, 0], [0, 1], [3, 1]] }, // In (Sakura)
+            sage: { key: 2, scale: [0, 3, 5, 7, 10], bright: 0.95, day: [[0, 0], [1, 0], [4, 0], [2, 0]], night: [[3, 0], [1, 0], [0, 0], [2, 0]] }, // Ritsu (minor yo)
+            hokkaido: { key: 4, scale: [0, 2, 4, 7, 9], bright: 1.15, day: [[0, 0], [3, 0], [4, 0], [1, 0]], night: [[4, 0], [1, 0], [0, 0], [3, 0]] }, // Ryo (gagaku)
+            tokyo: { key: 5, scale: [0, 2, 3, 7, 8], bright: 0.9, day: [[4, 0], [3, 0], [0, 0], [2, 0]], night: [[0, 0], [4, 0], [2, 0], [3, 0]] }, // Hirajoshi
+            okinawa: { key: 0, scale: [0, 4, 5, 7, 11], bright: 1.05, day: [[0, 'add9'], [5, 'maj'], [4, 'm7'], [7, 'sus4']], night: [[9, 'm7'], [5, 'maj'], [0, 'add9'], [7, 'sus4']] } // Ryukyu
         };
         // Second progression per theme for the B sections: [day, night]
         var ALT = {
-            neutral: [[[5, 'maj9'], [7, 'sus4'], [4, 'm7'], [9, 'm9']], [[2, 'm9'], [7, 'sus2'], [0, 'maj7'], [9, 'm7']]],
-            warm: [[[9, 'm7'], [2, 'm9'], [7, 'sus2'], [0, 'add9']], [[5, 'maj9'], [4, 'm7'], [2, 'm9'], [7, 'sus4']]],
-            cool: [[[5, 'maj7'], [9, 'm9'], [2, 'm7'], [7, 'sus4']], [[4, 'm7'], [5, 'maj9'], [0, 'six9'], [7, 'sus2']]],
-            sepia: [[[5, 'm7'], [8, 'maj9'], [1, 'maj7'], [0, 'sus4']], [[8, 'maj7'], [7, 'sus4'], [5, 'm9'], [0, 'm7']]],
-            rose: [[[2, 'm7'], [7, 'sus2'], [4, 'm7'], [9, 'm9']], [[5, 'maj7'], [0, 'six9'], [9, 'm9'], [7, 'sus4']]],
-            sage: [[[3, 'maj7'], [10, 'sus2'], [5, 'm7'], [0, 'm9']], [[8, 'maj9'], [10, 'add9'], [3, 'maj7'], [7, 'm7']]],
-            hokkaido: [[[4, 'm7'], [5, 'maj9'], [9, 'm7'], [7, 'sus4']], [[2, 'm9'], [5, 'maj7'], [0, 'add9'], [9, 'm7']]],
-            tokyo: [[[3, 'maj9'], [5, 'm7'], [8, 'maj7'], [10, 'sus4']], [[10, 'add9'], [8, 'maj9'], [5, 'm7'], [0, 'm9']]],
-            okinawa: [[[5, 'maj7'], [4, 'm7'], [2, 'm7'], [7, 'sus4']], [[4, 'm7'], [9, 'm7'], [5, 'maj9'], [0, 'maj7']]]
+            neutral: [[[2, 0], [3, 0], [1, 0], [4, 0]], [[1, 0], [3, 0], [4, 0], [0, 1]]],
+            warm: [[[2, 0], [0, 1], [4, 0], [3, 0]], [[2, 0], [3, 0], [4, 0], [1, 0]]],
+            cool: [[[3, 0], [1, 0], [0, 1], [0, 0]], [[1, 0], [3, 0], [0, 1], [0, 0]]],
+            sepia: [[[1, 0], [2, 0], [4, 0], [0, 1]], [[2, 0], [4, 0], [1, 0], [0, 1]]],
+            rose: [[[4, 0], [2, 0], [3, 1], [0, 0]], [[0, 1], [2, 0], [4, 0], [3, 1]]],
+            sage: [[[1, 0], [4, 0], [2, 0], [0, 0]], [[4, 0], [1, 0], [3, 0], [0, 0]]],
+            hokkaido: [[[3, 0], [4, 0], [1, 0], [0, 0]], [[1, 0], [4, 0], [3, 0], [0, 0]]],
+            tokyo: [[[2, 0], [4, 0], [3, 0], [0, 0]], [[4, 0], [2, 0], [0, 0], [3, 0]]],
+            okinawa: [[[5, 'maj'], [4, 'm7'], [2, 'm7'], [7, 'sus4']], [[4, 'm7'], [9, 'm7'], [5, 'add9'], [0, 'maj']]]
         };
+        // Scale-degree offsets of a chord built from the scale: full colour, open (with octave), plain
+        var STACKS = [[0, 2, 3, 4], [0, 2, 4, 5], [0, 2, 3]];
         // Soundscape per theme: continuous layers (0..1) + events per minute
         var NAT = {
             neutral: { d: { wind: 0.5, ev: { chirp: 4, crane: 0.6 } }, n: { wind: 0.55, ev: { cricket: 9, owl: 0.5 } } },
@@ -4541,7 +4544,10 @@
             for (var i = 1; i < amps.length; i++) im[i] = amps[i];
             var sh = [0, 1, 0.32, 0.16, 0.07, 0.05, 0.025, 0.015], sre = new Float32Array(sh.length), sim = new Float32Array(sh.length);
             for (var j = 1; j < sh.length; j++) sim[j] = sh[j];
-            return { piano: c.createPeriodicWave(re, im), shaku: c.createPeriodicWave(sre, sim) };
+            // Free reed (shō): strong, slowly falling harmonic series
+            var rd = [0, 1, 0.7, 0.55, 0.42, 0.3, 0.24, 0.17, 0.12, 0.09, 0.06], rre = new Float32Array(rd.length), rim = new Float32Array(rd.length);
+            for (var q = 1; q < rd.length; q++) rim[q] = rd[q];
+            return { piano: c.createPeriodicWave(re, im), shaku: c.createPeriodicWave(sre, sim), reed: c.createPeriodicWave(rre, rim) };
         }
         function buildGraph(c) {
             var g = {};
@@ -4579,7 +4585,7 @@
         // ── Node helpers ────────────────────────────────────────────────
         function gainN(v) { var g = ctx.createGain(); g.gain.value = v; return g; }
         function filt(type, f, q) { var b = ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q != null) b.Q.value = q; return b; }
-        function oscN(type, f) { var o = ctx.createOscillator(); if (type === 'piano' || type === 'shaku') o.setPeriodicWave(PW[type]); else o.type = type; o.frequency.value = f; return o; }
+        function oscN(type, f) { var o = ctx.createOscillator(); if (PW && PW[type]) o.setPeriodicWave(PW[type]); else o.type = type; o.frequency.value = f; return o; }
         function noiseN(kind) { var s = ctx.createBufferSource(); s.buffer = NB[kind]; s.loop = true; return s; }
         function startNoise(s, t) { s.start(t, Math.random() * (s.buffer.duration - 0.5)); }
         function send(node, dst, wet, echo, pan) {
@@ -4693,6 +4699,7 @@
         // Plucked strings (Karplus-Strong with fractional-delay tuning): koto, sanshin, upright bass
         function renderString(sr, m, kind) {
             var f = mtof(m), K2 = kind === 'sanshin' ? { dur: 1.6, t60: 1.1, S: 0.32, ex: 0.85, pk: 0.13 }
+                : kind === 'shamisen' ? { dur: 1.6, t60: 0.9, S: 0.2, ex: 0.95, pk: 0.07, buzz: 2.5 }
                 : kind === 'bass' ? { dur: 2.2, t60: 2.4, S: 0.5, ex: 0.22, pk: 0.25 }
                     : { dur: 2.8, t60: clamp(3.4 - (m - 55) * 0.05, 1.2, 3.4), S: 0.45, ex: 0.6, pk: 0.18 };
             var n = Math.floor(sr * K2.dur), d = new Float32Array(n), D = sr / f - K2.S, N = Math.max(2, Math.floor(D - 0.1)), fr = D - N, C = (1 - fr) / (1 + fr);
@@ -4706,6 +4713,14 @@
                 var a = C * l + ax - C * ay; ax = l; ay = a;
                 ln[idx] = a * rho; d[i] = x;
                 if (++idx === N) idx = 0;
+            }
+            // Shamisen: sawari buzz (odd-harmonic waveshaping) and the hard bachi strike
+            if (K2.buzz) {
+                var pk2 = 0;
+                for (i = 0; i < n; i++) if (Math.abs(d[i]) > pk2) pk2 = Math.abs(d[i]);
+                for (i = 0; i < n; i++) { var y2 = d[i] / (pk2 || 1); d[i] = y2 + K2.buzz * y2 * y2 * y2 * 0.4; }
+                var bn = Math.floor(sr * 0.005);
+                for (i = 0; i < bn; i++) d[i] += (Math.random() * 2 - 1) * 0.5 * (1 - i / bn);
             }
             return finish(d, sr, 0.001, 0.15);
         }
@@ -4731,6 +4746,21 @@
                 }
             }
         }
+        // Shō (gagaku mouth organ): free-reed cluster with slow swell and gentle beating
+        function sho(dst, t, notes, dur, vel, o) {
+            o = o || {}; var att = 1.6, hold = Math.max(att, dur), end = t + hold + 2.4;
+            var lp = filt('lowpass', 3200, 0.6), g = gainN(0), v = vel / Math.max(1, notes.length * 0.6);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setValueAtTime(v, t + hold); g.gain.setTargetAtTime(0, t + hold, 0.7);
+            lp.connect(g); send(g, dst, o.wet || 0.6, 0, 0);
+            notes.forEach(function (m, i) {
+                var x = oscN('reed', mtof(m)), tgt = lp;
+                x.detune.value = rnd(-5, 5);
+                if (ctx.createStereoPanner) { tgt = ctx.createStereoPanner(); tgt.pan.value = (i / Math.max(1, notes.length - 1) - 0.5) * 0.6; tgt.connect(lp); }
+                x.connect(tgt); x.start(t); x.stop(end);
+            });
+        }
+        // Aitake-like voicing: chord tones plus a neighbouring scale tone, packed into the shō register
+        function shoVoice(s, ch) { return voiceChord(ch.concat([s.k + s.scale[1]]), null, 69, 88).slice(0, 6); }
         function sub(dst, t, m, dur, vel) {
             var hold = Math.max(1.6, dur), end = t + hold + 2.5, a = gainN(0), x = oscN('sine', mtof(m)), y = oscN('triangle', mtof(m) * 2), yg = gainN(0.18);
             a.gain.setValueAtTime(0, t); a.gain.linearRampToValueAtTime(vel, t + 1.6); a.gain.setValueAtTime(vel, t + hold); a.gain.setTargetAtTime(0, t + hold, 0.7);
@@ -4768,7 +4798,7 @@
         function pluck(dst, t, m, vel, o) {
             o = o || {};
             if (o.synth) return synthPluck(dst, t, m, vel, o);
-            var kind = o.wave === 'square' ? 'sanshin' : 'koto', z = zoneOf(m), b = sampleBuf(kind, z), r = Math.pow(2, (m - z) / 12), f = mtof(m), dec = o.decay || 1.4;
+            var kind = o.kind || (o.wave === 'square' ? 'sanshin' : 'koto'), z = zoneOf(m), b = sampleBuf(kind, z), r = Math.pow(2, (m - z) / 12), f = mtof(m), dec = o.decay || 1.4;
             var s = ctx.createBufferSource(), lp = filt('lowpass', Math.min(15000, f * (o.bright || 7) * 1.6), 0.6), g = gainN(0);
             s.buffer = b; s.playbackRate.setValueAtTime(r, t);
             if (o.bend) { s.playbackRate.setValueAtTime(r, t + o.bendAt); s.playbackRate.linearRampToValueAtTime(r * Math.pow(2, o.bend / 12), t + o.bendAt + 0.14); }
@@ -4791,9 +4821,10 @@
         }
         // Shakuhachi: breathy attack (muraiki), slide into pitch (meri→kari), late vibrato
         function flute(dst, t, m, dur, vel, o) {
-            o = o || {}; var f = mtof(m), end = t + dur + 1.2;
-            var a = oscN('shaku', f), vib = oscN('sine', rnd(4.6, 5.4)), vg = gainN(0), g = gainN(0), lp = filt('lowpass', f * 5, 0.5);
-            a.frequency.setValueAtTime(f * 0.955, t); a.frequency.exponentialRampToValueAtTime(f, t + 0.22);
+            o = o || {}; var f = mtof(m), end = t + dur + 1.2, g0 = o.grace ? mtof(o.grace) : f * 0.955;
+            var a = oscN('shaku', f), vib = oscN('sine', o.fue ? rnd(5.8, 6.6) : rnd(4.6, 5.4)), vg = gainN(0), g = gainN(0), lp = filt('lowpass', f * (o.fue ? 6 : 5), 0.5);
+            // Shakuhachi slides up into the note; a grace note (shinobue ornament) drops into it
+            a.frequency.setValueAtTime(g0, t); a.frequency.exponentialRampToValueAtTime(f, t + (o.grace ? 0.07 : 0.22));
             vg.gain.setValueAtTime(0, t + dur * 0.45); vg.gain.linearRampToValueAtTime(f * 0.011, t + dur);
             vib.connect(vg); vg.connect(a.frequency);
             g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.18); g.gain.linearRampToValueAtTime(vel * 0.85, t + dur * 0.6);
@@ -4877,7 +4908,12 @@
         }
 
         // ── Harmony ─────────────────────────────────────────────────────
-        function chordNotes(s, idx) { var c = s.prog[idx % s.prog.length], b = 60 + pc(s.k + c[0]); return CH[c[1]].map(function (i) { return b + i; }); }
+        function chordOf(k, scale, c) {
+            if (typeof c[1] === 'string') { var b = 60 + pc(k + c[0]); return CH[c[1]].map(function (i) { return b + i; }); }
+            var n = scale.length, deg = c[0], r = 60 + pc(k + scale[deg % n]), base = scale[deg % n] + 12 * Math.floor(deg / n);
+            return STACKS[c[1] || 0].map(function (o) { var d = deg + o; return r + scale[d % n] + 12 * Math.floor(d / n) - base; });
+        }
+        function chordNotes(s, idx) { return chordOf(s.k, s.scale, s.prog[idx % s.prog.length]); }
         function chordPcs(s, idx) {
             var r = [];
             chordNotes(s, idx == null ? s.ci : idx).forEach(function (m) { if (r.indexOf(pc(m)) < 0) r.push(pc(m)); });
@@ -4968,8 +5004,8 @@
             this.nextT = t; this.bar = this.bar0 = 0; this.forcePad = true;
             natureStart(this, t);
             var wl = {
-                ambient: [['glass', 64, 96], ['kalimba', 64, 90], ['celesta', 76, 96]], zen: [[this.theme === 'okinawa' ? 'sanshin' : 'koto', 52, 92], ['glass', 76, 96]],
-                piano: [['piano', 40, 96], ['celesta', 72, 96]], lofi: [['bass', 24, 60], ['ep', 52, 80], ['vibes', 60, 90]], nature: [['kalimba', 76, 98]]
+                ambient: [['glass', 64, 96], ['koto', 64, 92]], zen: [[this.theme === 'okinawa' ? 'sanshin' : 'koto', 52, 96], ['glass', 76, 96]],
+                piano: [['piano', 40, 96], ['koto', 64, 96], ['celesta', 72, 96]], lofi: [['bass', 24, 60], ['ep', 52, 80], ['koto', 60, 88], ['shamisen', 60, 88], ['vibes', 60, 90]], nature: [['koto', 64, 98]]
             }[this.genre] || [];
             wl.forEach(function (w) { warm(w[0], w[1], w[2]); });
             if (this.gn.start) this.gn.start(this, t);
@@ -5019,9 +5055,15 @@
         };
         function span(s, rel) { return (s.cpb - (rel % s.cpb)) * s.barDur; }
         var SEC = 8, FORMS = [['A', 'A', 'B', 'A', 'C', 'B'], ['A', 'B', 'A', 'B', 'C', 'A'], ['A', 'A', 'B', 'C', 'B', 'A'], ['A', 'B', 'C', 'A', 'B', 'B']];
-        // Each pass recolours some chords (maj7 ↔ maj9/add9/6/9, m7 ↔ m9, sus2 ↔ sus4) without changing the harmony
-        var COLORS = { maj7: ['maj9', 'add9', 'six9'], maj9: ['maj7', 'six9'], add9: ['maj9', 'six9', 'maj7'], six9: ['maj9', 'add9'], m7: ['m9'], m9: ['m7'], sus2: ['sus4', 'add9'], sus4: ['sus2'], ms11: ['maj9'] };
-        function colorize(p) { return p.map(function (c) { return chance(0.35) && COLORS[c[1]] ? [c[0], pick(COLORS[c[1]])] : c; }); }
+        // Each pass recolours some chords: Western types swap colour tones, scale chords drop or keep their colour tone
+        var COLORS = { maj7: ['maj9', 'add9', 'six9'], maj9: ['maj7', 'six9'], add9: ['maj9', 'six9', 'maj7'], six9: ['maj9', 'add9'], maj: ['add9'], m7: ['m9'], m9: ['m7'], sus2: ['sus4', 'add9'], sus4: ['sus2'], ms11: ['maj9'] };
+        function colorize(p) {
+            return p.map(function (c) {
+                if (!chance(0.35)) return c;
+                if (typeof c[1] === 'string') return COLORS[c[1]] ? [c[0], pick(COLORS[c[1]])] : c;
+                return c[1] === 1 ? c : [c[0], c[1] === 2 ? 0 : 2];
+            });
+        }
 
         // ── Genres ──────────────────────────────────────────────────────
         function ambientBar(s, rel, t0, cs) {
@@ -5033,16 +5075,16 @@
             }
             // Lead: glass motif (A), kalimba motif with echoes (B); the bridge (C) keeps to slow swells
             if (sec !== 'C' && E >= 1 && chance(E === 1 ? 0.45 : E >= 3 ? 0.95 : s.dark ? 0.6 : 0.8)) {
-                var kal = sec === 'B', notes = scaleNotes(s, kal ? 67 : 72, kal ? 88 : 93);
+                var kt = sec === 'B', notes = scaleNotes(s, kt ? 67 : 72, kt ? 88 : 93);
                 phrase(s, 'amb' + sec, rel, notes).forEach(function (n) {
-                    tone(kal ? 'kalimba' : 'glass', s.d, t0 + n.beat * B + rnd(0, 0.02), n.m, (kal ? 0.04 : 0.032) * rnd(0.8, 1.05), { wet: 0.75, echo: kal ? 0.4 : 0.3, pan: rnd(-0.5, 0.5) });
+                    var tt = t0 + n.beat * B + rnd(0, 0.02), pn = rnd(-0.5, 0.5);
+                    if (kt) pluck(s.d, tt, n.m, rnd(0.05, 0.065), { decay: 1.4, bright: 6, q: 1.2, wet: 0.7, echo: 0.4, pan: pn, pick: true });
+                    else tone('glass', s.d, tt, n.m, 0.032 * rnd(0.8, 1.05), { wet: 0.75, echo: 0.3, pan: pn });
                 });
             }
-            if (E >= 1 && rel % 4 === 2 && chance(E >= 3 || sec === 'C' ? 0.8 : 0.5)) {
-                var hi = voiceChord(chordNotes(s, s.ci), null, 79, 91).slice(-2);
-                pad(s.d, t0 + B, hi, s.barDur * 1.5, { type: 'sine', type2: 'sine', cut: 5000, att: 3, rel: 4, gain: 0.014, det: 6, wet: 0.9 });
-            }
+            if (E >= 1 && rel % 4 === 2 && chance(E >= 3 || sec === 'C' ? 0.8 : 0.5)) sho(s.d, t0 + B, shoVoice(s, chordNotes(s, s.ci)), s.barDur * 1.5, 0.016, { wet: 0.85 });
             if (sec === 'C' && rel % 2 === 0) tone('glass', s.d, t0 + B * pick([0, 1, 2]), pick(voiceChord(chordNotes(s, s.ci), null, 79, 96)), 0.02, { wet: 0.9, echo: 0.4, pan: rnd(-0.6, 0.6) });
+            if (sec === 'C' && rel % 4 === 1 && chance(0.6)) flute(s.d, t0 + B * 0.5, pick(scaleNotes(s, 62, 76)), s.barDur * 0.7, 0.045, { wet: 0.75, echo: 0.3, pan: rnd(-0.2, 0.2) });
             if (s.secLast) noiseHit(s.d, t0 + B * 2, { kind: 'pink', type: 'bandpass', f: 500, f2: 2600, q: 1, dur: B * 2, att: B * 1.9, vel: 0.008, wet: 0.6 });
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
         }
@@ -5054,16 +5096,17 @@
             var B = s.B, oki = s.theme === 'okinawa', E = s.Ee, sec = s.sec;
             if (cs) {
                 var ch = chordNotes(s, s.ci), cl = voiceChord(ch.concat([s.k + s.scale[1], s.k + s.scale[3]]), s.hiVoice, 67, 86).slice(0, 5); s.hiVoice = cl;
-                pad(s.d, t0, cl, span(s, rel), { type: 'sawtooth', type2: 'sine', cut: 1700 * s.bright, att: 3, rel: 3.5, gain: 0.011, det: 5, wet: 0.7 });
+                sho(s.d, t0, shoVoice(s, ch), span(s, rel), 0.022, { wet: 0.7 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
             }
             // Shakuhachi phrase (not in Okinawa — sanshin carries the melody there); alone in the bridge
             if (!oki && E >= (sec === 'C' ? 1 : 2) && t0 >= s.busyUntil && rel % 2 === 0 && chance(sec === 'C' ? 0.75 : (s.dark ? 0.35 : 0.45) + (E >= 3 ? 0.15 : 0))) {
-                var fl = scaleNotes(s, 62, 81), m = s.lastFl, tt = t0 + B * pick([0, 0.5, 1]), cnt = 2 + Math.floor(Math.random() * 2);
+                // By day sometimes the shinobue (higher bamboo flute with grace notes) instead of the shakuhachi
+                var fue = !s.dark && chance(0.35), fl = fue ? scaleNotes(s, 74, 93) : scaleNotes(s, 62, 81), m = fue ? null : s.lastFl, tt = t0 + B * pick([0, 0.5, 1]), cnt = 2 + Math.floor(Math.random() * 2);
                 for (var i = 0; i < cnt; i++) {
                     m = walk(s, fl, m, i === cnt - 1);
-                    var d = B * pick([1.5, 2, 2.5, 3]);
-                    flute(s.d, tt, m, d, rnd(0.05, 0.07), { wet: 0.65, echo: 0.25, pan: rnd(-0.2, 0.2) });
+                    var d = B * pick(fue ? [1, 1.5, 2] : [1.5, 2, 2.5, 3]);
+                    flute(s.d, tt, m, d, rnd(0.05, 0.07) * (fue ? 0.7 : 1), { wet: 0.65, echo: 0.25, pan: rnd(-0.2, 0.2), fue: fue, grace: fue && chance(0.6) ? fl[Math.min(fl.length - 1, nearestIdx(fl, m) + 1)] : 0 });
                     tt += d + B * pick([0.25, 0.5, 1]);
                 }
                 s.lastFl = m; s.busyUntil = tt;
@@ -5080,11 +5123,15 @@
                         : { decay: 1.6, bright: 7, q: 1.5, wet: 0.45, echo: 0.15, pan: pan, pick: true, bend: last && chance(0.3) ? 1 : 0, bendAt: 0.2 });
                 });
                 s.lastKoto = mk;
+                // Occasional koto tremolo on the phrase's last note
+                if (!oki && chance(0.15)) for (var tr = 1; tr <= 5; tr++) pluck(s.d, t0 + 3.5 * B + tr * 0.07, mk, 0.05 * (1 - tr * 0.12), { decay: 0.6, bright: 7, wet: 0.45, pan: pan, pick: true });
             }
             // B: a gentle ostinato on the chord tones
             if (sec === 'B' && E >= 2) {
                 var ost = chordTones(chordNotes(s, s.ci), oki ? 64 : 62, 81), op = rnd(-0.4, 0.4);
                 if (ost.length >= 3) for (var o = 0; o < 8; o++) if (o % 4 !== 3) pluck(s.d, t0 + o * B / 2 + rnd(0, 0.01), ost[[0, 2, 1][o % 4]], 0.032 * (o % 2 ? 0.7 : 1), oki ? { wave: 'square', decay: 0.6, bright: 8, wet: 0.35, pan: op } : { decay: 1, bright: 6, wet: 0.4, echo: 0.15, pan: op });
+                // Mokugyo (temple woodblock) keeps a soft pulse
+                for (var mg = 0; mg < 4; mg++) wood(s.d, t0 + mg * B, 470, mg === 0 ? 0.03 : 0.018, { wet: 0.35, pan: -0.25 });
             }
             if (!oki && sec !== 'C' && E >= 2 && ((rel % 8 === 0 && chance(0.4)) || (E >= 4 && rel % 2 === 0))) { // sararin: quick upward sweep at phrase start
                 var i0 = Math.floor(Math.random() * 3);
@@ -5130,7 +5177,8 @@
             if (sec === 'C') {
                 // Bridge: sustained chords and a few celesta sparkles
                 if (cs) voiceChord(ch, s.prevVoice, 55, 74).concat([R]).forEach(function (m, i) { piano(s.d, t0 + i * 0.015, m, 0.15 * dk, span(s, rel), { wet: 0.5 }); });
-                if (chance(0.6)) tone('celesta', s.d, t0 + B * pick([1, 1.5, 2.5]), pick(scaleNotes(s, 79, 96)), 0.022, { wet: 0.6, echo: 0.3, pan: rnd(-0.4, 0.4) });
+                if (chance(0.6) && rel % 2 === 1) flute(s.d, t0 + B * 0.5, pick(scaleNotes(s, 67, 84)), B * 2.5, 0.045, { wet: 0.7, echo: 0.25, pan: 0.1 });
+                else if (chance(0.5)) tone('celesta', s.d, t0 + B * pick([1, 1.5, 2.5]), pick(scaleNotes(s, 79, 96)), 0.022, { wet: 0.6, echo: 0.3, pan: rnd(-0.4, 0.4) });
             } else {
                 (E <= 1 || (s.dark && E < 3) ? LH_SPARSE : sec === 'B' ? LH_ARP : s.lhPat).forEach(function (p) {
                     piano(s.d, t0 + p[0] * B + rnd(0, 0.012), lh[p[1]], p[2] * rnd(0.85, 1.05) * dk * (E <= 0 ? 0.8 : 1), (4 - p[0]) * B + B, { wet: 0.4 });
@@ -5141,6 +5189,8 @@
                     var notes = scaleNotes(s, sec === 'B' ? 69 : 64, sec === 'B' ? 93 : 86);
                     phrase(s, 'pno' + sec, rel, notes).forEach(function (n, j) {
                         var vel = rnd(0.22, 0.32);
+                        // B: the koto takes the melody over the piano accompaniment
+                        if (sec === 'B') { pluck(s.d, t0 + n.beat * B + rnd(0, 0.015), n.m, vel * 0.26, { decay: 1.6, bright: 7, q: 1.5, wet: 0.45, echo: 0.2, pan: 0.18, pick: true }); return; }
                         piano(s.d, t0 + n.beat * B + rnd(0, 0.015), n.m, vel, n.dur * B + B * 0.5, { wet: 0.45, pan: 0.12 });
                         if (j === 0 && chance(0.2)) piano(s.d, t0 + n.beat * B, notes[Math.max(0, nearestIdx(notes, n.m) - 2)], vel * 0.7, n.dur * B, { wet: 0.45, pan: 0.12 });
                     });
@@ -5179,10 +5229,13 @@
                 if (s.secLast) for (var f = 0; f < 4; f++) brush(s.d, t0 + 3 * B + f * B / 4 + (f % 2 ? sw * 0.5 : 0), (0.12 + f * 0.06) * dk);
             }
             if (E >= 4 || (E >= 3 && rel % 2 === 1)) arpLayer(s, t0, E);
-            // Vibraphone melody built from motifs
+            // Hook: koto (A), shamisen (B), vibraphone in the bridge
             if (E >= 1 && chance((s.dark ? 0.3 : 0.45) * (E >= 3 || sec === 'B' ? 1.5 : 1))) {
-                phrase(s, 'lofi' + sec, rel, scaleNotes(s, 67, 86)).forEach(function (n) {
-                    tone('vibes', s.d, t0 + n.beat * B + (n.beat % 1 ? sw : 0), n.m, 0.03 * dk, { dur: n.dur * B + 0.3, wet: 0.4, echo: 0.3, pan: 0.2, trem: 4.6 });
+                phrase(s, 'lofi' + sec, rel, scaleNotes(s, 64, 84)).forEach(function (n) {
+                    var tt = t0 + n.beat * B + (n.beat % 1 ? sw : 0);
+                    if (sec === 'B') pluck(s.d, tt, n.m, 0.055 * dk, { kind: 'shamisen', decay: 0.9, bright: 9, wet: 0.3, echo: 0.2, pan: -0.15 });
+                    else if (sec === 'A') pluck(s.d, tt, n.m, 0.06 * dk, { decay: 1.3, bright: 6, q: 1.3, wet: 0.35, echo: 0.25, pan: 0.2, pick: true });
+                    else tone('vibes', s.d, tt, n.m, 0.03 * dk, { dur: n.dur * B + 0.3, wet: 0.4, echo: 0.3, pan: 0.2, trem: 4.6 });
                 });
             }
         }
@@ -5412,8 +5465,7 @@
             var h = s.hist, e = h.length ? h[0] : null;
             for (var i = h.length - 1; i >= 0; i--) if (h[i].t <= t + 0.01) { e = h[i]; break; }
             if (!e) return chordNotes(s, s.ci);
-            var c = e.prog[e.ci % e.prog.length], b = 60 + pc(e.k + c[0]);
-            return CH[c[1]].map(function (x) { return b + x; });
+            return chordOf(e.k, s.scale, e.prog[e.ci % e.prog.length]);
         }
         function chordTones(ch, lo, hi) {
             var pcs = ch.map(pc), r = [];
@@ -5425,11 +5477,11 @@
         function answer(s, t, m, k) {
             var d = s.d, g = s.genre, pan = spot();
             if (g === 'piano') piano(d, t, m, 0.26 * k, 0.9, { wet: 0.5, pan: pan });
-            else if (g === 'lofi') tone('vibes', d, t, m, 0.04 * k, { wet: 0.4, echo: 0.3, pan: pan, trem: 4.6 });
+            else if (g === 'lofi' || g === 'nature') pluck(d, t, m, 0.07 * k, { decay: 1.4, bright: 7, q: 1.4, wet: g === 'nature' ? 0.55 : 0.4, echo: 0.25, pan: pan, pick: true });
             else if (g === 'zen') pluck(d, t, m, 0.075 * k, s.theme === 'okinawa'
                 ? { wave: 'square', decay: 0.8, bright: 9, q: 2.5, wet: 0.35, pan: pan, pick: true }
                 : { decay: 1.5, bright: 7, q: 1.5, wet: 0.45, echo: 0.2, pan: pan, pick: true });
-            else tone(g === 'nature' ? 'kalimba' : 'glass', d, t, m, (g === 'nature' ? 0.04 : 0.035) * k, { wet: 0.6, echo: 0.3, pan: pan });
+            else tone('glass', d, t, m, 0.035 * k, { wet: 0.6, echo: 0.3, pan: pan });
         }
         // The strokes of a kanji trace a melody over the chord tones
         function contourNote(s, t, idx) {
@@ -5472,7 +5524,12 @@
         }
         // Section start: a soft high glass tone and some air (a small frame drum in zen)
         function secHit(s, t0) {
-            if (s.genre === 'zen') { taiko(s.d, t0, 0.06); return; }
+            if (s.genre === 'zen') {
+                // Small taiko or the hyōshigi clappers
+                if (chance(0.5)) taiko(s.d, t0, 0.06);
+                else { wood(s.d, t0, 2300, 0.045, { wet: 0.4 }); wood(s.d, t0 + 0.09, 2200, 0.035, { wet: 0.4 }); }
+                return;
+            }
             tone('glass', s.d, t0 + 0.01, rootNear(s, 84), 0.014, { wet: 0.85, echo: 0.3, pan: rnd(-0.4, 0.4) });
             noiseHit(s.d, t0, { type: 'highpass', f: 7000, dur: 1.2, att: 0.01, vel: 0.006, wet: 0.7 });
         }
@@ -5604,7 +5661,7 @@
                 noiseHit(FXD(), t, { type: 'bandpass', f: 1800, f2: 3800, q: 0.9, dur: 0.12, att: 0.03, vel: 0.03 });
                 noiseHit(FXD(), t + 0.09, { type: 'bandpass', f: 3200, f2: 1500, q: 1, dur: 0.16, att: 0.02, vel: 0.022 });
             },
-            play: function (t) { tone('kalimba', FXD(), t, rootNear(ks(), 84), 0.035, { wet: 0.3 }); },
+            play: function (t) { pluck(FXD(), t, rootNear(ks(), 79), 0.035, { decay: 1, bright: 7, wet: 0.3, pick: true }); },
             reveal: function (t) {
                 var n = fxNotes(76, 96), i0 = nearestIdx(n, 79);
                 for (var i = 0; i < 3; i++) tone(i < 2 ? 'celesta' : 'glass', FXD(), t + i * 0.06, n[Math.min(n.length - 1, i0 + i)], 0.026 - i * 0.004, { wet: 0.45 });
@@ -5618,7 +5675,7 @@
                 noiseHit(FXD(), t, { kind: 'pink', type: 'bandpass', f: 2600, f2: 500, q: 0.9, dur: 0.45, att: 0.05, vel: 0.03, wet: 0.3 });
                 pluck(FXD(), t + 0.3, rootNear(ks(), 55), 0.05, { decay: 0.6, bright: 4, wet: 0.3 });
             },
-            undo: function (t) { var n = fxNotes(67, 88), i = nearestIdx(n, 79); tone('kalimba', FXD(), t, n[i], 0.03, { wet: 0.25 }); tone('kalimba', FXD(), t + 0.08, n[Math.max(0, i - 2)], 0.024, { wet: 0.25 }); },
+            undo: function (t) { var n = fxNotes(67, 88), i = nearestIdx(n, 79); pluck(FXD(), t, n[i], 0.03, { decay: 0.8, bright: 7, wet: 0.25, pick: true }); pluck(FXD(), t + 0.08, n[Math.max(0, i - 2)], 0.025, { decay: 0.8, bright: 7, wet: 0.25 }); },
             skip: function (t) { swish(FXD(), t, 500, 1900, 0.3, 0.028); tone('glass', FXD(), t + 0.2, rootNear(ks(), 79), 0.02, { wet: 0.45 }); },
             cardFront: function (t) { swish(FXD(), t, 800, 1700, 0.26, 0.05); },
             cardBack: function (t) {
