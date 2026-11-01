@@ -3792,6 +3792,40 @@ html.is-ankidesktop .info-overlay {
     filter: drop-shadow(0 2px 0 var(--speech-border));
 }
 
+/* Story & hint highlights: component colours mirror the primitive-tree branch palette */
+.kd-kw {
+    font-weight: 800;
+    padding: 0 0.28em;
+    border-radius: 6px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.kd-p {
+    font-style: italic;
+}
+
+.kd-k {
+    color: var(--text-main);
+    background: var(--accent-bg);
+    box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.kd-c1 { color: #13719e; background: rgba(42, 167, 224, 0.14); }
+.kd-c2 { color: #9b33b3; background: rgba(212, 107, 232, 0.14); }
+.kd-c3 { color: #9a5a06; background: rgba(240, 160, 48, 0.16); }
+.kd-c4 { color: #1c7f53; background: rgba(63, 191, 134, 0.15); }
+.kd-c5 { color: #b8372f; background: rgba(232, 98, 92, 0.14); }
+.kd-c6 { color: #5546c8; background: rgba(138, 124, 240, 0.15); }
+
+/* Dark surfaces: night mode and the speech bubble, which is dark in every theme */
+.nightMode .kd-c1, .night_mode .kd-c1, .visuell-hinweis .kd-c1 { color: #6fcdf4; background: rgba(42, 167, 224, 0.24); }
+.nightMode .kd-c2, .night_mode .kd-c2, .visuell-hinweis .kd-c2 { color: #eba6f6; background: rgba(212, 107, 232, 0.24); }
+.nightMode .kd-c3, .night_mode .kd-c3, .visuell-hinweis .kd-c3 { color: #f8c779; background: rgba(240, 160, 48, 0.24); }
+.nightMode .kd-c4, .night_mode .kd-c4, .visuell-hinweis .kd-c4 { color: #7fe0b4; background: rgba(63, 191, 134, 0.24); }
+.nightMode .kd-c5, .night_mode .kd-c5, .visuell-hinweis .kd-c5 { color: #f6a19c; background: rgba(232, 98, 92, 0.24); }
+.nightMode .kd-c6, .night_mode .kd-c6, .visuell-hinweis .kd-c6 { color: #bcb3fa; background: rgba(138, 124, 240, 0.26); }
+
 .word-example-list {
     display: grid;
     grid-template-columns: 1fr;
