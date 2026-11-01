@@ -411,8 +411,8 @@ test('C2-Back stores stroke style on window._kanjiStrokeStyle', () => {
 });
 
 test('C2-Back gel halos use getComputedStyle for path color', () => {
-  assert(c2b.includes('getComputedStyle(path).stroke') || c2b.includes('getComputedStyle(p).stroke'),
-    'Gel halos must use getComputedStyle for accurate color');
+  assert(c2b.includes('resolvedColors[i]') && c2b.includes('getComputedStyle'),
+    'Gel halos must reuse colors resolved via getComputedStyle');
 });
 
 // ── 7. Style-switch reliability ──

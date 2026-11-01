@@ -193,29 +193,29 @@
             Externe Links
         </div>
         <div class="link-grid">
-            <a class="link-btn" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank">
+            <a class="link-btn" href="https://jisho.org/search/{{text:Kanji}}%20%23kanji" target="_blank" rel="noopener noreferrer">
                 Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
                 </svg>
             </a>
-            <a class="link-btn" href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de"
-                target="_blank">
+            <a class="link-btn" href="https://tatoeba.org/de/sentences/search?query={{text:Kanji}}&from=jpn&to=de"
+                target="_blank" rel="noopener noreferrer">
                 Tatoeba <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
                 </svg>
             </a>
-            <a class="link-btn" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank">
+            <a class="link-btn" href="https://www.wanikani.com/kanji/{{text:Kanji}}" target="_blank" rel="noopener noreferrer">
                 WaniKani <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
                 </svg>
             </a>
-            <a class="link-btn" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank">
+            <a class="link-btn" href="https://kanji.koohii.com/study/kanji/{{text:Kanji}}" target="_blank" rel="noopener noreferrer">
                 Koohii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
                     <line x1="7" y1="17" x2="17" y2="7" />
@@ -367,7 +367,7 @@
         if (!rawDataEl || !target) return;
 
         let rawData = rawDataEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ');
-        rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
+        rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').replace(/\s(?:on\w+|href|xlink:href)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '').trim();
         if (!rawData) return;
 
         function parseFlatTree(str) {
@@ -455,6 +455,7 @@
         const rawWordsEl = document.getElementById('raw-hint-words');
         const targetWordsEl = document.getElementById('formatted-hint-words');
         if (rawWordsEl && targetWordsEl) {
+            const _wsan = s => s.replace(/<(?!\/?(?:ruby|rt|rp|rb)>)[^>]*>/gi, '').replace(/<(\/?(?:ruby|rt|rp|rb))\s[^>]*>/gi, '<$1>');
             let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
             const _wesc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             targetWordsEl.innerHTML = words.map(word => {
@@ -462,8 +463,8 @@
                 if (!word) return '';
                 let match = word.match(/^(.*?)\s*\((.*?)\)$/);
                 return match
-                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
-                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsan(match[1])}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsan(word)}</div></div></div>`;
             }).join('');
             targetWordsEl.addEventListener('click', function (e) {
                 var item = e.target.closest('.word-example-item');

@@ -27,6 +27,13 @@ _SETTINGS_FILE = os.path.join(
 )
 _settings_cache = None
 _lock = threading.Lock()
+_MAX_MESSAGE = 256 * 1024
+_TEMPLATE_MARKERS = ("settings-overlay", "tree-render-target", "raw-tree-data", "drawLayer", "draw-layer")
+
+
+def _is_kanji_card(text):
+    """Only inject into cards rendered from this template."""
+    return any(m in text for m in _TEMPLATE_MARKERS)
 
 
 def _load():
@@ -44,7 +51,8 @@ def _load():
             return _settings_cache
         except (json.JSONDecodeError, OSError) as e:
             _log.warning("Failed to load settings: %s", e)
-            return {}
+            _settings_cache = {}
+            return _settings_cache
 
 
 def _save(data):
@@ -70,9 +78,15 @@ def _on_js_message(handled, message, context):
     """Intercept pycmd('kdp:{...}') from card templates."""
     if not isinstance(message, str) or not message.startswith("kdp:"):
         return handled
+    if len(message) > _MAX_MESSAGE:
+        _log.debug("Oversized kdp message ignored")
+        return (True, None)
     try:
         data = json.loads(message[4:])
-        if isinstance(data, dict):
+        if isinstance(data, dict) and all(
+            isinstance(k, str) and isinstance(v, (str, int, float, bool))
+            for k, v in data.items()
+        ):
             _save(data)
     except (json.JSONDecodeError, TypeError) as e:
         _log.debug("Malformed kdp message: %s", e)
@@ -81,6 +95,8 @@ def _on_js_message(handled, message, context):
 
 def _on_card_will_show(text, card, kind):
     """Inject saved settings before template scripts run."""
+    if not _is_kanji_card(text):
+        return text
     settings = _load()
     # Always inject sentinel so templates can detect that the addon is present.
     # Also restore persisted settings into window._ks and localStorage when available.
