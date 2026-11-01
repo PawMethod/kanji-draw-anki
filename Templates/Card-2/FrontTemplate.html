@@ -1,4 +1,41 @@
-<script>qFade = 0; aFade = 0; if (typeof anki !== "undefined") { anki.qFade = 0; anki.aFade = 0; }</script>
+<script>qFade = 0; aFade = 0; if (typeof anki !== "undefined") { anki.qFade = 0; anki.aFade = 0; }
+    // [SHARED c1-front/c2-front] Landscape + colours before the first paint, gentle entrance of a new card
+    (function () {
+        try {
+            var R = document.documentElement, B = document.body, back = !!document.getElementById('is-back-side-marker'), ss = window.sessionStorage;
+            var keys = ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa'];
+            var ck = function (k) {
+                if (window._ks && window._ks[k] !== undefined) return window._ks[k];
+                try {
+                    var cs = document.cookie.split('; '), i;
+                    if (location.protocol !== 'file:') for (i = 0; i < cs.length; i++) if (cs[i].indexOf('_k=') === 0) { var o = JSON.parse(decodeURIComponent(cs[i].substring(3))); if (o[k] !== undefined) return o[k]; break; }
+                    for (i = cs.length - 1; i >= 0; i--) if (cs[i].indexOf(k + '=') === 0) return decodeURIComponent(cs[i].substring(k.length + 1));
+                } catch (e) { }
+                try { return localStorage.getItem(k); } catch (e) { return null; }
+            };
+            var th = ck('kanjiThemePrimary') || (getComputedStyle(R).getPropertyValue('--default-theme-primary') || '').trim();
+            if (th === 'random') {
+                var prev = null; try { prev = ss.getItem('kanjiRandomThemeActive'); } catch (e) { }
+                prev = prev || window._kanjiRandomThemeActive;
+                if (back && keys.indexOf(prev) >= 0) th = prev;
+                else {
+                    var pool = keys.filter(function (k) { return k !== prev; });
+                    th = window._kanjiRandomThemeActive = pool[Math.floor(Math.random() * pool.length)];
+                    if (!back) window._kdPreRoll = th;
+                    try { ss.setItem('kanjiRandomThemeActive', th); } catch (e) { }
+                }
+            }
+            if (keys.indexOf(th) >= 0) {
+                R.setAttribute('data-jp-theme', th);
+                var pal = null; try { pal = JSON.parse(ss.getItem('kdPal:' + th + (ss.getItem('kdDark') === '1' ? ':n' : ':d'))); } catch (e) { }
+                if (pal) [R, B].forEach(function (el) { if (el) { el.style.setProperty('--bg-main', pal[0]); el.style.setProperty('--surface', pal[1]); el.style.setProperty('--border-color', pal[2]); } });
+            }
+            R.classList.toggle('kd-enter', !back);
+            clearTimeout(window._kdEnterT);
+            if (!back) window._kdEnterT = setTimeout(function () { R.classList.remove('kd-enter'); }, 1400);
+        } catch (e) { }
+    })();
+</script>
 <button class="gear-btn" onclick="openSettings(event)" title="Einstellungen" tabindex="-1">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round">
@@ -284,7 +321,7 @@
                     </label>
                 </div>
             </div><!-- /grid-sub-options -->
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Vorderseite (c1-only) ═══ -->
@@ -487,7 +524,7 @@
                     </div>
                 </label>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Rückseite ═══ -->
@@ -634,7 +671,7 @@
                     </label>
                 </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Vorderseite Erkennen (c2-only) ═══ -->
@@ -712,7 +749,7 @@
                     </label>
                 </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
 
         <!-- ═══ Sub-Page: Erscheinungsbild ═══ -->
@@ -1141,7 +1178,7 @@
                     </div>
                 </label>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
         <!-- [KD-SOUND-PAGE] -->
         <!-- ═══ Sub-Page: Klang & Musik [SHARED c1-front/c2-front] ═══ -->
@@ -1410,7 +1447,7 @@
                 </label>
             </div>
             </div>
-            <div role="button" tabindex="0" class="close-settings" onclick="closeSettings(event)">Schließen</div>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur Übersicht</div>
         </div>
         <!-- [/KD-SOUND-PAGE] -->
     </div>
@@ -6315,6 +6352,10 @@
     if (document.getElementById('is-back-side-marker')) {
         try { _cardRandomTheme = sessionStorage.getItem('kanjiRandomThemeActive') || window._kanjiRandomThemeActive; } catch (e) { }
         if (!_cardRandomTheme || _jpThemeKeys.indexOf(_cardRandomTheme) < 0) _rollRandomTheme();
+    } else if (window._kdPreRoll && _jpThemeKeys.indexOf(window._kdPreRoll) >= 0) {
+        // Already rolled by the early script at the top, so the first paint shows the right landscape
+        _cardRandomTheme = window._kdPreRoll;
+        window._kdPreRoll = null;
     } else {
         _rollRandomTheme();
     }
@@ -6447,6 +6488,7 @@
                 accentTargets[t].style.setProperty('--surface', pPalette.surface);
                 accentTargets[t].style.setProperty('--border-color', pPalette.borderColor);
             }
+            try { sessionStorage.setItem('kdPal:' + primary + (isDark ? ':n' : ':d'), JSON.stringify([pPalette.bgMain, pPalette.surface, pPalette.borderColor])); sessionStorage.setItem('kdDark', isDark ? '1' : '0'); } catch (e) { }
 
             // --- 2c. Stroke color ---
             var strokeColor = safeGetItem('kanjiThemeStrokeColor', globalConf.themeStrokeColor || 'black');
@@ -6625,7 +6667,7 @@
         (function () {
             var rules = [
                 ['#button-reveal', 'hint'], ['#button-undo', 'undo'], ['#button-skip', 'skip'], ['#button-reset', 'reset'],
-                ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.close-settings', 'close'], ['.back-btn', 'back'],
+                ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.back-to-main', 'back'], ['.close-settings', 'close'], ['.back-btn', 'back'],
                 ['.category-card', 'nav'], ['.segment-btn', 'tab'], ['button, [role="button"]', 'tap']
             ];
             var down = null;

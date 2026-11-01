@@ -384,6 +384,48 @@ html.is-ankimobile:has(.info-overlay.active) {
     z-index: 0;
     pointer-events: none;
     background-color: var(--bg-main);
+    transition: background-color 0.8s ease;
+}
+
+/* New card: the landscape and content fade in while the background colour blends
+   (html.kd-enter is set by the early script at the top of both front templates) */
+@keyframes kdFadeIn {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes kdRiseIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+html.kd-enter .forest-scenery {
+    animation: kdFadeIn 1.1s ease-out backwards;
+}
+
+html.kd-enter .card-title {
+    animation: kdRiseIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.06s backwards;
+}
+
+html.kd-enter .kanji-container,
+html.kd-enter .action-buttons {
+    animation: kdFadeIn 0.5s ease-out 0.12s backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card::before {
+        transition: none;
+    }
+
+    html.kd-enter .forest-scenery,
+    html.kd-enter .card-title,
+    html.kd-enter .kanji-container,
+    html.kd-enter .action-buttons {
+        animation: none;
+    }
 }
 
 html.is-ankidesktop body,
