@@ -663,7 +663,8 @@
         });
     })();
 
-    // --- Primitive Tree (Kanji-Study style) [SHARED with c2-back] ---
+    // [KD-SRC back/primitive-tree.js]
+    // --- Primitive Tree (Kanji-Study style) ---
     // Field grammar: value[keyword]@strokes{children}, e.g. 吾[Ich]@8-14{五[fünf]@8-11, 口[Mund]@12-14}
     // Plain "value[keyword], ..." lists (no @/{}) still render, just without stroke colouring.
 
@@ -1760,8 +1761,10 @@
         });
         if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
     };
+    // [/KD-SRC back/primitive-tree.js]
 
-    // --- Radical Tree Renderer [SHARED with c2-back] ---
+    // [KD-SRC back/radical-tree.js]
+    // --- Radical Tree Renderer ---
 
     (() => {
         const rawDataEl = document.getElementById('raw-tree-data');
@@ -1792,8 +1795,10 @@
             window._kanjiRenderPrimitiveTree(rawData, target);
         } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Primitive konnten nicht geladen werden.</span>`; }
     })();
+    // [/KD-SRC back/radical-tree.js]
 
-    // --- Pitfalls ("Häufige Schreibfehler" Sub-Page) [SHARED with c2-back] ---
+    // [KD-SRC back/pitfalls.js]
+    // --- Pitfalls ("Häufige Schreibfehler" Sub-Page) ---
     // Field grammar: cat@strokes[title]: desc || ...
     // Categories: order (Reihenfolge), dir (Strichrichtung), bend (In einem Zug), form (Form & Proportion)
 
@@ -1955,8 +1960,8 @@
 
                             const txt = document.createElementNS(NS, 'text');
                             txt.setAttribute('x', nx.toFixed(1));
-                            txt.setAttribute('dy', '0.06em');
                             txt.setAttribute('y', ny.toFixed(1));
+                            txt.setAttribute('dy', '0.06em');
                             txt.setAttribute('text-anchor', 'middle');
                             txt.setAttribute('dominant-baseline', 'central');
                             txt.setAttribute('fill', hlColor);
@@ -2094,9 +2099,11 @@
                 document.getElementById('pitfalls-nav-desc')
             );
         } catch (e) { }
+    // [/KD-SRC back/pitfalls.js]
     })();
 
-    // --- Word Examples (furigana toggle) [SHARED with c2-back] ---
+    // [KD-SRC back/word-examples.js]
+    // --- Word Examples (furigana toggle) ---
 
     (() => {
         const rawWordsEl = document.getElementById('raw-hint-words');
@@ -2126,10 +2133,12 @@
             });
         }
     })();
+    // [/KD-SRC back/word-examples.js]
 
     // Provided by FrontSide injection: getGlobalConfig()
 
-    // --- Hide "Lesungen" if no readings exist [SHARED with c2-back] ---
+    // [KD-SRC back/hide-readings.js]
+    // --- Hide "Lesungen" if no readings exist ---
     (() => {
         const rc = document.querySelector('.readings-container--backside');
         if (rc && !rc.querySelector('.reading-row')) {
@@ -2138,6 +2147,7 @@
             if (prev && prev.classList.contains('info-section-title')) prev.style.display = 'none';
         }
     })();
+    // [/KD-SRC back/hide-readings.js]
 
     // --- Back Side Features (stroke colors, numbers) ---
 
@@ -3818,7 +3828,8 @@
         };
     })();
 
-    // --- Stroke-Order Player [SHARED with c2-back] ---
+    // [KD-SRC back/stroke-order-player.js]
+    // --- Stroke-Order Player ---
 
     (function () {
         var NS = 'http://www.w3.org/2000/svg';
@@ -3951,8 +3962,10 @@
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         if (window._kanjiOrder) window._kanjiOrder.action(act);
     }
+    // [/KD-SRC back/stroke-order-player.js]
 
-    // --- Cross-Platform Fixes [SHARED with c2-back] ---
+    // [KD-SRC back/cross-platform.js]
+    // --- Cross-Platform Fixes ---
 
     // Clean up sparkle particles in case of rapid card transition
     if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
@@ -4157,4 +4170,5 @@
             window.addEventListener('focus', function () { resyncModalScroll(); setTimeout(resyncModalScroll, 50); });
         }
     })();
+    // [/KD-SRC back/cross-platform.js]
 </script>

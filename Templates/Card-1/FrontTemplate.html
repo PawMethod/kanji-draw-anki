@@ -6540,7 +6540,8 @@
 
     document.body.classList.add('no-scroll');
 
-    // --- Persistence Layer [SHARED with c2-front] ---
+    // [KD-SRC front/persistence.js]
+    // --- Persistence Layer: settings in window._ks (add-on) → cookie _k → localStorage ---
 
     var _cookieCache = null, _cookieCacheRaw = null;
     function _parseCookies() {
@@ -6593,8 +6594,10 @@
         window.addEventListener('pagehide', window._kanjiFlushPH);
         window.addEventListener('beforeunload', window._kanjiFlushPH);
     }
+    // [/KD-SRC front/persistence.js]
 
-    // --- Shared helpers [SHARED c1-front/c2-front] (the back side gets them via {{FrontSide}}) ---
+    // [KD-SRC front/shared-helpers.js]
+    // --- Shared helpers (the back side gets them via FrontSide) ---
     // Anki marks dark mode on <html> or <body>, as nightMode or (older versions) night_mode
     window._kanjiIsDark = function () {
         var h = document.documentElement.classList, b = document.body ? document.body.classList : h;
@@ -6646,6 +6649,7 @@
             if (window._kanjiModalEatClick === h) window._kanjiModalEatClick = null;
         }, 300);
     };
+    // [/KD-SRC front/shared-helpers.js]
 
     document.querySelectorAll('#svg-bg path').forEach(path => {
         path.classList.add('svg-stroke');
@@ -7331,7 +7335,8 @@
         if (category === 'mode') _scheduleDeferredThemeCheck();
     }
 
-    // --- Klang & Musik: Bridge zur Audio-Engine (window.__kdAudio) [SHARED c1-front/c2-front] ---
+    // [KD-SRC front/sound-bridge.js]
+    // --- Klang & Musik: Bridge zur Audio-Engine (window.__kdAudio) ---
     // Einstellungen sind global (nicht c1_/c2_-gescoped) wie die Theme-Keys. Standard: aus.
     function _kdSnd(method) {
         var a = window.__kdAudio;
@@ -7407,8 +7412,10 @@
             });
         })();
     }
+    // [/KD-SRC front/sound-bridge.js]
 
-    // --- Grid Rendering [SHARED with c2-front] ---
+    // [KD-SRC front/grid-display.js]
+    // --- Grid Rendering ---
 
     function updateGridDisplay() {
         const globalConf = getGlobalConfig();
@@ -7472,6 +7479,7 @@
         sub.style.opacity = disabled ? '0.35' : '';
         sub.style.pointerEvents = disabled ? 'none' : '';
     }
+    // [/KD-SRC front/grid-display.js]
 
     function updateFeatureSetting(category, val, scopeOverride) {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
@@ -9341,7 +9349,8 @@
         addPenHandler(document.getElementById('button-reset'), 'btn');
     })();
 
-    // --- Scroll Guards & AnkiMobile Tappable Isolation [SHARED with c2-front] ---
+    // [KD-SRC front/scroll-guards.js]
+    // --- Scroll Guards & AnkiMobile Tappable Isolation ---
 
     window._kanjiSetupModalTouchGuards = function () {
         document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
@@ -9482,6 +9491,7 @@
         });
     };
     window._kanjiSetupModalTouchGuards();
+    // [/KD-SRC front/scroll-guards.js]
 
     // --- Apple Pencil: pen-to-click for modal controls [SHARED with c2-front] ---
     // The addPenHandler() above only covers top-level buttons (gear, reveal, etc.).

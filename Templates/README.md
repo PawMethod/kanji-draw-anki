@@ -9,11 +9,12 @@ Entwickler-Dokumentation zum Notiztyp **KanjiDraw**. Die Bedienung erklärt das 
 
 | Datei | Größe | Inhalt | Karte |
 |---|---|---|---|
-| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 500 Z. / 638 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
+| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 600 Z. / 643 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
 | [Card-1/BackTemplate.html](Card-1/BackTemplate.html) | ~4 200 Z. / 245 KB | Rückseite der Zeichenkarte: Strichfarben, Freimodus-Auswertung, Info-Modal | [Card-1/README.md](Card-1/README.md) |
-| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~7 900 Z. / 545 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
+| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~8 000 Z. / 550 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
 | [Card-2/BackTemplate.html](Card-2/BackTemplate.html) | ~2 600 Z. / 133 KB | Rückseite der Erkennungskarte | [Card-2/README.md](Card-2/README.md) |
 | [Styling.css](Styling.css) | ~6 000 Z. / 148 KB | Gemeinsames Stylesheet aller vier Templates | unten |
+| [src/](src/) | 12 Dateien | **Quellen** des Codes, der in beiden Karten gleich ist; `Tools/build.py` setzt sie ein | [unten](#generierte-blöcke-nicht-von-hand-bearbeiten) |
 
 ## Wie Anki die Dateien zusammensetzt
 
@@ -22,8 +23,9 @@ flowchart LR
     CSS[Styling.css] --> F1 & B1 & F2 & B2
     F1[Card-1 Front] -->|"{{FrontSide}}"| B1[Card-1 Back]
     F2[Card-2 Front] -->|"{{FrontSide}}"| B2[Card-2 Back]
-    ENG[Tools/audio/kd-audio-engine.js] -->|embed_audio.py| F1 & F2
-    PAGE[Tools/audio/page-sound.html] -->|embed_audio.py| F1 & F2
+    ENG[Tools/audio/src/*.js] -->|build.py| F1 & F2
+    PAGE[Tools/audio/page-sound.html] -->|build.py| F1 & F2
+    SRC[Templates/src/front + back] -->|build.py| F1 & F2 & B1 & B2
 ```
 
 - **Rückseite = Vorderseite + Zusatz.** Jede BackTemplate bindet ihre Vorderseite über `{{FrontSide}}` ein. Alle Funktionen der Vorderseite stehen der Rückseite zur Verfügung, etwa `safeGetItem`, `getGlobalConfig`, `applyThemeSettings`, die gemeinsamen Helfer (`_kanjiIsDark` …) und die Audio-Engine. Die Rückseite erkennt sich an `#is-back-side-marker`.
@@ -32,9 +34,9 @@ flowchart LR
   - Beide Karten verwenden dieselben globalen Handler-Namen. So ersetzt jede Karte die Handler der anderen, statt sie zusätzlich zu binden.
   - Laufende Animationen werden über Generationszähler abgebrochen (`window._kanjiDrawGen`, `_kanjiSrGenC1/C2`).
 - **AnkiDroid** lädt die Seite pro Karte neu. Zustand, der den Wechsel überleben soll, liegt in `sessionStorage`/`localStorage`.
-- **Kein Include-Mechanismus.** Anki kann keine gemeinsamen Dateien einbinden. Gemeinsamer Code wird deshalb **kopiert** und mit `[SHARED c1-front/c2-front]` bzw. `[SHARED with c2-back]` markiert. Wer einen solchen Block ändert, muss die andere Karte mitziehen.
+- **Kein Include-Mechanismus.** Anki kann keine gemeinsamen Dateien einbinden. Code, der in beiden Karten gleich ist, liegt deshalb einmal unter [src/](src/) und wird von `python3 Tools/build.py` zwischen die Marker `// [KD-SRC <datei>]` … `// [/KD-SRC <datei>]` kopiert (siehe unten). Blöcke, die sich zwischen den Karten noch unterscheiden, sind weiter mit `[SHARED …]` markiert und müssen von Hand mitgezogen werden.
 
-## Gemeinsame Helfer (`Shared helpers [SHARED c1-front/c2-front]`)
+## Gemeinsame Helfer (`src/front/shared-helpers.js`)
 
 Stehen in beiden Vorderseiten direkt nach dem „Persistence Layer“ und sind damit auch auf den Rückseiten verfügbar.
 
@@ -50,14 +52,16 @@ Stehen in beiden Vorderseiten direkt nach dem „Persistence Layer“ und sind d
 
 | Marker | Quelle | Inhalt |
 |---|---|---|
-| `<!-- [KD-AUDIO-ENGINE] -->` … `<!-- [/KD-AUDIO-ENGINE] -->` | [../Tools/audio/kd-audio-engine.js](../Tools/audio/kd-audio-engine.js) | Prozedurale Musik, Strich- und Effektklänge (`window.__kdAudio`) |
+| `<!-- [KD-AUDIO-ENGINE] -->` … `<!-- [/KD-AUDIO-ENGINE] -->` | [../Tools/audio/src/](../Tools/audio/src/) (gebündelt zu [kd-audio-engine.js](../Tools/audio/kd-audio-engine.js)) | Prozedurale Musik, Strich- und Effektklänge (`window.__kdAudio`) |
 | `<!-- [KD-SOUND-PAGE] -->` … `<!-- [/KD-SOUND-PAGE] -->` | [../Tools/audio/page-sound.html](../Tools/audio/page-sound.html) | Einstellungsseite „Klang & Musik“ |
+| `// [KD-SRC front/<datei>]` … `// [/KD-SRC …]` | [src/front/](src/front/) | In beiden Vorderseiten: `persistence.js`, `shared-helpers.js`, `sound-bridge.js`, `grid-display.js`, `scroll-guards.js` |
+| `// [KD-SRC back/<datei>]` … `// [/KD-SRC …]` | [src/back/](src/back/) | In beiden Rückseiten: `primitive-tree.js`, `radical-tree.js`, `pitfalls.js`, `word-examples.js`, `hide-readings.js`, `stroke-order-player.js`, `cross-platform.js` |
 
-Eingebettet werden beide mit `python3 Tools/audio/embed_audio.py`. Das Skript ist idempotent und ersetzt nur den Inhalt zwischen den Markern. Tests und Werkzeuge beschreibt [../Tools/audio/README.md](../Tools/audio/README.md).
+Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur den Inhalt zwischen den Markern und rückt die Quelle wie den Marker ein; `--check` meldet veraltete Templates (Exit-Code 1). In Quellen verboten sind `{{`, `}}` und `</script` (Anki-Feldsyntax bzw. Skriptende). Tests und Werkzeuge der Engine beschreibt [../Tools/audio/README.md](../Tools/audio/README.md).
 
 ## Einstellungen und Speicher
 
-- **Lesen und Schreiben:** `safeGetItem(key, default)` / `safeSetItem(key, value)` in „Persistence Layer [SHARED]“ der Vorderseiten.
+- **Lesen und Schreiben:** `safeGetItem(key, default)` / `safeSetItem(key, value)` in [src/front/persistence.js](src/front/persistence.js).
   - Lesereihenfolge: `window._ks` (vom Add-on injiziert) → Cookie `_k` (geparst von `_kCookieObj`) → `localStorage`.
   - Auf Anki Desktop schickt `pycmd('kdp:' + JSON)` den Stand an das Add-on [Kanji Draw Persistence](../Addon/README.md).
 - **Schlüssel:** `kanji*` (global, z. B. `kanjiThemePrimary`, `kanjiSoundMusic`).
@@ -76,13 +80,13 @@ Eingebettet werden beide mit `python3 Tools/audio/embed_audio.py`. Das Skript is
 | die Strichbewertung (geführter Modus) anpassen | Card-1/FrontTemplate.html | `const evaluateStroke` |
 | die Freimodus-Auswertung (Rückseite) anpassen | Card-1/BackTemplate.html | `FREE MODE: Evaluation` |
 | Algorithmen (Resampling, Fréchet, Ungarische Methode, Abstands-/Winkelmaße) ändern | Card-1/FrontTemplate.html | `Shared Scoring Algorithms` (`window._kanjiAlgo`) |
-| Dunkelmodus-Prüfung, Strichbreite, Gelstift-Halo oder Klick-Schlucken ändern | beide FrontTemplates | `Shared helpers [SHARED` |
+| Dunkelmodus-Prüfung, Strichbreite, Gelstift-Halo oder Klick-Schlucken ändern | `src/front/shared-helpers.js`, danach `build.py` | – |
 | Farben und Landschaften eines Themes ändern | Styling.css `Theme: …` plus SVG `jp-scene-<theme>` in beiden FrontTemplates | `data-jp-theme` |
 | die Akzent- und Hauptfarben (Swatches) ändern | beide FrontTemplates | `Theme: Accent color definitions` |
-| Musik und Klänge ändern | `Tools/audio/kd-audio-engine.js`, danach `embed_audio.py` | – |
-| den Radikal-Baum der Rückseite ändern | beide BackTemplates | `Primitive Tree (Kanji-Study style)` |
-| die Schreibfehler-Seite ändern | beide BackTemplates | `Pitfalls ("Häufige Schreibfehler"` |
-| den Strichfolge-Player ändern | beide BackTemplates | `Stroke-Order Player` |
+| Musik und Klänge ändern | `Tools/audio/src/` (Modulübersicht in [../Tools/audio/README.md](../Tools/audio/README.md#module-src)), danach `build.py` | – |
+| den Radikal-Baum der Rückseite ändern | `src/back/primitive-tree.js`, danach `build.py` | – |
+| die Schreibfehler-Seite ändern | `src/back/pitfalls.js`, danach `build.py` | – |
+| den Strichfolge-Player ändern | `src/back/stroke-order-player.js`, danach `build.py` | – |
 | Fixes für Stift, S-Pen oder Apple Pencil ändern | alle vier Templates | `S-Pen`, `Apple Pencil`, `addPenHandler` |
 
 ## Styling.css – Abschnitte
@@ -114,37 +118,63 @@ Eingebettet werden beide mit `python3 Tools/audio/embed_audio.py`. Das Skript is
 
 ## Audio-Engine (`[KD-AUDIO-ENGINE]`)
 
-Die Quelle ist [../Tools/audio/kd-audio-engine.js](../Tools/audio/kd-audio-engine.js) (1871 Z., Version 1.0.0). Zeile N der Quelle steht in Card-1/FrontTemplate.html in Zeile N + 4442 und in Card-2/FrontTemplate.html in Zeile N + 4403.
+Die Quelle liegt in Modulen unter [../Tools/audio/src/](../Tools/audio/src/) (Version 1.1.0, Modulübersicht in [../Tools/audio/README.md](../Tools/audio/README.md#module-src)). `Tools/build.py` bündelt sie zu einer IIFE ([kd-audio-engine.js](../Tools/audio/kd-audio-engine.js)) und setzt diese in beide Vorderseiten ein; jedes Modul beginnt dort mit dem Kommentar `// ── <modul>.js`.
 
-Musikalisches Prinzip: ein **Repertoire echter Lieder** (`SONGS`: gemeinfreie Klassiker wie Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato, Nanatsu no Ko sowie eigene Stücke in Ryukyu-, Min'yō-, In- und Yo-Tonleiter). Jedes Lied läuft als Vorspiel → Strophen mit wechselnder Behandlung (`buildPlan`: verziert, Heterophonie, Ruf/Antwort, oktaviert, Fragment) → Zwischenspiel → Nachspiel → Ma. **Die Landschaft färbt nur** (`retheme`/`applyWant`: Instrumentenpaar ab dem nächsten Abschnitt, Raum, Helligkeit, Naturkulisse, Schlagwerk); Lied, Tonart und Tempo bleiben, auch beim Genrewechsel und nach einem Seiten-Reload (`snapshot`/`kdAudioState`). **Jo-Ha-Kyū** (`PROG`, `stageNow`) und der Lernfluss (`energy`) steuern die Dichte; Treffer-Töne werden auf Achtel gerastert und bei schnellem Zeichnen zusammengefasst (`slot`, `dens`).
+Musikalisches Prinzip: ein **Repertoire echter Lieder** (`SONGS`: gemeinfreie Klassiker wie Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato, Nanatsu no Ko sowie eigene Stücke in Ryukyu-, Min'yō-, In- und Yo-Tonleiter). Jedes Lied läuft als Vorspiel → Strophen mit wechselnder Behandlung (`Song.plan`: verziert, Heterophonie, Ruf/Antwort, oktaviert, Fragment) → Zwischenspiel → Nachspiel → Ma. **Die Landschaft färbt nur** (`retheme`/`applyWant`: Instrumentenpaar ab dem nächsten Abschnitt, Raum, Helligkeit, Naturkulisse, Schlagwerk); Lied, Tonart und Tempo bleiben, auch beim Genrewechsel und nach einem Seiten-Reload (`snapshot`/`kdAudioState`). **Jo-Ha-Kyū** und der Lernfluss (`class Flow`: `stage()`, `energy()`) steuern die Dichte; Treffer-Töne werden auf Achtel gerastert und bei schnellem Zeichnen zusammengefasst (`Flow.slot`, `Flow.dens`).
 
-Neues Lied hinzufügen: Eintrag in `SONGS` (`mel` als `Halbtöne:Schläge`, `ch` ein Akkord je Takt), dann im Selbsttest `songs` prüfen – die Zeile muss `[]` zeigen.
+Neues Lied hinzufügen: Eintrag in `SONGS` in `03-repertoire.js` (`mel` als `Halbtöne:Schläge`, `ch` ein Akkord je Takt), dann im Selbsttest `songs` prüfen – die Zeile muss `[]` zeigen.
 
-| Quelle | Abschnitt | Wichtigste Namen |
-|---|---|---|
-| 1–32 | Kopf, Versionsprüfung | `VERSION`, alte Instanz → `dispose()` |
-| 33–109 | `── Tables` | `THEMES` (Helligkeit, Signatur), `NAT` (Natur je Theme), `GENRES` (Tempofaktor, Pegel), `SK` (Stiftklänge), `SPACE` (Raum), `VOPT`/`VREG`/`VK`/`STR` (Instrumentenpaar je Landschaft), `RES`, `CYCLE`/`STAGE_AT`/`SETTLE` |
-| 110–193 | `── Repertoire` | `CHT`, `SONGS` (Melodie, Akkorde, Quelle, passende Landschaften), `parseSong`, `songErrors` |
-| 194–216 | `── State` | `cfg`, `cur`, `players`, `PROG` (Jo-Ha-Kyū), `AQ`/`RATE` (Antwort-Raster), `SFORCE` (Test) |
-| 217–313 | `── Context & master graph` | `ensureCtx`, `makeNoise`, `makeIR`, `buildGraph` (Hall, Echo, Kompressor) |
-| 314–334 | `── Node helpers` | `gainN`, `filt`, `oscN`, `send` |
-| 335–644 | `── Instruments` | Sample-Cache `SMP`/`warm`; Renderer `renderPiano`, `MODAL`, `renderString`; Spieler `tone`, `pluck`, `flute`, `sho`, `piano`, `bowl`, `singBowl`, `kane`, `suikin`, `taiko` … |
-| 645–682 | `── Harmony helpers` | `tonesIn`, `scaleNotes`, `voiceChord`, `neighbor`, `chordAt`/`ctones` |
-| 683–844 | `── Player` | `pickSong`, `buildPlan`, `Player` (`begin`, `load`, `newSong`, `step`, `retheme`/`applyWant`, `scheduleBar`, `snapshot`/`save`), `warmFor` |
-| 845–856 | `── Jo-ha-kyū` | `stageNow`, `advance`, `room` (Stimmenbudget) |
-| 857–921 | `── Melody` | `regBase` (Register je Instrument), `playNote` (Verzierungen), `phrase`, `harmonics`, `melody` (Behandlungen, Zwischen-/Nachspiel) |
-| 922–983 | `── Signature percussion` | `SIG` (Koto, Shamisen, Suikin, Biwa, Fūrin, Mokugyo, Taiko, Hyōshigi, Paranku), `sigHit` |
-| 984–998 | `── Shared layers` | `shimmer` (Stufe 4), `rhythmOn` |
-| 999–1090 | `── Genres` | `ambientBar`, `zenBar`, `pianoBar`, `lofiBar` (Begleitung je Akkord, 3/4 und 4/4) |
-| 1091–1387 | `── Nature soundscapes` | `Nature` (eine Schicht je Landschaft, überblendet), `natureBar`, Tierstimmen, `EV`-Tabelle |
-| 1388–1471 | `── Flow` | `energy`, `slot`/`dens`, `answer`, `contourNote`, `ghost`, `penTick`, `accentBar`, `stageHit` |
-| 1472–1532 | `── Music control` | `syncMusic` (Landschaft → `retheme`, Genre → neuer Player), `pump`, `tick` |
-| 1533–1661 | `── Public operations` | `configure`, `setScene`, `cardShown`, `FX` (UI-Klänge), `strokeResult`, `complete` (Sararin-Lauf, `advance`) |
-| 1662–1779 | `── Stroke sounds` | `strokeStart`/`buildStroke`/`strokeMove`/`strokeEnd`, `duck` |
-| 1780–1810 | `── Lifecycle` | Geste/Sichtbarkeit, Leerlauf-Suspend, `dispose` |
-| 1811–1871 | `── Offline render`, API | `offline` (Tests; Optionen `song`, `E`, `stage`, `flow`, `done`, `noEvents`), `api` → `window.__kdAudio` |
+```mermaid
+classDiagram
+    class Player {
+        genre, song, plan, V, N
+        begin()
+        newSong()
+        retheme()
+        applyWant()
+        scheduleBar()
+        snapshot()
+    }
+    class Song {
+        bars, lo, hi
+        plan(genre)
+        weight()
+        errors()
+    }
+    class Nature {
+        L
+        bar()
+        fadeOut()
+        dispose()
+    }
+    class Flow {
+        done, bloomUntil, calmUntil
+        level()
+        add()
+        stage()
+        energy()
+        slot()
+        dens()
+    }
+    class SampleBank {
+        get()
+        warm()
+        piano()$
+        modal()$
+        string()$
+    }
+    class StrokeVoice {
+        move()
+        apply()
+        release()
+    }
+    Player --> Song : spielt
+    Player --> "1..3" Nature : überblendet
+    Player ..> Flow : FL
+    Player ..> SampleBank : bank
+```
 
-Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an („Klang & Musik: Bridge“ in den FrontTemplates).
+Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an ([src/front/sound-bridge.js](src/front/sound-bridge.js)).
 
 ## Code-Review: Stand
 
