@@ -5,16 +5,16 @@ Anki templates cannot load external files, so shared code is maintained in
 source files and copied into the templates between markers. Re-running is
 idempotent: only the text between the markers is replaced.
 
-1. Audio engine: Tools/audio/src/*.js (in file-name order) are wrapped into
-   one IIFE and written to Tools/audio/kd-audio-engine.js (generated; the
-   test pages load this bundle).
+1. Audio engine: Templates/src/audio/*.js (in file-name order) are wrapped into
+   one IIFE. A copy goes to Tests/browser/kd-audio-engine.js (git-ignored; the
+   browser test pages load it).
 2. Embedding:
    - <!-- [KD-AUDIO-ENGINE] --> … <!-- [/KD-AUDIO-ENGINE] -->  engine bundle (front templates)
-   - <!-- [KD-SOUND-PAGE] -->   … <!-- [/KD-SOUND-PAGE] -->    Tools/audio/page-sound.html (front templates)
+   - <!-- [KD-SOUND-PAGE] -->   … <!-- [/KD-SOUND-PAGE] -->    Templates/src/front/page-sound.html (front templates)
    - // [KD-SRC <file>] … // [/KD-SRC <file>]                    Templates/src/<file>, indented like the marker
 
 Usage: python3 Tools/build.py          build and embed
-       python3 Tools/build.py --check  exit 1 if a template or the bundle is out of date
+       python3 Tools/build.py --check  exit 1 if a template is out of date
 """
 import pathlib
 import re
@@ -23,7 +23,8 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 TPL = ROOT / 'Templates'
 SRC = TPL / 'src'
-AUDIO = ROOT / 'Tools/audio'
+AUDIO = SRC / 'audio'
+BUNDLE = ROOT / 'Tests/browser/kd-audio-engine.js'
 FRONTS = [TPL / 'Card-1/FrontTemplate.html', TPL / 'Card-2/FrontTemplate.html']
 ALL = FRONTS + [TPL / 'Card-1/BackTemplate.html', TPL / 'Card-2/BackTemplate.html']
 
@@ -34,8 +35,8 @@ FORBIDDEN_SRC = ('{{', '}}', '</script')
 
 INTRO = '''\
 /* ═══════════════════════════════════════════════════════════════════
-   KanjiDraw Audio — GENERIERT von Tools/build.py aus Tools/audio/src/
-   Nicht hier bearbeiten: Änderungen gehören in die Module unter src/.
+   KanjiDraw Audio — GENERIERT von Tools/build.py aus Templates/src/audio/
+   Nicht hier bearbeiten: Änderungen gehören in die Module dort.
    ═══════════════════════════════════════════════════════════════════ */'''
 
 
@@ -44,9 +45,9 @@ def indent(text, pad):
 
 
 def bundle_engine():
-    mods = sorted((AUDIO / 'src').glob('*.js'))
+    mods = sorted(AUDIO.glob('*.js'))
     if not mods:
-        sys.exit('no modules in Tools/audio/src')
+        sys.exit('no modules in Templates/src/audio')
     body = '\n\n'.join(f'// ── {m.name} ' + '─' * max(4, 60 - len(m.name)) + '\n' + m.read_text(encoding='utf-8').strip('\n') for m in mods)
     for bad in FORBIDDEN:
         if bad in body:
@@ -100,12 +101,9 @@ def main():
     check = '--check' in sys.argv
     stale = []
     engine = bundle_engine()
-    bundle = AUDIO / 'kd-audio-engine.js'
-    if bundle.read_text(encoding='utf-8') != engine:
-        stale.append(bundle)
-        if not check:
-            bundle.write_text(engine, encoding='utf-8')
-    page = (AUDIO / 'page-sound.html').read_text(encoding='utf-8').strip('\n')
+    if not check and (not BUNDLE.is_file() or BUNDLE.read_text(encoding='utf-8') != engine):
+        BUNDLE.write_text(engine, encoding='utf-8')
+    page = (SRC / 'front/page-sound.html').read_text(encoding='utf-8').strip('\n')
     for f in ALL:
         src = f.read_text(encoding='utf-8')
         out = src

@@ -1,12 +1,13 @@
 # Tests
 
-Automatische Tests für die Templates und das Add-on. Die Tests der Audio-Engine stehen in [../Tools/audio/README.md](../Tools/audio/README.md).
+Automatische Tests für die Templates und das Add-on.
 
 ## Ordner
 
 | Pfad | Inhalt |
 |---|---|
 | [js/](js/) | Node-Tests (`node --test`), kein Browser nötig |
+| [browser/](browser/README.md) | Headless-Chromium-Tests: Selbsttest der Audio-Engine, Harness-Seiten aus den echten Templates |
 | [live_stress_test.py](live_stress_test.py) | Stresstest im laufenden Anki (echte WebView) |
 | [anki_addon_stress_helper/](anki_addon_stress_helper/) | Hilfs-Add-on für den Stresstest: führt JavaScript in der Karten-WebView aus |
 
@@ -58,7 +59,7 @@ Jede Anfrage braucht ein Bearer-Token aus `<tmp>/kanjidraw_stress_token` (Rechte
 **Behoben**
 - `algorithms.js` und `test_persistence.js` prüfen jetzt den echten Template-Code statt Kopien. Ändert sich das Template, schlagen die Tests an. Die abweichende `smoothInput`-Kopie (ohne `passes`) ist damit weg.
 - `test_strictness.js` nutzt `avgPointDist`/`segmentAngles` aus `window._kanjiAlgo` und verweist per Suchbegriff statt per Zeilennummer auf `evaluateStroke`.
-- Die Selbsttests der Audio-Engine liegen jetzt im Repository ([../Tools/audio/](../Tools/audio/README.md)).
+- Die Selbsttests der Audio-Engine liegen jetzt im Repository ([browser/](browser/README.md)).
 
 **Offen**
-- `test_settings`, `test_new_fixes`, `test_snap` und `test_stress` bauen weiterhin Logik mit Mock-DOM nach. Diese Logik (Einstellungs-Modal, Zeichen-Handler) hängt eng an DOM und Timern und lässt sich nicht ohne Browser aus dem Template ausführen. Abhilfe wäre ein Headless-Browser-Test nach dem Vorbild der Harness-Seiten in `Tools/audio`.
+- `test_settings`, `test_new_fixes`, `test_snap` und `test_stress` bauen weiterhin Logik mit Mock-DOM nach. Diese Logik (Einstellungs-Modal, Zeichen-Handler) hängt eng an DOM und Timern und lässt sich nicht ohne Browser aus dem Template ausführen. Abhilfe wäre ein Headless-Browser-Test nach dem Vorbild der Harness-Seiten in `browser/`.

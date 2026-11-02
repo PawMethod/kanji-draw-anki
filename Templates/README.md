@@ -14,7 +14,7 @@ Entwickler-Dokumentation zum Notiztyp **KanjiDraw**. Die Bedienung erklärt das 
 | [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~8 000 Z. / 550 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
 | [Card-2/BackTemplate.html](Card-2/BackTemplate.html) | ~2 600 Z. / 133 KB | Rückseite der Erkennungskarte | [Card-2/README.md](Card-2/README.md) |
 | [Styling.css](Styling.css) | ~6 000 Z. / 148 KB | Gemeinsames Stylesheet aller vier Templates | unten |
-| [src/](src/) | 12 Dateien | **Quellen** des Codes, der in beiden Karten gleich ist; `Tools/build.py` setzt sie ein | [unten](#generierte-blöcke-nicht-von-hand-bearbeiten) |
+| [src/](src/) | `front/`, `back/`, `audio/` | **Quellen** für generierte Blöcke: Code, der in beiden Karten gleich ist, die Klangseite und die Audio-Engine; `Tools/build.py` setzt sie ein | [unten](#generierte-blöcke-nicht-von-hand-bearbeiten) |
 
 ## Wie Anki die Dateien zusammensetzt
 
@@ -23,8 +23,8 @@ flowchart LR
     CSS[Styling.css] --> F1 & B1 & F2 & B2
     F1[Card-1 Front] -->|"{{FrontSide}}"| B1[Card-1 Back]
     F2[Card-2 Front] -->|"{{FrontSide}}"| B2[Card-2 Back]
-    ENG[Tools/audio/src/*.js] -->|build.py| F1 & F2
-    PAGE[Tools/audio/page-sound.html] -->|build.py| F1 & F2
+    ENG[src/audio/*.js] -->|build.py| F1 & F2
+    PAGE[src/front/page-sound.html] -->|build.py| F1 & F2
     SRC[Templates/src/front + back] -->|build.py| F1 & F2 & B1 & B2
 ```
 
@@ -52,12 +52,12 @@ Stehen in beiden Vorderseiten direkt nach dem „Persistence Layer“ und sind d
 
 | Marker | Quelle | Inhalt |
 |---|---|---|
-| `<!-- [KD-AUDIO-ENGINE] -->` … `<!-- [/KD-AUDIO-ENGINE] -->` | [../Tools/audio/src/](../Tools/audio/src/) (gebündelt zu [kd-audio-engine.js](../Tools/audio/kd-audio-engine.js)) | Prozedurale Musik, Strich- und Effektklänge (`window.__kdAudio`) |
-| `<!-- [KD-SOUND-PAGE] -->` … `<!-- [/KD-SOUND-PAGE] -->` | [../Tools/audio/page-sound.html](../Tools/audio/page-sound.html) | Einstellungsseite „Klang & Musik“ |
+| `<!-- [KD-AUDIO-ENGINE] -->` … `<!-- [/KD-AUDIO-ENGINE] -->` | [src/audio/](src/audio/) (gebündelt zu einer IIFE) | Prozedurale Musik, Strich- und Effektklänge (`window.__kdAudio`) |
+| `<!-- [KD-SOUND-PAGE] -->` … `<!-- [/KD-SOUND-PAGE] -->` | [src/front/page-sound.html](src/front/page-sound.html) | Einstellungsseite „Klang & Musik“ |
 | `// [KD-SRC front/<datei>]` … `// [/KD-SRC …]` | [src/front/](src/front/) | In beiden Vorderseiten: `persistence.js`, `shared-helpers.js`, `sound-bridge.js`, `grid-display.js`, `scroll-guards.js` |
 | `// [KD-SRC back/<datei>]` … `// [/KD-SRC …]` | [src/back/](src/back/) | In beiden Rückseiten: `primitive-tree.js`, `radical-tree.js`, `pitfalls.js`, `word-examples.js`, `hide-readings.js`, `stroke-order-player.js`, `cross-platform.js` |
 
-Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur den Inhalt zwischen den Markern und rückt die Quelle wie den Marker ein; `--check` meldet veraltete Templates (Exit-Code 1). In Quellen verboten sind `{{`, `}}` und `</script` (Anki-Feldsyntax bzw. Skriptende). Tests und Werkzeuge der Engine beschreibt [../Tools/audio/README.md](../Tools/audio/README.md).
+Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur den Inhalt zwischen den Markern und rückt die Quelle wie den Marker ein; `--check` meldet veraltete Templates (Exit-Code 1). In Quellen verboten sind `{{`, `}}` und `</script` (Anki-Feldsyntax bzw. Skriptende). Die Browser-Tests der Engine beschreibt [../Tests/browser/README.md](../Tests/browser/README.md).
 
 ## Einstellungen und Speicher
 
@@ -83,7 +83,7 @@ Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur d
 | Dunkelmodus-Prüfung, Strichbreite, Gelstift-Halo oder Klick-Schlucken ändern | `src/front/shared-helpers.js`, danach `build.py` | – |
 | Farben und Landschaften eines Themes ändern | Styling.css `Theme: …` plus SVG `jp-scene-<theme>` in beiden FrontTemplates | `data-jp-theme` |
 | die Akzent- und Hauptfarben (Swatches) ändern | beide FrontTemplates | `Theme: Accent color definitions` |
-| Musik und Klänge ändern | `Tools/audio/src/` (Modulübersicht in [../Tools/audio/README.md](../Tools/audio/README.md#module-src)), danach `build.py` | – |
+| Musik und Klänge ändern | `src/audio/` ([Modulübersicht](#module-srcaudio)), danach `build.py` | – |
 | den Radikal-Baum der Rückseite ändern | `src/back/primitive-tree.js`, danach `build.py` | – |
 | die Schreibfehler-Seite ändern | `src/back/pitfalls.js`, danach `build.py` | – |
 | den Strichfolge-Player ändern | `src/back/stroke-order-player.js`, danach `build.py` | – |
@@ -118,11 +118,36 @@ Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur d
 
 ## Audio-Engine (`[KD-AUDIO-ENGINE]`)
 
-Die Quelle liegt in Modulen unter [../Tools/audio/src/](../Tools/audio/src/) (Version 1.1.0, Modulübersicht in [../Tools/audio/README.md](../Tools/audio/README.md#module-src)). `Tools/build.py` bündelt sie zu einer IIFE ([kd-audio-engine.js](../Tools/audio/kd-audio-engine.js)) und setzt diese in beide Vorderseiten ein; jedes Modul beginnt dort mit dem Kommentar `// ── <modul>.js`.
+Die Quelle liegt in 18 Modulen unter [src/audio/](src/audio/) (Version 1.1.0 in `01-base.js`). `Tools/build.py` bündelt sie zu einer IIFE und setzt diese in beide Vorderseiten ein; jedes Modul beginnt dort mit dem Kommentar `// ── <modul>.js`. Eine Kopie des Bündels schreibt es für die Browser-Tests nach `Tests/browser/kd-audio-engine.js`.
 
 Musikalisches Prinzip: ein **Repertoire echter Lieder** (`SONGS`: gemeinfreie Klassiker wie Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato, Nanatsu no Ko sowie eigene Stücke in Ryukyu-, Min'yō-, In- und Yo-Tonleiter). Jedes Lied läuft als Vorspiel → Strophen mit wechselnder Behandlung (`Song.plan`: verziert, Heterophonie, Ruf/Antwort, oktaviert, Fragment) → Zwischenspiel → Nachspiel → Ma. **Die Landschaft färbt nur** (`retheme`/`applyWant`: Instrumentenpaar ab dem nächsten Abschnitt, Raum, Helligkeit, Naturkulisse, Schlagwerk); Lied, Tonart und Tempo bleiben, auch beim Genrewechsel und nach einem Seiten-Reload (`snapshot`/`kdAudioState`). **Jo-Ha-Kyū** und der Lernfluss (`class Flow`: `stage()`, `energy()`) steuern die Dichte; Treffer-Töne werden auf Achtel gerastert und bei schnellem Zeichnen zusammengefasst (`Flow.slot`, `Flow.dens`).
 
 Neues Lied hinzufügen: Eintrag in `SONGS` in `03-repertoire.js` (`mel` als `Halbtöne:Schläge`, `ch` ein Akkord je Takt), dann im Selbsttest `songs` prüfen – die Zeile muss `[]` zeigen.
+
+### Module (`src/audio/`)
+
+Die Dateien werden in Namensreihenfolge zu einer IIFE verbunden; alle Module teilen sich deren Gültigkeitsbereich (keine Imports). Konstanten und Klassen stehen vor ihrer ersten Verwendung zur Laufzeit; Funktionsdeklarationen dürfen auch später kommen.
+
+| Modul | Inhalt |
+|---|---|
+| `01-base.js` | `VERSION`, Singleton-Prüfung, Mathe-Helfer (`clamp`, `mtof`, `rnd`, `pick`, `poisson`, `shuffle` …) |
+| `02-tables.js` | `THEMES`, `NAT`, `SK`, `SPACE`, `VOPT`/`VREG`/`VK`, `RES`, Jo-Ha-Kyū-Konstanten |
+| `03-repertoire.js` | **`class Song`** (parst Melodie und Akkorde, `errors()`, `plan(genre)`, `weight()`), `SONGS`, `pickSong` |
+| `04-runtime.js` | Laufzeitzustand (`cfg`, `cur`, `ctx`, `players` …), `now`, `imm`, `musicOn`, `live` |
+| `05-graph.js` | AudioContext, Rauschpuffer, Hall, Echo, Master-Graph, Knoten-Helfer (`gainN`, `filt`, `send` …) |
+| `06-samples.js` | **`class SampleBank`** (Cache, Vorwärmen im Hintergrund; Renderer `piano`, `modal`, `string`), `MODAL` |
+| `07-instruments.js` | `tone`, `pluck`, `flute`, `piano`, `sho`, `bowl`, `kane`, `suikin`, `taiko` … |
+| `08-harmony.js` | `scaleNotes`, `voiceChord`, `chordAt`, `ctones` |
+| `09-flow.js` | **`class Flow`** (Lernfluss, Jo-Ha-Kyū-Stufe, Antwort-Raster, Strichrate) als `FL`; Antworten `answer`, `ghost`, `stageHit` |
+| `10-melody.js` | `playNote` (Verzierungen), `phrase`, `melody` (Behandlungen) |
+| `11-percussion.js` | `SIG` (Schlagwerk je Landschaft), `SIG_HIT`/`sigHit`, `shimmer` |
+| `12-genres.js` | `GENRES`, `ambientBar`, `zenBar`, `pianoBar`, `lofiBar` |
+| `13-nature.js` | **`class Nature`** (Naturbetten, `bar()` plant Ereignisse), Tierstimmen, `EV` |
+| `14-player.js` | **`class Player`** (ein Lied je Genre: `begin`, `newSong`, `retheme`/`applyWant`, `scheduleBar`, `snapshot`) |
+| `15-control.js` | `syncMusic`, `pump`, `tick` |
+| `16-fx.js` | `FX` (UI-Klänge in der Tonart des Lieds) |
+| `17-strokes.js` | **`class StrokeVoice`** (ein Strichklang: `move`, `apply`, `release`), `strokeStart`/`Move`/`End`, `duck` |
+| `18-api.js` | `configure`, `setScene`, `cardShown`, `strokeResult`, `complete`, Lebenszyklus, `offline` (Tests), `api` |
 
 ```mermaid
 classDiagram
@@ -179,7 +204,7 @@ Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an ([src/front
 ## Code-Review: Stand
 
 **Behoben**
-- Die Audio-Werkzeuge liegen jetzt im Repository unter [../Tools/audio/](../Tools/audio/README.md).
+- Die Browser-Tests der Audio-Engine liegen im Repository unter [../Tests/browser/](../Tests/browser/README.md).
 - Speicher der Audio-Samples: Glocken (`kane`) und Klangschalen (`bowl`) werden mit 11 025 Hz statt 22 050 Hz gerendert. Das halbiert ihren Anteil am Sample-Cache; hörbar ist das bei diesen tiefen Klängen nicht.
 - Gemeinsame Helfer statt Kopien (siehe oben). Abgeglichene Blöcke zwischen den Karten: siehe [Card-2/README.md](Card-2/README.md#abgleich-mit-card-1).
 - CSS: Selektoren ohne Verwendung entfernt:

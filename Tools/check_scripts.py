@@ -6,7 +6,7 @@ import subprocess
 import sys
 import tempfile
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+ROOT = pathlib.Path(__file__).resolve().parents[1]
 bad = 0
 for f in sorted((ROOT / 'Templates').glob('Card-*/*.html')):
     text = f.read_text(encoding='utf-8')
