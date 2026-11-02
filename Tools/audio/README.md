@@ -40,4 +40,8 @@ python3 make_harness.py
 
 Ausgabezeilen beginnen mit `KDR`. Ein Lauf ist fertig, wenn `KDR DONE` erscheint. Die Harness-Seiten melden zusätzlich `errors` (soll `[]` sein) und die Engine-Version.
 
+Wichtige Testgruppen des Selbsttests: `songs` (Taktprüfung aller Transkriptionen, soll `[]` sein), `song/<lied>/<genre>` (jedes Lied in jedem Genre), `review/<genre>/still|flip` (alle 2 s eine andere Landschaft gegen keinen Wechsel – `maxJump1s` darf bei `flip` nicht deutlich über `still` liegen), `music/` (jede Kombination, 24 s), `bed/` (nur Naturbetten), `flowE/` (feste Dichte 0–4), `flowplay/` (acht Striche und ein fertiges Kanji), `burst/` (20 Striche in 4 s – die Spitze darf die der reinen Musik nicht nennenswert übersteigen), `form/` (150 s, Hüllkurve je 10 s). Mit `./run_selftest.sh "" 300 selftest.html prof=1` kommen Hüllkurven je Jo-Ha-Kyū-Stufe dazu (`stage/<genre>/<0-2>`).
+
+Hörvergleich: `vergleich.html` rendert die in `VERS` eingetragenen Versionen aus `versions/kd-audio-<x.y.z>.js`. Neue Version dort ablegen: `cp kd-audio-engine.js versions/kd-audio-$(grep -o "VERSION = '[^']*'" kd-audio-engine.js | cut -d"'" -f2).js`.
+
 Danach die Templates in Anki übernehmen und die JS-Tests laufen lassen ([../../Tests/README.md](../../Tests/README.md)).

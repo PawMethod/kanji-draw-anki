@@ -52,6 +52,22 @@ async function run(name, o) {
         console.log('KDR cost ' + JSON.stringify(cost));
     }
     var genres = ['ambient', 'zen', 'piano', 'lofi', 'nature'];
+    var T4 = window.__kdAudio._t, only0 = (new URLSearchParams(location.search).get('only') || '').split(',').filter(Boolean);
+    if (T4.songErrors) console.log('KDR songs ' + JSON.stringify(T4.songErrors()));
+    // Every song in every genre: full rendition from the intro
+    if (T4.SONGS) for (var so of T4.SONGS) for (var sg of ['zen', 'piano', 'lofi', 'ambient']) await run('song/' + so.id + '/' + sg, { seconds: 30, music: sg, theme: so.th[0], song: so.id, immersion: 'low' });
+    // Fast review: a random landscape every 2 s. Envelope jump between 1 s windows shows how much the music lurches
+    var themes9 = ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa'];
+    for (var rg of ['zen', 'piano', 'lofi']) for (var rv of [0, 1]) {
+        if (only0.length && !only0.some(function (p) { return ('review/' + rg).indexOf(p) === 0; })) continue;
+        var evr = []; if (rv) for (var ri = 0; ri < 14; ri++) evr.push({ at: 4 + ri * 2, fn: 'setScene', args: [themes9[(ri * 4 + 1) % 9], ri % 5 === 3] });
+        var bR = await window.__kdAudio._offline({ seconds: 36, music: rg, theme: 'neutral', song: 'sakura', events: evr, noEvents: true }), sR = stats(bR);
+        var LR = bR.getChannelData(0), wR = bR.sampleRate, eR = [];
+        for (var kR = 0; kR + wR <= LR.length; kR += wR) { var aR = 0; for (var jR = kR; jR < kR + wR; jR += 4) aR += LR[jR] * LR[jR]; eR.push(20 * Math.log10(Math.sqrt(aR / (wR / 4)) + 1e-9)); }
+        var jump = 0; for (var q2 = 5; q2 < eR.length; q2++) jump = Math.max(jump, Math.abs(eR[q2] - eR[q2 - 1]));
+        sR.maxJump1s = Math.round(jump * 10) / 10;
+        console.log('KDR review/' + rg + (rv ? '/flip' : '/still') + ' ' + JSON.stringify(sR));
+    }
     var scenes = [['neutral', false], ['tokyo', true], ['okinawa', false], ['hokkaido', true], ['sepia', true], ['sage', false]];
     for (var g of genres) for (var sc of scenes) await run('music/' + g + '/' + sc[0] + (sc[1] ? '-n' : '-d'), { seconds: 24, music: g, theme: sc[0], dark: sc[1] });
     for (var g2 of genres) await run('xfade/' + g2 + '/warm-d>tokyo-n', { seconds: 30, music: g2, theme: 'warm', events: [{ at: 12, fn: 'setScene', args: ['tokyo', true] }] });
@@ -79,6 +95,14 @@ async function run(name, o) {
         return ev;
     };
     for (var pg of genres) for (var pi of ['off', 'high']) await run('flowplay/' + pg + '/' + pi, { seconds: 26, music: pg, theme: 'okinawa', immersion: pi, events: play8() });
+    // Burst: 20 strokes in 4 s with results (the "overloaded" case) — peaks must stay close to the plain music
+    var burst = function () {
+        var ev = [];
+        for (var i = 0; i < 20; i++) { var t0 = 4 + i * 0.2; ev = ev.concat(strokeEvents('standard', t0, 0.12, 0.6)); ev.push({ at: t0 + 0.14, fn: 'strokeResult', args: [true, i] }); }
+        ev.push({ at: 8.3, fn: 'complete', args: [] });
+        return ev;
+    };
+    for (var bg of ['zen', 'piano', 'lofi']) await run('burst/' + bg, { seconds: 14, music: bg, theme: 'neutral', immersion: 'high', events: burst() });
     for (var xg of ['ambient', 'lofi']) await run('flowxfade/' + xg, { seconds: 24, music: xg, theme: 'warm', immersion: 'high', events: [{ at: 8, fn: 'strokeResult', args: [true, 0] }, { at: 10, fn: 'setScene', args: ['tokyo', true] }] });
     for (var fg2 of ['ambient', 'zen', 'piano', 'lofi']) {
         var only2 = (new URLSearchParams(location.search).get('only') || '').split(',').filter(Boolean);
@@ -90,10 +114,18 @@ async function run(name, o) {
         console.log('KDR form/' + fg2 + ' ' + JSON.stringify(st));
     }
     if (/prof/.test(location.search)) {
+        var env1 = function (buf, win) {
+            var L = buf.getChannelData(0), w = Math.floor(buf.sampleRate * win), env = [];
+            for (var k = 0; k + w <= L.length; k += w) { var a = 0; for (var j = k; j < k + w; j += 2) a += L[j] * L[j]; env.push(Math.round(20 * Math.log10(Math.sqrt(a / (w / 2)) + 1e-9))); }
+            return env;
+        };
         var buf = await window.__kdAudio._offline({ seconds: 26, music: 'piano', theme: 'okinawa', immersion: 'high', events: play8() });
-        var L = buf.getChannelData(0), w = Math.floor(buf.sampleRate * 0.25), env = [];
-        for (var k = 0; k + w <= L.length; k += w) { var a = 0; for (var j = k; j < k + w; j++) a += L[j] * L[j]; env.push(Math.round(20 * Math.log10(Math.sqrt(a / w) + 1e-9))); }
-        console.log('KDR profile/piano ' + JSON.stringify(env));
+        console.log('KDR profile/piano ' + JSON.stringify(env1(buf, 0.25)));
+        // Jo-ha-kyū stages: 1 s envelope per stage, music only (no nature events)
+        for (var pg2 of ['zen', 'ambient', 'piano', 'lofi']) for (var stg = 0; stg <= 2; stg++) {
+            var bs = await window.__kdAudio._offline({ seconds: 40, music: pg2, theme: 'neutral', immersion: 'high', stage: stg, flow: stg === 2 ? 0.8 : 0.3, noEvents: true });
+            console.log('KDR stage/' + pg2 + '/' + stg + ' ' + JSON.stringify(env1(bs, 1)));
+        }
     }
     console.log('KDR DONE');
 })();

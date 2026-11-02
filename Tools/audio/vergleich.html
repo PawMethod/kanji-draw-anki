@@ -26,7 +26,7 @@
 </div>
 <div id="out"></div>
 <script>
-var VERS = [['1.3.1', 'Vorher (1.3.1)'], ['1.5.0', 'Version 1.5.0'], ['2.0.0', 'Jetzt (2.0.0)']], out = document.getElementById('out');
+var VERS = [['2.0.1', 'Entwurf (älter)'], ['3.0.0', 'Entwurf (vorher)'], ['1.0.0', 'Jetzt (1.0.0)']], out = document.getElementById('out');
 window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data || !e.data.wav) return;
     var row = document.getElementById('v' + e.data.v.replace(/\./g, '_'));
