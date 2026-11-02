@@ -419,14 +419,6 @@
 
     // Provided by FrontSide injection: safeGetItem(), safeSetItem(), getGlobalConfig()
 
-    // Shared dark-mode helper (avoids 3× copy-paste of the 4-clause check)
-    window._kanjiIsDark = function () {
-        return document.documentElement.classList.contains('nightMode') ||
-            document.documentElement.classList.contains('night_mode') ||
-            document.body.classList.contains('nightMode') ||
-            document.body.classList.contains('night_mode');
-    };
-
     // Re-apply font-size on back side (class toggle + dynamic style for WKWebView)
     (function () {
         try {
@@ -477,8 +469,7 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var swVal = safeGetItem('kanjiThemeStrokeWidth', 'normal');
-            var swf0 = swVal === 'thin' ? 0.7 : swVal === 'thick' ? 1.4 : 1;
+            var swf0 = window._kanjiSwFactor();
             document.documentElement.style.setProperty('--kd-sw', String(swf0));
             var dk = window._kanjiIsDark();
             var _wk = document.documentElement.classList.contains('is-ankimobile');
@@ -2085,7 +2076,6 @@
         }
 
         renderList();
-        if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
     };
 
     (() => {
@@ -2206,10 +2196,7 @@
 
         // Create an SVG stroke path element with the current style applied.
         // Always returns the main <path> element. For gel, also inserts a halo before it upon append.
-        const _getSwf = () => {
-            const v = safeGetItem('kanjiThemeStrokeWidth', (getGlobalConfig().themeStrokeWidth || 'normal'));
-            return v === 'thin' ? 0.7 : v === 'thick' ? 1.4 : 1;
-        };
+        const _getSwf = () => window._kanjiSwFactor(safeGetItem('kanjiThemeStrokeWidth', getGlobalConfig().themeStrokeWidth || 'normal'));
         const makeStrokePath = (d, width, color) => {
             const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             p.setAttribute('d', d);
@@ -2594,6 +2581,14 @@
             const freeView = safeGetItem('c1_kanjiOptFreeView', safeGetItem('kanjiOptFreeView', globalConfFree.freeView || 'handwriting'));
 
             // ── Shared morph utilities (used by WK forward, Desktop forward, Desktop reverse, WK reverse) ──
+            // Hidden SVG for getTotalLength(); renderFreeView removes leftovers via window._kanjiScratchSvgs
+            var _newScratchSvg = function () {
+                var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                s.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+                document.body.appendChild(s);
+                (window._kanjiScratchSvgs = window._kanjiScratchSvgs || []).push(s);
+                return s;
+            };
             var _morphResample = function (d, scratch, n) {
                 var tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 tmp.setAttribute('d', d);
@@ -2663,9 +2658,7 @@
 
                     const SAMPLE_N = 65;
 
-                    const _parseScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                    _parseScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-                    document.body.appendChild(_parseScratch);
+                    const _parseScratch = _newScratchSvg();
                     const parseDToPoints = (d) => {
                         const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                         tmp.setAttribute('d', d);
@@ -3198,11 +3191,7 @@
                                     // Resample both paths to identical polyline format so WebKit can
                                     // interpolate the `d` attribute natively at 60 fps.
                                     var WK_N = 16;
-                                    var _wkScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                    _wkScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-                                    document.body.appendChild(_wkScratch);
-                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
-                                    window._kanjiScratchSvgs.push(_wkScratch);
+                                    var _wkScratch = _newScratchSvg();
                                     var _wkResamplePts = function (d) { return _morphResample(d, _wkScratch, WK_N); };
 
                                     var DUR = 0.32; // seconds
@@ -3310,11 +3299,7 @@
 
                                     // Use a hidden scratch SVG for getTotalLength() to avoid
                                     // forced reflows on the visible morphSvg per stroke pair.
-                                    var _scratchSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                    _scratchSvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-                                    document.body.appendChild(_scratchSvg);
-                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
-                                    window._kanjiScratchSvgs.push(_scratchSvg);
+                                    var _scratchSvg = _newScratchSvg();
 
                                     var resample = function (d) { return _morphResample(d, _scratchSvg, N); };
 
@@ -3492,11 +3477,7 @@
                                 const _revSnapGen = _freeRenderGen;
                                 if (!_isWKRev && _revPairs && _revPairs.length && _transC) {
                                     const FRAMES_R = 15, N_R = 16;
-                                    const _scratchR = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                    _scratchR.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-                                    document.body.appendChild(_scratchR);
-                                    if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
-                                    window._kanjiScratchSvgs.push(_scratchR);
+                                    const _scratchR = _newScratchSvg();
                                     const _resampleR = function (d) { return _morphResample(d, _scratchR, N_R); };
                                     const revSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                                     revSvg.setAttribute('viewBox', '0 0 109 109');
@@ -3649,11 +3630,7 @@
                                     const _qtRevPairs = window._kanjiLastMorphPairs;
                                     if (_isWKQt && _qtRevPairs && _qtRevPairs.length && _transC) {
                                         const QT_N = 16, QT_DUR = 0.32;
-                                        const _qtScratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                        _qtScratch.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-                                        document.body.appendChild(_qtScratch);
-                                        if (!window._kanjiScratchSvgs) window._kanjiScratchSvgs = [];
-                                        window._kanjiScratchSvgs.push(_qtScratch);
+                                        const _qtScratch = _newScratchSvg();
                                         const _qtResamplePts = function (d) { return _morphResample(d, _qtScratch, QT_N); };
                                         // True bezier label position + collision adjustment.
                                         const _qtTrueLP = function (d) { return _morphLabelPos(d, _qtScratch); };
@@ -4026,10 +4003,7 @@
                 } else {
                     target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
                 }
-                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                window._kanjiModalEatClick = _eatHandler;
-                document.addEventListener('click', _eatHandler, true);
-                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                window._kanjiEatNextClick();
             });
         });
     }
@@ -4056,10 +4030,7 @@
                     if (handler === 'info') openInfoModal(e);
                     else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
-                    var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                    window._kanjiModalEatClick = _eatHandler;
-                    document.addEventListener('click', _eatHandler, true);
-                    window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                    window._kanjiEatNextClick();
                 });
             });
         }

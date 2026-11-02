@@ -20,7 +20,6 @@
     /* Sichtbarkeit: 'light' (Dezent), 'medium' (Normal), 'dark' (Stark) */
     --default-grid-opac: dark;
 
-
     /* --- 2. KORREKTUR & FEEDBACK --- */
 
     /* Echtzeit-Prüfung (Vorderseite): 'on' (An), 'off' (Aus) */
@@ -659,11 +658,6 @@ html.is-ankidesktop .card {
     fill: #5e3c16;
 }
 
-.forest-scenery .fs-sparkle {
-    fill: #fffbe0;
-    opacity: 0.9;
-}
-
 /* Night Mode Japanese Scenery — Moonlit Indigo-Pine & Glowing Lanterns */
 .nightMode .forest-scenery .fs-fuji-light,
 .night_mode .forest-scenery .fs-fuji-light {
@@ -872,10 +866,6 @@ html[data-jp-theme="okinawa"] .forest-scenery .jp-scene-okinawa {
     fill: #78c8dc;
 }
 
-.forest-scenery .fs-water-deep {
-    fill: #5ab0c8;
-}
-
 .forest-scenery .fs-water-ripple {
     stroke: rgba(255, 255, 255, 0.65);
     stroke-width: 1.8;
@@ -936,11 +926,6 @@ html[data-jp-theme="okinawa"] .forest-scenery .jp-scene-okinawa {
 .nightMode .forest-scenery .fs-water,
 .night_mode .forest-scenery .fs-water {
     fill: #1f5064;
-}
-
-.nightMode .forest-scenery .fs-water-deep,
-.night_mode .forest-scenery .fs-water-deep {
-    fill: #153c4d;
 }
 
 .nightMode .forest-scenery .fs-water-ripple,
@@ -2831,10 +2816,6 @@ html.is-ankidesktop .info-overlay {
     touch-action: none !important;
 }
 
-.order-overlay {
-    z-index: 110;
-}
-
 .settings-modal,
 .info-modal {
     box-sizing: border-box;
@@ -3242,26 +3223,22 @@ html.is-ankidesktop .info-overlay {
     fill-opacity: 1;
 }
 
-.fi-coral,
-.pi-coral {
+.fi-coral {
     fill: #df6d53;
     fill-opacity: 1;
 }
 
-.fi-gold,
-.pi-gold {
+.fi-gold {
     fill: #edb25e;
     fill-opacity: 1;
 }
 
-.fi-mint,
-.pi-mint {
+.fi-mint {
     fill: #86bd91;
     fill-opacity: 1;
 }
 
-.fi-teal,
-.pi-sky {
+.fi-teal {
     fill: #6ea6b5;
     fill-opacity: 1;
 }
@@ -3271,14 +3248,12 @@ html.is-ankidesktop .info-overlay {
     fill-opacity: 1;
 }
 
-.fi-rose,
-.pi-rose {
+.fi-rose {
     fill: #eb94ad;
     fill-opacity: 1;
 }
 
-.fi-lavender,
-.pi-lavender {
+.fi-lavender {
     fill: #b392e0;
     fill-opacity: 1;
 }
@@ -3290,33 +3265,25 @@ html.is-ankidesktop .info-overlay {
 }
 
 .nightMode .fi-coral,
-.night_mode .fi-coral,
-.nightMode .pi-coral,
-.night_mode .pi-coral {
+.night_mode .fi-coral {
     fill: #e37258;
     fill-opacity: 1;
 }
 
 .nightMode .fi-gold,
-.night_mode .fi-gold,
-.nightMode .pi-gold,
-.night_mode .pi-gold {
+.night_mode .fi-gold {
     fill: #f0b65e;
     fill-opacity: 1;
 }
 
 .nightMode .fi-mint,
-.night_mode .fi-mint,
-.nightMode .pi-mint,
-.night_mode .pi-mint {
+.night_mode .fi-mint {
     fill: #82bf90;
     fill-opacity: 1;
 }
 
 .nightMode .fi-teal,
-.night_mode .fi-teal,
-.nightMode .pi-sky,
-.night_mode .pi-sky {
+.night_mode .fi-teal {
     fill: #70abbd;
     fill-opacity: 1;
 }
@@ -3328,17 +3295,13 @@ html.is-ankidesktop .info-overlay {
 }
 
 .nightMode .fi-rose,
-.night_mode .fi-rose,
-.nightMode .pi-rose,
-.night_mode .pi-rose {
+.night_mode .fi-rose {
     fill: #ec96b0;
     fill-opacity: 1;
 }
 
 .nightMode .fi-lavender,
-.night_mode .fi-lavender,
-.nightMode .pi-lavender,
-.night_mode .pi-lavender {
+.night_mode .fi-lavender {
     fill: #b694e6;
     fill-opacity: 1;
 }
@@ -3482,61 +3445,6 @@ html.is-ankidesktop .info-overlay {
 .nightMode .accent-swatch,
 .night_mode .accent-swatch {
     border-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Primary color swatches — Japanese Nature Theme preview colors */
-.primary-swatch-neutral {
-    background: linear-gradient(135deg, #7da7bd 50%, #dff3e4 50%);
-}
-
-.primary-swatch-warm {
-    background: linear-gradient(135deg, #e0aa28 50%, #f2ebd4 50%);
-}
-
-.primary-swatch-cool {
-    background: linear-gradient(135deg, #64b5c9 50%, #daf0f2 50%);
-}
-
-.primary-swatch-sepia {
-    background: linear-gradient(135deg, #e05a32 50%, #f5e8cf 50%);
-}
-
-.primary-swatch-rose {
-    background: linear-gradient(135deg, #f498b8 50%, #f7e6ee 50%);
-}
-
-.primary-swatch-sage {
-    background: linear-gradient(135deg, #4eb862 50%, #dff0d8 50%);
-}
-
-.nightMode .primary-swatch-neutral,
-.night_mode .primary-swatch-neutral {
-    background: linear-gradient(135deg, #325f7a 50%, #1c3329 50%);
-}
-
-.nightMode .primary-swatch-warm,
-.night_mode .primary-swatch-warm {
-    background: linear-gradient(135deg, #b88818 50%, #2c301e 50%);
-}
-
-.nightMode .primary-swatch-cool,
-.night_mode .primary-swatch-cool {
-    background: linear-gradient(135deg, #2e7588 50%, #1b313a 50%);
-}
-
-.nightMode .primary-swatch-sepia,
-.night_mode .primary-swatch-sepia {
-    background: linear-gradient(135deg, #b84220 50%, #30261c 50%);
-}
-
-.nightMode .primary-swatch-rose,
-.night_mode .primary-swatch-rose {
-    background: linear-gradient(135deg, #b85c7c 50%, #30202b 50%);
-}
-
-.nightMode .primary-swatch-sage,
-.night_mode .primary-swatch-sage {
-    background: linear-gradient(135deg, #2f7d44 50%, #1d3423 50%);
 }
 
 .accent-option span {
@@ -4086,15 +3994,13 @@ ruby rt {
     box-shadow: var(--filter-soft);
 }
 
-.onyomi-label,
-.label-on {
+.onyomi-label {
     background: var(--tag-on-bg);
     color: var(--tag-on-text);
     border: 1.5px solid var(--border-color);
 }
 
-.kunyomi-label,
-.label-kun {
+.kunyomi-label {
     background: var(--tag-kun-bg);
     color: var(--tag-kun-text);
     border: 1.5px solid var(--border-color);
@@ -4407,8 +4313,7 @@ ruby rt {
     transform: translateY(-1px);
 }
 
-.pitfall-card-top,
-.pitfall-card-head {
+.pitfall-card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -4467,16 +4372,14 @@ ruby rt {
     border: 1px solid var(--border-color);
 }
 
-.pitfall-title,
-.pitfall-card-title {
+.pitfall-title {
     font-size: 14px;
     font-weight: 800;
     color: var(--text-main);
     line-height: 1.3;
 }
 
-.pitfall-desc,
-.pitfall-card-desc {
+.pitfall-desc {
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.5;
@@ -4537,12 +4440,6 @@ ruby rt {
     -webkit-tap-highlight-color: transparent;
 }
 
-.tree-node.show-tooltip {
-    border-color: var(--accent);
-    box-shadow: var(--filter-hover);
-    transform: translateY(-1px);
-}
-
 .tree-node-char {
     font-size: 28px;
     font-weight: 400;
@@ -4552,20 +4449,6 @@ ruby rt {
     justify-content: center;
     width: 100%;
     height: 100%;
-}
-
-.primitive-tag-icon {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 18px;
-    height: 18px;
-    color: var(--stroke-warn1);
-    fill: currentColor;
-    background-color: var(--surface);
-    border-radius: 50%;
-    padding: 2px;
-    z-index: 5;
 }
 
 .tree-node-tooltip {
@@ -4597,22 +4480,7 @@ ruby rt {
     border-top-color: var(--text-main);
 }
 
-.tree-node.show-tooltip .tree-node-tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
 /* Overrides sticky :hover on touch devices when explicitly dismissed */
-.tree-node.tooltip-dismissed {
-    border-color: var(--border-color) !important;
-    box-shadow: var(--filter-soft) !important;
-    transform: none !important;
-}
-
-.tree-node.tooltip-dismissed .tree-node-tooltip {
-    opacity: 0 !important;
-    transform: translateX(-50%) translateY(4px) !important;
-}
 
 @media (hover: hover),
 (any-hover: hover) {
@@ -4653,6 +4521,8 @@ ruby rt {
     border-radius: var(--border-rad-main);
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.06), var(--filter-soft);
     overflow: hidden;
+    touch-action: none !important;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .tree-container.tree-graph-mode .tree-children {
@@ -4691,11 +4561,6 @@ ruby rt {
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
-}
-
-.tree-container.tree-graph-mode {
-    touch-action: none !important;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .tree-container.tree-graph-mode.tree-focused {
@@ -5197,33 +5062,6 @@ ruby rt {
 .night_mode .custom-scroll-thumb:hover,
 .night_mode .custom-scroll-thumb.dragging {
     background: color-mix(in srgb, var(--title-border) 82%, transparent);
-}
-
-/* --------------------------------------------------------------------------
-   9. Custom SVG Icon Styling (Radicals)
-   -------------------------------------------------------------------------- */
-.custom-svg-icon {
-    width: 32px;
-    height: 32px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.custom-svg-icon.kanji-stroke-format {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-}
-
-.custom-svg-icon.font-stroke-format {
-    fill: currentColor;
-    stroke: var(--surface) !important;
-    stroke-width: 3.5% !important;
-    stroke-linejoin: round;
-    transform: scale(1, -1);
-    shape-rendering: geometricPrecision;
 }
 
 /* --------------------------------------------------------------------------

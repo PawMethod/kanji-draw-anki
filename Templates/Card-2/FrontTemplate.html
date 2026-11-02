@@ -4285,6 +4285,7 @@
 <!-- SVG filter definitions for neon glow -->
 <svg id="neon-defs" style="width:0;height:0;position:absolute;overflow:hidden" aria-hidden="true">
     <defs>
+        <!-- Full neon: Desktop/Android (two blur passes) -->
         <filter id="neon-glow" filterUnits="userSpaceOnUse" x="-10" y="-10" width="129" height="129">
             <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1" />
             <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2" />
@@ -4303,20 +4304,26 @@
                 <feMergeNode in="SourceGraphic" />
             </feMerge>
         </filter>
-        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1" />
+        <!-- Lite neon: WebKit/AnkiMobile (single blur, less GPU load) -->
+        <filter id="neon-glow-lite" filterUnits="userSpaceOnUse" x="-12" y="-12" width="130" height="130">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b2" />
             <feMerge>
+                <feMergeNode in="b2" />
                 <feMergeNode in="b1" />
                 <feMergeNode in="SourceGraphic" />
             </feMerge>
         </filter>
-        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-8" y="-8" width="125" height="125">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b1" />
+        <filter id="neon-glow-lite-dk" filterUnits="userSpaceOnUse" x="-12" y="-12" width="130" height="130">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b2" />
             <feMerge>
+                <feMergeNode in="b2" />
                 <feMergeNode in="b1" />
                 <feMergeNode in="SourceGraphic" />
             </feMerge>
         </filter>
+
     </defs>
 </svg>
 
@@ -4382,7 +4389,7 @@
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
-        var VERSION = '2.0.0';
+        var VERSION = '2.0.1';
         var W = window, D = document;
         var prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4395,7 +4402,7 @@
         var MLEVEL = { low: 0.45, mid: 0.7, high: 1 };
         var CH = {
             add9: [0, 4, 7, 14], maj7: [0, 4, 7, 11], maj9: [0, 4, 11, 14], six9: [0, 4, 9, 14], maj: [0, 4, 7, 12],
-            m7: [0, 3, 7, 10], m9: [0, 3, 10, 14], sus2: [0, 2, 7, 12], sus4: [0, 5, 7, 10], ms11: [0, 4, 11, 18]
+            m7: [0, 3, 7, 10], m9: [0, 3, 10, 14], sus2: [0, 2, 7, 12], sus4: [0, 5, 7, 10]
         };
         // key = tonic pitch class, scale = Japanese pentatonic mode.
         // Progression entries: [scale degree, stack] builds the chord from the scale itself (STACKS);
@@ -4636,7 +4643,7 @@
         function sampleBuf(kind, z) {
             var k = kind + z;
             if (!SMP[k]) {
-                var sr = 22050, d = kind === 'piano' ? renderPiano(sr, z) : MODAL[kind] ? renderModal(sr, z, MODAL[kind]) : renderString(sr, z, kind), b = ctx.createBuffer(1, d.length, sr);
+                var sr = (MODAL[kind] && MODAL[kind].sr) || 22050, d = kind === 'piano' ? renderPiano(sr, z) : MODAL[kind] ? renderModal(sr, z, MODAL[kind]) : renderString(sr, z, kind), b = ctx.createBuffer(1, d.length, sr);
                 b.getChannelData(0).set(d); SMP[k] = b;
             }
             return SMP[k];
@@ -4689,15 +4696,14 @@
         }
         // Tuned percussion as modal partials [frequency ratio, amplitude, T60 s]; decay shortens with pitch above ref
         var MODAL = {
-            // Singing bowl and temple bell: close partial pairs beat slowly (the typical wobble)
-            bowl: { dur: 16, ref: 60, click: 0.015, att: 0.004, parts: [[1, 1, 24], [1.0035, 0.7, 21], [2.76, 0.5, 12], [2.768, 0.35, 11], [5.4, 0.22, 6.5], [5.42, 0.15, 6], [8.93, 0.08, 3.5], [13.3, 0.03, 2]] },
-            kane: { dur: 20, ref: 48, click: 0.06, att: 0.006, parts: [[0.5, 0.9, 26], [0.503, 0.6, 24], [1, 1, 16], [1.006, 0.6, 15], [1.19, 0.4, 9], [1.5, 0.35, 7], [2, 0.3, 5], [2.62, 0.2, 3.5], [3.3, 0.1, 2]] },
+            // Singing bowl and temple bell: close partial pairs beat slowly (the typical wobble); long and low, so half the sample rate suffices
+            bowl: { dur: 16, ref: 60, sr: 11025, click: 0.015, att: 0.004, parts: [[1, 1, 24], [1.0035, 0.7, 21], [2.76, 0.5, 12], [2.768, 0.35, 11], [5.4, 0.22, 6.5], [5.42, 0.15, 6], [8.93, 0.08, 3.5], [13.3, 0.03, 2]] },
+            kane: { dur: 20, ref: 48, sr: 11025, click: 0.06, att: 0.006, parts: [[0.5, 0.9, 26], [0.503, 0.6, 24], [1, 1, 16], [1.006, 0.6, 15], [1.19, 0.4, 9], [1.5, 0.35, 7], [2, 0.3, 5], [2.62, 0.2, 3.5], [3.3, 0.1, 2]] },
             // Suikinkutsu: a drop rings the buried clay jar
             suikin: { dur: 5, ref: 84, click: 0.05, att: 0.002, parts: [[1, 1, 4.5], [1.006, 0.4, 4], [2.27, 0.35, 2.2], [3.9, 0.15, 1.2], [5.6, 0.06, 0.6]] },
             celesta: { dur: 3, ref: 72, click: 0.08, parts: [[1, 1, 2.6], [2, 0.14, 1.2], [3.01, 0.05, 0.7], [5.42, 0.04, 0.25]] },
             vibes: { dur: 3.5, ref: 72, click: 0.04, parts: [[1, 1, 4], [4, 0.22, 1.3], [10.1, 0.05, 0.35]] },
             glass: { dur: 4, ref: 79, click: 0.02, att: 0.012, parts: [[1, 1, 4.5], [2.32, 0.32, 2.6], [4.25, 0.12, 1.5], [6.63, 0.05, 0.8]] },
-            kalimba: { dur: 2.2, ref: 72, click: 0.1, parts: [[1, 1, 1.9], [5.9, 0.16, 0.25], [11.4, 0.05, 0.1]] },
             marimba: { dur: 1.8, ref: 60, click: 0.12, parts: [[1, 1, 1], [3.93, 0.24, 0.28], [9.2, 0.06, 0.08]] },
             ep: { dur: 3, ref: 60, click: 0.03, parts: [[1, 1, 3.2], [2, 0.32, 1.6], [3, 0.1, 0.9], [4, 0.05, 0.5], [7.1, 0.1, 0.12]] },
             wood: { dur: 0.35, ref: 84, click: 0.25, parts: [[1, 1, 0.09], [2.42, 0.5, 0.05], [4.07, 0.22, 0.03], [6.7, 0.08, 0.02]] }
@@ -5028,7 +5034,7 @@
             var vo = VOPT[theme] || VOPT.neutral; this.V = chance(0.4) ? vo[0] : pick(vo);
             this.B = 60 / (gn.bpm * (this.dark ? 0.94 : 1) * rnd(0.95, 1.05)); this.barDur = this.B * 4; this.cpb = gn.cpb;
             this.offset = 0; this.bar0 = 0; this.bar = 0; this.nextT = 0; this.endT = null; this.ending = false; this.ci = 0; this.forcePad = true;
-            this.prevVoice = null; this.hiVoice = null; this.lastMel = null; this.lastKoto = null; this.busyUntil = 0; this.motif = null; this.lhPat = null;
+            this.prevVoice = null; this.lastKoto = null; this.busyUntil = 0; this.lhPat = null;
             this.cont = []; this.fv = null; this.hist = []; this.E = null; this.Ee = null; this.accent = false;
             var sp = this.sp = SPACE[theme] || SPACE.neutral;
             this.dry = gainN(gn.trim); this.nat = gainN(gn.nat); this.wet = gainN(sp.verb); this.nwet = gainN(gn.nat); this.echo = gainN(sp.echo);
@@ -5116,7 +5122,7 @@
         function span(s, rel) { return (s.cpb - (rel % s.cpb)) * s.barDur; }
         var SEC = 8, FORMS = [['A', 'A', 'B', 'A', 'C', 'B'], ['A', 'B', 'A', 'B', 'C', 'A'], ['A', 'A', 'B', 'C', 'B', 'A'], ['A', 'B', 'C', 'A', 'B', 'B']];
         // Each pass recolours some chords: Western types swap colour tones, scale chords drop or keep their colour tone
-        var COLORS = { maj7: ['maj9', 'add9', 'six9'], maj9: ['maj7', 'six9'], add9: ['maj9', 'six9', 'maj7'], six9: ['maj9', 'add9'], maj: ['add9'], m7: ['m9'], m9: ['m7'], sus2: ['sus4', 'add9'], sus4: ['sus2'], ms11: ['maj9'] };
+        var COLORS = { maj7: ['maj9', 'add9', 'six9'], maj9: ['maj7', 'six9'], add9: ['maj9', 'six9', 'maj7'], six9: ['maj9', 'add9'], maj: ['add9'], m7: ['m9'], m9: ['m7'], sus2: ['sus4', 'add9'], sus4: ['sus2'] };
         function colorize(p) {
             return p.map(function (c) {
                 if (!chance(0.35)) return c;
@@ -5161,7 +5167,7 @@
         function zenBar(s, rel, t0, cs) {
             var B = s.B, oki = s.theme === 'okinawa', E = s.Ee, sec = s.sec;
             if (cs) {
-                var ch = chordNotes(s, s.ci), cl = voiceChord(ch.concat([s.k + s.scale[1], s.k + s.scale[3]]), s.hiVoice, 67, 86).slice(0, 5); s.hiVoice = cl;
+                var ch = chordNotes(s, s.ci);
                 sho(s.d, t0, shoVoice(s, ch), span(s, rel), 0.022, { wet: 0.7 });
                 sub(s.d, t0, low(ch[0]), span(s, rel), 0.06);
             }
@@ -6244,6 +6250,8 @@
         }
         return _cookieCache;
     }
+    // Copy of the settings object stored in the _k cookie
+    function _kCookieObj() { var o = _parseCookies()._kObj, r = {}; for (var k in o) r[k] = o[k]; return r; }
     function safeGetItem(key, fallback) {
         if (window._ks && window._ks[key] !== undefined) return window._ks[key];
         try {
@@ -6261,8 +6269,7 @@
         if (location.protocol === 'file:') {
             try { document.cookie = key + '=' + encodeURIComponent(value) + ';path=/;max-age=31536000;SameSite=Lax'; } catch (e) { }
         } else {
-            var obj = {};
-            try { var cs = document.cookie.split('; '); for (var j = 0; j < cs.length; j++) { if (cs[j].indexOf('_k=') === 0) { obj = JSON.parse(decodeURIComponent(cs[j].substring(3))); break; } } } catch (e) { }
+            var obj = _kCookieObj();
             obj[key] = value;
             var encoded = '_k=' + encodeURIComponent(JSON.stringify(obj)) + ';path=/;max-age=31536000;SameSite=Lax';
             if (encoded.length < 3800) { document.cookie = encoded; }
@@ -6272,7 +6279,7 @@
     }
     // Android CookieManager only persists cookies on lifecycle events - flush proactively
     if (location.protocol !== 'file:') {
-        var _fc = function () { if (!window._ks) return; var o = {}; try { var c = document.cookie.split('; '); for (var i = 0; i < c.length; i++) { if (c[i].indexOf('_k=') === 0) { o = JSON.parse(decodeURIComponent(c[i].substring(3))); break; } } } catch (e) { } for (var k in window._ks) o[k] = window._ks[k]; var enc = '_k=' + encodeURIComponent(JSON.stringify(o)) + ';path=/;max-age=31536000;SameSite=Lax'; if (enc.length < 3800) document.cookie = enc; };
+        var _fc = function () { if (!window._ks) return; var o = _kCookieObj(); for (var k in window._ks) o[k] = window._ks[k]; var enc = '_k=' + encodeURIComponent(JSON.stringify(o)) + ';path=/;max-age=31536000;SameSite=Lax'; if (enc.length < 3800) document.cookie = enc; };
         if (window._kanjiFlushVis) document.removeEventListener('visibilitychange', window._kanjiFlushVis);
         if (window._kanjiFlushPH) { window.removeEventListener('pagehide', window._kanjiFlushPH); window.removeEventListener('beforeunload', window._kanjiFlushPH); }
         window._kanjiFlushVis = function () { if (document.hidden) _fc(); };
@@ -6281,6 +6288,59 @@
         window.addEventListener('pagehide', window._kanjiFlushPH);
         window.addEventListener('beforeunload', window._kanjiFlushPH);
     }
+
+    // --- Shared helpers [SHARED c1-front/c2-front] (the back side gets them via {{FrontSide}}) ---
+    // Anki marks dark mode on <html> or <body>, as nightMode or (older versions) night_mode
+    window._kanjiIsDark = function () {
+        var h = document.documentElement.classList, b = document.body ? document.body.classList : h;
+        return h.contains('nightMode') || h.contains('night_mode') || b.contains('nightMode') || b.contains('night_mode');
+    };
+    window._kanjiSwFactor = function (v) {
+        if (v === undefined) v = safeGetItem('kanjiThemeStrokeWidth', 'normal');
+        return v === 'thin' ? 0.7 : v === 'thick' ? 1.4 : 1;
+    };
+    // Gel pen: colour of a reference path (computed style, else inline/attribute, else the theme colour)
+    window._kanjiGelColor = function (refPath, cache) {
+        var c = cache && cache.get(refPath);
+        if (c) return c;
+        try { c = getComputedStyle(refPath).stroke; } catch (e) { c = ''; }
+        if (!c || c === 'none' || c === 'transparent' || /^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(c)) {
+            c = refPath.style.stroke || refPath.getAttribute('stroke') || (refPath.classList.contains('hint-active') ? 'var(--stroke-hint)' : 'var(--stroke-active)');
+        }
+        if (cache) cache.set(refPath, c);
+        return c;
+    };
+    // Gel pen: wide translucent copy behind the stroke (returned, not inserted) plus a faint ink spread on the stroke
+    window._kanjiMakeGelHalo = function (refPath, color, swf, opacity) {
+        var halo = refPath.cloneNode(false), w = String(8.5 * swf);
+        halo.setAttribute('class', 'gel-halo');
+        halo.setAttribute('stroke-width', w);
+        halo.setAttribute('stroke-linecap', 'round');
+        halo.setAttribute('stroke-linejoin', 'round');
+        halo.style.cssText = '';
+        halo.style.setProperty('stroke-width', w, 'important');
+        halo.style.setProperty('opacity', opacity, 'important');
+        halo.style.setProperty('stroke', color, 'important');
+        halo.removeAttribute('filter');
+        refPath.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + color + ')');
+        refPath.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + color + ')');
+        return halo;
+    };
+    // A pen tap is followed by a delayed synthetic click: swallow that one click
+    window._kanjiEatNextClick = function () {
+        var h = function (ev) {
+            ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault();
+            document.removeEventListener('click', h, true);
+            if (window._kanjiModalEatClick === h) window._kanjiModalEatClick = null;
+        };
+        window._kanjiModalEatClick = h;
+        document.addEventListener('click', h, true);
+        clearTimeout(window._kanjiModalEatTimer);
+        window._kanjiModalEatTimer = setTimeout(function () {
+            document.removeEventListener('click', h, true);
+            if (window._kanjiModalEatClick === h) window._kanjiModalEatClick = null;
+        }, 300);
+    };
 
     document.querySelectorAll('#svg-bg path').forEach(path => {
         path.classList.add('svg-stroke');
@@ -6769,40 +6829,16 @@
         }, 200);
     }
 
-    // Local gel halo implementation for Card 2.
-    // Card 2 shows all strokes at once (stroke-complete), so halos must be
-    // created here — cannot rely on window._kanjiAddGelHaloToPath being set
-    // (it's only available if Card 1 was loaded in the same WebView session).
+    // Card 2 shows all strokes at once, so it adds the gel halos itself (Card 1 adds them per drawn stroke)
     var _c2GelColorCache = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
     function _c2AddGelHaloToPath(refPath) {
         if (!refPath || !refPath.parentNode) return;
         var prev = refPath.previousElementSibling;
         if (prev && prev.classList.contains('gel-halo')) prev.parentNode.removeChild(prev);
-        var strokeColor = _c2GelColorCache && _c2GelColorCache.get(refPath);
-        if (!strokeColor) {
-            try { strokeColor = getComputedStyle(refPath).stroke; } catch (e) { strokeColor = ''; }
-            if (!strokeColor || strokeColor === 'none' || strokeColor === 'transparent' || /^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(strokeColor)) {
-                strokeColor = refPath.style.stroke || refPath.getAttribute('stroke') || 'var(--stroke-active)';
-            }
-            if (_c2GelColorCache) _c2GelColorCache.set(refPath, strokeColor);
-        }
-        var sw0 = safeGetItem('kanjiThemeStrokeWidth', 'normal');
-        var swf0 = sw0 === 'thin' ? 0.7 : sw0 === 'thick' ? 1.4 : 1;
-        var isDk0 = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
-        var isColored0 = strokeColor !== 'var(--stroke-active)' && !!refPath.style.stroke;
-        var haloOp0 = (isDk0 && isColored0) ? '0.22' : '0.15';
-        refPath.style.setProperty('filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
-        refPath.style.setProperty('-webkit-filter', 'drop-shadow(0 0 0.3px ' + strokeColor + ')');
-        var halo = refPath.cloneNode(false);
-        halo.setAttribute('class', 'gel-halo');
-        halo.setAttribute('stroke-width', String(8.5 * swf0));
-        halo.setAttribute('stroke-linecap', 'round');
-        halo.setAttribute('stroke-linejoin', 'round');
-        halo.style.cssText = '';
-        halo.style.setProperty('stroke-width', String(8.5 * swf0), 'important');
-        halo.style.setProperty('opacity', haloOp0, 'important');
-        halo.style.setProperty('stroke', strokeColor, 'important');
-        halo.removeAttribute('filter');
+        var strokeColor = window._kanjiGelColor(refPath, _c2GelColorCache);
+        // Coloured strokes (colour by stroke order) need a stronger halo on dark backgrounds
+        var isColored = strokeColor !== 'var(--stroke-active)' && !!refPath.style.stroke;
+        var halo = window._kanjiMakeGelHalo(refPath, strokeColor, window._kanjiSwFactor(), (window._kanjiIsDark() && isColored) ? '0.22' : '0.15');
         refPath.parentNode.insertBefore(halo, refPath);
     }
 
@@ -6815,7 +6851,7 @@
             var accent = safeGetItem('kanjiThemeAccent', globalConf.themeAccent || 'green');
             var fontSize = safeGetItem('kanjiThemeFontSize', globalConf.themeFontSize || 'normal');
             var strokeWidth = safeGetItem('kanjiThemeStrokeWidth', globalConf.themeStrokeWidth || 'normal');
-            document.documentElement.style.setProperty('--kd-sw', strokeWidth === 'thin' ? '0.7' : strokeWidth === 'thick' ? '1.4' : '1');
+            document.documentElement.style.setProperty('--kd-sw', String(window._kanjiSwFactor(strokeWidth)));
 
             // --- 1. Dark/Light mode override ---
             var root = document.documentElement;
@@ -6904,15 +6940,15 @@
             // Apply SVG filters and gel halos to reference paths.
             // In Card 2 all paths are stroke-complete from init, so halos must be
             // managed here on every theme change (unlike C1 where they're added per revealed stroke).
-            var _dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode');
+            var _dk = window._kanjiIsDark();
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             var _neonRef = _wk
                 ? (_dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)')
                 : (_dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)');
-            var _swfTheme = strokeWidth === 'thin' ? 0.7 : strokeWidth === 'thick' ? 1.4 : 1;
+            var _swfTheme = window._kanjiSwFactor(strokeWidth);
             var _refStrokeW = String((strokeStyle === 'gel' || strokeStyle === 'ink' ? 4.5 : 4) * _swfTheme);
-            if (document.getElementById('is-back-side-marker') && typeof window.kanjiSettingsGlobalHandlerC2 === 'function') {
-                try { window.kanjiSettingsGlobalHandlerC2(); } catch (e) { }
+            if (document.getElementById('is-back-side-marker') && typeof window.kanjiSettingsGlobalHandler === 'function') {
+                try { window.kanjiSettingsGlobalHandler(); } catch (e) { }
             } else {
                 [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                     if (!svgEl) return;
@@ -7015,7 +7051,7 @@
         _themeApplying = false;
         applyThemeSettings();
         // Immediately refresh back-side features (stroke colors, gel halos, etc.)
-        if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
+        if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
         if (category === 'mode') _scheduleDeferredThemeCheck();
     }
 
@@ -7175,8 +7211,8 @@
             refreshSettingsRadios();
         }
         // Always trigger back-side re-render so live preview is consistent
-        if (window.kanjiSettingsGlobalHandlerC2) {
-            try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
+        if (window.kanjiSettingsGlobalHandler) {
+            try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
         }
     }
 
@@ -7201,7 +7237,12 @@
             if (mainPage) { mainPage.style.display = ''; mainPage.classList.add('active'); }
             _currentSettingsPage = 'settings-main';
         }
-        if (_gearBtn) _gearBtn.classList.add('no-hover-fx');
+        // Gear tap feedback — delay no-hover-fx so animation is visible
+        if (_gearBtn) {
+            _gearBtn.classList.remove('gear-tap');
+            requestAnimationFrame(function () { _gearBtn.classList.add('gear-tap'); });
+            setTimeout(function () { _gearBtn.classList.add('no-hover-fx'); }, 300);
+        }
         if (_settingsModal) _settingsModal.scrollTop = 0;
         _settingsOverlay.classList.add('active');
         updateModeDisabledSettings();
@@ -7225,7 +7266,7 @@
         _cachedGlobalConf = null;
         applyThemeSettings();
         updateGridDisplay();
-        if (window.kanjiSettingsGlobalHandlerC2) try { window.kanjiSettingsGlobalHandlerC2(); } catch (ex) { }
+        if (window.kanjiSettingsGlobalHandler) try { window.kanjiSettingsGlobalHandler(); } catch (ex) { }
         _scheduleDeferredThemeCheck();
     }
 
@@ -7359,15 +7400,15 @@
 
     // --- Scroll Lock & iOS Detection [SHARED with c1-front] ---
 
-    if (window.kanjiTouchMoveModalHandlerC2) document.removeEventListener('touchmove', window.kanjiTouchMoveModalHandlerC2, { passive: false });
-    window.kanjiTouchMoveModalHandlerC2 = function (e) {
+    if (window.kanjiTouchMoveModalHandler) document.removeEventListener('touchmove', window.kanjiTouchMoveModalHandler, { passive: false });
+    window.kanjiTouchMoveModalHandler = function (e) {
         if (e.target.closest('.settings-modal') || e.target.closest('.info-modal') || e.target.closest('.settings-overlay') || e.target.closest('.info-overlay')) return;
         if (document.body.classList.contains('no-scroll')) e.preventDefault();
     };
-    document.addEventListener('touchmove', window.kanjiTouchMoveModalHandlerC2, { passive: false });
+    document.addEventListener('touchmove', window.kanjiTouchMoveModalHandler, { passive: false });
 
-    if (window.kanjiTouchStartHandlerC2) document.removeEventListener('touchstart', window.kanjiTouchStartHandlerC2, { passive: false });
-    window.kanjiTouchStartHandlerC2 = function (e) {
+    if (window.kanjiTouchStartHandler) document.removeEventListener('touchstart', window.kanjiTouchStartHandler, { passive: false });
+    window.kanjiTouchStartHandler = function (e) {
         if (!document.body.classList.contains('no-scroll')) return;
         if (e.touches.length > 1) { e.preventDefault(); return; }
         if (e.target.closest('.settings-overlay') || e.target.closest('.info-overlay') ||
@@ -7377,7 +7418,7 @@
             e.target.closest('input') || e.target.closest('label')) return;
         e.preventDefault();
     };
-    document.addEventListener('touchstart', window.kanjiTouchStartHandlerC2, { passive: false });
+    document.addEventListener('touchstart', window.kanjiTouchStartHandler, { passive: false });
 
     // Detect iOS early - must run BEFORE checkScrollability()
     // so .is-ankimobile body.no-scroll { position:fixed } takes effect
@@ -7440,9 +7481,9 @@
     // Run synchronously to prevent flicker on card load
     checkScrollability();
 
-    if (window.kanjiResizeHandlerC2) window.removeEventListener('resize', window.kanjiResizeHandlerC2);
-    window.kanjiResizeHandlerC2 = checkScrollability;
-    window.addEventListener('resize', window.kanjiResizeHandlerC2);
+    if (window.kanjiResizeHandler) window.removeEventListener('resize', window.kanjiResizeHandler);
+    window.kanjiResizeHandler = checkScrollability;
+    window.addEventListener('resize', window.kanjiResizeHandler);
 
     // --- Button Feedback & Stylus Fixes [SHARED with c1-front] ---
 
@@ -7464,11 +7505,7 @@
                     window._kanjiModalEatClick = null;
                 }
                 if (handler === 'gear') openSettings(e);
-                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                window._kanjiModalEatClick = _eatHandler;
-                document.addEventListener('click', _eatHandler, true);
-                clearTimeout(window._kanjiModalEatTimer);
-                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                window._kanjiEatNextClick();
             });
         }
         addPenTopBtn(_gearBtn, 'gear');
@@ -7650,11 +7687,7 @@
                 } else {
                     target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
                 }
-                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                window._kanjiModalEatClick = _eatHandler;
-                document.addEventListener('click', _eatHandler, true);
-                clearTimeout(window._kanjiModalEatTimer);
-                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                window._kanjiEatNextClick();
             });
         });
     }

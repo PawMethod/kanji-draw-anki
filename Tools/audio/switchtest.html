@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="kd-audio-engine.js"></script>
+<script>
+// Real-time check: flipping cards every 0.8 s, then lingering
+(async function () {
+    var A = window.__kdAudio, wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    var log = function (k, v) { console.log('KDR ' + k + ' ' + JSON.stringify(v)); };
+    A.configure({ level: 'mid', music: 'zen', musicLevel: 'mid', immersion: 'low' });
+    A.setScene('neutral', false); A.cardShown(false);
+    await wait(3000);
+    log('start', A.state().scenes);
+    var th = ['rose', 'tokyo', 'sepia', 'okinawa', 'cool', 'sage'], maxN = 0;
+    for (var i = 0; i < th.length; i++) {
+        A.setScene(th[i], false); A.cardShown(false);
+        await wait(800);
+        maxN = Math.max(maxN, A.state().scenes.length);
+    }
+    log('flipping', { maxScenes: maxN, now: A.state().scenes });
+    await wait(2500);
+    log('settled', A.state().scenes);
+    A.setScene('warm', true); A.cardShown(false);
+    await wait(2500);
+    log('second', A.state().scenes);
+    A.configure({ music: 'piano' });
+    await wait(300);
+    log('genre', A.state().scenes);
+    console.log('KDR DONE');
+})();
+</script>

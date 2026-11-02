@@ -225,23 +225,20 @@ test('CSS defines nightMode overrides for key variables', () => {
     'Missing dark mode CSS classes');
 });
 
-// ── 7. Primary Swatch CSS Classes ──
+// ── 7. Landscape picker ──
 
-console.log('\n── 7. Primary swatch dark mode classes ──');
+console.log('\n── 7. Landscape picker offers every theme ──');
 
-const primaryNames = ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage'];
+const landscapes = ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa'];
 
-for (const name of primaryNames) {
-  test(`CSS has .primary-swatch-${name} class`, () => {
-    assert(cssContent.includes(`.primary-swatch-${name}`),
-      `Missing .primary-swatch-${name} CSS class`);
-  });
-
-  test(`CSS has nightMode override for .primary-swatch-${name}`, () => {
-    const hasNightMode = cssContent.includes(`.nightMode .primary-swatch-${name}`) ||
-                         cssContent.includes(`.night_mode .primary-swatch-${name}`);
-    assert(hasNightMode, `Missing dark mode override for .primary-swatch-${name}`);
-  });
+for (const card of ['Card-1', 'Card-2']) {
+  const html = fs.readFileSync(path.join(__dirname, '..', '..', 'Templates', card, 'FrontTemplate.html'), 'utf8');
+  for (const name of landscapes) {
+    test(`${card}: landscape "${name}" has a picker option and a scene`, () => {
+      assert(html.includes(`name="theme-primary" value="${name}"`), `Missing picker option for ${name}`);
+      assert(html.includes(`jp-scene-${name}`), `Missing scenery for ${name}`);
+    });
+  }
 }
 
 // ── 8. Font Size Class Coverage ──

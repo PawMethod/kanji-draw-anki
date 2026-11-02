@@ -354,9 +354,7 @@
     // Re-apply font-size on back side (class toggle + dynamic style for WKWebView)
     (function () {
         try {
-            var fs = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeFontSize', 'normal')
-                : (localStorage.getItem('kanjiThemeFontSize') || 'normal');
+            var fs = safeGetItem('kanjiThemeFontSize', 'normal');
             document.documentElement.classList.remove('font-small', 'font-large');
             if (fs === 'small') document.documentElement.classList.add('font-small');
             else if (fs === 'large') document.documentElement.classList.add('font-large');
@@ -393,9 +391,7 @@
     // Re-apply stroke style class on back side (CSS needs it on .kanji-container)
     (function () {
         try {
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (ss === 'soft') ss = 'gel';
             window._kanjiStrokeStyle = ss;
             var kc = document.querySelector('.kanji-container');
@@ -405,12 +401,9 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var swVal = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
-                : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
-            var swf0 = swVal === 'thin' ? 0.7 : swVal === 'thick' ? 1.4 : 1;
+            var swf0 = window._kanjiSwFactor();
             document.documentElement.style.setProperty('--kd-sw', String(swf0));
-            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+            var dk = window._kanjiIsDark();
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
@@ -1691,12 +1684,12 @@
         rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
         if (!rawData) return;
 
-        if (window._kanjiTreeOutsideHandlerC2) {
-            document.removeEventListener('touchstart', window._kanjiTreeOutsideHandlerC2, true);
-            document.removeEventListener('pointerdown', window._kanjiTreeOutsideHandlerC2, true);
-            document.removeEventListener('click', window._kanjiTreeOutsideHandlerC2, true);
+        if (window._kanjiTreeOutsideHandler) {
+            document.removeEventListener('touchstart', window._kanjiTreeOutsideHandler, true);
+            document.removeEventListener('pointerdown', window._kanjiTreeOutsideHandler, true);
+            document.removeEventListener('click', window._kanjiTreeOutsideHandler, true);
         }
-        window._kanjiTreeOutsideHandlerC2 = e => {
+        window._kanjiTreeOutsideHandler = e => {
             const t = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
             if (!t || !t.closest) return;
             if (!t.closest('.tree-container')) {
@@ -1704,9 +1697,9 @@
                 if (window._kanjiClearTreeSelection) window._kanjiClearTreeSelection();
             }
         };
-        document.addEventListener('touchstart', window._kanjiTreeOutsideHandlerC2, true);
-        document.addEventListener('pointerdown', window._kanjiTreeOutsideHandlerC2, true);
-        document.addEventListener('click', window._kanjiTreeOutsideHandlerC2, true);
+        document.addEventListener('touchstart', window._kanjiTreeOutsideHandler, true);
+        document.addEventListener('pointerdown', window._kanjiTreeOutsideHandler, true);
+        document.addEventListener('click', window._kanjiTreeOutsideHandler, true);
         try {
             window._kanjiRenderPrimitiveTree(rawData, target);
         } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Primitive konnten nicht geladen werden.</span>`; }
@@ -2060,7 +2053,7 @@
 
     (() => {
         // Null stale handler from previous card before registering a new one
-        window.kanjiSettingsGlobalHandlerC2 = null;
+        window.kanjiSettingsGlobalHandler = null;
         if (!document.getElementById('is-back-side-marker')) return;
         const svgBg = document.getElementById('svg-bg');
         if (!svgBg) return;
@@ -2105,8 +2098,8 @@
             if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
             if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
 
-            const errStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiErrors', null) : null;
-            const strokeStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiCurrentStroke', null) : null;
+            const errStr = safeGetItem('kanjiErrors', null);
+            const strokeStr = safeGetItem('kanjiCurrentStroke', null);
 
             if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
             if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
@@ -2154,9 +2147,7 @@
 
             // Apply stroke-style-specific inline effects
             // Re-read from storage (not stale window._kanjiStrokeStyle from page load)
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (ss === 'soft') ss = 'gel';
             window._kanjiStrokeStyle = ss;
             // Clean old gel halos before re-applying any style
@@ -2170,10 +2161,7 @@
                 document.body.classList.contains('night_mode');
             var wk = (ss === 'neon') ? document.documentElement.classList.contains('is-ankimobile') : false;
             var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
-            var swVal2 = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeWidth', 'normal')
-                : (localStorage.getItem('kanjiThemeStrokeWidth') || 'normal');
-            var swf = swVal2 === 'thin' ? 0.7 : swVal2 === 'thick' ? 1.4 : 1;
+            var swf = window._kanjiSwFactor();
             document.documentElement.style.setProperty('--kd-sw', String(swf));
             paths.forEach((path, i) => {
                 // Full reset
@@ -2241,11 +2229,9 @@
         // Run synchronously to prevent flicker on card load
         applyBackFeatures();
 
-        window.kanjiSettingsGlobalHandlerC2 = () => {
+        window.kanjiSettingsGlobalHandler = () => {
             // Re-read and apply stroke style class (may have changed)
-            var _ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (_ss === 'soft') _ss = 'gel';
             window._kanjiStrokeStyle = _ss;
             var _kc = document.querySelector('.kanji-container');
@@ -2442,10 +2428,7 @@
                 } else {
                     target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
                 }
-                var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                window._kanjiModalEatClick = _eatHandler;
-                document.addEventListener('click', _eatHandler, true);
-                window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                window._kanjiEatNextClick();
             });
         });
     }
@@ -2472,10 +2455,7 @@
                     if (handler === 'info') openInfoModal(e);
                     else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
-                    var _eatHandler = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; };
-                    window._kanjiModalEatClick = _eatHandler;
-                    document.addEventListener('click', _eatHandler, true);
-                    window._kanjiModalEatTimer = setTimeout(function () { document.removeEventListener('click', _eatHandler, true); if (window._kanjiModalEatClick === _eatHandler) window._kanjiModalEatClick = null; }, 300);
+                    window._kanjiEatNextClick();
                 });
             });
         }

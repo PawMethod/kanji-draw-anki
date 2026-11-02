@@ -5,7 +5,7 @@
  * modifies ALL scoring thresholds in both guided and free mode.
  */
 
-const { resamplePoints, discreteFrechet, smoothInput } = require('./algorithms');
+const { resamplePoints, discreteFrechet, smoothInput, avgPointDist, segmentAngles } = require('./algorithms');
 
 // ── Test framework ──────────────────────────────────────────────────────
 let _passed = 0, _failed = 0;
@@ -19,24 +19,7 @@ function assertClose(a, b, eps, msg) {
 function section(name) { console.log('\n' + name); }
 
 // ── Re-implement scoring logic from template for isolated testing ───────
-// Mirrors evaluateStroke() from Card-1/FrontTemplate.html lines 1789–1880.
-
-function avgPointDist(a, b) {
-    const n = Math.min(a.length, b.length);
-    let sum = 0;
-    for (let i = 0; i < n; i++) sum += Math.hypot(a[i].x - b[i].x, a[i].y - b[i].y);
-    return sum / n;
-}
-
-function segmentAngles(pts, nSec) {
-    const step = (pts.length - 1) / nSec;
-    const angles = [];
-    for (let s = 0; s < nSec; s++) {
-        const si = Math.round(s * step), ei = Math.round((s + 1) * step);
-        angles.push(Math.atan2(pts[ei].y - pts[si].y, pts[ei].x - pts[si].x));
-    }
-    return angles;
-}
+// Mirrors evaluateStroke() in Card-1/FrontTemplate.html (search: const evaluateStroke).
 
 /**
  * Guided-mode scoring, extracted to a pure function.

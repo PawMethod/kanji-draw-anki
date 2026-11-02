@@ -377,7 +377,7 @@ test('C1-Back makeStrokePath handles gel style with halo via appendStrokePath', 
 
 test('C1-Back makeStrokePath handles neon style', () => {
   assert(c1b.includes("case 'neon':"), 'makeStrokePath must have neon case');
-  assert(c1b.includes('nightMode'), 'neon must check dark mode for radius');
+  assert(c1b.includes('_kanjiIsDark()'), 'neon must check dark mode for radius');
 });
 
 test('C1-Back makeStrokePath handles ink style', () => {
@@ -448,12 +448,14 @@ test('applyThemeSettings resets opacity on svg-bg/svg-guide paths', () => {
   assert(svgBgReset, 'Must clear inline opacity on svg-bg/svg-guide paths');
 });
 
-test('_addGelHaloToPath uses getComputedStyle first (not fallback)', () => {
-  const fn = c1f.match(/const _addGelHaloToPath[\s\S]*?insertBefore/);
-  assert(fn, 'Must have _addGelHaloToPath');
+test('gel halo colour uses getComputedStyle first (not fallback)', () => {
+  const add = c1f.match(/const _addGelHaloToPath[\s\S]*?insertBefore/);
+  assert(add && add[0].includes('window._kanjiGelColor('), '_addGelHaloToPath must resolve its colour via _kanjiGelColor');
+  const fn = c1f.match(/window\._kanjiGelColor = function[\s\S]*?\n {4}\};/);
+  assert(fn, 'Must have window._kanjiGelColor');
   const csIdx = fn[0].indexOf('getComputedStyle');
   const styleIdx = fn[0].indexOf('refPath.style.stroke');
-  assert(csIdx < styleIdx, 'getComputedStyle must be tried BEFORE inline style fallback');
+  assert(csIdx >= 0 && csIdx < styleIdx, 'getComputedStyle must be tried BEFORE inline style fallback');
 });
 
 test('applyPathStyle resets stroke-width to 4 before gel sets 4.5', () => {
@@ -523,10 +525,10 @@ test('updateThemeSetting calls kanjiSettingsGlobalHandler immediately (C1)', () 
   assert(fn[0].includes('kanjiSettingsGlobalHandler'), 'Must call kanjiSettingsGlobalHandler on every setting change');
 });
 
-test('updateThemeSetting calls kanjiSettingsGlobalHandlerC2 immediately (C2)', () => {
+test('updateThemeSetting calls kanjiSettingsGlobalHandler immediately (C2)', () => {
   const fn = c2f.match(/function updateThemeSetting[\s\S]*?\n    \}/);
   assert(fn, 'Must have updateThemeSetting');
-  assert(fn[0].includes('kanjiSettingsGlobalHandlerC2'), 'Must call kanjiSettingsGlobalHandlerC2 on every setting change');
+  assert(fn[0].includes('kanjiSettingsGlobalHandler'), 'Must call kanjiSettingsGlobalHandler on every setting change');
 });
 
 test('C1-Back applyBackFeatures re-reads stroke style from storage', () => {
