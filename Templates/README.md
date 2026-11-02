@@ -9,9 +9,9 @@ Entwickler-Dokumentation zum Notiztyp **KanjiDraw**. Die Bedienung erklärt das 
 
 | Datei | Größe | Inhalt | Karte |
 |---|---|---|---|
-| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 300 Z. / 627 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
+| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 500 Z. / 638 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
 | [Card-1/BackTemplate.html](Card-1/BackTemplate.html) | ~4 200 Z. / 245 KB | Rückseite der Zeichenkarte: Strichfarben, Freimodus-Auswertung, Info-Modal | [Card-1/README.md](Card-1/README.md) |
-| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~7 700 Z. / 535 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
+| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~7 900 Z. / 545 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
 | [Card-2/BackTemplate.html](Card-2/BackTemplate.html) | ~2 600 Z. / 133 KB | Rückseite der Erkennungskarte | [Card-2/README.md](Card-2/README.md) |
 | [Styling.css](Styling.css) | ~6 000 Z. / 148 KB | Gemeinsames Stylesheet aller vier Templates | unten |
 
@@ -89,51 +89,60 @@ Eingebettet werden beide mit `python3 Tools/audio/embed_audio.py`. Das Skript is
 
 | Zeilen | Abschnitt (Suchbegriff) | Inhalt |
 |---|---|---|
-| 1–84 | `DEINE DAUERHAFTEN EINSTELLUNGEN` | Benutzer-Defaults als CSS-Variablen |
-| 85–279 | `1. CSS Variables & Theming` | Farbvariablen Tag/Nacht, AnkiWeb-Sonderregeln (158–226), Nachtfarben (227) |
-| 280–818 | `2. Global Layout & Typography` | `html`/`body`/`.card` (345), Hintergrundebene `.card::before` (379), Einblend-Animationen `kdFadeIn`/`kdRiseIn` (389), Landschaftsbühne `.forest-scenery` (436), Tag/Nacht-Ebenen (457), Nachtszene (661) |
-| 819–1973 | `2b. Selectable Japanese Regional Landscapes` | Sichtbarkeit `.jp-scene-<theme>` (824–863), gemeinsame Paletten (864), danach je Theme: rose 991, neutral 1097, sepia 1137, cool 1288, warm 1394, sage 1508, hokkaido 1614, tokyo 1762, okinawa 1868 |
-| 1974–2009 | Button-Reset, `.card-title` | Kartentitel als Pille |
-| 2010–2339 | `3. Kanji Canvas Container & SVG Grid` | Zeichenfläche, Ebenen, `#touch-shield` (2086), Warnbanner AnkiDroid-Gesten (2102) und fehlendes Add-on (2174) |
-| 2340–2433 | `3a. Stroke Style Filters` | Gelstift, Tusche, Neon, Farbfelder |
-| 2434–2474 | `3b. Completion Celebration` | Abschlussfeier |
-| 2475–2764 | `4. UI Controls & Buttons` | Aktionsknöpfe, Zahnrad (2680), Tipp-Feedback |
-| 2765–3058 | `5. Modals & Overlays` | Einstellungs- und Info-Overlay, Banner-Header, Icons |
-| 3059–3563 | `5b. Settings Navigation` | Seiten-Slides, Segment-Schalter C1/C2, Kategoriekarten, Pastell-Icons, Akzent-Swatches (3393), Unterseiten-Header (3462) |
-| 3564–3641 | `6. Stroke Logic` | Strich-Zustände, Hinweis- und Rückspul-Animation |
-| 3642–4504 | `7. Backside Elements` | Info-Tags, Sprechblase, Story-Hervorhebungen `.kd-*` (ab 3773), Wortbeispiele, Info-Knopf, Aktionsleiste (4135), Schreibfehler-Seite (4203) |
-| 4505–5005 | `7b. Kanji-Study-style Primitive Tree` | Radikal-Baum, Zoom-Knöpfe (4585), Vollbild (4634) |
-| 5006–5066 | `Custom Overlay Scrollbars` | eigene Scrollleiste in Modals |
-| 5067–5245 | `10. Free Canvas Mode` | `.setting-disabled` (5071), Handschrift-Overlay, Strichzahl-Badges, Umschalter Handschrift/SVG |
-| 5246–5485 | `11. Font Size Scaling` | `.font-small` / `.font-large` |
-| 5486–5540 | `12. WKWebView (AnkiMobile) GPU-safety overrides` | – |
-| 5541–5794 | `12b. Start-Point Hint, Stroke-Order Player, Grade Recommendation` | Startpunkt-Puls, Strichfolge-Knopf und -Player |
-| 5795–5927 | `S-Pen / Stylus explicit hover` | `.spen-hover` |
-| 5928–5950 | `13. Reduced Motion` | `prefers-reduced-motion`, Anki-Option „Reduce motion“ |
-| 5951–Ende | `S-Pen / Stylus hover fix` | – |
+| 1–87 | `DEINE DAUERHAFTEN EINSTELLUNGEN` | Benutzer-Defaults als CSS-Variablen |
+| 88–282 | `1. CSS Variables & Theming` | Farbvariablen Tag/Nacht, AnkiWeb-Sonderregeln (161–229), Nachtfarben (230) |
+| 283–821 | `2. Global Layout & Typography` | `html`/`body`/`.card` (348), Hintergrundebene `.card::before` (382), Einblend-Animationen `kdFadeIn`/`kdRiseIn` (392), Landschaftsbühne `.forest-scenery` (439), Tag/Nacht-Ebenen (460), Nachtszene (664) |
+| 822–1976 | `2b. Selectable Japanese Regional Landscapes` | Sichtbarkeit `.jp-scene-<theme>` (827–866), gemeinsame Paletten (867), danach je Theme: rose 994, neutral 1100, sepia 1140, cool 1291, warm 1397, sage 1511, hokkaido 1617, tokyo 1765, okinawa 1871 |
+| 1977–2012 | Button-Reset, `.card-title` | Kartentitel als Pille |
+| 2013–2342 | `3. Kanji Canvas Container & SVG Grid` | Zeichenfläche, Ebenen, `#touch-shield` (2089), Warnbanner AnkiDroid-Gesten (2105) und fehlendes Add-on (2177) |
+| 2343–2436 | `3a. Stroke Style Filters` | Gelstift, Tusche, Neon, Farbfelder |
+| 2437–2477 | `3b. Completion Celebration` | Abschlussfeier |
+| 2478–2767 | `4. UI Controls & Buttons` | Aktionsknöpfe, Zahnrad (2683), Tipp-Feedback |
+| 2768–3061 | `5. Modals & Overlays` | Einstellungs- und Info-Overlay, Banner-Header, Icons |
+| 3062–3566 | `5b. Settings Navigation` | Seiten-Slides, Segment-Schalter C1/C2, Kategoriekarten, Pastell-Icons, Akzent-Swatches (3396), Unterseiten-Header (3465) |
+| 3567–3644 | `6. Stroke Logic` | Strich-Zustände, Hinweis- und Rückspul-Animation |
+| 3645–4507 | `7. Backside Elements` | Info-Tags, Sprechblase, Story-Hervorhebungen `.kd-*` (ab 3776), Wortbeispiele, Info-Knopf, Aktionsleiste (4138), Schreibfehler-Seite (4206) |
+| 4508–5008 | `7b. Kanji-Study-style Primitive Tree` | Radikal-Baum, Zoom-Knöpfe (4588), Vollbild (4637) |
+| 5009–5069 | `Custom Overlay Scrollbars` | eigene Scrollleiste in Modals |
+| 5070–5248 | `10. Free Canvas Mode` | `.setting-disabled` (5074), Handschrift-Overlay, Strichzahl-Badges, Umschalter Handschrift/SVG |
+| 5249–5488 | `11. Font Size Scaling` | `.font-small` / `.font-large` |
+| 5489–5543 | `12. WKWebView (AnkiMobile) GPU-safety overrides` | – |
+| 5544–5811 | `12b. Start-Point Hint, Stroke-Order Player, Grade Recommendation` | Startpunkt-Puls, Strichfolge-Knopf und -Player |
+| 5812–5944 | `S-Pen / Stylus explicit hover` | `.spen-hover` |
+| 5945–5967 | `13. Reduced Motion` | `prefers-reduced-motion`, Anki-Option „Reduce motion“ |
+| 5968–Ende | `S-Pen / Stylus hover fix` | – |
 
 ## Audio-Engine (`[KD-AUDIO-ENGINE]`)
 
-Die Quelle ist [../Tools/audio/kd-audio-engine.js](../Tools/audio/kd-audio-engine.js) (1756 Z., Version 2.0.1). Zeile N der Quelle steht in Card-1/FrontTemplate.html in Zeile N + 4413 und in Card-2/FrontTemplate.html in Zeile N + 4374.
+Die Quelle ist [../Tools/audio/kd-audio-engine.js](../Tools/audio/kd-audio-engine.js) (1871 Z., Version 1.0.0). Zeile N der Quelle steht in Card-1/FrontTemplate.html in Zeile N + 4442 und in Card-2/FrontTemplate.html in Zeile N + 4403.
+
+Musikalisches Prinzip: ein **Repertoire echter Lieder** (`SONGS`: gemeinfreie Klassiker wie Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato, Nanatsu no Ko sowie eigene Stücke in Ryukyu-, Min'yō-, In- und Yo-Tonleiter). Jedes Lied läuft als Vorspiel → Strophen mit wechselnder Behandlung (`buildPlan`: verziert, Heterophonie, Ruf/Antwort, oktaviert, Fragment) → Zwischenspiel → Nachspiel → Ma. **Die Landschaft färbt nur** (`retheme`/`applyWant`: Instrumentenpaar ab dem nächsten Abschnitt, Raum, Helligkeit, Naturkulisse, Schlagwerk); Lied, Tonart und Tempo bleiben, auch beim Genrewechsel und nach einem Seiten-Reload (`snapshot`/`kdAudioState`). **Jo-Ha-Kyū** (`PROG`, `stageNow`) und der Lernfluss (`energy`) steuern die Dichte; Treffer-Töne werden auf Achtel gerastert und bei schnellem Zeichnen zusammengefasst (`slot`, `dens`).
+
+Neues Lied hinzufügen: Eintrag in `SONGS` (`mel` als `Halbtöne:Schläge`, `ch` ein Akkord je Takt), dann im Selbsttest `songs` prüfen – die Zeile muss `[]` zeigen.
 
 | Quelle | Abschnitt | Wichtigste Namen |
 |---|---|---|
-| 1–25 | Kopf, Versionsprüfung | `VERSION`, alte Instanz → `dispose()` |
-| 26–124 | `── Tables` | `THEMES` (Tonleitern, Akkordfolgen), `ALT`, `STACKS`, `NAT` (Natur je Theme), `GENRES`, `SK` (Stiftklänge), `SPACE` (Raum), `VOPT`/`VREG`/`VK`/`STR` (Instrumente je Landschaft), `RES` |
-| 125–144 | `── State` | `cfg`, `cur`, `scenes`, Timer, Szenenwechsel-Sperre (`DWELL`, `MINGAP`) |
-| 145–243 | `── Context & master graph` | `ensureCtx`, `makeNoise`, `makeIR`, `buildGraph` (Hall, Echo, Kompressor) |
-| 244–264 | `── Node helpers` | `gainN`, `filt`, `oscN`, `send` |
-| 265–608 | `── Instruments` | Sample-Cache `SMP`/`warm`; Renderer `renderPiano`, `MODAL` (Glocken, Schalen, Suikinkutsu; `sr` je Instrument), `renderString` (Koto, Shamisen, Biwa …); Spieler `tone`, `pluck`, `flute`, `sho`, `piano`, `bowl`, `singBowl`, `kane`, `suikin` … |
-| 609–650 | `── Harmony` | `chordOf`, `scaleNotes`, `voiceChord`, `pivotIndex` |
-| 651–759 | `── Scenes` | `Scene` (Überblenden, `scheduleBar`, Songform A/B/C) |
-| 760–984 | `── Genres` | `ambientBar`, `zenBar`, `pianoBar`, `lofiBar`; Phrasen `JP`, `jphrase`, `jvoice`, `lead` |
-| 985–1266 | `── Nature soundscapes` | `natureStart`/`natureBar`, Tierstimmen, `EV`-Tabelle |
-| 1267–1357 | `── Flow` | `energy`, `answer`, `ghost`, `penTick`, `arpLayer` |
-| 1358–1423 | `── Music control` | `syncMusic` (inkl. Wechselsperre), `pump`, `tick` |
-| 1424–1556 | `── Public operations` | `configure`, `setScene`, `cardShown`, `FX` (UI-Klänge), `strokeResult`, `complete` |
-| 1557–1672 | `── Stroke sounds` | `strokeStart`/`buildStroke`/`strokeMove`/`strokeEnd` |
-| 1673–1703 | `── Lifecycle` | Geste/Sichtbarkeit, Leerlauf-Suspend, `dispose` |
-| 1704–1756 | `── Offline render`, API | `offline` (Tests), `api` → `window.__kdAudio` |
+| 1–32 | Kopf, Versionsprüfung | `VERSION`, alte Instanz → `dispose()` |
+| 33–109 | `── Tables` | `THEMES` (Helligkeit, Signatur), `NAT` (Natur je Theme), `GENRES` (Tempofaktor, Pegel), `SK` (Stiftklänge), `SPACE` (Raum), `VOPT`/`VREG`/`VK`/`STR` (Instrumentenpaar je Landschaft), `RES`, `CYCLE`/`STAGE_AT`/`SETTLE` |
+| 110–193 | `── Repertoire` | `CHT`, `SONGS` (Melodie, Akkorde, Quelle, passende Landschaften), `parseSong`, `songErrors` |
+| 194–216 | `── State` | `cfg`, `cur`, `players`, `PROG` (Jo-Ha-Kyū), `AQ`/`RATE` (Antwort-Raster), `SFORCE` (Test) |
+| 217–313 | `── Context & master graph` | `ensureCtx`, `makeNoise`, `makeIR`, `buildGraph` (Hall, Echo, Kompressor) |
+| 314–334 | `── Node helpers` | `gainN`, `filt`, `oscN`, `send` |
+| 335–644 | `── Instruments` | Sample-Cache `SMP`/`warm`; Renderer `renderPiano`, `MODAL`, `renderString`; Spieler `tone`, `pluck`, `flute`, `sho`, `piano`, `bowl`, `singBowl`, `kane`, `suikin`, `taiko` … |
+| 645–682 | `── Harmony helpers` | `tonesIn`, `scaleNotes`, `voiceChord`, `neighbor`, `chordAt`/`ctones` |
+| 683–844 | `── Player` | `pickSong`, `buildPlan`, `Player` (`begin`, `load`, `newSong`, `step`, `retheme`/`applyWant`, `scheduleBar`, `snapshot`/`save`), `warmFor` |
+| 845–856 | `── Jo-ha-kyū` | `stageNow`, `advance`, `room` (Stimmenbudget) |
+| 857–921 | `── Melody` | `regBase` (Register je Instrument), `playNote` (Verzierungen), `phrase`, `harmonics`, `melody` (Behandlungen, Zwischen-/Nachspiel) |
+| 922–983 | `── Signature percussion` | `SIG` (Koto, Shamisen, Suikin, Biwa, Fūrin, Mokugyo, Taiko, Hyōshigi, Paranku), `sigHit` |
+| 984–998 | `── Shared layers` | `shimmer` (Stufe 4), `rhythmOn` |
+| 999–1090 | `── Genres` | `ambientBar`, `zenBar`, `pianoBar`, `lofiBar` (Begleitung je Akkord, 3/4 und 4/4) |
+| 1091–1387 | `── Nature soundscapes` | `Nature` (eine Schicht je Landschaft, überblendet), `natureBar`, Tierstimmen, `EV`-Tabelle |
+| 1388–1471 | `── Flow` | `energy`, `slot`/`dens`, `answer`, `contourNote`, `ghost`, `penTick`, `accentBar`, `stageHit` |
+| 1472–1532 | `── Music control` | `syncMusic` (Landschaft → `retheme`, Genre → neuer Player), `pump`, `tick` |
+| 1533–1661 | `── Public operations` | `configure`, `setScene`, `cardShown`, `FX` (UI-Klänge), `strokeResult`, `complete` (Sararin-Lauf, `advance`) |
+| 1662–1779 | `── Stroke sounds` | `strokeStart`/`buildStroke`/`strokeMove`/`strokeEnd`, `duck` |
+| 1780–1810 | `── Lifecycle` | Geste/Sichtbarkeit, Leerlauf-Suspend, `dispose` |
+| 1811–1871 | `── Offline render`, API | `offline` (Tests; Optionen `song`, `E`, `stage`, `flow`, `done`, `noEvents`), `api` → `window.__kdAudio` |
 
 Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an („Klang & Musik: Bridge“ in den FrontTemplates).
 
@@ -142,7 +151,6 @@ Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an („Klang &
 **Behoben**
 - Die Audio-Werkzeuge liegen jetzt im Repository unter [../Tools/audio/](../Tools/audio/README.md).
 - Speicher der Audio-Samples: Glocken (`kane`) und Klangschalen (`bowl`) werden mit 11 025 Hz statt 22 050 Hz gerendert. Das halbiert ihren Anteil am Sample-Cache; hörbar ist das bei diesen tiefen Klängen nicht.
-- Dead Code in der Engine entfernt: `MODAL.kalimba`, `CH.ms11`, die Szenenfelder `hiVoice`/`lastMel`/`motif` und die ungenutzte Berechnung in `zenBar`.
 - Gemeinsame Helfer statt Kopien (siehe oben). Abgeglichene Blöcke zwischen den Karten: siehe [Card-2/README.md](Card-2/README.md#abgleich-mit-card-1).
 - CSS: Selektoren ohne Verwendung entfernt:
   - `.fs-sparkle`, `.fs-water-deep`, `.order-overlay`
@@ -154,8 +162,8 @@ Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an („Klang &
 - Die doppelte Regel `.tree-container.tree-graph-mode` ist zusammengeführt.
 
 **Offen** (bewusst nicht angefasst)
-1. **Jede Karte parst ~600 KB HTML, auf der Rückseite noch einmal**, wegen `{{FrontSide}}`. Allein die neun Landschaften sind ~207 KB SVG (Card-1 Z. 1483–4281). Sichtbar ist immer nur eine, die anderen hängen mit `display:none` im DOM.
+1. **Jede Karte parst ~600 KB HTML, auf der Rückseite noch einmal**, wegen `{{FrontSide}}`. Allein die neun Landschaften sind ~207 KB SVG (Card-1 Z. 1511–4309). Sichtbar ist immer nur eine, die anderen hängen mit `display:none` im DOM.
    - Möglicher Weg: Szenen als `<template id="scene-…">` ablegen und nur die aktive klonen.
    - Das berührt Theme-Wechsel, Vorab-Palette und Nachtmodus auf allen Plattformen. Ohne Sichtprüfung auf AnkiMobile und AnkiDroid ist es zu riskant.
-2. **CSS:** `.card` und `.gear-btn` stehen zusätzlich in Media-Queries (2706, 2713). Das sind gewollte Überschreibungen, keine Duplikate.
+2. **CSS:** `.card` und `.gear-btn` stehen zusätzlich in Media-Queries (2709, 2716). Das sind gewollte Überschreibungen, keine Duplikate.
    - Die 18 einzelnen `@media (hover: hover)`-Blöcke stehen jeweils bei ihrem Bauteil. Ein Zusammenlegen würde die Lesbarkeit verschlechtern und ändert nichts an der Geschwindigkeit.

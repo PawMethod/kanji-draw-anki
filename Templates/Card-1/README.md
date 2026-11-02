@@ -12,56 +12,56 @@ Allgemeines zu Aufbau, Speicher und gemeinsamen Blöcken steht in [../README.md]
 |---|---|---|
 | 1–38 | Theme-Vorauswahl vor dem ersten Paint, gecachte Palette, Einblenden der Karte `[SHARED]` | `_kdPreRoll`, `kdPal:`, `kd-enter` |
 | 39–47 | Zahnrad-Knopf | `.gear-btn`, `openSettings` |
-| 48–1480 | Einstellungs-Overlay | `#settings-overlay` |
+| 48–1508 | Einstellungs-Overlay | `#settings-overlay` |
 | 52–198 | ‑ Übersicht (Kategoriekarten, Segment C1/C2) | `#settings-main` |
 | 200–326 | ‑ Hilfslinien | `#page-grid` |
-| 328–530 | ‑ Vorderseite (nur C1) | `#page-front` |
-| 532–678 | ‑ Rückseite | `#page-back` |
-| 680–757 | ‑ Vorderseite Erkennen (nur C2, hier ausgeblendet) | `#page-front-c2` |
-| 759–1186 | ‑ Erscheinungsbild (Hell/Dunkel, Akzent, Landschaft, Strichfarbe/-stil/-breite, Schrift, Hand) | `#page-theme` |
-| 1187–1479 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]`, `#page-sound` |
-| 1483–4281 | Landschaften (~207 KB SVG): Tag-/Nachtebenen 1486/1512, Szenen `neutral` 1565, `warm` 1943, `cool` 2280, `sepia` 2547, `rose` 2792, `sage` 3121, `hokkaido` 3407, `tokyo` 3728, `okinawa` 3980, Glühwürmchen 4225 | `.forest-scenery`, `jp-scene-<theme>` |
-| 4282 | Kartentitel | `.card-title` (`{{Bedeutung}}`) |
-| 4285–4328 | Neon-Filter (Desktop/Android und WebKit-lite) | `#neon-defs` |
-| 4329–4375 | Zeichenfläche: Raster, Referenzpfade, Canvas (AnkiMobile), Zeichenebene, Touch-Schild, Banner | `.kanji-container`, `#grid-bg`, `#svg-bg` (`{{SVGPfade}}`), `#draw-canvas`, `#draw-layer`, `#touch-shield`, `#legacy-gesture-warning`, `#addon-hint` |
-| 4376–4406 | Aktionsknöpfe | `#button-reveal`, `#button-undo`, `#button-skip`, `#button-reset` |
-| 4407–4411 | Aufdeck-Ersatz (Plattformen ohne `pycmd`) | `#answer-fallback` |
-| 4412–6171 | Audio-Engine (**generiert**, siehe [../README.md](../README.md#audio-engine-kd-audio-engine)) | `[KD-AUDIO-ENGINE]` |
+| 328–558 | ‑ Vorderseite (nur C1) | `#page-front` |
+| 560–706 | ‑ Rückseite | `#page-back` |
+| 708–785 | ‑ Vorderseite Erkennen (nur C2, hier ausgeblendet) | `#page-front-c2` |
+| 787–1214 | ‑ Erscheinungsbild (Hell/Dunkel, Akzent, Landschaft, Strichfarbe/-stil/-breite, Schrift, Hand) | `#page-theme` |
+| 1215–1507 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]`, `#page-sound` |
+| 1511–4309 | Landschaften (~207 KB SVG): Tag-/Nachtebenen 1514/1540, Szenen `neutral` 1593, `warm` 1971, `cool` 2308, `sepia` 2575, `rose` 2820, `sage` 3149, `hokkaido` 3435, `tokyo` 3756, `okinawa` 4008, Glühwürmchen 4253 | `.forest-scenery`, `jp-scene-<theme>` |
+| 4310 | Kartentitel | `.card-title` (`{{Bedeutung}}`) |
+| 4313–4356 | Neon-Filter (Desktop/Android und WebKit-lite) | `#neon-defs` |
+| 4357–4403 | Zeichenfläche: Raster, Referenzpfade, Canvas (AnkiMobile), Zeichenebene, Touch-Schild, Banner | `.kanji-container`, `#grid-bg`, `#svg-bg` (`{{SVGPfade}}`), `#draw-canvas`, `#draw-layer`, `#touch-shield`, `#legacy-gesture-warning`, `#addon-hint` |
+| 4404–4434 | Aktionsknöpfe | `#button-reveal`, `#button-undo`, `#button-skip`, `#button-reset` |
+| 4435–4439 | Aufdeck-Ersatz (Plattformen ohne `pycmd`) | `#answer-fallback` |
+| 4440–6314 | Audio-Engine (**generiert**, siehe [../README.md](../README.md#audio-engine-kd-audio-engine)) | `[KD-AUDIO-ENGINE]` |
 
-### Haupt-Skript (6172–9306)
+### Haupt-Skript (6315–9481)
 
 | Zeilen | Abschnitt (Suchbegriff) | Wichtigste Namen |
 |---|---|---|
-| 6194–6245 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` |
-| 6246–6267 | `AnkiDroid Legacy swipe-gesture warning` | `#legacy-gesture-warning` |
-| 6268–6284 | `Anki Desktop: addon-missing hint` | `#addon-hint` |
-| 6285–6293 | `Anti-Flicker [SHARED]` | – |
-| 6294–6347 | `Persistence Layer [SHARED]` | `_parseCookies`, `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` (Cookie sichern), `pycmd('kdp:…')` |
-| 6348–6405 | **`Shared helpers [SHARED]`** – auch für die Rückseite | `_kanjiIsDark`, `_kanjiSwFactor` (Strichbreite), `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` (Stift-Geisterklick schlucken) |
-| 6406–6699 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `_initModalScrollbars` (eigene Scrollleiste), `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `updateModeDisabledSettings`, `getGlobalConfig` |
-| 6700–6781 | Farbdefinitionen | `_accentColors`, `_primaryColors`, Strichfarben |
-| 6782–6824 | Zufalls-Landschaft, verzögerte Theme-Kontrolle | `_rollRandomTheme`, `_scheduleDeferredThemeCheck` |
-| 6825–7064 | `applyThemeSettings`: 1. Hell/Dunkel, 2. Akzent, 2b. Landschaft, 2c. Strichfarbe, 2d. Strichstil, 3. Schriftgröße, 4./5. Qt-Hintergrund | – |
-| 7065–7076 | Theme-Einstellung speichern | `updateThemeSetting` |
-| 7077–7153 | `Klang & Musik: Bridge zur Audio-Engine [SHARED]` | `_kdSnd`, `_kdSoundConf`, `applySoundSettings`, `updateSoundSetting`, UI-Klang-Delegation (`_kdSndUiBound`) |
-| 7154–7237 | `Grid Rendering [SHARED]`, Funktionsschalter | `updateGridDisplay`, `updateGridSetting`, `updateFeatureSetting` |
-| 7238–7291 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` |
-| 7292–7421 | Abwehr von Ankis Nachtmodus-Umschaltung, MediaQuery, bfcache | `_kanjiThemeObserver`, `_kanjiMQHandler`, `_kanjiPagesShowHandler` |
-| 7422–7514 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` |
-| 7515–7526 | `Cleanup stale DOM` | – |
-| 7527–7630 | `Shared Scoring Algorithms` | `window._kanjiAlgo` (`resamplePoints`, `discreteFrechet`, `smoothInput`, `hungarianMatch`, `avgPointDist`, `segmentAngles`) – auch von den Tests geladen |
-| 7631–8161 | `Drawing Engine` – Zustand und Hilfsfunktionen | `getCSSVar` 7683, `updateStartMarker` 7721, `saveState` 7755, `triggerAutoFlip` 7775, `clearDrawLayer` 7817, Strichstil/-breite 7827, Canvas (AnkiMobile) 7846, `applyPathStyle` 7907, `_addGelHaloToPath` 7949, `snapToReference` 7975, `getMousePos` 8027, `playCompletionAnimation` 8039 |
-| 8162–8501 | `HANDLER DEFINITIONS` | `startDrawing` 8168, `_renderCanvasFrame` 8236, `draw` 8273, `stopDrawing` 8301, **`evaluateStroke` 8340** (Bewertung geführter Modus), `saveFreeStrokes` 8493 |
-| 8502–8587 | `EVENT WIRING` | Pointer-/Touch-Listener auf `#draw-layer` bzw. `#touch-shield`, `_kanjiDrawCleanup` 8561 |
-| 8588–8948 | `BUTTON ACTIONS` | `revealAction`, `guidedResetAction` (Rückspul-Animation), `guidedSkipAction`, `freeUndoAction`, `freeResetAction`, `bindModeButtons` |
-| 8949–8980 | `MODE SWITCHING` | `_kanjiSwitchDrawMode` |
-| 8981–9025 | `Button Feedback & Stylus Fixes [SHARED]` | – |
-| 9026–9062 | `Stroke-Order Replay Overlay [SHARED]` | `addPenHandler` |
-| 9063–9204 | `Scroll Guards & AnkiMobile Tappable Isolation [SHARED]` | `_kanjiSetupModalTouchGuards` |
-| 9205–9246 | `Apple Pencil: pen-to-click for modal controls [SHARED]` | – |
-| 9247–9259 | `S-Pen / Stylus: backdrop-close verification [SHARED]` | `_trackBg` |
-| 9260–9301 | `Global S-Pen defense [SHARED]` | `_kanjiGlobalPenDefenseAdded`, `.spen-hover` |
-| 9302–9306 | AnkiDroid/AnkiMobile-Gesten | `userJs1`–`userJs3` (extern aufgerufen) |
+| 6337–6388 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` |
+| 6389–6410 | `AnkiDroid Legacy swipe-gesture warning` | `#legacy-gesture-warning` |
+| 6411–6427 | `Anki Desktop: addon-missing hint` | `#addon-hint` |
+| 6428–6436 | `Anti-Flicker [SHARED]` | – |
+| 6437–6490 | `Persistence Layer [SHARED]` | `_parseCookies`, `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` (Cookie sichern), `pycmd('kdp:…')` |
+| 6491–6548 | **`Shared helpers [SHARED]`** – auch für die Rückseite | `_kanjiIsDark`, `_kanjiSwFactor` (Strichbreite), `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` (Stift-Geisterklick schlucken) |
+| 6549–6850 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `_initModalScrollbars` (eigene Scrollleiste), `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `updateModeDisabledSettings`, `getGlobalConfig` |
+| 6851–6932 | Farbdefinitionen | `_accentColors`, `_primaryColors`, Strichfarben |
+| 6933–6975 | Zufalls-Landschaft, verzögerte Theme-Kontrolle | `_rollRandomTheme`, `_scheduleDeferredThemeCheck` |
+| 6976–7215 | `applyThemeSettings`: 1. Hell/Dunkel, 2. Akzent, 2b. Landschaft, 2c. Strichfarbe, 2d. Strichstil, 3. Schriftgröße, 4./5. Qt-Hintergrund | – |
+| 7216–7227 | Theme-Einstellung speichern | `updateThemeSetting` |
+| 7228–7304 | `Klang & Musik: Bridge zur Audio-Engine [SHARED]` | `_kdSnd`, `_kdSoundConf`, `applySoundSettings`, `updateSoundSetting`, UI-Klang-Delegation (`_kdSndUiBound`) |
+| 7305–7388 | `Grid Rendering [SHARED]`, Funktionsschalter | `updateGridDisplay`, `updateGridSetting`, `updateFeatureSetting` |
+| 7389–7442 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` |
+| 7443–7572 | Abwehr von Ankis Nachtmodus-Umschaltung, MediaQuery, bfcache | `_kanjiThemeObserver`, `_kanjiMQHandler`, `_kanjiPagesShowHandler` |
+| 7573–7665 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` |
+| 7666–7677 | `Cleanup stale DOM` | – |
+| 7678–7781 | `Shared Scoring Algorithms` | `window._kanjiAlgo` (`resamplePoints`, `discreteFrechet`, `smoothInput`, `hungarianMatch`, `avgPointDist`, `segmentAngles`) – auch von den Tests geladen |
+| 7782–8332 | `Drawing Engine` – Zustand und Hilfsfunktionen | `getCSSVar` 7834, `updateStartMarker` 7880, `saveState` 7926, `triggerAutoFlip` 7946, `clearDrawLayer` 7988, Strichstil/-breite 7998, Canvas (AnkiMobile) 8017, `applyPathStyle` 8078, `_addGelHaloToPath` 8120, `snapToReference` 8146, `getMousePos` 8198, `playCompletionAnimation` 8210 |
+| 8333–8675 | `HANDLER DEFINITIONS` | `startDrawing` 8339, `_renderCanvasFrame` 8408, `draw` 8445, `stopDrawing` 8473, **`evaluateStroke` 8514** (Bewertung geführter Modus), `saveFreeStrokes` 8667 |
+| 8676–8762 | `EVENT WIRING` | Pointer-/Touch-Listener auf `#draw-layer` bzw. `#touch-shield`, `_kanjiDrawCleanup` 8735 |
+| 8763–9123 | `BUTTON ACTIONS` | `revealAction`, `guidedResetAction` (Rückspul-Animation), `guidedSkipAction`, `freeUndoAction`, `freeResetAction`, `bindModeButtons` |
+| 9124–9155 | `MODE SWITCHING` | `_kanjiSwitchDrawMode` |
+| 9156–9200 | `Button Feedback & Stylus Fixes [SHARED]` | – |
+| 9201–9237 | `Stroke-Order Replay Overlay [SHARED]` | `addPenHandler` |
+| 9238–9379 | `Scroll Guards & AnkiMobile Tappable Isolation [SHARED]` | `_kanjiSetupModalTouchGuards` |
+| 9380–9421 | `Apple Pencil: pen-to-click for modal controls [SHARED]` | – |
+| 9422–9434 | `S-Pen / Stylus: backdrop-close verification [SHARED]` | `_trackBg` |
+| 9435–9476 | `Global S-Pen defense [SHARED]` | `_kanjiGlobalPenDefenseAdded`, `.spen-hover` |
+| 9477–9481 | AnkiDroid/AnkiMobile-Gesten | `userJs1`–`userJs3` (extern aufgerufen) |
 
 ## BackTemplate.html
 
@@ -108,5 +108,5 @@ Allgemeines zu Aufbau, Speicher und gemeinsamen Blöcken steht in [../README.md]
 
 **Offen** (bewusst nicht angefasst, weil ohne Sichtprüfung auf allen Plattformen riskant)
 1. Vier ähnliche Morph-Animationen auf der Rückseite (WebKit-SMIL und Desktop, je vorwärts und rückwärts, ~600 Zeilen). Eine gemeinsame `runMorph(pairs, {reverse, smil})` wäre möglich, muss aber auf AnkiMobile geprüft werden.
-2. Die Landschaften (1483–4281) werden auf Vorder- und Rückseite komplett geparst. Siehe [../README.md](../README.md#code-review-stand).
+2. Die Landschaften (1511–4309) werden auf Vorder- und Rückseite komplett geparst. Siehe [../README.md](../README.md#code-review-stand).
 3. `applyThemeSettings` stylt bei jedem Lauf alle Referenzpfade neu, auch wenn sich nichts geändert hat.

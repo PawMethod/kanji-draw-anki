@@ -12,38 +12,38 @@ Allgemeines steht in [../README.md](../README.md). Die Zeilennummern gelten für
 |---|---|---|
 | 1–38 | Theme-Vorauswahl, Palette, Einblenden `[SHARED]` | `_kdPreRoll` |
 | 39–48 | Zahnrad-Knopf | `.gear-btn` |
-| 49–1481 | Einstellungs-Overlay, startet auf Reiter C2 (`data-tab="c2"`) | `#settings-overlay` |
-| 53 / 201 / 329 / 533 / 681 / 760 | ‑ Übersicht / Hilfslinien / Vorderseite C1 (ausgeblendet) / Rückseite / **Vorderseite Erkennen** / Erscheinungsbild | `#settings-main`, `#page-grid`, `#page-front`, `#page-back`, `#page-front-c2`, `#page-theme` |
-| 1188–1480 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]` |
-| 1484–4282 | Landschaften (identisch zu Card-1) | `.forest-scenery`, `jp-scene-<theme>` |
-| 4283 | Kartentitel, versteckt | `.card-title` |
-| 4286–4329 | Neon-Filter (identisch zu Card-1) | `#neon-defs` |
-| 4330–4372 | Kanji-Anzeige: Raster, Referenzpfade, Banner (ohne Zeichenebene) | `#grid-bg`, `#svg-bg`, `#legacy-gesture-warning`, `#addon-hint` |
-| 4373–6132 | Audio-Engine (**generiert**) | `[KD-AUDIO-ENGINE]` |
+| 49–1509 | Einstellungs-Overlay, startet auf Reiter C2 (`data-tab="c2"`) | `#settings-overlay` |
+| 53 / 201 / 329 / 561 / 709 / 788 | ‑ Übersicht / Hilfslinien / Vorderseite C1 (ausgeblendet) / Rückseite / **Vorderseite Erkennen** / Erscheinungsbild | `#settings-main`, `#page-grid`, `#page-front`, `#page-back`, `#page-front-c2`, `#page-theme` |
+| 1216–1508 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]` |
+| 1512–4310 | Landschaften (identisch zu Card-1) | `.forest-scenery`, `jp-scene-<theme>` |
+| 4311 | Kartentitel, versteckt | `.card-title` |
+| 4314–4357 | Neon-Filter (identisch zu Card-1) | `#neon-defs` |
+| 4358–4400 | Kanji-Anzeige: Raster, Referenzpfade, Banner (ohne Zeichenebene) | `#grid-bg`, `#svg-bg`, `#legacy-gesture-warning`, `#addon-hint` |
+| 4401–6275 | Audio-Engine (**generiert**) | `[KD-AUDIO-ENGINE]` |
 
-### Haupt-Skript (6133–7746)
+### Haupt-Skript (6276–7897)
 
 | Zeilen | Abschnitt (Suchbegriff) | Wichtigste Namen | Gegenstück Card-1 |
 |---|---|---|---|
-| 6142–6189 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` | 6194 |
-| 6190–6217 | AnkiDroid-Gesten-Warnung, fehlendes Add-on | – | 6246, 6268 |
-| 6218–6237 | `Anti-Flicker [SHARED]` (setzt zusätzlich `stroke-complete`) | – | 6285 |
-| 6238–6291 | `Persistence Layer [SHARED]` | `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` | 6294 |
-| 6292–6350 | `Shared helpers [SHARED]` | `_kanjiIsDark`, `_kanjiSwFactor`, `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` | 6348 |
-| 6351–6428 | **`Card 2 Front: apply c2f_* feature settings`** | `_addNumbersC2F`, `applyFrontFeaturesC2` (Nummern, Farbe nach Strichfolge, Anzeigestil) | – |
-| 6429–6713 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `getGlobalConfig` 6680 | 6406 |
-| 6714–6833 | Farbdefinitionen, Zufalls-Landschaft | `_rollRandomTheme` 6795, `_scheduleDeferredThemeCheck` | 6700 |
-| 6834–6844 | **Gelstift-Halos für alle Striche** (alle sofort sichtbar), nutzt die gemeinsamen Helfer | `_c2AddGelHaloToPath` | `_addGelHaloToPath` 7949 |
-| 6845–7057 | `applyThemeSettings`, `updateThemeSetting` 7046 | – | 6825 |
-| 7058–7134 | `Klang & Musik: Bridge [SHARED]` | `_kdSnd`, `applySoundSettings` | 7077 |
-| 7135–7223 | `Grid Rendering [SHARED]`, Funktionsschalter (inkl. `c2f`-Bereich) | `updateGridDisplay`, `updateFeatureSetting` 7200 | 7154 |
-| 7224–7302 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` 7252 | 7238 |
-| 7303–7400 | Theme-Observer, MediaQuery, `Cleanup stale DOM` (7374), bfcache | `_kanjiThemeObserver`, `_kanjiPagesShowHandler` 7388 | 7292 |
-| 7401–7487 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` 7442 | 7422 |
-| 7488–7513 | `Button Feedback & Stylus Fixes [SHARED]` | `addPenTopBtn` | 8981 |
-| 7514–7655 | `Scroll Guards & AnkiMobile Tappable Isolation [SHARED]` | `_kanjiSetupModalTouchGuards` | 9063 |
-| 7656–7741 | Apple Pencil, S-Pen (Hintergrund, globale Abwehr) `[SHARED]` | `_trackBg`, `_kanjiGlobalPenDefenseAdded` | 9205–9301 |
-| 7742–7745 | Geste für AnkiDroid/AnkiMobile | `userJs1` (Card-1 hat `userJs1`–`3`) | 9302 |
+| 6285–6332 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` | 6337 |
+| 6333–6360 | AnkiDroid-Gesten-Warnung, fehlendes Add-on | – | 6389, 6411 |
+| 6361–6380 | `Anti-Flicker [SHARED]` (setzt zusätzlich `stroke-complete`) | – | 6428 |
+| 6381–6434 | `Persistence Layer [SHARED]` | `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` | 6437 |
+| 6435–6493 | `Shared helpers [SHARED]` | `_kanjiIsDark`, `_kanjiSwFactor`, `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` | 6491 |
+| 6494–6571 | **`Card 2 Front: apply c2f_* feature settings`** | `_addNumbersC2F`, `applyFrontFeaturesC2` (Nummern, Farbe nach Strichfolge, Anzeigestil) | – |
+| 6572–6864 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `getGlobalConfig` 6830 | 6549 |
+| 6865–6984 | Farbdefinitionen, Zufalls-Landschaft | `_rollRandomTheme` 6946, `_scheduleDeferredThemeCheck` | 6851 |
+| 6985–6995 | **Gelstift-Halos für alle Striche** (alle sofort sichtbar), nutzt die gemeinsamen Helfer | `_c2AddGelHaloToPath` | `_addGelHaloToPath` 8120 |
+| 6996–7208 | `applyThemeSettings`, `updateThemeSetting` 7197 | – | 6976 |
+| 7209–7285 | `Klang & Musik: Bridge [SHARED]` | `_kdSnd`, `applySoundSettings` | 7228 |
+| 7286–7374 | `Grid Rendering [SHARED]`, Funktionsschalter (inkl. `c2f`-Bereich) | `updateGridDisplay`, `updateFeatureSetting` 7351 | 7305 |
+| 7375–7453 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` 7403 | 7389 |
+| 7454–7551 | Theme-Observer, MediaQuery, `Cleanup stale DOM` (7525), bfcache | `_kanjiThemeObserver`, `_kanjiPagesShowHandler` 7539 | 7443 |
+| 7552–7638 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` 7593 | 7573 |
+| 7639–7664 | `Button Feedback & Stylus Fixes [SHARED]` | `addPenTopBtn` | 9156 |
+| 7665–7806 | `Scroll Guards & AnkiMobile Tappable Isolation [SHARED]` | `_kanjiSetupModalTouchGuards` | 9238 |
+| 7807–7892 | Apple Pencil, S-Pen (Hintergrund, globale Abwehr) `[SHARED]` | `_trackBg`, `_kanjiGlobalPenDefenseAdded` | 9380–9476 |
+| 7893–7896 | Geste für AnkiDroid/AnkiMobile | `userJs1` (Card-1 hat `userJs1`–`3`) | 9477 |
 
 ## BackTemplate.html
 

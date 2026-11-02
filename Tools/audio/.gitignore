@@ -1,2 +1,3 @@
 harness_*.html
-versions/
+# local symlink to the archived engine versions for vergleich.html
+versions
