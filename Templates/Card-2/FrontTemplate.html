@@ -525,6 +525,34 @@
                     </div>
                 </label>
             </div>
+            <div class="setting-group-title" id="start-hint-delay-title">Startpunkt-Hilfe: Zeitpunkt</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);" id="start-hint-delay-grid">
+                <label><input type="radio" name="opt-start-hint-delay" value="instant"
+                        onchange="updateFeatureSetting('startHintDelay', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="4" width="17" height="16" rx="3.2" class="fi-cream" />
+                            <circle cx="8" cy="15.5" r="3" class="fi-coral" />
+                            <path d="M15 4.5L11.5 11h3.5l-1.5 6 4.5-8h-3.5z" class="fi-gold" />
+                        </svg>
+                        <span>Sofort</span>
+                    </div>
+                </label>
+                <label><input type="radio" name="opt-start-hint-delay" value="delay"
+                        onchange="updateFeatureSetting('startHintDelay', this.value)">
+                    <div class="visual-option">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3.5" y="4" width="17" height="16" rx="3.2" class="fi-cream" />
+                            <circle cx="8" cy="15.5" r="3" class="fi-coral" />
+                            <circle cx="16" cy="9.5" r="4.5" class="fi-mint" />
+                            <path d="M16 7.3v2.2l1.6 1.2" />
+                        </svg>
+                        <span>Nach 4 s</span>
+                    </div>
+                </label>
+            </div>
             <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
                 Übersicht</div>
         </div>
@@ -6621,6 +6649,7 @@
             'opt-draw-mode': scopedGet('kanjiOptDrawMode', globalConf.drawMode),
             'opt-free-view': scopedGet('kanjiOptFreeView', globalConf.freeView),
             'opt-start-hint': scopedGet('kanjiOptStartHint', globalConf.startHint),
+            'opt-start-hint-delay': scopedGet('kanjiOptStartHintDelay', globalConf.startHintDelay),
             'opt-numbers-c2f': safeGetItem('c2f_kanjiOptNumbers', safeGetItem('c2_kanjiOptNumbers', safeGetItem('kanjiOptNumbers', globalConf.numbers || 'on'))),
             'opt-display-style-c2f': safeGetItem('c2f_kanjiOptDisplayStyle', safeGetItem('c2_kanjiOptDisplayStyle', safeGetItem('kanjiOptDisplayStyle', globalConf.displayStyle || 'standard'))),
             'theme-mode': safeGetItem('kanjiThemeMode', globalConf.themeMode || 'system'),
@@ -6668,6 +6697,12 @@
         var shGrid = document.getElementById('start-hint-grid');
         if (shTitle) shTitle.classList.toggle('setting-disabled', isFree);
         if (shGrid) shGrid.classList.toggle('setting-disabled', isFree);
+        // Zeitpunkt: only relevant when the start-point hint is on
+        var shOff = isFree || scopedGet('kanjiOptStartHint', globalConf.startHint) !== 'on';
+        var shdTitle = document.getElementById('start-hint-delay-title');
+        var shdGrid = document.getElementById('start-hint-delay-grid');
+        if (shdTitle) shdTitle.classList.toggle('setting-disabled', shOff);
+        if (shdGrid) shdGrid.classList.toggle('setting-disabled', shOff);
         // Free view (Strichansicht): disabled in guided mode
         var fvTitle = document.getElementById('free-view-title');
         var fvGrid = document.getElementById('free-view-grid');
@@ -6700,6 +6735,7 @@
             drawMode: getVar('--default-opt-draw-mode', 'guided'),
             freeView: getVar('--default-opt-free-view', 'handwriting'),
             startHint: getVar('--default-opt-start-hint', 'off'),
+            startHintDelay: getVar('--default-opt-start-hint-delay', 'instant'),
             themeMode: getVar('--default-theme-mode', 'system'),
             themeAccent: getVar('--default-theme-accent', 'green'),
             themeFontSize: getVar('--default-theme-font-size', 'normal'),

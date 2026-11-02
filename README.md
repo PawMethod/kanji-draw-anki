@@ -142,6 +142,8 @@ Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen 
 | **Echtzeit-Prüfung** | ✓ | — | An · Aus |
 | **Zeichen-Hilfe** | ✓ | — | An · Aus |
 | **Abschluss-Animation** | ✓ | — | An · Aus |
+| **Startpunkt-Hilfe** | ✓ | — | An · Aus (nur Geführt) |
+| **Startpunkt-Hilfe: Zeitpunkt** | ✓ | — | Sofort · Nach 4 s ohne Zeichnen |
 
 ### Rückseiten-Darstellung
 

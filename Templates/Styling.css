@@ -52,6 +52,9 @@
     /* Startpunkt-Hilfe (Nur Zeichnen-Karte, Geführt-Modus): 'on' (An), 'off' (Aus) */
     --default-opt-start-hint: off;
 
+    /* Startpunkt-Hilfe Zeitpunkt: 'instant' (Sofort), 'delay' (nach 4 s ohne Zeichnen) */
+    --default-opt-start-hint-delay: instant;
+
     /* --- 3. ERSCHEINUNGSBILD (Appearance) --- */
 
     /* Modus: 'system' (System), 'light' (Hell), 'dark' (Dunkel) */
@@ -5550,6 +5553,20 @@ html.is-ankimobile .rewind-anim {
     z-index: 3;
     pointer-events: none;
     overflow: visible;
+}
+
+#start-marker-layer.start-delayed {
+    animation: startFadeIn 0.6s ease-out;
+}
+
+@keyframes startFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 #start-marker-layer .start-dot {
