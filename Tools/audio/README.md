@@ -1,4 +1,4 @@
-# Tools/audio – Audio-Engine, Einbetten und Tests
+# Tools/audio – Audio-Engine, Bündeln und Tests
 
 Quellen und Prüfwerkzeuge der Audio-Engine. Was im Template landet, beschreibt [../../Templates/README.md](../../Templates/README.md#audio-engine-kd-audio-engine).
 
@@ -6,9 +6,9 @@ Quellen und Prüfwerkzeuge der Audio-Engine. Was im Template landet, beschreibt 
 
 | Datei | Zweck |
 |---|---|
-| `kd-audio-engine.js` | **Quelle** der Audio-Engine (`window.__kdAudio`, Version in `VERSION`) |
+| `src/*.js` | **Quelle** der Audio-Engine (`window.__kdAudio`), aufgeteilt in Module, Version in `src/01-base.js` (`VERSION`) |
+| `kd-audio-engine.js` | **Generiert** von [../build.py](../build.py) aus `src/` (eine IIFE). Die Testseiten laden dieses Bündel |
 | `page-sound.html` | **Quelle** der Einstellungsseite „Klang & Musik“ |
-| `embed_audio.py` | Bettet beide Quellen zwischen die Marker `[KD-AUDIO-ENGINE]` und `[KD-SOUND-PAGE]` in beiden FrontTemplates ein (idempotent) |
 | `check_scripts.py` | Syntaxprüfung aller `<script>`-Blöcke der vier Templates mit `node --check` (`{{Feld}}` wird durch `0` ersetzt) |
 | `selftest.html`, `run_selftest.sh` | Rendert jede Kombination aus Genre, Landschaft und Hell/Dunkel offline. Prüft Pegel, Spitzen und NaN |
 | `switchtest.html` | Szenen- und Genrewechsel im Live-Kontext |
@@ -18,11 +18,36 @@ Quellen und Prüfwerkzeuge der Audio-Engine. Was im Template landet, beschreibt 
 
 `harness_*.html` und `versions/` sind generiert bzw. lokal und stehen in [.gitignore](.gitignore).
 
+## Module (`src/`)
+
+Die Dateien werden in Namensreihenfolge zu einer IIFE verbunden; alle Module teilen sich deren Gültigkeitsbereich (keine Imports). Konstanten und Klassen stehen vor ihrer ersten Verwendung zur Laufzeit; Funktionsdeklarationen dürfen auch später kommen.
+
+| Modul | Inhalt |
+|---|---|
+| `01-base.js` | `VERSION`, Singleton-Prüfung, Mathe-Helfer (`clamp`, `mtof`, `rnd`, `pick`, `poisson`, `shuffle` …) |
+| `02-tables.js` | `THEMES`, `NAT`, `SK`, `SPACE`, `VOPT`/`VREG`/`VK`, `RES`, Jo-Ha-Kyū-Konstanten |
+| `03-repertoire.js` | **`class Song`** (parst Melodie und Akkorde, `errors()`, `plan(genre)`, `weight()`), `SONGS`, `pickSong` |
+| `04-runtime.js` | Laufzeitzustand (`cfg`, `cur`, `ctx`, `players` …), `now`, `imm`, `musicOn`, `live` |
+| `05-graph.js` | AudioContext, Rauschpuffer, Hall, Echo, Master-Graph, Knoten-Helfer (`gainN`, `filt`, `send` …) |
+| `06-samples.js` | **`class SampleBank`** (Cache, Vorwärmen im Hintergrund; Renderer `piano`, `modal`, `string`), `MODAL` |
+| `07-instruments.js` | `tone`, `pluck`, `flute`, `piano`, `sho`, `bowl`, `kane`, `suikin`, `taiko` … |
+| `08-harmony.js` | `scaleNotes`, `voiceChord`, `chordAt`, `ctones` |
+| `09-flow.js` | **`class Flow`** (Lernfluss, Jo-Ha-Kyū-Stufe, Antwort-Raster, Strichrate) als `FL`; Antworten `answer`, `ghost`, `stageHit` |
+| `10-melody.js` | `playNote` (Verzierungen), `phrase`, `melody` (Behandlungen) |
+| `11-percussion.js` | `SIG` (Schlagwerk je Landschaft), `SIG_HIT`/`sigHit`, `shimmer` |
+| `12-genres.js` | `GENRES`, `ambientBar`, `zenBar`, `pianoBar`, `lofiBar` |
+| `13-nature.js` | **`class Nature`** (Naturbetten, `bar()` plant Ereignisse), Tierstimmen, `EV` |
+| `14-player.js` | **`class Player`** (ein Lied je Genre: `begin`, `newSong`, `retheme`/`applyWant`, `scheduleBar`, `snapshot`) |
+| `15-control.js` | `syncMusic`, `pump`, `tick` |
+| `16-fx.js` | `FX` (UI-Klänge in der Tonart des Lieds) |
+| `17-strokes.js` | **`class StrokeVoice`** (ein Strichklang: `move`, `apply`, `release`), `strokeStart`/`Move`/`End`, `duck` |
+| `18-api.js` | `configure`, `setScene`, `cardShown`, `strokeResult`, `complete`, Lebenszyklus, `offline` (Tests), `api` |
+
 ## Arbeitsablauf
 
 ```bash
-# 1. Engine oder Klangseite ändern, dann einbetten
-python3 Tools/audio/embed_audio.py
+# 1. Module in src/ oder die Klangseite ändern, dann bündeln und einbetten
+python3 Tools/build.py           # --check meldet nur, ob etwas veraltet ist
 
 # 2. Syntax aller Template-Skripte prüfen
 python3 Tools/audio/check_scripts.py

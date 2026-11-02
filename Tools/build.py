@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""Build the generated parts of the KanjiDraw templates.
+
+Anki templates cannot load external files, so shared code is maintained in
+source files and copied into the templates between markers. Re-running is
+idempotent: only the text between the markers is replaced.
+
+1. Audio engine: Tools/audio/src/*.js (in file-name order) are wrapped into
+   one IIFE and written to Tools/audio/kd-audio-engine.js (generated; the
+   test pages load this bundle).
+2. Embedding:
+   - <!-- [KD-AUDIO-ENGINE] --> … <!-- [/KD-AUDIO-ENGINE] -->  engine bundle (front templates)
+   - <!-- [KD-SOUND-PAGE] -->   … <!-- [/KD-SOUND-PAGE] -->    Tools/audio/page-sound.html (front templates)
+   - // [KD-SRC <file>] … // [/KD-SRC <file>]                    Templates/src/<file>, indented like the marker
+
+Usage: python3 Tools/build.py          build and embed
+       python3 Tools/build.py --check  exit 1 if a template or the bundle is out of date
+"""
+import pathlib
+import re
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+TPL = ROOT / 'Templates'
+SRC = TPL / 'src'
+AUDIO = ROOT / 'Tools/audio'
+FRONTS = [TPL / 'Card-1/FrontTemplate.html', TPL / 'Card-2/FrontTemplate.html']
+ALL = FRONTS + [TPL / 'Card-1/BackTemplate.html', TPL / 'Card-2/BackTemplate.html']
+
+# Anki template syntax and the HTML parser must not see these inside a <script>
+# (the engine avoids '</' entirely; template code may build markup like '</span>')
+FORBIDDEN = ('{{', '}}', '</')
+FORBIDDEN_SRC = ('{{', '}}', '</script')
+
+INTRO = '''\
+/* ═══════════════════════════════════════════════════════════════════
+   KanjiDraw Audio — GENERIERT von Tools/build.py aus Tools/audio/src/
+   Nicht hier bearbeiten: Änderungen gehören in die Module unter src/.
+   ═══════════════════════════════════════════════════════════════════ */'''
+
+
+def indent(text, pad):
+    return '\n'.join(pad + ln if ln.strip() else '' for ln in text.split('\n'))
+
+
+def bundle_engine():
+    mods = sorted((AUDIO / 'src').glob('*.js'))
+    if not mods:
+        sys.exit('no modules in Tools/audio/src')
+    body = '\n\n'.join(f'// ── {m.name} ' + '─' * max(4, 60 - len(m.name)) + '\n' + m.read_text(encoding='utf-8').strip('\n') for m in mods)
+    for bad in FORBIDDEN:
+        if bad in body:
+            sys.exit(f'engine contains forbidden sequence {bad!r}')
+    return f"{indent(INTRO, '    ')}\n    (function () {{\n        'use strict';\n{indent(body, '        ')}\n    }})();\n"
+
+
+def put(text, begin, end, block, anchor=None, before=True):
+    """Replace the lines between begin/end markers (inclusive) with block; insert at anchor if absent."""
+    if begin in text:
+        i = text.rfind('\n', 0, text.index(begin)) + 1
+        j = text.index(end, i) + len(end)
+        if text[j:j + 1] == '\n':
+            j += 1
+        return text[:i] + block + text[j:]
+    if anchor is None:
+        return text
+    found = list(anchor.finditer(text))
+    if len(found) != 1:
+        sys.exit(f'anchor matched {len(found)}x: {anchor.pattern[:60]}')
+    pos = found[0].start() if before else found[0].end()
+    return text[:pos] + block + text[pos:]
+
+
+EB, EE = '<!-- [KD-AUDIO-ENGINE] -->', '<!-- [/KD-AUDIO-ENGINE] -->'
+PB, PE = '<!-- [KD-SOUND-PAGE] -->', '<!-- [/KD-SOUND-PAGE] -->'
+# First-time insertion points: main card script header / end of the "Erscheinungsbild" settings page
+ENGINE_ANCHOR = re.compile(r'(?m)^<script>\n    // =+\n    // FrontTemplate-Card-[12] ')
+PAGE_ANCHOR = re.compile(
+    r'(?m)^            <div role="button" tabindex="0" class="close-settings" '
+    r'onclick="closeSettings\(event\)">Schließen</div>\n        </div>\n'
+    r'(?=    </div>\n</div>\n\n<div class="forest-scenery")')
+SRC_MARK = re.compile(r'(?m)^([ \t]*)// \[KD-SRC ([\w./-]+)\]\n.*?^[ \t]*// \[/KD-SRC \2\]\n', re.S)
+
+
+def embed_src(text, path):
+    def rep(m):
+        pad, name = m.group(1), m.group(2)
+        f = SRC / name
+        if not f.is_file():
+            sys.exit(f'{path.name}: source {name} not found')
+        code = f.read_text(encoding='utf-8').strip('\n')
+        for bad in FORBIDDEN_SRC:
+            if bad.lower() in code.lower():
+                sys.exit(f'{name} contains forbidden sequence {bad!r}')
+        return f'{pad}// [KD-SRC {name}]\n{indent(code, pad)}\n{pad}// [/KD-SRC {name}]\n'
+    return SRC_MARK.sub(rep, text)
+
+
+def main():
+    check = '--check' in sys.argv
+    stale = []
+    engine = bundle_engine()
+    bundle = AUDIO / 'kd-audio-engine.js'
+    if bundle.read_text(encoding='utf-8') != engine:
+        stale.append(bundle)
+        if not check:
+            bundle.write_text(engine, encoding='utf-8')
+    page = (AUDIO / 'page-sound.html').read_text(encoding='utf-8').strip('\n')
+    for f in ALL:
+        src = f.read_text(encoding='utf-8')
+        out = src
+        if f in FRONTS:
+            out = put(out, EB, EE, f'{EB}\n<script>\n{engine}</script>\n{EE}\n', ENGINE_ANCHOR, before=True)
+            out = put(out, PB, PE, f'        {PB}\n{page}\n        {PE}\n', PAGE_ANCHOR, before=False)
+        out = embed_src(out, f)
+        if out != src:
+            stale.append(f)
+            if not check:
+                f.write_text(out, encoding='utf-8')
+        print(f'{f.parent.name}/{f.name}: {"veraltet" if check and out != src else "ok" if out == src else "aktualisiert"}, {len(out.splitlines())} Zeilen')
+    if check and stale:
+        sys.exit('nicht aktuell: ' + ', '.join(str(p.relative_to(ROOT)) for p in stale))
+
+
+if __name__ == '__main__':
+    main()
