@@ -1,6 +1,6 @@
 # Tests
 
-Automatische Tests für die Templates und das Add-on. Die Zeilennummern gelten für Commit `46fc277`.
+Automatische Tests für die Templates und das Add-on. Die Tests der Audio-Engine stehen in [../Tools/audio/README.md](../Tools/audio/README.md).
 
 ## Ordner
 
@@ -16,11 +16,11 @@ Ausführen mit `cd Tests/js && npm test` (entspricht `node --test "test_*.js"`).
 
 | Datei | Prüft | Quelle der geprüften Logik |
 |---|---|---|
-| `algorithms.js` | – (Hilfsmodul) Resampling, Fréchet, Punktabstand, Segmentwinkel, Glättung, Ungarische Methode | **Kopie** aus Card-1 `window._kanjiAlgo` bzw. `avgPointDist`/`segmentAngles` |
-| `test_algorithms.js` | die Algorithmen oben | `algorithms.js` |
+| `algorithms.js` | – (Hilfsmodul) Resampling, Fréchet, Punktabstand, Segmentwinkel, Glättung, Ungarische Methode | **lädt den echten** Block `window._kanjiAlgo = {…}` aus Card-1/FrontTemplate.html und wertet ihn per `new Function` aus |
+| `test_algorithms.js` | die Algorithmen oben | `algorithms.js` (echter Code) |
 | `test_snap.js` | Einrasten der Striche auf die Referenz | `algorithms.js` plus **nachgebaute** Snap-Logik |
-| `test_strictness.js` | Strenge „Locker/Normal/Streng“ im geführten und freien Modus | **nachgebautes** `evaluateStroke` |
-| `test_persistence.js` | Cookie/`localStorage`-Kette | **nachgebautes** `_parseCookies`/`safeGetItem` |
+| `test_strictness.js` | Strenge „Locker/Normal/Streng“ im geführten und freien Modus | `algorithms.js` plus **nachgebaute** Entscheidungslogik von `evaluateStroke` |
+| `test_persistence.js` | Cookie/`localStorage`-Kette, Add-on-Snapshot | **führt den echten** „Persistence Layer“ aus Card-1/FrontTemplate.html gegen Mock-Cookie und Mock-`localStorage` aus |
 | `test_settings.js` | Einstellungs-Modal unter Last, Theme-Wechsel | **nachgebaute** Settings-Logik mit Mock-DOM |
 | `test_stress.js` | Race Conditions, Timer, Animationsüberlappungen | Mock-DOM und Mock-Timer |
 | `test_new_fixes.js` | Regressionstests für frühere Fixes | **nachgebaut** (`saveState`, `stopDrawingOnLeave` …) |
@@ -53,11 +53,12 @@ Jede Anfrage braucht ein Bearer-Token aus `<tmp>/kanjidraw_stress_token` (Rechte
 
 **Nur für die Dauer der Stresstests installieren.** Ein Add-on, das beliebiges JavaScript in Anki ausführt, gehört nicht in den Alltagsbetrieb.
 
-## Befunde aus dem Code-Review (Stand `46fc277`)
+## Code-Review: Stand
 
-1. **Viele Tests prüfen Kopien statt des echten Codes.** Betroffen sind `test_persistence`, `test_settings`, `test_strictness`, `test_new_fixes`, `test_snap` und `algorithms.js`. Sie bauen die Template-Logik nach. Ändert sich das Template, bleiben die Tests grün, obwohl das Verhalten anders ist. Belege:
-   - `test_strictness.js` verweist auf „Card-1/FrontTemplate.html lines 1789–1880“, `evaluateStroke` steht inzwischen in Zeile 8309.
-   - `smoothInput` hat im Template einen Parameter `passes`, die Kopie in `algorithms.js` nicht.
+**Behoben**
+- `algorithms.js` und `test_persistence.js` prüfen jetzt den echten Template-Code statt Kopien. Ändert sich das Template, schlagen die Tests an. Die abweichende `smoothInput`-Kopie (ohne `passes`) ist damit weg.
+- `test_strictness.js` nutzt `avgPointDist`/`segmentAngles` aus `window._kanjiAlgo` und verweist per Suchbegriff statt per Zeilennummer auf `evaluateStroke`.
+- Die Selbsttests der Audio-Engine liegen jetzt im Repository ([../Tools/audio/](../Tools/audio/README.md)).
 
-   Vorschlag: die Funktionen wie `test_banners.js` direkt aus den Templates extrahieren, z. B. den Block `window._kanjiAlgo = {…}` per Regex herausschneiden und in einem `vm`-Kontext auswerten. Dann können die Kopien entfallen.
-2. **Die Audio-Engine hat hier keine Tests.** Ihre Selbsttests (Pegel, NaN-Prüfung, Szenenwechsel) liegen außerhalb des Repositorys in `~/kanji-draw-work/audio/` (`selftest.html`, `switchtest.html`, `run_selftest.sh`).
+**Offen**
+- `test_settings`, `test_new_fixes`, `test_snap` und `test_stress` bauen weiterhin Logik mit Mock-DOM nach. Diese Logik (Einstellungs-Modal, Zeichen-Handler) hängt eng an DOM und Timern und lässt sich nicht ohne Browser aus dem Template ausführen. Abhilfe wäre ein Headless-Browser-Test nach dem Vorbild der Harness-Seiten in `Tools/audio`.

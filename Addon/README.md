@@ -41,8 +41,8 @@ sequenceDiagram
 
 Das Gegenstück in den Templates heißt „Persistence Layer [SHARED]“ (`safeGetItem`, `safeSetItem`, `_fc`), siehe [../Templates/README.md](../Templates/README.md#einstellungen-und-speicher).
 
-## Befunde aus dem Code-Review (Stand `46fc277`)
+## Code-Review: Stand
 
 - **Sicherheit:** Schlüssel und Werte werden validiert, die Nachrichtengröße ist begrenzt, und die Injektion kann den `<script>`-Block nicht vorzeitig schließen. Keine Auffälligkeiten.
 - **Keine Probleme mit Performance, Dead Code oder Redundanz.**
-- **Kleinigkeit:** `__pycache__/` liegt im Arbeitsordner und ist nicht in `.gitignore` eingetragen. Es wird derzeit zwar nicht versioniert, ein Eintrag schützt aber vor versehentlichem Einchecken.
+- `__pycache__/` steht in der `.gitignore` im Hauptordner.
