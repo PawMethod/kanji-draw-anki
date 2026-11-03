@@ -9,9 +9,6 @@ class StrokeVoice {
         const sc = imm() ? live() : null, r = RES[style];
         let out = amp, tones = sc && sc.song ? ctones(sc, t, r.lo, r.hi) : null;
         Object.assign(this, { style: style, c: c, x: x, y: y, ms: clockMs(), sp: 0, upd: 0, m: 0, pen: ptype === 'pen', pr: +pressure || 0, src: [], amp: amp });
-        // Neon hum sits on the chord root and rises towards the fifth with speed
-        if (sc && sc.song && style === 'neon') this.root = mtof(low(chordAt(sc, t).root, 38));
-        const hz0 = this.root || 92;
         if (ctx.createStereoPanner) { this.pan = ctx.createStereoPanner(); this.pan.pan.value = panOf(x); amp.connect(this.pan); out = this.pan; }
         out.connect(G.stroke);
         const src = kind => { const s = noiseN(kind); startNoise(s, t); this.src.push(s); return s; };
@@ -28,17 +25,17 @@ class StrokeVoice {
             this.f = lp;
             thock(d, t, 45, 0.035);
         } else if (style === 'neon') {
-            // Electric tube hum that brightens and rises with speed
-            const o1 = oscN('sawtooth', hz0), o2 = oscN('sawtooth', hz0 * 1.007), o3 = oscN('sine', hz0 * 2), lp = filt('lowpass', c.f0, 5), o3g = gainN(0.5);
-            o1.connect(lp); o2.connect(lp); o3.connect(o3g); o3g.connect(lp); lp.connect(amp);
+            // Soft glow on the chord root (else the key): two slightly detuned sines beat slowly, a quiet
+            // triangle an octave up carries it on phone speakers. Speed changes brightness, never pitch
+            const f = mtof(low(sc && sc.song ? chordAt(sc, t).root : ks().k, 50)), lp = filt('lowpass', c.f0, 0.7), og = gainN(0.25);
+            const o1 = oscN('sine', f), o2 = oscN('sine', f * 1.003), o3 = oscN('triangle', f * 2);
+            o1.connect(lp); o2.connect(lp); o3.connect(og); og.connect(lp); lp.connect(amp);
             [o1, o2, o3].forEach(o => { o.start(t); this.src.push(o); });
-            const cs = src('white'), cbp = filt('bandpass', 5200, 2), cg = gainN(0.02);
-            cs.connect(cbp); cbp.connect(cg); cg.connect(amp);
-            this.f = lp; this.o1 = o1; this.o2 = o2; this.o3 = o3;
-            const z = oscN('sine', 280), zg = gainN(0);
-            z.frequency.setValueAtTime(280, t); z.frequency.exponentialRampToValueAtTime(1500, t + 0.07);
-            zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.025, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.04, 0.03);
-            z.connect(zg); zg.connect(out); z.start(t); z.stop(t + 0.3);
+            this.f = lp;
+            // Pen down: a quiet ping two octaves up instead of a zap
+            const z = oscN('sine', f * 4), zg = gainN(0);
+            zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.007, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.02, 0.07);
+            z.connect(zg); zg.connect(out); send(zg, d, 0.5, 0, 0); z.start(t); z.stop(t + 0.5);
         } else {
             // Soft pencil on smooth paper: warm friction band, slow fine graphite grain (no hiss, no crackle)
             const ps = src('pink'), bp = filt('bandpass', c.f0, 0.7), lp = filt('lowpass', 4200, 0.5), gr = gainN(0.7), gm = src('pink'), gmf = filt('lowpass', 28, 0.5), gmg = gainN(1.6);
@@ -67,9 +64,7 @@ class StrokeVoice {
         this.f.frequency.setTargetAtTime(c.f0 + (c.f1 - c.f0) * m, t, 0.05);
         if (this.pan) this.pan.pan.setTargetAtTime(panOf(this.x), t, 0.1);
         if (this.tg) this.tg.gain.setTargetAtTime(0.012 * loud, t, 0.05);
-        if (this.o1) this.tune(this.root ? this.root * (1 + 0.5 * m) : 92 + 46 * m, t, 0.06);
     }
-    tune(hz, t, tc) { this.o1.frequency.setTargetAtTime(hz, t, tc); this.o2.frequency.setTargetAtTime(hz * 1.007, t, tc); this.o3.frequency.setTargetAtTime(hz * 2, t, tc); }
     move(x, y, pressure) {
         const ms = clockMs(), dt = Math.max(1, ms - this.ms) / 1000, dist = Math.sqrt((x - this.x) * (x - this.x) + (y - this.y) * (y - this.y));
         this.x = x; this.y = y; this.ms = ms; if (pressure > 0) this.pr = pressure;
@@ -82,7 +77,6 @@ class StrokeVoice {
         const t = now(), c = this.c, d = { dry: G.stroke, wet: G.verbIn, echo: null }, end = t + c.rel * 8 + 0.05;
         this.amp.gain.cancelScheduledValues(t); this.amp.gain.setTargetAtTime(0, t, c.rel);
         if (this.style === 'ink' && this.m > 0.4) noiseHit(d, t, { kind: 'pink', type: 'bandpass', f: 1400, f2: 3800, q: 1.4, dur: 0.14, att: 0.02, vel: 0.05 * this.m, pan: this.pan ? panOf(this.x) : 0 });
-        if (this.o1) this.tune(this.root ? this.root / 2 : 55, t, 0.12);
         this.src.forEach(s => { try { s.stop(end); } catch (e) { } });
     }
 }

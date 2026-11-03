@@ -84,31 +84,88 @@ function complete() {
 }
 
 // ── Lifecycle ──
-function onGesture() {
+let faded = false, ctxStale = false, autoRebuilt = false;
+// iOS only counts these as user activation (may create/resume an AudioContext)
+const ACTIVATING = { pointerup: 1, touchend: 1, click: 1, keydown: 1 };
+function onGesture(e) {
     if (cfg.level === 'off' || disposed) return;
     touch();
+    if (faded) revive();
+    if (ctx && (ctxStale || ctx.state === 'closed')) { if (!e || ACTIVATING[e.type]) rebuild(); else return; }
     if (!ctx && !musicOn()) return;
     if (!ensureCtx()) return;
-    if (ctx.state !== 'running') { try { ctx.resume(); } catch (e) { } }
+    if (ctx.state !== 'running') { wake(); checkAlive(); }
 }
 function onVis() {
     if (!ctx) return;
     if (D.hidden) { const s = live(); if (s) s.save(); try { ctx.suspend(); } catch (e) { } }
-    else if (cfg.level !== 'off' && (musicOn() || SV)) { try { ctx.resume(); } catch (e) { } }
+    else {
+        autoRebuilt = false;
+        if (faded) revive();
+        if (cfg.level !== 'off' && (musicOn() || SV)) { wake(); checkAlive(); }
+    }
 }
-function onHide() { const s = live(); if (s) s.save(); }
-const GEST = ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click'];
-GEST.forEach(n => D.addEventListener(n, onGesture, true));
+function revive() { faded = false; if (ctx && G && !OFF) setParam(G.master.gain, LEVEL[cfg.level] || 0, now(), 0.08); }
+// After Safari or another app, iOS can leave the context interrupted or frozen: rebuild it right away,
+// and if that is not allowed without a gesture, on the next tap anywhere (also inside modals)
+function checkAlive() {
+    if (!ctx || OFF) return;
+    const c = ctx, t0 = c.currentTime;
+    setTimeout(() => {
+        if (ctx !== c || D.hidden || (c.state === 'running' && c.currentTime > t0)) return;
+        if (!autoRebuilt && musicOn()) { autoRebuilt = true; rebuild(); checkAlive(); }
+        else ctxStale = true;
+    }, 800);
+}
+function rebuild() {
+    ctxStale = false;
+    const s = live(); if (s) s.save();
+    stopTimer();
+    players.forEach(p => p.dispose()); players = [];
+    if (SV) { clearInterval(SV.iv); SV = null; }
+    const old = ctx;
+    ctx = null; G = null;
+    old.onstatechange = null;
+    try { const pr = old.close(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { }
+    if (!ensureCtx()) return;
+    if (ctx.state !== 'running') wake();
+    if (musicOn()) syncMusic();
+}
+// Watchdog (bar timer): a context that reports "running" while its clock stands still is dead
+let wdT = -1, wdMs = 0;
+function watchdog() {
+    if (OFF || !ctx || D.hidden || ctx.state !== 'running') { wdT = -1; return; }
+    const ms = clockMs();
+    if (ctx.currentTime !== wdT) { wdT = ctx.currentTime; wdMs = ms; return; }
+    if (ms - wdMs > 1500 && !ctxStale) { ctxStale = true; if (!autoRebuilt) { autoRebuilt = true; rebuild(); } }
+}
+// AnkiDroid Legacy tears the page down per card side: fade out within a few ms instead of a hard cut (click).
+// The wait gives the audio thread time to render the fade before the context is destroyed.
+function onHide() {
+    const s = live(); if (s) s.save();
+    if (!ctx || !G || OFF || ctx.state !== 'running') return;
+    const p = G.master.gain, t = now(), lat = (ctx.baseLatency || 0) + (ctx.outputLatency || 0);
+    faded = true;
+    p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(0, t + 0.03);
+    const end = performance.now() + Math.min(100, 45 + lat * 1000);
+    while (performance.now() < end) { }
+}
+// The page stayed alive (bfcache, or iOS fired pagehide without unloading): undo the fade of onHide
+function onShow() { if (faded) revive(); }
+const GEST = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'keydown', 'click'];
+// Window capture runs before any handler of the card (modals stop propagation or prevent touches)
+GEST.forEach(n => W.addEventListener(n, onGesture, { capture: true, passive: true }));
 D.addEventListener('visibilitychange', onVis);
 W.addEventListener('pagehide', onHide);
+W.addEventListener('pageshow', onShow);
 // Idle: release the audio device when nothing has played for a while
 idleIv = setInterval(() => {
     if (ctx && ctx.state === 'running' && !players.length && !SV && Date.now() - lastAct > 15000) { try { ctx.suspend(); } catch (e) { } }
 }, 5000);
 function dispose() {
     disposed = true; stopTimer(); clearInterval(idleIv); bank.stop();
-    GEST.forEach(n => D.removeEventListener(n, onGesture, true));
-    D.removeEventListener('visibilitychange', onVis); W.removeEventListener('pagehide', onHide);
+    GEST.forEach(n => W.removeEventListener(n, onGesture, { capture: true }));
+    D.removeEventListener('visibilitychange', onVis); W.removeEventListener('pagehide', onHide); W.removeEventListener('pageshow', onShow);
     if (ctx) { try { ctx.close(); } catch (e) { } }
     ctx = null; players = [];
     if (W.__kdAudio === api) W.__kdAudio = null;
@@ -154,16 +211,16 @@ const api = {
     strokeEnd: safe(strokeEnd),
     strokeResult: safe(strokeResult),
     complete: safe(complete),
-    fx: safe((name, delay) => { if (fxOn() && FX.hasOwnProperty(name)) play(FX[name], delay); }),
+    fx: safe((name, delay, arg) => { if (fxOn() && FX.hasOwnProperty(name)) play(t => FX[name](t, arg), delay); }),
     demoStroke: safe(demoStroke),
     state() {
         return {
-            ctx: ctx ? ctx.state : 'none', cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark, flow: Math.round(FL.level() * 100) / 100, done: FL.done,
+            ctx: ctx ? ctx.state : 'none', gain: G ? Math.round(G.master.gain.value * 100) / 100 : null, cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark, flow: Math.round(FL.level() * 100) / 100, done: FL.done,
             scenes: players.map(p => p.describe())
         };
     },
     dispose: dispose,
     _offline: offline,
-    _t: { THEMES, GENRES, NAT, SK, FX, EV, SIG, SONGS, songErrors, scaleNotes, voiceChord, rootNear, renderPiano: SampleBank.piano, renderString: SampleBank.string }
+    _t: { THEMES, GENRES, NAT, SK, FX, EV, SIG, SONGS, songErrors, scaleNotes, voiceChord, rootNear, renderPiano: SampleBank.piano, renderString: SampleBank.string, ctx: () => ctx }
 };
 W.__kdAudio = api;

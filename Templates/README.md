@@ -9,11 +9,11 @@ Entwickler-Dokumentation zum Notiztyp **KanjiDraw**. Die Bedienung erklärt das 
 
 | Datei | Größe | Inhalt | Karte |
 |---|---|---|---|
-| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 600 Z. / 643 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
-| [Card-1/BackTemplate.html](Card-1/BackTemplate.html) | ~4 200 Z. / 245 KB | Rückseite der Zeichenkarte: Strichfarben, Freimodus-Auswertung, Info-Modal | [Card-1/README.md](Card-1/README.md) |
-| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~8 000 Z. / 550 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
-| [Card-2/BackTemplate.html](Card-2/BackTemplate.html) | ~2 600 Z. / 133 KB | Rückseite der Erkennungskarte | [Card-2/README.md](Card-2/README.md) |
-| [Styling.css](Styling.css) | ~6 000 Z. / 148 KB | Gemeinsames Stylesheet aller vier Templates | unten |
+| [Card-1/FrontTemplate.html](Card-1/FrontTemplate.html) | ~9 800 Z. / 640 KB | Zeichenkarte: Einstellungen, Landschaften, Zeichenfläche, Bewertung, Audio-Engine | [Card-1/README.md](Card-1/README.md) |
+| [Card-1/BackTemplate.html](Card-1/BackTemplate.html) | ~4 200 Z. / 244 KB | Rückseite der Zeichenkarte: Strichfarben, Freimodus-Auswertung, Info-Modal | [Card-1/README.md](Card-1/README.md) |
+| [Card-2/FrontTemplate.html](Card-2/FrontTemplate.html) | ~8 200 Z. / 548 KB | Erkennungskarte: zeigt das fertige Kanji, sonst wie Card-1 ohne Zeichen-Engine | [Card-2/README.md](Card-2/README.md) |
+| [Card-2/BackTemplate.html](Card-2/BackTemplate.html) | ~2 600 Z. / 132 KB | Rückseite der Erkennungskarte | [Card-2/README.md](Card-2/README.md) |
+| [Styling.css](Styling.css) | ~6 200 Z. / 152 KB | Gemeinsames Stylesheet aller vier Templates | unten |
 | [src/](src/) | `front/`, `back/`, `audio/` | **Quellen** für generierte Blöcke: Code, der in beiden Karten gleich ist, die Klangseite und die Audio-Engine; `Tools/build.py` setzt sie ein | [unten](#generierte-blöcke-nicht-von-hand-bearbeiten) |
 
 ## Wie Anki die Dateien zusammensetzt
@@ -24,7 +24,7 @@ flowchart LR
     F1[Card-1 Front] -->|"{{FrontSide}}"| B1[Card-1 Back]
     F2[Card-2 Front] -->|"{{FrontSide}}"| B2[Card-2 Back]
     ENG[src/audio/*.js] -->|build.py| F1 & F2
-    PAGE[src/front/page-sound.html] -->|build.py| F1 & F2
+    PAGE[src/front/page-sound.html + page-about.html] -->|build.py| F1 & F2
     SRC[Templates/src/front + back] -->|build.py| F1 & F2 & B1 & B2
 ```
 
@@ -55,6 +55,7 @@ Stehen in beiden Vorderseiten direkt nach dem „Persistence Layer“ und sind d
 | `<!-- [KD-AUDIO-ENGINE] -->` … `<!-- [/KD-AUDIO-ENGINE] -->` | [src/audio/](src/audio/) (gebündelt zu einer IIFE) | Prozedurale Musik, Strich- und Effektklänge (`window.__kdAudio`) |
 | `<!-- [KD-SOUND-PAGE] -->` … `<!-- [/KD-SOUND-PAGE] -->` | [src/front/page-sound.html](src/front/page-sound.html) | Einstellungsseite „Klang & Musik“ |
 | `// [KD-SRC front/<datei>]` … `// [/KD-SRC …]` | [src/front/](src/front/) | In beiden Vorderseiten: `persistence.js`, `shared-helpers.js`, `sound-bridge.js`, `grid-display.js`, `scroll-guards.js` |
+| `<!-- [KD-SRC front/page-about.html] -->` … | [src/front/page-about.html](src/front/page-about.html) | Einstellungsseite „Danke“ (Herz oben rechts in den Einstellungen): AnkiWeb-Bewertung, GitHub-Issues, Quellenangaben |
 | `// [KD-SRC back/<datei>]` … `// [/KD-SRC …]` | [src/back/](src/back/) | In beiden Rückseiten: `primitive-tree.js`, `radical-tree.js`, `pitfalls.js`, `word-examples.js`, `hide-readings.js`, `stroke-order-player.js`, `cross-platform.js` |
 
 Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur den Inhalt zwischen den Markern und rückt die Quelle wie den Marker ein; `--check` meldet veraltete Templates (Exit-Code 1). In Quellen verboten sind `{{`, `}}` und `</script` (Anki-Feldsyntax bzw. Skriptende). Die Browser-Tests der Engine beschreibt [../Tests/browser/README.md](../Tests/browser/README.md).
@@ -87,6 +88,7 @@ Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur d
 | den Radikal-Baum der Rückseite ändern | `src/back/primitive-tree.js`, danach `build.py` | – |
 | die Schreibfehler-Seite ändern | `src/back/pitfalls.js`, danach `build.py` | – |
 | den Strichfolge-Player ändern | `src/back/stroke-order-player.js`, danach `build.py` | – |
+| die Danke-Seite (Links, Quellenangaben) ändern | `src/front/page-about.html`, danach `build.py` | – |
 | Fixes für Stift, S-Pen oder Apple Pencil ändern | alle vier Templates | `S-Pen`, `Apple Pencil`, `addPenHandler` |
 
 ## Styling.css – Abschnitte
@@ -98,27 +100,27 @@ Alles erzeugt `python3 Tools/build.py`. Das Skript ist idempotent, ersetzt nur d
 | 283–821 | `2. Global Layout & Typography` | `html`/`body`/`.card` (348), Hintergrundebene `.card::before` (382), Einblend-Animationen `kdFadeIn`/`kdRiseIn` (392), Landschaftsbühne `.forest-scenery` (439), Tag/Nacht-Ebenen (460), Nachtszene (664) |
 | 822–1976 | `2b. Selectable Japanese Regional Landscapes` | Sichtbarkeit `.jp-scene-<theme>` (827–866), gemeinsame Paletten (867), danach je Theme: rose 994, neutral 1100, sepia 1140, cool 1291, warm 1397, sage 1511, hokkaido 1617, tokyo 1765, okinawa 1871 |
 | 1977–2012 | Button-Reset, `.card-title` | Kartentitel als Pille |
-| 2013–2342 | `3. Kanji Canvas Container & SVG Grid` | Zeichenfläche, Ebenen, `#touch-shield` (2089), Warnbanner AnkiDroid-Gesten (2105) und fehlendes Add-on (2177) |
-| 2343–2436 | `3a. Stroke Style Filters` | Gelstift, Tusche, Neon, Farbfelder |
-| 2437–2477 | `3b. Completion Celebration` | Abschlussfeier |
-| 2478–2767 | `4. UI Controls & Buttons` | Aktionsknöpfe, Zahnrad (2683), Tipp-Feedback |
-| 2768–3061 | `5. Modals & Overlays` | Einstellungs- und Info-Overlay, Banner-Header, Icons |
-| 3062–3566 | `5b. Settings Navigation` | Seiten-Slides, Segment-Schalter C1/C2, Kategoriekarten, Pastell-Icons, Akzent-Swatches (3396), Unterseiten-Header (3465) |
-| 3567–3644 | `6. Stroke Logic` | Strich-Zustände, Hinweis- und Rückspul-Animation |
-| 3645–4507 | `7. Backside Elements` | Info-Tags, Sprechblase, Story-Hervorhebungen `.kd-*` (ab 3776), Wortbeispiele, Info-Knopf, Aktionsleiste (4138), Schreibfehler-Seite (4206) |
-| 4508–5008 | `7b. Kanji-Study-style Primitive Tree` | Radikal-Baum, Zoom-Knöpfe (4588), Vollbild (4637) |
-| 5009–5069 | `Custom Overlay Scrollbars` | eigene Scrollleiste in Modals |
-| 5070–5248 | `10. Free Canvas Mode` | `.setting-disabled` (5074), Handschrift-Overlay, Strichzahl-Badges, Umschalter Handschrift/SVG |
-| 5249–5488 | `11. Font Size Scaling` | `.font-small` / `.font-large` |
-| 5489–5543 | `12. WKWebView (AnkiMobile) GPU-safety overrides` | – |
-| 5544–5811 | `12b. Start-Point Hint, Stroke-Order Player, Grade Recommendation` | Startpunkt-Puls, Strichfolge-Knopf und -Player |
-| 5812–5944 | `S-Pen / Stylus explicit hover` | `.spen-hover` |
-| 5945–5967 | `13. Reduced Motion` | `prefers-reduced-motion`, Anki-Option „Reduce motion“ |
-| 5968–Ende | `S-Pen / Stylus hover fix` | – |
+| 2013–2367 | `3. Kanji Canvas Container & SVG Grid` | Zeichenfläche, Ebenen, `#touch-shield` (2089), Warnbanner AnkiDroid-Gesten (2105) und fehlendes Add-on (2202) |
+| 2368–2461 | `3a. Stroke Style Filters` | Gelstift, Tusche, Neon, Farbfelder |
+| 2462–2502 | `3b. Completion Celebration` | Abschlussfeier |
+| 2503–2792 | `4. UI Controls & Buttons` | Aktionsknöpfe, Zahnrad (2708), Tipp-Feedback |
+| 2793–3101 | `5. Modals & Overlays` | Einstellungs- und Info-Overlay, Banner-Header, Icons |
+| 3102–3750 | `5b. Settings Navigation` | Seiten-Slides, Segment-Schalter C1/C2, Kategoriekarten, Pastell-Icons, Akzent-Swatches (3436), Unterseiten-Header (3505), Herz-Knopf und Danke-Seite (3607) |
+| 3751–3828 | `6. Stroke Logic` | Strich-Zustände, Hinweis- und Rückspul-Animation |
+| 3829–4708 | `7. Backside Elements` | Info-Tags, Sprechblase, Story-Hervorhebungen `.kd-*` (ab 3960), Wortbeispiele, Info-Knopf, Aktionsleiste (4322), Schreibfehler-Seite (4390) |
+| 4709–5209 | `7b. Kanji-Study-style Primitive Tree` | Radikal-Baum, Zoom-Knöpfe (4789), Vollbild (4838) |
+| 5210–5271 | `Custom Overlay Scrollbars` | eigene Scrollleiste in Modals |
+| 5272–5450 | `10. Free Canvas Mode` | `.setting-disabled` (5276), Handschrift-Overlay, Strichzahl-Badges, Umschalter Handschrift/SVG |
+| 5451–5690 | `11. Font Size Scaling` | `.font-small` / `.font-large` |
+| 5691–5745 | `12. WKWebView (AnkiMobile) GPU-safety overrides` | – |
+| 5746–6013 | `12b. Start-Point Hint, Stroke-Order Player, Grade Recommendation` | Startpunkt-Puls, Strichfolge-Knopf und -Player |
+| 6014–6146 | `S-Pen / Stylus explicit hover` | `.spen-hover` |
+| 6147–6169 | `13. Reduced Motion` | `prefers-reduced-motion`, Anki-Option „Reduce motion“ |
+| 6170–Ende | `S-Pen / Stylus hover fix` | – |
 
 ## Audio-Engine (`[KD-AUDIO-ENGINE]`)
 
-Die Quelle liegt in 18 Modulen unter [src/audio/](src/audio/) (Version 1.1.0 in `01-base.js`). `Tools/build.py` bündelt sie zu einer IIFE und setzt diese in beide Vorderseiten ein; jedes Modul beginnt dort mit dem Kommentar `// ── <modul>.js`. Eine Kopie des Bündels schreibt es für die Browser-Tests nach `Tests/browser/kd-audio-engine.js`.
+Die Quelle liegt in 18 Modulen unter [src/audio/](src/audio/) (Version 1.2.0 in `01-base.js`). `Tools/build.py` bündelt sie zu einer IIFE und setzt diese in beide Vorderseiten ein; jedes Modul beginnt dort mit dem Kommentar `// ── <modul>.js`. Eine Kopie des Bündels schreibt es für die Browser-Tests nach `Tests/browser/kd-audio-engine.js`.
 
 Musikalisches Prinzip: ein **Repertoire echter Lieder** (`SONGS`: gemeinfreie Klassiker wie Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato, Nanatsu no Ko sowie eigene Stücke in Ryukyu-, Min'yō-, In- und Yo-Tonleiter). Jedes Lied läuft als Vorspiel → Strophen mit wechselnder Behandlung (`Song.plan`: verziert, Heterophonie, Ruf/Antwort, oktaviert, Fragment) → Zwischenspiel → Nachspiel → Ma. **Die Landschaft färbt nur** (`retheme`/`applyWant`: Instrumentenpaar ab dem nächsten Abschnitt, Raum, Helligkeit, Naturkulisse, Schlagwerk); Lied, Tonart und Tempo bleiben, auch beim Genrewechsel und nach einem Seiten-Reload (`snapshot`/`kdAudioState`). **Jo-Ha-Kyū** und der Lernfluss (`class Flow`: `stage()`, `energy()`) steuern die Dichte; Treffer-Töne werden auf Achtel gerastert und bei schnellem Zeichnen zusammengefasst (`Flow.slot`, `Flow.dens`).
 
@@ -217,8 +219,8 @@ Die Templates sprechen die Engine nur über `_kdSnd(method, …)` an ([src/front
 - Die doppelte Regel `.tree-container.tree-graph-mode` ist zusammengeführt.
 
 **Offen** (bewusst nicht angefasst)
-1. **Jede Karte parst ~600 KB HTML, auf der Rückseite noch einmal**, wegen `{{FrontSide}}`. Allein die neun Landschaften sind ~207 KB SVG (Card-1 Z. 1511–4309). Sichtbar ist immer nur eine, die anderen hängen mit `display:none` im DOM.
+1. **Jede Karte parst ~600 KB HTML, auf der Rückseite noch einmal**, wegen `{{FrontSide}}`. Allein die neun Landschaften sind ~207 KB SVG (Card-1 Z. 1582–4380). Sichtbar ist immer nur eine, die anderen hängen mit `display:none` im DOM.
    - Möglicher Weg: Szenen als `<template id="scene-…">` ablegen und nur die aktive klonen.
    - Das berührt Theme-Wechsel, Vorab-Palette und Nachtmodus auf allen Plattformen. Ohne Sichtprüfung auf AnkiMobile und AnkiDroid ist es zu riskant.
-2. **CSS:** `.card` und `.gear-btn` stehen zusätzlich in Media-Queries (2709, 2716). Das sind gewollte Überschreibungen, keine Duplikate.
-   - Die 18 einzelnen `@media (hover: hover)`-Blöcke stehen jeweils bei ihrem Bauteil. Ein Zusammenlegen würde die Lesbarkeit verschlechtern und ändert nichts an der Geschwindigkeit.
+2. **CSS:** `.card` und `.gear-btn` stehen zusätzlich in Media-Queries (2734, 2741). Das sind gewollte Überschreibungen, keine Duplikate.
+   - Die 19 einzelnen `@media (hover: hover)`-Blöcke stehen jeweils bei ihrem Bauteil. Ein Zusammenlegen würde die Lesbarkeit verschlechtern und ändert nichts an der Geschwindigkeit.

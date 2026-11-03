@@ -60,6 +60,13 @@
                     <circle cx="12" cy="12" r="3" class="fi-cream"></circle>
                 </svg>
                 Einstellungen
+                <button type="button" class="settings-about-btn tappable" aria-label="Danke &amp; Feedback"
+                    onclick="navigateToPage('page-about', null, event)">
+                    <svg viewBox="0 0 24 24">
+                        <path class="fi-coral"
+                            d="M12 20s-7-4.4-7-9.6A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.4c0 5.2-7 9.6-7 9.6z"></path>
+                    </svg>
+                </button>
             </div>
             <div class="settings-segment">
                 <div role="button" tabindex="0" class="segment-btn tappable" data-tab="c1"
@@ -557,7 +564,7 @@
                 Übersicht</div>
         </div>
 
-        <!-- ═══ Sub-Page: Rückseite ═══ -->
+        <!-- ═══ Sub-Page: Back side ("Rückseite") ═══ -->
         <div class="settings-page" id="page-back">
             <div class="subpage-header">
                 <button class="back-btn" onclick="navigateBack()">
@@ -1506,6 +1513,70 @@
                 Übersicht</div>
         </div>
         <!-- [/KD-SOUND-PAGE] -->
+        <!-- [KD-SRC front/page-about.html] -->
+        <div class="settings-page" id="page-about">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Danke</h3>
+            </div>
+
+            <div class="about-hero">
+                <div class="about-kanji" lang="ja">感謝</div>
+                <svg class="about-brush" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M6 10 C 50 3, 120 14, 194 6"></path>
+                </svg>
+                <div class="about-reading">kansha · Dankbarkeit</div>
+            </div>
+
+            <p class="about-text">Schön, dass du mit <b>KanjiDraw</b> lernst. Das Deck ist ein Freizeitprojekt, Strich für
+                Strich gebaut. Wenn es dir hilft, freue ich mich über ein kurzes Zeichen.</p>
+
+            <div class="category-list">
+                <a class="category-card about-link tappable" href="https://ankiweb.net/shared/info/2072366368" target="_blank"
+                    rel="noopener noreferrer">
+                    <div class="category-icon cat-theme">
+                        <svg viewBox="0 0 24 24">
+                            <path class="fi-gold"
+                                d="M12 3.2l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.5l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"></path>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Auf AnkiWeb bewerten</span>
+                        <span class="category-desc">Ein Daumen hoch hilft anderen, das Deck zu finden</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 17L17 7M9 7h8v8"></path>
+                    </svg>
+                </a>
+                <a class="category-card about-link tappable" href="https://github.com/PawMethod/kanji-draw-anki/issues"
+                    target="_blank" rel="noopener noreferrer">
+                    <div class="category-icon cat-sound">
+                        <svg viewBox="0 0 24 24">
+                            <path class="fi-cream" d="M4 5.5h16v10H10l-4.5 3.8V15.5H4z"></path>
+                            <path class="fi-gold" d="M12 7.6a2.6 2.6 0 0 1 1.5 4.7v1h-3v-1A2.6 2.6 0 0 1 12 7.6z"></path>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Fehler melden &amp; Ideen teilen</span>
+                        <span class="category-desc">Auf GitHub – jede Rückmeldung ist willkommen</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 17L17 7M9 7h8v8"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <p class="about-credits">Kanji-Reihenfolge &amp; Schlüsselwörter: James W. Heisig / Robert Rauther, „Die Kanji
+                lernen und behalten“ · Strichpfade: KanjiVG (Ulrich Apel, CC BY-SA 3.0) · Zerlegung nach Primitiven: Migaku
+                Kanji God (GPL v3) · Farbige Strichfolge inspiriert von Kanji Colorizer</p>
+            <p class="about-sign" lang="ja">ありがとう</p>
+        </div>
+        <!-- [/KD-SRC front/page-about.html] -->
     </div>
 </div>
 
@@ -4365,11 +4436,15 @@
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
-        <p><strong>Hinweis: AnkiDroid&nbsp;(Legacy)</strong></p>
-        <p>Falls Wischgesten aktiv sind, könnten Zeichenstriche als Gesten erkannt werden und die Rückseite ungewollt
-            aufdecken.</p>
-        <p class="lgw-path"><strong>Wischgesten deaktivieren</strong> unter<br>Einstellungen&nbsp;→ Steuerung<br>oder
-            ggf. auf den <strong>Neuen Lernmodus</strong> wechseln.</p>
+        <p><strong>Neuen Lernbildschirm einschalten</strong></p>
+        <p>Du nutzt den alten Lernbildschirm von AnkiDroid. Für diese Karten ist der Wechsel <b>sehr zu empfehlen</b>:
+        </p>
+        <ul class="lgw-list">
+            <li>Die Musik läuft beim Umdrehen ohne Pause weiter</li>
+            <li>Flüssiger Kartenwechsel ohne Neuladen der Seite</li>
+            <li>Der alte Lernbildschirm wird nicht mehr weiterentwickelt</li>
+        </ul>
+        <p class="lgw-path">Einstellungen&nbsp;→ <b>Neuer Lernbildschirm</b>&nbsp;→ einschalten</p>
         <button id="lgw-dismiss"
             onclick="(function(){try{sessionStorage.setItem('kanji-lgw-dismissed','1');}catch(e){}document.getElementById('legacy-gesture-warning').classList.remove('lgw-visible');})()">Verstanden</button>
     </div>
@@ -4401,30 +4476,30 @@
 <!-- [KD-AUDIO-ENGINE] -->
 <script>
     /* ═══════════════════════════════════════════════════════════════════
-       KanjiDraw Audio — GENERIERT von Tools/build.py aus Templates/src/audio/
-       Nicht hier bearbeiten: Änderungen gehören in die Module dort.
+       KanjiDraw Audio — GENERATED by Tools/build.py from Templates/src/audio/
+       Do not edit here: changes belong in the modules there.
        ═══════════════════════════════════════════════════════════════════ */
     (function () {
         'use strict';
         // ── 01-base.js ──────────────────────────────────────────────────
-        /* KanjiDraw Audio — prozedurale Klangwelt (Web Audio API, keine Dateien)
-           · Musik aus einem Repertoire echter Lieder (gemeinfreie japanische Klassiker
-             und eigene Stücke), je Strophe anders arrangiert, mit Ma (Stille)
-           · Die Landschaft färbt nur (Instrumente, Raum, Natur); Lied, Tonart und
-             Tempo bleiben — schnelles Durchblättern ändert die Musik nur dezent
-           · Jo-Ha-Kyū und Lernfluss (nach dem Vorbild von Tetris Effect): fertige
-             Kanji steigern das Arrangement, Denkpausen lichten es aus; Treffer
-             antworten im Takt, schnelle Striche werden zusammengefasst
-           · Strichgeräusche je Strichstil, dezente UI-Effekte, Naturkulisse
-           Singleton window.__kdAudio überlebt Kartenwechsel (Anki Desktop und
-           AnkiMobile ersetzen nur #qa); bei Seiten-Reloads (AnkiDroid) setzt das Lied
-           über sessionStorage an derselben Stelle fort.
+        /* KanjiDraw Audio — procedural soundscape (Web Audio API, no audio files)
+           · Music from a repertoire of real songs (public-domain Japanese classics
+             and original pieces), arranged differently per verse, with ma (silence)
+           · The landscape only colours the sound (instruments, room, nature); song,
+             key and tempo stay — flipping through cards changes the music only subtly
+           · Jo-ha-kyū and learning flow (modelled on Tetris Effect): finished kanji
+             build up the arrangement, thinking pauses thin it out; hits answer on the
+             beat, fast strokes are merged
+           · Stroke sounds per stroke style, subtle UI effects, nature ambience
+           The singleton window.__kdAudio survives card changes (Anki Desktop and
+           AnkiMobile only replace #qa); on page reloads (AnkiDroid) the song resumes
+           at the same position via sessionStorage.
 
-           Module (Reihenfolge = Dateiname): base → tables → repertoire → runtime →
+           Modules (order = file name): base → tables → repertoire → runtime →
            graph → samples → instruments → harmony → flow → melody → percussion →
            genres → nature → player → control → fx → strokes → api */
 
-        const VERSION = '1.1.0';
+        const VERSION = '1.2.0';
         const W = window, D = document;
         const prior = W.__kdAudio;
         if (prior && prior.version === VERSION) return;
@@ -4462,7 +4537,7 @@
             rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4, hototogisu: 0.6 } }, n: { wind: 0.55, ev: { frog: 5, cricket: 2, hototogisu: 0.5 } } },
             sage: { d: { wind: 0.55, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2, kakko: 0.8, suikin: 1.5 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3, bell: 0.3 } } },
             hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6, karasu: 0.5, crane: 0.5 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
-            tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1, karasu: 1.2, fumikiri: 0.4, minmin: 0.6 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4, fumikiri: 0.3 } } },
+            tokyo: { d: { city: 0.05, ev: { car: 1.5, train: 0.5, chirp: 1, karasu: 1.2, fumikiri: 0.4, minmin: 0.6 } }, n: { city: 0.04, ev: { car: 1, train: 0.4, fumikiri: 0.3, cricket: 2 } } },
             okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8, minmin: 1 } }, n: { waves: 0.45, ev: { cricket: 6, frog: 2 } } }
         };
         // Continuous-layer calibration (pre-scene gain)
@@ -4472,7 +4547,7 @@
             standard: { base: 0, k: 0.5, f0: 1300, f1: 2500, rel: 0.035 },
             gel: { base: 0, k: 0.5, f0: 1300, f1: 2400, rel: 0.04 },
             ink: { base: 0, k: 0.48, f0: 650, f1: 2100, rel: 0.06 },
-            neon: { base: 0.01, k: 0.05, f0: 380, f1: 2600, rel: 0.09 }
+            neon: { base: 0, k: 0.03, f0: 500, f1: 1600, rel: 0.12 }
         };
         // Acoustic space per theme: reverb send, reverb damping (Hz), echo send
         const SPACE = {
@@ -4636,7 +4711,7 @@
         let cur = { theme: 'neutral', dark: false };
         let ctx = null, G = null, NB = null, PW = null;      // AudioContext, master graph, noise buffers, periodic waves
         let players = [];                                     // one Player per genre; at most two overlap in a crossfade
-        let timer = null, idleIv = null, disposed = false;
+        let timer = null, idleIv = null, disposed = false, loadWait = false;
         let OFF = false, TO = null;                           // offline rendering: fixed clock TO instead of ctx.currentTime
         let lastAct = 0, SV = null, sTok = 0, lastStyle = 'standard', lastX = 54.5, cBase = 0, lastTick = -1e9;
         let NV = 0;                                           // voices scheduled in the current bar (budget, see room())
@@ -4651,6 +4726,8 @@
         function fxOn() { return cfg.level !== 'off' && cfg.fx === 'on'; }
         function live() { for (let i = players.length - 1; i >= 0; i--) if (!players[i].ending) return players[i]; return null; }
         function room(n) { return NV + n <= 44; }
+        // resume() rejects on a closed or interrupted context: ignore, the lifecycle code rebuilds it
+        function wake() { if (!ctx) return; try { const p = ctx.resume(); if (p && p.catch) p.catch(() => { }); } catch (e) { } }
 
         // ── 05-graph.js ─────────────────────────────────────────────────
         // Audio context, master graph (compressor, chorus, reverb, echo) and node helpers
@@ -5093,7 +5170,7 @@
         function chime(style, dst, t, m, vel) {
             if (style === 'ink') pluck(dst, t, m, vel * 1.3, { decay: 1.2, bright: 6, wet: 0.35, pick: true });
             else if (style === 'gel') tone('glass', dst, t, m, vel, { wet: 0.4 });
-            else if (style === 'neon') pluck(dst, t, m, vel * 0.8, { synth: true, wave: 'square', decay: 0.5, bright: 12, q: 5, wet: 0.25, echo: 0.4 });
+            else if (style === 'neon') tone('vibes', dst, t, m, vel * 1.6, { wet: 0.35, echo: 0.35, trem: 5 });
             else marimba(dst, t, m, vel * 1.2);
         }
 
@@ -5542,9 +5619,9 @@
                     this.L.rain = { lvl: pr.rain };
                 }
                 if (pr.city) {
-                    // Distant traffic: a soft mid-band wash that breathes, no rumble
-                    const c2 = this.bed('pink', t, 0.7), bp = filt('bandpass', 520, 0.6), g = gainN(0);
-                    c2.connect(bp); bp.connect(g); g.connect(bg); g.gain.setTargetAtTime(pr.city * K.city, t, 1);
+                    // Distant traffic: a dark, quiet rumble that breathes; the city itself lives in its events
+                    const c2 = this.bed('pink', t, 0.7), lp = filt('lowpass', 380, 0.5), g = gainN(0);
+                    c2.connect(lp); lp.connect(g); g.connect(bg); g.gain.setTargetAtTime(pr.city * K.city, t, 1);
                     this.L.city = { g: g, lvl: pr.city * K.city };
                 }
             }
@@ -5793,6 +5870,14 @@
             const du = rnd(5, 8), pn = rnd(-0.6, 0.6);
             for (let tt = t, i = 0; tt < t + du; tt += 0.48, i++) bell(d, tt, i % 2 ? 83 : 84, lvl * (1 - (tt - t) / du * 0.4), { decay: 0.25, ratio: 2.76, index: 1.2, wet: 0.6, pan: pn });
         }
+        // A car passing in the distance: a dark swell that travels across the stereo field
+        function car(d, t, lvl) {
+            const s = noiseN('pink'), lp = filt('lowpass', 260, 0.7), g = gainN(0), du = rnd(3.5, 5.5), dir = chance(0.5) ? 1 : -1;
+            lp.frequency.setValueAtTime(260, t); lp.frequency.linearRampToValueAtTime(rnd(700, 1000), t + du * 0.5); lp.frequency.linearRampToValueAtTime(260, t + du);
+            g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl, t + du * 0.5); g.gain.linearRampToValueAtTime(0, t + du);
+            s.connect(lp); lp.connect(g); sendMove(g, d, 0.3, -0.7 * dir, 0.7 * dir, t, du);
+            startNoise(s, t); s.stop(t + du + 0.1);
+        }
         const EV = {
             minmin: (d, t) => minmin(d, t, 0.009),
             higurashi: (d, t) => higurashi(d, t, 0.014),
@@ -5801,6 +5886,7 @@
             kajika: (d, t) => kajika(d, t, 0.018),
             karasu: (d, t) => karasu(d, t, 0.02),
             fumikiri: (d, t) => fumikiri(d, t, 0.01),
+            car: (d, t) => car(d, t, 0.03),
             suikin(d, t, s) { const nt = scaleNotes(s, 79, 96), pn = rnd(-0.6, 0.6); suikin(d, t, pick(nt), rnd(0.015, 0.03), pn); if (chance(0.4)) suikin(d, t + rnd(0.15, 0.4), pick(nt), 0.012, pn); },
             chirp: (d, t) => birdCall(d, t, 0.028),
             uguisu: (d, t) => uguisu(d, t, 0.03),
@@ -5982,9 +6068,11 @@
             if (disposed) return;
             if (!musicOn()) { fadeOutAll(1.8); return; }
             if (!ensureCtx()) return;
-            if (!OFF && ctx.state !== 'running') { if (!D.hidden) { try { ctx.resume(); } catch (e) { } } return; }
+            if (!OFF && ctx.state !== 'running') { if (!D.hidden) wake(); return; }
             const top = live();
             if (top && top.genre === cfg.music) { top.retheme(cur.theme, cur.dark); return; }
+            // While the page still parses and paints, a starting AudioContext underruns on phones (crackle): start after load
+            if (!top && !OFF && D.readyState !== 'complete') { waitForLoad(); return; }
             const p = new Player(cfg.music);
             let t = now() + 0.06, dur, st = null;
             if (top) {
@@ -5996,13 +6084,24 @@
                 if (imm()) p.accent = true;
             } else {
                 const ls = OFF ? null : loadState();
-                if (ls && ls.recent) { st = ls; FL.resume(ls); dur = 1.5; }
+                // After a page reload (AnkiDroid Legacy) the song continues where it was
+                if (ls && ls.recent) { st = ls; FL.resume(ls); dur = 0.6; }
                 else dur = 3;
             }
             p.begin(t, dur, st);
             players.push(p);
             if (players.length > 3) players[0].fadeOut(now() + 0.01, 0.3, true);
             if (!OFF) { ensureTimer(); tick(); }
+        }
+        function waitForLoad() {
+            if (loadWait) return;
+            loadWait = true;
+            let done = false;
+            const go = () => { if (done) return; done = true; W.removeEventListener('load', soon); loadWait = false; syncMusic(); };
+            // One more frame after load: the first paint of the landscape is the last heavy step
+            const soon = () => setTimeout(() => requestAnimationFrame(go), 50);
+            W.addEventListener('load', soon);
+            setTimeout(go, 4000);
         }
         function fadeOutAll(dur) {
             if (!ctx) return;
@@ -6025,7 +6124,7 @@
             players = players.filter(s => { if (s.endT !== null && tn > s.endT + 7) { s.dispose(); return false; } return true; });
             if (!players.length) stopTimer();
         }
-        function tick() { if (!ctx || ctx.state !== 'running') return; try { pump(now() + 1.4); } catch (e) { if (W.__kdAudioDebug) console.error(e); } }
+        function tick() { watchdog(); if (!ctx || ctx.state !== 'running') return; try { pump(now() + 1.4); } catch (e) { if (W.__kdAudioDebug) console.error(e); } }
         function ensureTimer() { if (!timer) timer = setInterval(tick, 250); }
         function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 
@@ -6068,6 +6167,26 @@
             undo(t) { const n = fxNotes(67, 88), i = nearestIdx(n, 79); pluck(FXD(), t, n[i], 0.03, { decay: 0.8, bright: 7, wet: 0.25, pick: true }); pluck(FXD(), t + 0.08, n[Math.max(0, i - 2)], 0.025, { decay: 0.8, bright: 7, wet: 0.25 }); },
             skip(t) { swish(FXD(), t, 500, 1900, 0.3, 0.028); tone('glass', FXD(), t + 0.2, rootNear(ks(), 79), 0.02, { wet: 0.45 }); },
             cardFront(t) { swish(FXD(), t, 800, 1700, 0.26, 0.05); },
+            // Kanji tree: the deeper the primitive, the higher the tone
+            node(t, depth) {
+                const n = fxNotes(72, 96), i = clamp(1 + 2 * (depth || 0), 0, n.length - 1);
+                tone('celesta', FXD(), t, n[i], 0.022, { wet: 0.35 });
+                tone('glass', FXD(), t + 0.05, n[Math.min(n.length - 1, i + 2)], 0.008, { wet: 0.5 });
+            },
+            nodeOff(t) { const n = fxNotes(67, 84); tone('celesta', FXD(), t, n[nearestIdx(n, 76)], 0.012, { wet: 0.3 }); },
+            // Furigana: a short koto upturn when the reading appears, one soft note when it hides
+            furigana(t) {
+                const n = fxNotes(67, 88), i = nearestIdx(n, 74);
+                pluck(FXD(), t, n[i], 0.03, { decay: 0.9, bright: 7, wet: 0.3, pick: true });
+                pluck(FXD(), t + 0.07, n[Math.min(n.length - 1, i + 2)], 0.026, { decay: 1.1, bright: 7, wet: 0.35 });
+            },
+            furiganaOff(t) { const n = fxNotes(67, 88); pluck(FXD(), t, n[nearestIdx(n, 76)], 0.02, { decay: 0.7, bright: 5, wet: 0.3 }); },
+            // Pitfall card: a soft wood tap and a koto note one scale step higher per card
+            pitfall(t, i) {
+                const n = fxNotes(64, 91), k = clamp(nearestIdx(n, 69) + (i || 0), 0, n.length - 1);
+                wood(FXD(), t, 1250, 0.016);
+                pluck(FXD(), t + 0.015, n[k], 0.028, { decay: 0.9, bright: 6, wet: 0.3, pick: true });
+            },
             cardBack(t) {
                 const r = rootNear(ks(), 76);
                 swish(FXD(), t, 500, 2100, 0.34, 0.016);
@@ -6088,9 +6207,6 @@
                 const sc = imm() ? live() : null, r = RES[style];
                 let out = amp, tones = sc && sc.song ? ctones(sc, t, r.lo, r.hi) : null;
                 Object.assign(this, { style: style, c: c, x: x, y: y, ms: clockMs(), sp: 0, upd: 0, m: 0, pen: ptype === 'pen', pr: +pressure || 0, src: [], amp: amp });
-                // Neon hum sits on the chord root and rises towards the fifth with speed
-                if (sc && sc.song && style === 'neon') this.root = mtof(low(chordAt(sc, t).root, 38));
-                const hz0 = this.root || 92;
                 if (ctx.createStereoPanner) { this.pan = ctx.createStereoPanner(); this.pan.pan.value = panOf(x); amp.connect(this.pan); out = this.pan; }
                 out.connect(G.stroke);
                 const src = kind => { const s = noiseN(kind); startNoise(s, t); this.src.push(s); return s; };
@@ -6107,17 +6223,17 @@
                     this.f = lp;
                     thock(d, t, 45, 0.035);
                 } else if (style === 'neon') {
-                    // Electric tube hum that brightens and rises with speed
-                    const o1 = oscN('sawtooth', hz0), o2 = oscN('sawtooth', hz0 * 1.007), o3 = oscN('sine', hz0 * 2), lp = filt('lowpass', c.f0, 5), o3g = gainN(0.5);
-                    o1.connect(lp); o2.connect(lp); o3.connect(o3g); o3g.connect(lp); lp.connect(amp);
+                    // Soft glow on the chord root (else the key): two slightly detuned sines beat slowly, a quiet
+                    // triangle an octave up carries it on phone speakers. Speed changes brightness, never pitch
+                    const f = mtof(low(sc && sc.song ? chordAt(sc, t).root : ks().k, 50)), lp = filt('lowpass', c.f0, 0.7), og = gainN(0.25);
+                    const o1 = oscN('sine', f), o2 = oscN('sine', f * 1.003), o3 = oscN('triangle', f * 2);
+                    o1.connect(lp); o2.connect(lp); o3.connect(og); og.connect(lp); lp.connect(amp);
                     [o1, o2, o3].forEach(o => { o.start(t); this.src.push(o); });
-                    const cs = src('white'), cbp = filt('bandpass', 5200, 2), cg = gainN(0.02);
-                    cs.connect(cbp); cbp.connect(cg); cg.connect(amp);
-                    this.f = lp; this.o1 = o1; this.o2 = o2; this.o3 = o3;
-                    const z = oscN('sine', 280), zg = gainN(0);
-                    z.frequency.setValueAtTime(280, t); z.frequency.exponentialRampToValueAtTime(1500, t + 0.07);
-                    zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.025, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.04, 0.03);
-                    z.connect(zg); zg.connect(out); z.start(t); z.stop(t + 0.3);
+                    this.f = lp;
+                    // Pen down: a quiet ping two octaves up instead of a zap
+                    const z = oscN('sine', f * 4), zg = gainN(0);
+                    zg.gain.setValueAtTime(0, t); zg.gain.linearRampToValueAtTime(0.007, t + 0.01); zg.gain.setTargetAtTime(0, t + 0.02, 0.07);
+                    z.connect(zg); zg.connect(out); send(zg, d, 0.5, 0, 0); z.start(t); z.stop(t + 0.5);
                 } else {
                     // Soft pencil on smooth paper: warm friction band, slow fine graphite grain (no hiss, no crackle)
                     const ps = src('pink'), bp = filt('bandpass', c.f0, 0.7), lp = filt('lowpass', 4200, 0.5), gr = gainN(0.7), gm = src('pink'), gmf = filt('lowpass', 28, 0.5), gmg = gainN(1.6);
@@ -6146,9 +6262,7 @@
                 this.f.frequency.setTargetAtTime(c.f0 + (c.f1 - c.f0) * m, t, 0.05);
                 if (this.pan) this.pan.pan.setTargetAtTime(panOf(this.x), t, 0.1);
                 if (this.tg) this.tg.gain.setTargetAtTime(0.012 * loud, t, 0.05);
-                if (this.o1) this.tune(this.root ? this.root * (1 + 0.5 * m) : 92 + 46 * m, t, 0.06);
             }
-            tune(hz, t, tc) { this.o1.frequency.setTargetAtTime(hz, t, tc); this.o2.frequency.setTargetAtTime(hz * 1.007, t, tc); this.o3.frequency.setTargetAtTime(hz * 2, t, tc); }
             move(x, y, pressure) {
                 const ms = clockMs(), dt = Math.max(1, ms - this.ms) / 1000, dist = Math.sqrt((x - this.x) * (x - this.x) + (y - this.y) * (y - this.y));
                 this.x = x; this.y = y; this.ms = ms; if (pressure > 0) this.pr = pressure;
@@ -6161,7 +6275,6 @@
                 const t = now(), c = this.c, d = { dry: G.stroke, wet: G.verbIn, echo: null }, end = t + c.rel * 8 + 0.05;
                 this.amp.gain.cancelScheduledValues(t); this.amp.gain.setTargetAtTime(0, t, c.rel);
                 if (this.style === 'ink' && this.m > 0.4) noiseHit(d, t, { kind: 'pink', type: 'bandpass', f: 1400, f2: 3800, q: 1.4, dur: 0.14, att: 0.02, vel: 0.05 * this.m, pan: this.pan ? panOf(this.x) : 0 });
-                if (this.o1) this.tune(this.root ? this.root / 2 : 55, t, 0.12);
                 this.src.forEach(s => { try { s.stop(end); } catch (e) { } });
             }
         }
@@ -6293,31 +6406,88 @@
         }
 
         // ── Lifecycle ──
-        function onGesture() {
+        let faded = false, ctxStale = false, autoRebuilt = false;
+        // iOS only counts these as user activation (may create/resume an AudioContext)
+        const ACTIVATING = { pointerup: 1, touchend: 1, click: 1, keydown: 1 };
+        function onGesture(e) {
             if (cfg.level === 'off' || disposed) return;
             touch();
+            if (faded) revive();
+            if (ctx && (ctxStale || ctx.state === 'closed')) { if (!e || ACTIVATING[e.type]) rebuild(); else return; }
             if (!ctx && !musicOn()) return;
             if (!ensureCtx()) return;
-            if (ctx.state !== 'running') { try { ctx.resume(); } catch (e) { } }
+            if (ctx.state !== 'running') { wake(); checkAlive(); }
         }
         function onVis() {
             if (!ctx) return;
             if (D.hidden) { const s = live(); if (s) s.save(); try { ctx.suspend(); } catch (e) { } }
-            else if (cfg.level !== 'off' && (musicOn() || SV)) { try { ctx.resume(); } catch (e) { } }
+            else {
+                autoRebuilt = false;
+                if (faded) revive();
+                if (cfg.level !== 'off' && (musicOn() || SV)) { wake(); checkAlive(); }
+            }
         }
-        function onHide() { const s = live(); if (s) s.save(); }
-        const GEST = ['pointerdown', 'pointerup', 'touchend', 'keydown', 'click'];
-        GEST.forEach(n => D.addEventListener(n, onGesture, true));
+        function revive() { faded = false; if (ctx && G && !OFF) setParam(G.master.gain, LEVEL[cfg.level] || 0, now(), 0.08); }
+        // After Safari or another app, iOS can leave the context interrupted or frozen: rebuild it right away,
+        // and if that is not allowed without a gesture, on the next tap anywhere (also inside modals)
+        function checkAlive() {
+            if (!ctx || OFF) return;
+            const c = ctx, t0 = c.currentTime;
+            setTimeout(() => {
+                if (ctx !== c || D.hidden || (c.state === 'running' && c.currentTime > t0)) return;
+                if (!autoRebuilt && musicOn()) { autoRebuilt = true; rebuild(); checkAlive(); }
+                else ctxStale = true;
+            }, 800);
+        }
+        function rebuild() {
+            ctxStale = false;
+            const s = live(); if (s) s.save();
+            stopTimer();
+            players.forEach(p => p.dispose()); players = [];
+            if (SV) { clearInterval(SV.iv); SV = null; }
+            const old = ctx;
+            ctx = null; G = null;
+            old.onstatechange = null;
+            try { const pr = old.close(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { }
+            if (!ensureCtx()) return;
+            if (ctx.state !== 'running') wake();
+            if (musicOn()) syncMusic();
+        }
+        // Watchdog (bar timer): a context that reports "running" while its clock stands still is dead
+        let wdT = -1, wdMs = 0;
+        function watchdog() {
+            if (OFF || !ctx || D.hidden || ctx.state !== 'running') { wdT = -1; return; }
+            const ms = clockMs();
+            if (ctx.currentTime !== wdT) { wdT = ctx.currentTime; wdMs = ms; return; }
+            if (ms - wdMs > 1500 && !ctxStale) { ctxStale = true; if (!autoRebuilt) { autoRebuilt = true; rebuild(); } }
+        }
+        // AnkiDroid Legacy tears the page down per card side: fade out within a few ms instead of a hard cut (click).
+        // The wait gives the audio thread time to render the fade before the context is destroyed.
+        function onHide() {
+            const s = live(); if (s) s.save();
+            if (!ctx || !G || OFF || ctx.state !== 'running') return;
+            const p = G.master.gain, t = now(), lat = (ctx.baseLatency || 0) + (ctx.outputLatency || 0);
+            faded = true;
+            p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(0, t + 0.03);
+            const end = performance.now() + Math.min(100, 45 + lat * 1000);
+            while (performance.now() < end) { }
+        }
+        // The page stayed alive (bfcache, or iOS fired pagehide without unloading): undo the fade of onHide
+        function onShow() { if (faded) revive(); }
+        const GEST = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'keydown', 'click'];
+        // Window capture runs before any handler of the card (modals stop propagation or prevent touches)
+        GEST.forEach(n => W.addEventListener(n, onGesture, { capture: true, passive: true }));
         D.addEventListener('visibilitychange', onVis);
         W.addEventListener('pagehide', onHide);
+        W.addEventListener('pageshow', onShow);
         // Idle: release the audio device when nothing has played for a while
         idleIv = setInterval(() => {
             if (ctx && ctx.state === 'running' && !players.length && !SV && Date.now() - lastAct > 15000) { try { ctx.suspend(); } catch (e) { } }
         }, 5000);
         function dispose() {
             disposed = true; stopTimer(); clearInterval(idleIv); bank.stop();
-            GEST.forEach(n => D.removeEventListener(n, onGesture, true));
-            D.removeEventListener('visibilitychange', onVis); W.removeEventListener('pagehide', onHide);
+            GEST.forEach(n => W.removeEventListener(n, onGesture, { capture: true }));
+            D.removeEventListener('visibilitychange', onVis); W.removeEventListener('pagehide', onHide); W.removeEventListener('pageshow', onShow);
             if (ctx) { try { ctx.close(); } catch (e) { } }
             ctx = null; players = [];
             if (W.__kdAudio === api) W.__kdAudio = null;
@@ -6363,17 +6533,17 @@
             strokeEnd: safe(strokeEnd),
             strokeResult: safe(strokeResult),
             complete: safe(complete),
-            fx: safe((name, delay) => { if (fxOn() && FX.hasOwnProperty(name)) play(FX[name], delay); }),
+            fx: safe((name, delay, arg) => { if (fxOn() && FX.hasOwnProperty(name)) play(t => FX[name](t, arg), delay); }),
             demoStroke: safe(demoStroke),
             state() {
                 return {
-                    ctx: ctx ? ctx.state : 'none', cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark, flow: Math.round(FL.level() * 100) / 100, done: FL.done,
+                    ctx: ctx ? ctx.state : 'none', gain: G ? Math.round(G.master.gain.value * 100) / 100 : null, cfg: JSON.parse(JSON.stringify(cfg)), theme: cur.theme, dark: cur.dark, flow: Math.round(FL.level() * 100) / 100, done: FL.done,
                     scenes: players.map(p => p.describe())
                 };
             },
             dispose: dispose,
             _offline: offline,
-            _t: { THEMES, GENRES, NAT, SK, FX, EV, SIG, SONGS, songErrors, scaleNotes, voiceChord, rootNear, renderPiano: SampleBank.piano, renderString: SampleBank.string }
+            _t: { THEMES, GENRES, NAT, SK, FX, EV, SIG, SONGS, songErrors, scaleNotes, voiceChord, rootNear, renderPiano: SampleBank.piano, renderString: SampleBank.string, ctx: () => ctx }
         };
         W.__kdAudio = api;
     })();
@@ -6737,17 +6907,15 @@
                     modal.insertBefore(rail, modal.firstChild);
 
                     var topInset = 2;
-                    var updateThumb = function (remeasure) {
+                    var updateThumb = function () {
                         var sh = modal.scrollHeight;
                         var ch = modal.clientHeight;
                         if (sh <= ch + 2) {
                             thumb.classList.remove('visible');
                             return;
                         }
-                        if (remeasure !== false) {
-                            var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
-                            topInset = (hdr ? hdr.offsetHeight : 0) + 2;
-                        }
+                        var hdr = modal.querySelector('.settings-page.active .info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                        topInset = (hdr ? hdr.offsetHeight : 0) + 2;
                         var bottomInset = 10;
                         var trackLen = ch - topInset - bottomInset;
                         if (trackLen <= 24) {
@@ -6776,7 +6944,7 @@
                             var dy = me.clientY - startY;
                             var sh = modal.scrollHeight;
                             var ch = modal.clientHeight;
-                            var hdr = modal.querySelector('.info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
+                            var hdr = modal.querySelector('.settings-page.active .info-modal-header, .settings-page.active .settings-main-title, .settings-page.active .subpage-header');
                             var topIn = (hdr ? hdr.offsetHeight : 0) + 2;
                             var trk = Math.max(1, ch - topIn - 10);
                             var tLen = Math.max(32, Math.round(trk * (ch / sh)));
@@ -6907,7 +7075,7 @@
         var celGrid = document.getElementById('celebration-grid');
         if (celTitle) celTitle.classList.toggle('setting-disabled', isFree);
         if (celGrid) celGrid.classList.toggle('setting-disabled', isFree);
-        // Echtzeit-Prüfung: disabled in free mode
+        // Live check ("Echtzeit-Prüfung"): disabled in free mode
         var cfTitle = document.getElementById('color-front-title');
         var cfGrid = document.getElementById('color-front-grid');
         if (cfTitle) cfTitle.classList.toggle('setting-disabled', isFree);
@@ -7168,7 +7336,7 @@
             var primary = (primaryPref === 'random') ? (_cardRandomTheme || _rollRandomTheme()) : primaryPref;
             if (!_primaryColors[primary]) primary = 'neutral';
             root.setAttribute('data-jp-theme', primary);
-            // Klang: Musik/Naturklang folgt Theme × Tag/Nacht (Überblendung in der Engine)
+            // Sound: music/ambience follows theme × day/night (the engine crossfades)
             _kdSnd('setScene', primary, isDark);
             applySoundSettings();
             var pColors = _primaryColors[primary] || _primaryColors.neutral;
@@ -7317,8 +7485,8 @@
     }
 
     // [KD-SRC front/sound-bridge.js]
-    // --- Klang & Musik: Bridge zur Audio-Engine (window.__kdAudio) ---
-    // Einstellungen sind global (nicht c1_/c2_-gescoped) wie die Theme-Keys. Standard: aus.
+    // --- Sound & music: bridge to the audio engine (window.__kdAudio) ---
+    // Settings are global (not c1_/c2_-scoped), like the theme keys. Default: off.
     function _kdSnd(method) {
         var a = window.__kdAudio;
         if (!a || typeof a[method] !== 'function') return;
@@ -7359,14 +7527,14 @@
         applySoundSettings();
     }
 
-    // Effekt-Klänge per Delegation — einmal pro WebView gebunden (Anki Desktop
-    // behält das Dokument über Kartenwechsel hinweg, nur #qa wird ersetzt).
+    // Effect sounds via delegation — bound once per WebView (Anki Desktop keeps
+    // the document across card changes, only #qa is replaced).
     if (!window._kdSndUiBound) {
         window._kdSndUiBound = true;
         (function () {
             var rules = [
                 ['#button-reveal', 'hint'], ['#button-undo', 'undo'], ['#button-skip', 'skip'], ['#button-reset', 'reset'],
-                ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.back-to-main', 'back'], ['.close-settings', 'close'], ['.back-btn', 'back'],
+                ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.settings-about-btn', 'nav'], ['.back-to-main', 'back'], ['.close-settings', 'close'], ['.back-btn', 'back'],
                 ['.category-card', 'nav'], ['.segment-btn', 'tab'], ['button, [role="button"]', 'tap']
             ];
             var down = null;
@@ -7552,7 +7720,7 @@
     applyFrontFeaturesC2();
     // Deferred re-apply: Anki may re-set nightMode after our script runs.
     _scheduleDeferredThemeCheck();
-    // Klang: Karte aufgedeckt / neue Karte (Musik läuft über Kartenwechsel weiter)
+    // Sound: card revealed / new card (music keeps playing across card changes)
     _kdSnd('cardShown', !!document.getElementById('is-back-side-marker'));
 
     // Prevent Anki from overriding forced light/dark mode.

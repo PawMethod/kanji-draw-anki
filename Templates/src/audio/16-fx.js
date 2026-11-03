@@ -36,6 +36,26 @@ const FX = {
     undo(t) { const n = fxNotes(67, 88), i = nearestIdx(n, 79); pluck(FXD(), t, n[i], 0.03, { decay: 0.8, bright: 7, wet: 0.25, pick: true }); pluck(FXD(), t + 0.08, n[Math.max(0, i - 2)], 0.025, { decay: 0.8, bright: 7, wet: 0.25 }); },
     skip(t) { swish(FXD(), t, 500, 1900, 0.3, 0.028); tone('glass', FXD(), t + 0.2, rootNear(ks(), 79), 0.02, { wet: 0.45 }); },
     cardFront(t) { swish(FXD(), t, 800, 1700, 0.26, 0.05); },
+    // Kanji tree: the deeper the primitive, the higher the tone
+    node(t, depth) {
+        const n = fxNotes(72, 96), i = clamp(1 + 2 * (depth || 0), 0, n.length - 1);
+        tone('celesta', FXD(), t, n[i], 0.022, { wet: 0.35 });
+        tone('glass', FXD(), t + 0.05, n[Math.min(n.length - 1, i + 2)], 0.008, { wet: 0.5 });
+    },
+    nodeOff(t) { const n = fxNotes(67, 84); tone('celesta', FXD(), t, n[nearestIdx(n, 76)], 0.012, { wet: 0.3 }); },
+    // Furigana: a short koto upturn when the reading appears, one soft note when it hides
+    furigana(t) {
+        const n = fxNotes(67, 88), i = nearestIdx(n, 74);
+        pluck(FXD(), t, n[i], 0.03, { decay: 0.9, bright: 7, wet: 0.3, pick: true });
+        pluck(FXD(), t + 0.07, n[Math.min(n.length - 1, i + 2)], 0.026, { decay: 1.1, bright: 7, wet: 0.35 });
+    },
+    furiganaOff(t) { const n = fxNotes(67, 88); pluck(FXD(), t, n[nearestIdx(n, 76)], 0.02, { decay: 0.7, bright: 5, wet: 0.3 }); },
+    // Pitfall card: a soft wood tap and a koto note one scale step higher per card
+    pitfall(t, i) {
+        const n = fxNotes(64, 91), k = clamp(nearestIdx(n, 69) + (i || 0), 0, n.length - 1);
+        wood(FXD(), t, 1250, 0.016);
+        pluck(FXD(), t + 0.015, n[k], 0.028, { decay: 0.9, bright: 6, wet: 0.3, pick: true });
+    },
     cardBack(t) {
         const r = rootNear(ks(), 76);
         swish(FXD(), t, 500, 2100, 0.34, 0.016);

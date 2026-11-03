@@ -804,11 +804,16 @@ window._kanjiRenderPrimitiveTree = function (rawData, target) {
             if (selectedNode === hitItem.node) {
                 applyNodeSelection(null);
                 hitItem.el.classList.add('pt-dismissed');
+                _kdSnd('fx', 'nodeOff');
             } else {
                 if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
                 applyNodeSelection(hitItem.node);
+                let depth = 0;
+                for (let p = hitItem.node.parent; p; p = p.parent) depth++;
+                _kdSnd('fx', 'node', 0, depth);
             }
         } else {
+            if (selectedNode) _kdSnd('fx', 'nodeOff');
             applyNodeSelection(null);
         }
     };

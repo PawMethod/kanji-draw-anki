@@ -991,7 +991,7 @@ html[data-jp-theme="okinawa"] .forest-scenery .jp-scene-okinawa {
     stroke: rgba(200, 240, 240, 0.38);
 }
 
-/* Theme: Sakura-Frühling (rose) — Hanami cherry-blossom park & bridge */
+/* Theme: Sakura spring (rose) — Hanami cherry-blossom park & bridge */
 html[data-jp-theme="rose"] {
     --sky-top: #fff0f5;
     --meadow-tint: #f2cedc;
@@ -1097,7 +1097,7 @@ html[data-jp-theme="rose"] .night_mode .forest-scenery .fs-pebbles {
     fill: #29131c;
 }
 
-/* Theme: Fuji & Wald (neutral) — Mt. Fuji & pine forest default */
+/* Theme: Fuji & forest (neutral) — Mt. Fuji & pine forest default */
 html[data-jp-theme="neutral"] {
     --sky-top: #eefbf0;
     --meadow-tint: #bde8cb;
@@ -1137,7 +1137,7 @@ html[data-jp-theme="neutral"] .night_mode {
     --tag-on-text: #d6ede0;
 }
 
-/* Theme: Kyoto-Herbst (sepia) — Momiji red-and-gold autumn maple foliage */
+/* Theme: Kyoto autumn (sepia) — Momiji red-and-gold autumn maple foliage */
 html[data-jp-theme="sepia"] {
     --sky-top: #fff6e4;
     --meadow-tint: #ebd2a4;
@@ -1288,7 +1288,7 @@ html[data-jp-theme="sepia"] .night_mode .forest-scenery .fs-pebbles {
     fill: #261408;
 }
 
-/* Theme: Onsen-Nebel (cool) — Serene blue-teal misty mountain springs */
+/* Theme: Onsen mist (cool) — Serene blue-teal misty mountain springs */
 html[data-jp-theme="cool"] {
     --sky-top: #eefbfc;
     --meadow-tint: #bae4ea;
@@ -1394,7 +1394,7 @@ html[data-jp-theme="cool"] .night_mode .forest-scenery .fs-pebbles {
     fill: #182428;
 }
 
-/* Theme: Goldener Tempel (warm) — Kinkaku-ji golden sunlit glow */
+/* Theme: Golden temple (warm) — Kinkaku-ji golden sunlit glow */
 html[data-jp-theme="warm"] {
     --sky-top: #fdfce8;
     --meadow-tint: #dce3a8;
@@ -1614,7 +1614,7 @@ html[data-jp-theme="sage"] .night_mode .forest-scenery .fs-pebbles {
     fill: #21150a;
 }
 
-/* Theme: Hokkaidō-Winter (hokkaido) — Otaru Canal, Mt. Yōtei & Snow Lanterns */
+/* Theme: Hokkaidō winter (hokkaido) — Otaru Canal, Mt. Yōtei & Snow Lanterns */
 html[data-jp-theme="hokkaido"] {
     --sky-top: #e8f3fc;
     --meadow-tint: #b8d8f0;
@@ -1762,7 +1762,7 @@ html[data-jp-theme="okinawa"] .forest-scenery path.fs-grass-overhang {
     display: none;
 }
 
-/* Theme: Tokyo-Metropole (tokyo) — Modern Skyline, Tokyo Tower & Shinkansen */
+/* Theme: Tokyo metropolis (tokyo) — Modern Skyline, Tokyo Tower & Shinkansen */
 html[data-jp-theme="tokyo"] {
     --sky-top: #f2f3fc;
     --meadow-tint: #cbd0ed;
@@ -1868,7 +1868,7 @@ html[data-jp-theme="tokyo"] .night_mode .forest-scenery .fs-pebbles {
     fill: #151828;
 }
 
-/* Theme: Okinawa-Lagune (okinawa) — Subtropical Ryūkyū Island, Shisa & Coral Sea */
+/* Theme: Okinawa lagoon (okinawa) — Subtropical Ryūkyū Island, Shisa & Coral Sea */
 html[data-jp-theme="okinawa"] {
     --sky-top: #fff5ee;
     --meadow-tint: #f0d0be;
@@ -2154,6 +2154,31 @@ svg#svg-bg {
     padding: 6px 8px;
     margin-top: 4px;
     line-height: 1.5;
+}
+
+#legacy-gesture-warning .lgw-list {
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    font-size: 0.68rem;
+    line-height: 1.45;
+}
+
+#legacy-gesture-warning .lgw-list li {
+    padding-left: 1.1em;
+    text-indent: -1.1em;
+}
+
+#legacy-gesture-warning .lgw-list li::before {
+    content: '✓\00a0';
+    color: var(--accent);
+    font-weight: 700;
+}
+
+#legacy-gesture-warning .lgw-alt {
+    font-size: 0.62rem;
+    color: var(--text-muted);
 }
 
 #lgw-dismiss {
@@ -2896,6 +2921,21 @@ html.is-ankidesktop .info-overlay {
     color: rgba(255, 255, 255, 0.85);
 }
 
+.info-modal-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* RTK number of the kanji (field Nummer) */
+.info-modal-number {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.55);
+}
+
 .info-modal-meaning {
     font-size: 14px;
     font-weight: 800;
@@ -3562,6 +3602,150 @@ html.is-ankidesktop .info-overlay {
     flex-shrink: 0;
     stroke: #2b180e;
     color: #2b180e;
+}
+
+/* Small heart top right: thanks & feedback page (absolute: hover/animation never changes the header height) */
+.settings-about-btn {
+    position: absolute;
+    right: 16px;
+    top: calc(50% - 15px);
+    width: 30px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s ease, transform 0.12s ease;
+    animation: aboutBeat 1.1s ease 1.6s 1;
+}
+
+.settings-main-title .settings-about-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+}
+
+.settings-about-btn:active {
+    transform: scale(0.88);
+}
+
+@media (hover: hover),
+(any-hover: hover) {
+    .settings-about-btn:hover {
+        background: rgba(255, 255, 255, 0.28);
+    }
+}
+
+@keyframes aboutBeat {
+
+    0%,
+    40%,
+    100% {
+        transform: scale(1);
+    }
+
+    20% {
+        transform: scale(1.14);
+    }
+
+    60% {
+        transform: scale(1.08);
+    }
+}
+
+.about-hero {
+    text-align: center;
+    margin: 4px 0 14px;
+}
+
+.about-kanji {
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
+    font-size: 46px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    line-height: 1.15;
+    color: var(--accent);
+}
+
+.about-brush {
+    display: block;
+    width: 120px;
+    height: 10px;
+    margin: 2px auto 6px;
+}
+
+.about-brush path {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.45;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 0;
+}
+
+#page-about.active .about-brush path {
+    animation: aboutBrush 0.9s ease 0.2s both;
+}
+
+@keyframes aboutBrush {
+    from {
+        stroke-dashoffset: 200;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.about-reading {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.about-text {
+    margin: 0 6px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--text-main);
+}
+
+.about-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.about-credits {
+    margin: 4px 8px 8px;
+    font-size: 10px;
+    line-height: 1.45;
+    text-align: center;
+    color: var(--text-faint);
+}
+
+.about-sign {
+    margin: 0 0 4px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .settings-about-btn,
+    #page-about.active .about-brush path {
+        animation: none;
+    }
 }
 
 /* --------------------------------------------------------------------------
@@ -4281,6 +4465,7 @@ ruby rt {
 }
 
 .pitfall-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 7px;
@@ -4296,24 +4481,40 @@ ruby rt {
 }
 
 .pitfall-card[data-cat="order"] {
+    --pf-c: #e8625c;
     border-left-color: #e8625c;
 }
 
 .pitfall-card[data-cat="dir"] {
+    --pf-c: #2aa7e0;
     border-left-color: #2aa7e0;
 }
 
 .pitfall-card[data-cat="bend"] {
+    --pf-c: #f0a030;
     border-left-color: #f0a030;
 }
 
 .pitfall-card[data-cat="form"] {
+    --pf-c: #3fbf86;
     border-left-color: #3fbf86;
 }
 
+/* Selected card: frame, ring and a light tint in its category colour */
 .pitfall-card.active {
-    box-shadow: var(--filter-hover);
+    border-color: var(--pf-c, var(--accent));
+    box-shadow: 0 0 0 2px var(--pf-c, var(--accent)), var(--filter-hover);
     transform: translateY(-1px);
+}
+
+.pitfall-card.active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--pf-c, var(--accent));
+    opacity: 0.09;
+    pointer-events: none;
 }
 
 .pitfall-card-top {
@@ -5025,7 +5226,8 @@ ruby rt {
     margin: -24px -24px 0 0;
     overflow: visible;
     pointer-events: none;
-    z-index: 25;
+    /* Below the sticky headers (15), above the content */
+    z-index: 14;
 }
 
 .custom-scroll-thumb {

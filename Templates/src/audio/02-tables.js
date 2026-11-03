@@ -17,7 +17,7 @@ const NAT = {
     rose: { d: { wind: 0.5, ev: { uguisu: 1.5, chirp: 4, hototogisu: 0.6 } }, n: { wind: 0.55, ev: { frog: 5, cricket: 2, hototogisu: 0.5 } } },
     sage: { d: { wind: 0.55, leaves: 0.5, ev: { knock: 2, shishi: 0.8, chirp: 2, kakko: 0.8, suikin: 1.5 } }, n: { wind: 0.45, leaves: 0.35, ev: { shishi: 0.8, cricket: 6, owl: 0.3, bell: 0.3 } } },
     hokkaido: { d: { wind: 0.6, ev: { tinkle: 3, chirp: 0.6, karasu: 0.5, crane: 0.5 } }, n: { wind: 0.6, ev: { owl: 0.7, tinkle: 1 } } },
-    tokyo: { d: { city: 0.28, ev: { train: 0.5, chirp: 1, karasu: 1.2, fumikiri: 0.4, minmin: 0.6 } }, n: { city: 0.2, rain: 0.5, ev: { train: 0.4, fumikiri: 0.3 } } },
+    tokyo: { d: { city: 0.05, ev: { car: 1.5, train: 0.5, chirp: 1, karasu: 1.2, fumikiri: 0.4, minmin: 0.6 } }, n: { city: 0.04, ev: { car: 1, train: 0.4, fumikiri: 0.3, cricket: 2 } } },
     okinawa: { d: { waves: 0.5, wind: 0.2, ev: { furin: 1.5, chirp: 0.8, minmin: 1 } }, n: { waves: 0.45, ev: { cricket: 6, frog: 2 } } }
 };
 // Continuous-layer calibration (pre-scene gain)
@@ -27,7 +27,7 @@ const SK = {
     standard: { base: 0, k: 0.5, f0: 1300, f1: 2500, rel: 0.035 },
     gel: { base: 0, k: 0.5, f0: 1300, f1: 2400, rel: 0.04 },
     ink: { base: 0, k: 0.48, f0: 650, f1: 2100, rel: 0.06 },
-    neon: { base: 0.01, k: 0.05, f0: 380, f1: 2600, rel: 0.09 }
+    neon: { base: 0, k: 0.03, f0: 500, f1: 1600, rel: 0.12 }
 };
 // Acoustic space per theme: reverb send, reverb damping (Hz), echo send
 const SPACE = {

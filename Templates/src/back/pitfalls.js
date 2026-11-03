@@ -1,6 +1,6 @@
 // --- Pitfalls ("Häufige Schreibfehler" Sub-Page) ---
 // Field grammar: cat@strokes[title]: desc || ...
-// Categories: order (Reihenfolge), dir (Strichrichtung), bend (In einem Zug), form (Form & Proportion)
+// Categories with their UI labels: order "Reihenfolge", dir "Strichrichtung", bend "In einem Zug", form "Form & Proportion"
 
 window._kanjiRenderPitfalls = function (rawData, listTarget, padTarget, filterTarget, countBadge, navDesc) {
     const NS = 'http://www.w3.org/2000/svg';
@@ -233,9 +233,11 @@ window._kanjiRenderPitfalls = function (rawData, listTarget, padTarget, filterTa
 
             card.addEventListener('click', function (e) {
                 e.stopPropagation();
+                const same = activeIdx === idx;
                 activeIdx = idx;
                 listTarget.querySelectorAll('.pitfall-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
+                _kdSnd('fx', same ? 'tick' : 'pitfall', 0, visible.indexOf(entry));
                 if (filterTarget) {
                     filterTarget.querySelectorAll('.pitfall-filter-btn').forEach(b => {
                         b.classList.toggle('active', b.getAttribute('data-cat') === it.cat);

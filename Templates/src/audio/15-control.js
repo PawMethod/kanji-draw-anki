@@ -8,9 +8,11 @@ function syncMusic() {
     if (disposed) return;
     if (!musicOn()) { fadeOutAll(1.8); return; }
     if (!ensureCtx()) return;
-    if (!OFF && ctx.state !== 'running') { if (!D.hidden) { try { ctx.resume(); } catch (e) { } } return; }
+    if (!OFF && ctx.state !== 'running') { if (!D.hidden) wake(); return; }
     const top = live();
     if (top && top.genre === cfg.music) { top.retheme(cur.theme, cur.dark); return; }
+    // While the page still parses and paints, a starting AudioContext underruns on phones (crackle): start after load
+    if (!top && !OFF && D.readyState !== 'complete') { waitForLoad(); return; }
     const p = new Player(cfg.music);
     let t = now() + 0.06, dur, st = null;
     if (top) {
@@ -22,13 +24,24 @@ function syncMusic() {
         if (imm()) p.accent = true;
     } else {
         const ls = OFF ? null : loadState();
-        if (ls && ls.recent) { st = ls; FL.resume(ls); dur = 1.5; }
+        // After a page reload (AnkiDroid Legacy) the song continues where it was
+        if (ls && ls.recent) { st = ls; FL.resume(ls); dur = 0.6; }
         else dur = 3;
     }
     p.begin(t, dur, st);
     players.push(p);
     if (players.length > 3) players[0].fadeOut(now() + 0.01, 0.3, true);
     if (!OFF) { ensureTimer(); tick(); }
+}
+function waitForLoad() {
+    if (loadWait) return;
+    loadWait = true;
+    let done = false;
+    const go = () => { if (done) return; done = true; W.removeEventListener('load', soon); loadWait = false; syncMusic(); };
+    // One more frame after load: the first paint of the landscape is the last heavy step
+    const soon = () => setTimeout(() => requestAnimationFrame(go), 50);
+    W.addEventListener('load', soon);
+    setTimeout(go, 4000);
 }
 function fadeOutAll(dur) {
     if (!ctx) return;
@@ -51,6 +64,6 @@ function pump(horizon) {
     players = players.filter(s => { if (s.endT !== null && tn > s.endT + 7) { s.dispose(); return false; } return true; });
     if (!players.length) stopTimer();
 }
-function tick() { if (!ctx || ctx.state !== 'running') return; try { pump(now() + 1.4); } catch (e) { if (W.__kdAudioDebug) console.error(e); } }
+function tick() { watchdog(); if (!ctx || ctx.state !== 'running') return; try { pump(now() + 1.4); } catch (e) { if (W.__kdAudioDebug) console.error(e); } }
 function ensureTimer() { if (!timer) timer = setInterval(tick, 250); }
 function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }

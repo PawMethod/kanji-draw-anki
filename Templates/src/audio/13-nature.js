@@ -34,9 +34,9 @@ class Nature {
             this.L.rain = { lvl: pr.rain };
         }
         if (pr.city) {
-            // Distant traffic: a soft mid-band wash that breathes, no rumble
-            const c2 = this.bed('pink', t, 0.7), bp = filt('bandpass', 520, 0.6), g = gainN(0);
-            c2.connect(bp); bp.connect(g); g.connect(bg); g.gain.setTargetAtTime(pr.city * K.city, t, 1);
+            // Distant traffic: a dark, quiet rumble that breathes; the city itself lives in its events
+            const c2 = this.bed('pink', t, 0.7), lp = filt('lowpass', 380, 0.5), g = gainN(0);
+            c2.connect(lp); lp.connect(g); g.connect(bg); g.gain.setTargetAtTime(pr.city * K.city, t, 1);
             this.L.city = { g: g, lvl: pr.city * K.city };
         }
     }
@@ -285,6 +285,14 @@ function fumikiri(d, t, lvl) {
     const du = rnd(5, 8), pn = rnd(-0.6, 0.6);
     for (let tt = t, i = 0; tt < t + du; tt += 0.48, i++) bell(d, tt, i % 2 ? 83 : 84, lvl * (1 - (tt - t) / du * 0.4), { decay: 0.25, ratio: 2.76, index: 1.2, wet: 0.6, pan: pn });
 }
+// A car passing in the distance: a dark swell that travels across the stereo field
+function car(d, t, lvl) {
+    const s = noiseN('pink'), lp = filt('lowpass', 260, 0.7), g = gainN(0), du = rnd(3.5, 5.5), dir = chance(0.5) ? 1 : -1;
+    lp.frequency.setValueAtTime(260, t); lp.frequency.linearRampToValueAtTime(rnd(700, 1000), t + du * 0.5); lp.frequency.linearRampToValueAtTime(260, t + du);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lvl, t + du * 0.5); g.gain.linearRampToValueAtTime(0, t + du);
+    s.connect(lp); lp.connect(g); sendMove(g, d, 0.3, -0.7 * dir, 0.7 * dir, t, du);
+    startNoise(s, t); s.stop(t + du + 0.1);
+}
 const EV = {
     minmin: (d, t) => minmin(d, t, 0.009),
     higurashi: (d, t) => higurashi(d, t, 0.014),
@@ -293,6 +301,7 @@ const EV = {
     kajika: (d, t) => kajika(d, t, 0.018),
     karasu: (d, t) => karasu(d, t, 0.02),
     fumikiri: (d, t) => fumikiri(d, t, 0.01),
+    car: (d, t) => car(d, t, 0.03),
     suikin(d, t, s) { const nt = scaleNotes(s, 79, 96), pn = rnd(-0.6, 0.6); suikin(d, t, pick(nt), rnd(0.015, 0.03), pn); if (chance(0.4)) suikin(d, t + rnd(0.15, 0.4), pick(nt), 0.012, pn); },
     chirp: (d, t) => birdCall(d, t, 0.028),
     uguisu: (d, t) => uguisu(d, t, 0.03),

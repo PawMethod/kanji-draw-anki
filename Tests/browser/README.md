@@ -8,6 +8,8 @@ Testseiten für headless Chromium. Die Quellen der Engine liegen in [../../Templ
 |---|---|
 | `selftest.html`, `run_selftest.sh` | Rendert jede Kombination aus Genre, Landschaft und Hell/Dunkel offline. Prüft Pegel, Spitzen und NaN |
 | `switchtest.html` | Szenen- und Genrewechsel im Live-Kontext |
+| `reloadtest.html` | Seiten-Reload wie bei AnkiDroid (Legacy): `hideMs` = Ausblenden beim Verlassen, `duringParse` muss leer sein (kein Start während die Seite lädt), `afterLoad` zeigt dasselbe Lied wieder |
+| `lifecycletest.html` | Verlassen und Zurückkehren wie bei AnkiMobile: `pagehide` ohne Entladen (`after` muss wieder Pegel haben), toter AudioContext beim Zurückkehren (`autoRevived`: ohne Tippen neu aufgebaut) und bei einem Tipp in einem Popup, das Ereignisse stoppt (`modalTap`), neue Effekte |
 | `make_harness.py`, `harness_test.js` | Baut aus den echten Templates und einer echten Notiz (über AnkiConnect) die Testseiten `harness_c1.html`, `harness_c2.html` und `harness_c1b.html`. Diese spielen eine Bedienung durch und protokollieren alle Aufrufe an die Engine |
 | `gelcheck.html` | Laufzeitprüfung der gemeinsamen Helfer (Dunkelmodus, Gelstift-Halos) auf beiden Karten; braucht die Harness-Seiten |
 | `vergleich.html`, `render.html` | Hörvergleich mehrerer Engine-Versionen aus `versions/kd-audio-<x.y.z>.js` |
@@ -29,7 +31,7 @@ cd Tests/browser && python3 -m http.server 8777 --bind 127.0.0.1
 
 # 4. Integration in den echten Templates (braucht Anki mit AnkiConnect auf 8765)
 python3 make_harness.py
-./run_selftest.sh "" 60 harness_c1.html     # ebenso harness_c2.html, harness_c1b.html, switchtest.html
+./run_selftest.sh "" 60 harness_c1.html     # ebenso harness_c2.html, harness_c1b.html, switchtest.html, reloadtest.html, lifecycletest.html
 ```
 
 Ausgabezeilen beginnen mit `KDR`. Ein Lauf ist fertig, wenn `KDR DONE` erscheint. Die Harness-Seiten melden zusätzlich `errors` (soll `[]` sein) und die Engine-Version.

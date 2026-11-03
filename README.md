@@ -13,14 +13,14 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 
 <table align="center">
   <tr>
-    <td align="center"><img src="Media/demos/demo-guided.gif" width="200" alt="Geführter Modus – Strich für Strich"><br><sub>✍️ Geführter Modus</sub></td>
-    <td align="center"><img src="Media/demos/demo-freehand.gif" width="200" alt="Freihand-Modus mit Bewertung"><br><sub>🖊️ Freihand-Modus</sub></td>
-    <td align="center"><img src="Media/demos/demo-appearance.gif" width="200" alt="Erscheinungsbild-Optionen"><br><sub>🎨 Erscheinungsbild</sub></td>
+    <td align="center"><img src="Media/demos/demo-guided.webp" width="200" alt="Geführter Modus: Kanji Menge Strich für Strich"><br><sub>✍️ Geführter Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-freehand.webp" width="200" alt="Freihand-Modus: Kanji Liebe mit Bewertung"><br><sub>🖊️ Freihand-Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-strokeorder.webp" width="200" alt="Animierte Strichfolge"><br><sub>🔢 Strichfolge</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="Media/demos/demo-info.gif" width="200" alt="Info & Merkhilfe Modal"><br><sub>📖 Info-Modal</sub></td>
-    <td align="center"><img src="Media/demos/demo-settings.gif" width="200" alt="Einstellungen"><br><sub>⚙️ Einstellungen</sub></td>
-    <td align="center"><img src="Media/demos/demo-gallery.gif" width="200" alt="Screenshot-Galerie"><br><sub>🖼️ Galerie</sub></td>
+    <td align="center"><img src="Media/demos/demo-tree.webp" width="200" alt="Komponentenbaum eines Kanji"><br><sub>🌳 Komponentenbaum</sub></td>
+    <td align="center"><img src="Media/demos/demo-gallery.webp" width="200" alt="Diashow: Zeichnen, Info-Modal, Komponentenbaum, Schreibfehler, Einstellungen"><br><sub>🖼️ Galerie</sub></td>
+    <td align="center"><img src="Media/demos/demo-landscapes.webp" width="200" alt="Diashow: alle Landschaften in Hell und Dunkel"><br><sub>🏞️ Landschaften</sub></td>
   </tr>
 </table>
 
@@ -33,6 +33,7 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 - [Zeichenmodi](#zeichenmodi)
 - [Bewertungsalgorithmus](#bewertungsalgorithmus)
 - [Einstellungen](#einstellungen)
+- [Klang & Musik](#klang--musik)
 - [Info-Modal](#info-modal)
 - [Plattform-Kompatibilität](#plattform-kompatibilität)
 - [Notiztyp-Felder](#notiztyp-felder)
@@ -47,12 +48,13 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 
 ## Überblick
 
-Kanji Draw ist ein vollständig selbst enthaltenes Anki-Template — kein Build-Schritt, keine externen Dienste, vollständig offline-fähig. Es erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp und bietet:
+Kanji Draw ist ein vollständig selbst enthaltenes Anki-Template — keine Installation außer den Vorlagen, keine externen Dienste, vollständig offline-fähig. Es erzeugt **zwei Kartentypen** aus einem einzigen Notiztyp und bietet:
 
 - **Echte Strich-Erkennung** auf Basis mathematischer Kurvenähnlichkeit (diskrete Fréchet-Distanz)
 - **Zwei Lernmodi**: Strich für Strich geführt oder freies Zeichnen des gesamten Kanji
-- **Anpassbares Erscheinungsbild**: 4 Stift-Stile, 6 Akzentfarben, 6 Primärfarbthemen, Dark/Light Mode
-- **Umfassendes Info-Modal**: Radikalbaum, Eselsbrücke, Wortbeispiele, Lesungen, externe Links
+- **Anpassbares Erscheinungsbild**: 4 Strichstile, 6 Akzentfarben, 9 Japan-Themes mit eigener Landschaft, Dark/Light Mode
+- **Klang & Musik**: prozedural erzeugte japanische Musik, Naturklänge, Strichgeräusche und Effekte — ohne Audiodateien, standardmäßig aus
+- **Umfassendes Info-Modal**: Komponentenbaum, Eselsbrücke, Strichfolge-Player, häufige Schreibfehler, Wortbeispiele, Lesungen, externe Links
 - **Vollständige Plattformunterstützung**: Desktop, Android (inkl. S-Pen), iOS (inkl. Apple Pencil), Web
 
 ---
@@ -61,8 +63,8 @@ Kanji Draw ist ein vollständig selbst enthaltenes Anki-Template — kein Build-
 
 | | **Card 1 – Aktiv (Schreiben)** | **Card 2 – Passiv (Erkennen)** |
 |---|---|---|
-| **Vorderseite** | Deutsche Bedeutung · Zeichenfläche | Kanji sichtbar · Zeichenfläche |
-| **Rückseite** | Ergebnis · Info-Modal | Schlüsselwort · Farbige Strichreihenfolge · Ergebnis · Info-Modal |
+| **Vorderseite** | Deutsche Bedeutung · Zeichenfläche | Fertiges Kanji (optional nummeriert oder nach Strichfolge eingefärbt) |
+| **Rückseite** | Bewertung jedes Strichs · Info-Modal | Schlüsselwort · Info-Modal |
 | **Lernziel** | Kanji aus der Bedeutung abrufen und schreiben | Kanji sehen und die Bedeutung abrufen |
 
 Die Kartentypen können unabhängig voneinander konfiguriert werden. Card 1 bietet den vollen Einstellungsumfang (Zeichenmodus, Genauigkeit usw.); Card 2 beschränkt sich auf Darstellungsoptionen für das angezeigte Kanji (Strich-Nummern, Strich-Darstellung) sowie die gemeinsamen Erscheinungsbild-Einstellungen.
@@ -131,7 +133,7 @@ Die drei Stufen skalieren alle Schwellenwerte gleichmäßig:
 
 ## Einstellungen
 
-Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen werden pro Kartentyp (Card 1 / Card 2) unabhängig gespeichert.
+Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen werden pro Kartentyp (Card 1 / Card 2) unabhängig gespeichert; Erscheinungsbild und Klang gelten für beide. Dauerhafte Standardwerte lassen sich oben in `Templates/Styling.css` (Block „DEINE DAUERHAFTEN EINSTELLUNGEN“) eintragen.
 
 ### Zeichnen & Bewertung
 
@@ -154,6 +156,8 @@ Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen 
 | **Strichansicht** | ✓ | — | Handschrift beibehalten · SVG-Pfade einblenden |
 | **Strich-Darstellung** | — | ✓ | Standard · Farbig (Regenbogen-Strichreihenfolge) |
 
+Card 2 hat zusätzlich eine eigene Seite **Vorderseite** mit Strich-Nummern und Strich-Darstellung für das angezeigte Kanji.
+
 ### Hilfslinien-Raster
 
 | Einstellung | Optionen |
@@ -169,12 +173,13 @@ Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen 
 |---|---|
 | **Modus** | System (automatisch) · Hell · Dunkel |
 | **Akzentfarbe** | 🟢 Grün · 🔵 Blau · 🟣 Lila · 🟠 Orange · 🔴 Rot · 🩵 Türkis |
-| **Primärfarbe** | Neutral · Warm · Kühl · Sepia · Rosé · Salbei |
-| **Strich-Stil** | Standard · Gelstift · Tusche · Neon |
+| **Japan-Theme** (Landschaft & Farben) | Fuji · Kinkaku · Onsen · Momiji · Sakura · Bambus · Hokkaidō · Tokyo · Okinawa · Zufall (jede Karte neu) |
+| **Strichstil** | Standard · Gelstift · Tusche · Neon |
+| **Strichstärke** | Dünn · Normal · Dick |
 | **Strichfarbe** | Schwarz · Tintenblau · Violett · Braun · Türkis · Schiefer |
 | **Schriftgröße** | Klein · Normal · Groß |
 
-#### Stift-Stile im Detail
+#### Strichstile im Detail
 
 | Stil | Aussehen |
 |---|---|
@@ -182,6 +187,32 @@ Alle Optionen sind über das **⚙️ Zahnrad-Menü** erreichbar. Einstellungen 
 | **Gelstift** | Weicher Wet-Ink-Look mit leuchtendem Halo-Effekt |
 | **Tusche** | Variierender Pinselstrich mit dynamischer Breite |
 | **Neon** | Leuchtender Glow-Effekt (SVG-Doppelfilter, GPU-optimiert) |
+
+### Danke & Feedback
+
+Das kleine ❤️ oben rechts in den Einstellungen öffnet eine Dankesseite mit Links zur Bewertung auf AnkiWeb, zu GitHub-Issues für Fehler und Ideen sowie den Quellenangaben.
+
+---
+
+## Klang & Musik
+
+Eine eigene Klang-Engine (Web Audio API) erzeugt alles zur Laufzeit — keine Audiodateien, keine Netzwerkzugriffe. Standardmäßig ist der Klang **aus**.
+
+- **Musik** aus gemeinfreien japanischen Liedern (z. B. Sakura Sakura, Kōjō no Tsuki, Tōryanse, Furusato), je Strophe anders arrangiert; die Musik läuft über Kartenwechsel weiter
+- **Landschaft = Klangfarbe**: Jedes Japan-Theme hat eigene Instrumente, Raumklang und Naturgeräusche (Tag und Nacht)
+- **Reaktion aufs Zeichnen**: Richtige Striche antworten im Takt, fertige Kanji lassen die Musik wachsen, Denkpausen lichten sie aus
+- **Strichgeräusche** passend zum Strichstil und dezente **Effekt-Klänge** für Knöpfe, Baum, Furigana und Schreibfehler
+
+| Einstellung | Optionen |
+|---|---|
+| **Gesamtlautstärke** | Aus · Leise · Mittel · Laut |
+| **Musik** | Keine · Ambient · Zen · Klavier · Lo-Fi · Nur Natur |
+| **Reaktion aufs Zeichnen** | Aus · Dezent · Stark |
+| **Musik-Lautstärke** | Leise · Mittel · Laut |
+| **Strichgeräusche** | Aus · An |
+| **Effekt-Klänge** | Aus · An |
+
+> Browser und WebViews erlauben Klang erst nach einer Berührung. Die Musik setzt deshalb mit dem ersten Tippen oder Strich ein.
 
 ---
 
@@ -191,11 +222,14 @@ Das Info-Modal (📖-Schaltfläche auf der Rückseite) zeigt alle verfügbaren I
 
 | Bereich | Inhalt |
 |---|---|
-| **Kopfzeile** | Kanji · Deutsche Bedeutung · JLPT-Stufe · Häufigkeitsrang |
-| **Radikalbaum** | Visuelle Zerlegung in Radikale/Primitive mit antippbaren Tooltips |
-| **Eselsbrücke** | Deutsche Merkhilfe mit optionalem visuellem Hinweis |
+| **Kopfzeile** | „Übersicht“ · laufende Nummer (`Nummer`) · deutsche Bedeutung |
+| **Tags** | JLPT-Stufe · Häufigkeitsrang |
+| **Komponentenbaum** | Zerlegung in Bausteine/Primitive; Antippen färbt die zugehörigen Striche, mit Zoom und Vollbild |
+| **Strichfolge** | Animierter Player mit Schritt-für-Schritt-Steuerung |
+| **Schreibfehler** | Typische Fehler (Reihenfolge, Richtung, Zug, Form) mit Vorschau am Kanji; nur wenn `Stolperfallen` befüllt ist |
+| **Eselsbrücke** | Deutsche Merkhilfe mit farbig hervorgehobenen Bausteinen und optionalem visuellem Hinweis |
 | **Wortbeispiele** | Anklickbare Beispielwörter mit ein-/ausblendbarer Furigana |
-| **Lesungen** | ON-Lesung (blau) · KUN-Lesung (grün) mit farbigen Labels |
+| **Lesungen** | ON- und KUN-Lesung mit farbigen Labels |
 | **Externe Links** | [Jisho](https://jisho.org) · [Tatoeba](https://tatoeba.org) · [WaniKani](https://www.wanikani.com) · [Koohii](https://kanji.koohii.com) |
 
 ---
@@ -224,7 +258,7 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 
 ### Hinweise zu AnkiDroid
 
-- Der **neue Lernbildschirm** (*Einstellungen → Neuer Lernbildschirm*) wird empfohlen. Der alte Lernbildschirm erhält laut AnkiDroid-Team keine neuen Features mehr und wird künftig entfernt. Im alten Modus kann es zu Konflikten mit Wisch-Gesten kommen; das Template zeigt dann einen Hinweis an.
+- Der **neue Lernbildschirm** (*Einstellungen → Neuer Lernbildschirm*) wird **dringend empfohlen**: Zeichenstriche decken dort die Rückseite nicht versehentlich auf, die Musik läuft beim Umdrehen ohne Pause weiter, und Kartenwechsel laden nicht die ganze Seite neu. Der alte Lernbildschirm erhält laut AnkiDroid-Team keine neuen Features mehr und wird künftig entfernt; dort zeigt das Template einen entsprechenden Hinweis an.
 - Einstellungen werden über ein Cookie gespeichert und bleiben auch ohne `localStorage` erhalten. `localStorage` kann ab AnkiDroid 2.21 zusätzlich aktiviert werden:  
   *Einstellungen → Erweitert → localStorage aktivieren*
 - In **AnkiDroid 2.24.1 bis 2.25.2** können die externen Links im Info-Modal (Jisho, Tatoeba, …) durch eine Sicherheitsänderung blockiert sein. Ab **2.25.3** funktionieren sie wieder.
@@ -240,12 +274,14 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 | `SVGPfade` | ✓ | SVG-`<path>`-Elemente — ein Element pro Strich |
 | `JLPT` | — | JLPT-Stufe (N5–N1) |
 | `Häufigkeit` | — | Häufigkeitsrang unter den gebräuchlichsten Kanji |
-| `Radikale` | — | Strukturierte Kanji-Zerlegung (JSON) für den Radikalbaum |
+| `Radikale` | — | Zerlegung für den Komponentenbaum, Format `Wert[Schlüsselwort]@Striche{Kinder}`, z. B. `吾[Ich]@8-14{五[fünf]@8-11, 口[Mund]@12-14}` |
 | `Eselsbrücke` | — | Deutsche Merkhilfe / Eselsbrücke |
 | `Merkhilfe` | — | Visueller Hinweis zur Eselsbrücke (Bild oder HTML) |
 | `Wortbeispiel` | — | Wortbeispiele mit Furigana-Markup |
 | `Onyomi` | — | ON-Lesung (Katakana) |
 | `Kunyomi` | — | KUN-Lesung (Hiragana) |
+| `Stolperfallen` | — | Häufige Schreibfehler, Format `kategorie@striche[Titel]: Beschreibung \|\| …` (Kategorien `order`, `dir`, `bend`, `form`) |
+| `Nummer` | — | Laufende Nummer in der Lernreihenfolge (RTK 1–2200), dezent unter „Übersicht“ im Info-Modal |
 
 > Die Felder `Kanji`, `Bedeutung` und `SVGPfade` sind für die Grundfunktion zwingend erforderlich. Alle anderen Felder sind optional und werden im Info-Modal nur angezeigt, wenn sie befüllt sind.
 
@@ -253,7 +289,13 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 
 ## Installation
 
-### 1. Notiztyp anlegen
+### Empfohlen: fertiges Deck
+
+Das fertige Deck auf [AnkiWeb](https://ankiweb.net/shared/info/2072366368) enthält den Notiztyp mit allen Vorlagen — nichts muss von Hand kopiert werden.
+
+### Notiztyp selbst anlegen
+
+#### 1. Notiztyp anlegen
 
 1. In Anki: **Werkzeuge → Notiztypen verwalten → Hinzufügen**
 2. Notiztyp mit den oben genannten Feldern erstellen
@@ -267,7 +309,7 @@ Folgende JavaScript-Funktionen können Geräte-Gesten zugewiesen werden:
 | Card 2 – Rückseite | `Templates/Card-2/BackTemplate.html` |
 | Styling (CSS) | `Templates/Styling.css` |
 
-### 2. Inhalt übernehmen
+#### 2. Inhalt übernehmen
 
 Den Inhalt der jeweiligen Datei vollständig in das entsprechende Eingabefeld des Template-Editors kopieren.
 
@@ -311,26 +353,31 @@ Den Ordner `Addon/` in das Anki-Add-on-Verzeichnis kopieren und Anki neu starten
 
 ```
 kanji-draw-anki/
-├── Templates/
-│   ├── Card-1/
-│   │   ├── FrontTemplate.html    ← Zeichenfläche + Strich-Erkennung + Einstellungs-UI
-│   │   └── BackTemplate.html     ← Ergebnis + Info-Modal
-│   ├── Card-2/
-│   │   ├── FrontTemplate.html    ← Zeichenfläche + Strich-Erkennung + Einstellungs-UI
-│   │   └── BackTemplate.html     ← Strichreihenfolge + Ergebnis + Info-Modal
-│   └── Styling.css               ← Gemeinsames Stylesheet (Themes, Responsive, Animationen)
+├── Templates/                      ← Vorlagen für Anki (Entwickler-Doku: Templates/README.md)
+│   ├── Card-1/                     ← Zeichenkarte: FrontTemplate.html, BackTemplate.html, README.md
+│   ├── Card-2/                     ← Erkennungskarte: FrontTemplate.html, BackTemplate.html, README.md
+│   ├── Styling.css                 ← Gemeinsames Stylesheet (Themes, Landschaften, Animationen)
+│   └── src/                        ← Quellen der generierten Blöcke
+│       ├── front/                  ← gemeinsamer Code der Vorderseiten, Seiten „Klang & Musik“ und „Danke“
+│       ├── back/                   ← gemeinsamer Code der Rückseiten (Baum, Schreibfehler, Strichfolge …)
+│       └── audio/                  ← Klang-Engine in 18 Modulen
 │
-├── Addon/
-│   ├── __init__.py               ← Einstellungspersistenz für Anki Desktop
-│   └── manifest.json             ← Add-on-Metadaten
+├── Tools/
+│   ├── build.py                    ← setzt src/ in die Templates ein (`--check` prüft auf Aktualität)
+│   └── check_scripts.py            ← Syntaxprüfung aller Template-Skripte
 │
-├── Tests/
-│   ├── js/                       ← JavaScript-Unit-Tests (Node.js ≥ 21, `npm test`, 11 Dateien, 848 Tests)
-│   └── anki_addon_stress_helper/ ← Live-Stresstests (nur zum Testen installieren, token-geschützt)
+├── Addon/                          ← Einstellungspersistenz für Anki Desktop (Addon/README.md)
+│
+├── Tests/                          ← Testübersicht: Tests/README.md
+│   ├── js/                         ← Node-Tests (Node.js ≥ 21, `npm test`, 11 Dateien, über 850 Prüfungen)
+│   ├── browser/                    ← Headless-Chromium-Tests für Klang-Engine und Templates
+│   ├── live_stress_test.py         ← Stresstest im laufenden Anki
+│   └── anki_addon_stress_helper/   ← Hilfs-Add-on dafür (nur zum Testen installieren, token-geschützt)
 │
 ├── Media/
-│   └── demos/                    ← Demo-GIFs für README
+│   └── demos/                      ← Demo-Animationen (WebP) für README
 │
+├── LICENSE
 └── README.md
 ```
 
@@ -338,9 +385,11 @@ kanji-draw-anki/
 
 ## Technische Details
 
-### Kein Build-Schritt, keine Abhängigkeiten
+### Keine Laufzeit-Abhängigkeiten
 
 Reines HTML/CSS/JavaScript — direkt in Anki einsetzbar, keine CDN-Abhängigkeiten, vollständig offline-fähig.
+
+Für Entwickler: Anki kann keine gemeinsamen Dateien einbinden. Code, der in beiden Karten gleich ist, liegt deshalb einmal unter `Templates/src/` und wird von `python3 Tools/build.py` in die vier Vorlagen kopiert. Die fertigen Vorlagen im Repository sind immer gebaut; Details siehe [Templates/README.md](Templates/README.md).
 
 ### Algorithmen
 
@@ -356,6 +405,7 @@ Reines HTML/CSS/JavaScript — direkt in Anki einsetzbar, keine CDN-Abhängigkei
 - **Web Animations API** für Abschluss-Animationen (kein permanenter `requestAnimationFrame`-Loop)
 - **Anti-Flicker-System**: Strichfarben werden per Inline-`<style>` gerendert, bevor Ankis FrontSide-Injection ausgeführt wird — verhindert das kurze Aufblitzen falscher Farben
 - **GPU-Beförderung**: `will-change: transform` auf animierten Elementen; separate Lite-SVG-Filter für WebKit/iOS
+- **Klang-Engine**: Web Audio API, alle Klänge prozedural bzw. zur Laufzeit gerendert; ein Singleton `window.__kdAudio` überlebt Kartenwechsel
 
 ### Einstellungspersistenz (Fallback-Kette)
 
@@ -380,6 +430,7 @@ window._ks (Arbeitsspeicher)
 - **Kanji-Reihenfolge, Schlüsselwörter & Primitivnamen:** Entnommen aus James W. Heisig / Robert Rauther, *„Die Kanji lernen und behalten"* (Klostermann-Verlag). Lernreihenfolge, deutsche Schlüsselwörter und Primitivbezeichnungen sind geistiges Eigentum der Autoren bzw. des Verlags.
 - **SVG-Zerlegung nach Primitiven:** Extrahiert aus [Migaku Kanji God](https://github.com/migaku-official/Migaku-Kanji-Addon) — lizenziert unter [GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
 - **Farbige Strichreihenfolge:** Inspiriert von [Kanji Colorizer](https://github.com/cayennes/kanji-colorize) (Code: [AGPL v3](https://www.gnu.org/licenses/agpl-3.0.html), SVGs: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/))
+- **Musik:** Melodien gemeinfreier japanischer Lieder, zur Laufzeit neu arrangiert; keine Aufnahmen oder Samples Dritter
 - **Eselsbrücken & Merkhilfen:** Erstellt von [PawMethod](https://github.com/PawMethod) mit KI-Unterstützung. Konzept, Prompt-Design, Kuration und Redaktion: PawMethod.
 
 ---

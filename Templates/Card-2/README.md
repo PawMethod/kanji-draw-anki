@@ -12,38 +12,39 @@ Allgemeines steht in [../README.md](../README.md). Mit ← markierte Abschnitte 
 |---|---|---|
 | 1–38 | Theme-Vorauswahl, Palette, Einblenden `[SHARED]` | `_kdPreRoll` |
 | 39–48 | Zahnrad-Knopf | `.gear-btn` |
-| 49–1509 | Einstellungs-Overlay, startet auf Reiter C2 (`data-tab="c2"`) | `#settings-overlay` |
-| 53 / 201 / 329 / 561 / 709 / 788 | ‑ Übersicht / Hilfslinien / Vorderseite C1 (ausgeblendet) / Rückseite / **Vorderseite Erkennen** / Erscheinungsbild | `#settings-main`, `#page-grid`, `#page-front`, `#page-back`, `#page-front-c2`, `#page-theme` |
-| 1216–1508 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]` |
-| 1512–4310 | Landschaften (identisch zu Card-1) | `.forest-scenery`, `jp-scene-<theme>` |
-| 4311 | Kartentitel, versteckt | `.card-title` |
-| 4314–4357 | Neon-Filter (identisch zu Card-1) | `#neon-defs` |
-| 4358–4400 | Kanji-Anzeige: Raster, Referenzpfade, Banner (ohne Zeichenebene) | `#grid-bg`, `#svg-bg`, `#legacy-gesture-warning`, `#addon-hint` |
-| 4401–6381 | Audio-Engine (**generiert**) | `[KD-AUDIO-ENGINE]` |
+| 49–1580 | Einstellungs-Overlay, startet auf Reiter C2 (`data-tab="c2"`) | `#settings-overlay` |
+| 53 / 208 / 336 / 568 / 716 / 795 | ‑ Übersicht / Hilfslinien / Vorderseite C1 (ausgeblendet) / Rückseite / **Vorderseite Erkennen** / Erscheinungsbild | `#settings-main`, `#page-grid`, `#page-front`, `#page-back`, `#page-front-c2`, `#page-theme` |
+| 1223–1515 | ‑ Klang & Musik (**generiert**) | `[KD-SOUND-PAGE]` |
+| 1516–1579 | ‑ Danke ← `src/front/page-about.html` | `#page-about` |
+| 1583–4381 | Landschaften (identisch zu Card-1) | `.forest-scenery`, `jp-scene-<theme>` |
+| 4382 | Kartentitel, versteckt | `.card-title` |
+| 4385–4428 | Neon-Filter (identisch zu Card-1) | `#neon-defs` |
+| 4429–4475 | Kanji-Anzeige: Raster, Referenzpfade, Banner (ohne Zeichenebene) | `#grid-bg`, `#svg-bg`, `#legacy-gesture-warning`, `#addon-hint` |
+| 4476–6551 | Audio-Engine (**generiert**) | `[KD-AUDIO-ENGINE]` |
 
-### Haupt-Skript (6382–8013)
+### Haupt-Skript (6552–8180)
 
 | Zeilen | Abschnitt (Suchbegriff) | Wichtigste Namen | Gegenstück Card-1 |
 |---|---|---|---|
-| 6391–6438 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` | 6443 |
-| 6439–6466 | AnkiDroid-Gesten-Warnung, fehlendes Add-on | – | 6495, 6517 |
-| 6467–6486 | `Anti-Flicker [SHARED]` (setzt zusätzlich `stroke-complete`) | – | 6534 |
-| 6487–6541 | `Persistence Layer` ← `src/front/persistence.js` | `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` | 6543 |
-| 6543–6603 | `Shared helpers` ← `src/front/shared-helpers.js` | `_kanjiIsDark`, `_kanjiSwFactor`, `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` | 6599 |
-| 6604–6681 | **`Card 2 Front: apply c2f_* feature settings`** | `_addNumbersC2F`, `applyFrontFeaturesC2` (Nummern, Farbe nach Strichfolge, Anzeigestil) | – |
-| 6682–6974 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `getGlobalConfig` 6940 | 6659 |
-| 6975–7094 | Farbdefinitionen, Zufalls-Landschaft | `_rollRandomTheme` 7056, `_scheduleDeferredThemeCheck` | 6961 |
-| 7095–7105 | **Gelstift-Halos für alle Striche** (alle sofort sichtbar), nutzt die gemeinsamen Helfer | `_c2AddGelHaloToPath` | `_addGelHaloToPath` 8234 |
-| 7106–7318 | `applyThemeSettings`, `updateThemeSetting` 7307 | – | 7086 |
-| 7319–7396 | `Klang & Musik: Bridge` ← `src/front/sound-bridge.js` | `_kdSnd`, `applySoundSettings` | 7338 |
-| 7398–7488 | `Grid Rendering` ← `src/front/grid-display.js`, danach Funktionsschalter (inkl. `c2f`-Bereich) | `updateGridDisplay`, `updateFeatureSetting` 7465 | 7417 |
-| 7489–7567 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` 7517 | 7503 |
-| 7568–7665 | Theme-Observer, MediaQuery, `Cleanup stale DOM` (7639), bfcache | `_kanjiThemeObserver`, `_kanjiPagesShowHandler` 7653 | 7557 |
-| 7666–7752 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` 7707 | 7687 |
-| 7753–7778 | `Button Feedback & Stylus Fixes [SHARED]` | `addPenTopBtn` | 9270 |
-| 7779–7921 | `Scroll Guards & AnkiMobile Tappable Isolation` ← `src/front/scroll-guards.js` | `_kanjiSetupModalTouchGuards` | 9352 |
-| 7923–8008 | Apple Pencil, S-Pen (Hintergrund, globale Abwehr) `[SHARED]` | `_trackBg`, `_kanjiGlobalPenDefenseAdded` | 9496–9592 |
-| 8009–8012 | Geste für AnkiDroid/AnkiMobile | `userJs1` (Card-1 hat `userJs1`–`3`) | 9593 |
+| 6561–6608 | `AnkiWeb / Browser Detection [SHARED]` | `_applyAwSize`, `_measureAwBar` | 6616 |
+| 6609–6636 | AnkiDroid-Gesten-Warnung, fehlendes Add-on | – | 6668, 6690 |
+| 6637–6656 | `Anti-Flicker [SHARED]` (setzt zusätzlich `stroke-complete`) | – | 6707 |
+| 6657–6711 | `Persistence Layer` ← `src/front/persistence.js` | `_kCookieObj`, `safeGetItem`, `safeSetItem`, `_fc` | 6716 |
+| 6713–6773 | `Shared helpers` ← `src/front/shared-helpers.js` | `_kanjiIsDark`, `_kanjiSwFactor`, `_kanjiGelColor`, `_kanjiMakeGelHalo`, `_kanjiEatNextClick` | 6772 |
+| 6774–6851 | **`Card 2 Front: apply c2f_* feature settings`** | `_addNumbersC2F`, `applyFrontFeaturesC2` (Nummern, Farbe nach Strichfolge, Anzeigestil) | – |
+| 6852–7142 | `Settings UI [SHARED]` | `scopedGet`, `hostGet`, `switchSettingsTab`, `navigateToPage`, `navigateBack`, `refreshSettingsRadios`, `getGlobalConfig` 7108 | 6832 |
+| 7143–7262 | Farbdefinitionen, Zufalls-Landschaft | `_rollRandomTheme` 7224, `_scheduleDeferredThemeCheck` | 7132 |
+| 7263–7273 | **Gelstift-Halos für alle Striche** (alle sofort sichtbar), nutzt die gemeinsamen Helfer | `_c2AddGelHaloToPath` | `_addGelHaloToPath` 8405 |
+| 7274–7486 | `applyThemeSettings`, `updateThemeSetting` 7475 | – | 7257 |
+| 7487–7564 | `Klang & Musik: Bridge` ← `src/front/sound-bridge.js` | `_kdSnd`, `applySoundSettings` | 7509 |
+| 7566–7656 | `Grid Rendering` ← `src/front/grid-display.js`, danach Funktionsschalter (inkl. `c2f`-Bereich) | `updateGridDisplay`, `updateFeatureSetting` 7633 | 7588 |
+| 7657–7735 | Einstellungen öffnen/schließen | `openSettings`, `closeSettings` 7685 | 7674 |
+| 7736–7833 | Theme-Observer, MediaQuery, `Cleanup stale DOM` (7807), bfcache | `_kanjiThemeObserver`, `_kanjiPagesShowHandler` 7821 | 7728 |
+| 7834–7920 | `Scroll Lock & iOS Detection [SHARED]` | `kanjiTouchMoveModalHandler`, `kanjiTouchStartHandler`, `checkScrollability` 7875 | 7858 |
+| 7921–7946 | `Button Feedback & Stylus Fixes [SHARED]` | `addPenTopBtn` | 9442 |
+| 7947–8089 | `Scroll Guards & AnkiMobile Tappable Isolation` ← `src/front/scroll-guards.js` | `_kanjiSetupModalTouchGuards` | 9524 |
+| 8091–8176 | Apple Pencil, S-Pen (Hintergrund, globale Abwehr) `[SHARED]` | `_trackBg`, `_kanjiGlobalPenDefenseAdded` | 9668–9764 |
+| 8177–8180 | Geste für AnkiDroid/AnkiMobile | `userJs1`, `userJs3` (beide öffnen die Einstellungen; Card-1 hat `userJs1`–`3`) | 9765 |
 
 ## BackTemplate.html
 
@@ -52,16 +53,16 @@ Allgemeines steht in [../README.md](../README.md). Mit ← markierte Abschnitte 
 | 1–34 | Überblendung aus, statische Anti-Flacker-Regeln | `#kanji-anti-flicker` | 1–99 |
 | 35–69 | Strichfarben vorab, inkl. Farbe nach Strichfolge (HSL) | `_ck` | 100–136 |
 | 70–84 | Marker, `{{FrontSide}}`, Info-Knopf | `#is-back-side-marker` | 137–151 |
-| 85–341 | Info-Overlay (Übersicht 88, Strichfolge 278, Schreibfehler 316) | `#info-overlay` | 152–409 |
-| 342–577 | Kopf, Info-Modal-Navigation | `openInfoModal` 440, `closeInfoModal` 551 | 410–665 |
-| 578–1710 | `Primitive Tree` ← `src/back/primitive-tree.js` (inkl. Zoom/Vollbild), Aufruf ← `src/back/radical-tree.js` 1678 | `_kanjiRenderPrimitiveTree`, `_kanjiTreeOutsideHandler` | 666–1798 |
-| 1712–2016 | `Pitfalls` ← `src/back/pitfalls.js` | `_kanjiRenderPitfalls` | 1800–2104 |
-| 2017–2060 | `Word Examples`, `Hide "Lesungen"` ← `src/back/word-examples.js`, `src/back/hide-readings.js` | – | 2105–2150 |
-| 2062–2255 | `Back Side Features (stroke colors, numbers, colorOrder)` | `addNumbersGPAL` 2074 (vereinfachte Version), `applyBackFeatures` 2099, `kanjiSettingsGlobalHandler` 2242 | 2152–2586, 3812 |
-| 2256–2390 | `Stroke-Order Player` ← `src/back/stroke-order-player.js` | `_kanjiOrder` | 3831–3965 |
-| 2392–2479 | `Cross-Platform Fixes` ← `src/back/cross-platform.js` | `addPenHandler` | 3967–4054 |
-| 2480–2573 | S-Pen: Hintergrund-Prüfung, globale Abwehr | `_trackBg` | 4055–4148 |
-| 2574–2597 | Scroll-Neusynchronisierung (AnkiMobile) | `resyncModalScroll` | 4149–4172 |
+| 85–344 | Info-Overlay (Übersicht 88, Strichfolge 281, Schreibfehler 319) | `#info-overlay` | 152–412 |
+| 345–580 | Kopf, Info-Modal-Navigation | `openInfoModal` 443, `closeInfoModal` 554 | 413–668 |
+| 581–1718 | `Primitive Tree` ← `src/back/primitive-tree.js` (inkl. Zoom/Vollbild), Aufruf ← `src/back/radical-tree.js` 1686 | `_kanjiRenderPrimitiveTree`, `_kanjiTreeOutsideHandler` | 669–1806 |
+| 1720–2026 | `Pitfalls` ← `src/back/pitfalls.js` | `_kanjiRenderPitfalls` | 1808–2114 |
+| 2027–2072 | `Word Examples`, `Hide "Lesungen"` ← `src/back/word-examples.js`, `src/back/hide-readings.js` | – | 2115–2162 |
+| 2074–2267 | `Back Side Features (stroke colors, numbers, colorOrder)` | `addNumbersGPAL` 2086 (vereinfachte Version), `applyBackFeatures` 2111, `kanjiSettingsGlobalHandler` 2254 | 2164–2598, 3824 |
+| 2268–2402 | `Stroke-Order Player` ← `src/back/stroke-order-player.js` | `_kanjiOrder` | 3843–3977 |
+| 2404–2491 | `Cross-Platform Fixes` ← `src/back/cross-platform.js` | `addPenHandler` | 3979–4066 |
+| 2492–2585 | S-Pen: Hintergrund-Prüfung, globale Abwehr | `_trackBg` | 4067–4160 |
+| 2586–2609 | Scroll-Neusynchronisierung (AnkiMobile) | `resyncModalScroll` | 4161–4184 |
 
 ## Abgleich mit Card-1
 
@@ -75,5 +76,5 @@ Allgemeines steht in [../README.md](../README.md). Mit ← markierte Abschnitte 
 - Der Gelstift-Halo nutzt denselben Kern wie Card-1 (`_kanjiGelColor`, `_kanjiMakeGelHalo`).
 
 **Bewusst verschieden**
-- `addNumbersGPAL` gibt es in zwei Versionen mit verschiedenen Signaturen (Card-1 2163, Card-2 2074). Card-1 braucht zusätzlich Kollisionsvermeidung und Freimodus-Nummern. Eine Vereinigung lohnt sich erst, wenn beide Varianten sichtbar geprüft werden können.
+- `addNumbersGPAL` gibt es in zwei Versionen mit verschiedenen Signaturen (Card-1 2175, Card-2 2086). Card-1 braucht zusätzlich Kollisionsvermeidung und Freimodus-Nummern. Eine Vereinigung lohnt sich erst, wenn beide Varianten sichtbar geprüft werden können.
 - `_kanjiSrGenC1` und `_kanjiSrGenC2` sind getrennte Generationszähler. Das ist harmlos und gewollt: Jede Karte sperrt nur ihre eigene Einstellungsseite kurz nach dem Öffnen.

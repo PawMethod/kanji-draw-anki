@@ -186,6 +186,6 @@ function thock(dst, t, m, vel) {
 function chime(style, dst, t, m, vel) {
     if (style === 'ink') pluck(dst, t, m, vel * 1.3, { decay: 1.2, bright: 6, wet: 0.35, pick: true });
     else if (style === 'gel') tone('glass', dst, t, m, vel, { wet: 0.4 });
-    else if (style === 'neon') pluck(dst, t, m, vel * 0.8, { synth: true, wave: 'square', decay: 0.5, bright: 12, q: 5, wet: 0.25, echo: 0.4 });
+    else if (style === 'neon') tone('vibes', dst, t, m, vel * 1.6, { wet: 0.35, echo: 0.35, trem: 5 });
     else marimba(dst, t, m, vel * 1.2);
 }

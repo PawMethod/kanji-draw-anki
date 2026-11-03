@@ -74,8 +74,8 @@ async function run(name, o) {
     for (var th of ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa']) for (var dk of [false, true]) await run('nat/' + th + (dk ? '-n' : '-d'), { seconds: 16, music: 'nature', theme: th, dark: dk });
     for (var th2 of ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa']) for (var dk2 of [false, true]) await run('bed/' + th2 + (dk2 ? '-n' : '-d'), { seconds: 16, music: 'nature', theme: th2, dark: dk2, noEvents: true });
     for (var st of ['standard', 'gel', 'ink', 'neon']) await run('stroke/' + st, { seconds: 2.5, events: strokeEvents(st, 0.3, 0.7, 0.5) });
-    for (var fx of ['tap', 'tick', 'select', 'open', 'close', 'nav', 'back', 'tab', 'page', 'play', 'reveal', 'hide', 'hint', 'reset', 'undo', 'skip', 'cardFront', 'cardBack'])
-        await run('fx/' + fx, { seconds: 2, events: [{ at: 0.1, fn: 'fx', args: [fx] }] });
+    for (var fx of ['tap', 'tick', 'select', 'open', 'close', 'nav', 'back', 'tab', 'page', 'play', 'reveal', 'hide', 'hint', 'reset', 'undo', 'skip', 'cardFront', 'cardBack', 'node', 'nodeOff', 'furigana', 'furiganaOff', 'pitfall'])
+        await run('fx/' + fx, { seconds: 2, events: [{ at: 0.1, fn: 'fx', args: [fx, 0, 2] }] });
     await run('result/ok', { seconds: 2, events: [{ at: 0.1, fn: 'strokeResult', args: [true, 2] }] });
     await run('result/bad', { seconds: 2, events: [{ at: 0.1, fn: 'strokeResult', args: [false, 0] }] });
     await run('complete', { seconds: 4, events: [{ at: 0.1, fn: 'complete', args: [] }] });

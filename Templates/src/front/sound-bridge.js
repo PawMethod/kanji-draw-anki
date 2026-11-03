@@ -1,5 +1,5 @@
-// --- Klang & Musik: Bridge zur Audio-Engine (window.__kdAudio) ---
-// Einstellungen sind global (nicht c1_/c2_-gescoped) wie die Theme-Keys. Standard: aus.
+// --- Sound & music: bridge to the audio engine (window.__kdAudio) ---
+// Settings are global (not c1_/c2_-scoped), like the theme keys. Default: off.
 function _kdSnd(method) {
     var a = window.__kdAudio;
     if (!a || typeof a[method] !== 'function') return;
@@ -40,14 +40,14 @@ function updateSoundSetting(category, val) {
     applySoundSettings();
 }
 
-// Effekt-Klänge per Delegation — einmal pro WebView gebunden (Anki Desktop
-// behält das Dokument über Kartenwechsel hinweg, nur #qa wird ersetzt).
+// Effect sounds via delegation — bound once per WebView (Anki Desktop keeps
+// the document across card changes, only #qa is replaced).
 if (!window._kdSndUiBound) {
     window._kdSndUiBound = true;
     (function () {
         var rules = [
             ['#button-reveal', 'hint'], ['#button-undo', 'undo'], ['#button-skip', 'skip'], ['#button-reset', 'reset'],
-            ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.back-to-main', 'back'], ['.close-settings', 'close'], ['.back-btn', 'back'],
+            ['.gear-btn', 'open'], ['.info-btn', 'open'], ['.settings-about-btn', 'nav'], ['.back-to-main', 'back'], ['.close-settings', 'close'], ['.back-btn', 'back'],
             ['.category-card', 'nav'], ['.segment-btn', 'tab'], ['button, [role="button"]', 'tap']
         ];
         var down = null;

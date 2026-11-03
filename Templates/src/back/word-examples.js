@@ -21,9 +21,11 @@
             if (item.classList.contains('show-furigana')) {
                 item.classList.remove('show-furigana');
                 item.classList.add('furigana-dismissed');
+                _kdSnd('fx', 'furiganaOff');
             } else {
                 item.classList.remove('furigana-dismissed');
                 item.classList.add('show-furigana');
+                _kdSnd('fx', 'furigana');
             }
         });
     }

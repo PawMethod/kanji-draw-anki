@@ -1,21 +1,21 @@
-/* KanjiDraw Audio — prozedurale Klangwelt (Web Audio API, keine Dateien)
-   · Musik aus einem Repertoire echter Lieder (gemeinfreie japanische Klassiker
-     und eigene Stücke), je Strophe anders arrangiert, mit Ma (Stille)
-   · Die Landschaft färbt nur (Instrumente, Raum, Natur); Lied, Tonart und
-     Tempo bleiben — schnelles Durchblättern ändert die Musik nur dezent
-   · Jo-Ha-Kyū und Lernfluss (nach dem Vorbild von Tetris Effect): fertige
-     Kanji steigern das Arrangement, Denkpausen lichten es aus; Treffer
-     antworten im Takt, schnelle Striche werden zusammengefasst
-   · Strichgeräusche je Strichstil, dezente UI-Effekte, Naturkulisse
-   Singleton window.__kdAudio überlebt Kartenwechsel (Anki Desktop und
-   AnkiMobile ersetzen nur #qa); bei Seiten-Reloads (AnkiDroid) setzt das Lied
-   über sessionStorage an derselben Stelle fort.
+/* KanjiDraw Audio — procedural soundscape (Web Audio API, no audio files)
+   · Music from a repertoire of real songs (public-domain Japanese classics
+     and original pieces), arranged differently per verse, with ma (silence)
+   · The landscape only colours the sound (instruments, room, nature); song,
+     key and tempo stay — flipping through cards changes the music only subtly
+   · Jo-ha-kyū and learning flow (modelled on Tetris Effect): finished kanji
+     build up the arrangement, thinking pauses thin it out; hits answer on the
+     beat, fast strokes are merged
+   · Stroke sounds per stroke style, subtle UI effects, nature ambience
+   The singleton window.__kdAudio survives card changes (Anki Desktop and
+   AnkiMobile only replace #qa); on page reloads (AnkiDroid) the song resumes
+   at the same position via sessionStorage.
 
-   Module (Reihenfolge = Dateiname): base → tables → repertoire → runtime →
+   Modules (order = file name): base → tables → repertoire → runtime →
    graph → samples → instruments → harmony → flow → melody → percussion →
    genres → nature → player → control → fx → strokes → api */
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const W = window, D = document;
 const prior = W.__kdAudio;
 if (prior && prior.version === VERSION) return;
