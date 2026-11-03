@@ -13,6 +13,14 @@ Endpoints:
 Body for POST: {"js": "<javascript code>"}
 Response:      {"result": <value_or_null>, "error": <string_or_null>}
 
+Security:
+  Every request must carry "Authorization: Bearer <token>" and
+  "Content-Type: application/json"; requests with an Origin header are
+  rejected. The token is regenerated on each Anki start and written to
+  <tempdir>/kanjidraw_stress_token (mode 0600), where live_stress_test.py
+  reads it. This blocks websites from reaching the eval endpoint (CSRF).
+  Only install this add-on while running the stress tests.
+
 Architecture (v7):
   A Qt main-thread QTimer (50ms) dequeues JS requests and fires them via
   page.runJavaScript(). The JS returns a sentinel object {"ok":1,"v":<result>}
@@ -30,7 +38,7 @@ Architecture (v7):
 
 Installation: copy this folder into Anki's addons21 directory and restart Anki.
 """
-import sys, queue, threading, time
+import hmac, os, secrets, sys, queue, tempfile, threading, time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from aqt import mw
@@ -41,6 +49,19 @@ def _log(msg): print(f"[KDv7 +{time.time()-_t0:.1f}s] {msg}", file=sys.stderr, f
 
 PORT = 8767
 _server = None
+
+TOKEN_FILE = os.path.join(tempfile.gettempdir(), "kanjidraw_stress_token")
+_TOKEN = secrets.token_urlsafe(32)
+
+
+def _write_token():
+    try:
+        os.unlink(TOKEN_FILE)
+    except FileNotFoundError:
+        pass
+    fd = os.open(TOKEN_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(_TOKEN)
 
 # Thread-safe queue: items are either plain str (fire-and-forget)
 # or (str, callable) tuples (eval_sync — callback receives the JS result).
@@ -160,8 +181,20 @@ class _Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass
 
+    def _authorized(self):
+        if self.headers.get("Origin"):
+            return False
+        auth = self.headers.get("Authorization", "")
+        return hmac.compare_digest(auth.encode(), f"Bearer {_TOKEN}".encode())
+
     def do_POST(self):
         import json
+        if not self._authorized():
+            self._send_json(403, {"error": "forbidden"})
+            return
+        if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
+            self._send_json(415, {"error": "content-type must be application/json"})
+            return
         length = int(self.headers.get("Content-Length", 0))
         try:
             body = json.loads(self.rfile.read(length))
@@ -240,6 +273,9 @@ class _Handler(BaseHTTPRequestHandler):
             self._send_json(404, {"error": "not found"})
 
     def do_DELETE(self):
+        if not self._authorized():
+            self._send_json(403, {"error": "forbidden"})
+            return
         if self.path == "/shutdown":
             self._send_json(200, {"result": "ok"})
             threading.Thread(target=_server.shutdown, daemon=True).start()
@@ -247,6 +283,7 @@ class _Handler(BaseHTTPRequestHandler):
 
 def _start_server():
     global _server
+    _write_token()
     _server = _ThreadingServer(("127.0.0.1", PORT), _Handler)
     _server.serve_forever()
 

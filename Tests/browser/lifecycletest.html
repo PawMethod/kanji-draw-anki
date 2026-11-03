@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<script src="kd-audio-engine.js"></script>
+<script>
+// AnkiMobile: leaving via an external link and coming back must not leave the sound dead
+(async function () {
+    var A = window.__kdAudio, wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    var log = function (k, v) { console.log('KDR ' + k + ' ' + JSON.stringify(v)); };
+    var brief = function () { var s = A.state(); return { ctx: s.ctx, gain: s.gain, scenes: s.scenes }; };
+    A.configure({ level: 'mid', music: 'zen', musicLevel: 'mid', immersion: 'low' });
+    A.setScene('neutral', false); A.cardShown(false);
+    await wait(2500);
+    log('start', brief());
+    // 1) pagehide without unloading (iOS when an external link opens), then the page is visible again
+    window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: false }));
+    await wait(300);
+    var hidden = brief();
+    window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: false }));
+    await wait(600);
+    log('pagehide', { during: hidden.gain, after: brief().gain });
+    // 2) The context died while away (iOS audio session): returning alone rebuilds it, no tap needed
+    var old = A._t.ctx(), song = (A.state().scenes[0] || '').split(' ')[1];
+    await old.close();
+    document.dispatchEvent(new Event('visibilitychange'));
+    await wait(2000);
+    var s = brief();
+    log('autoRevived', { newCtx: A._t.ctx() !== old, ctx: s.ctx, gain: s.gain, sameSong: (s.scenes[0] || '').split(' ')[1] === song });
+    // 3) Dies again: a tap inside a modal that stops propagation still revives it, but only on an activating event
+    var old2 = A._t.ctx();
+    await old2.close();
+    var modal = document.createElement('div');
+    ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click'].forEach(function (n) { modal.addEventListener(n, function (e) { e.stopPropagation(); e.preventDefault(); }); });
+    document.body.appendChild(modal);
+    modal.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+    var afterDown = A._t.ctx() === old2;
+    modal.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+    await wait(1500);
+    s = brief();
+    log('modalTap', { keptOnPointerdown: afterDown, newCtx: A._t.ctx() !== old2, ctx: s.ctx, gain: s.gain, sameSong: (s.scenes[0] || '').split(' ')[1] === song, scenes: s.scenes });
+    // 4) The new effects
+    ['node', 'nodeOff', 'furigana', 'furiganaOff', 'pitfall'].forEach(function (n) { A.fx(n, 0, 2); });
+    log('fx', { ok: ['node', 'furigana', 'pitfall'].every(function (n) { return typeof A._t.FX[n] === 'function'; }) });
+    console.log('KDR DONE');
+})();
+</script>

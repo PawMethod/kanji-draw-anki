@@ -59,7 +59,13 @@ const _primaryColors = {
     rose: { bgMain: '#f9f4f5', surface: '#fff8f9', borderColor: '#e6dce0',
         dark: { bgMain: '#1e181a', surface: '#2a2226', borderColor: '#3c3236' } },
     sage: { bgMain: '#f3f6f2', surface: '#f8fbf6', borderColor: '#dae2d6',
-        dark: { bgMain: '#181d18', surface: '#222822', borderColor: '#343a30' } }
+        dark: { bgMain: '#181d18', surface: '#222822', borderColor: '#343a30' } },
+    hokkaido: { bgMain: '#cfe3f5', surface: '#f8fcff', borderColor: '#a3c6e0',
+        dark: { bgMain: '#132230', surface: '#1b3145', borderColor: '#2d4e6b' } },
+    tokyo: { bgMain: '#e4e6f5', surface: '#f9f9ff', borderColor: '#bcc1e3',
+        dark: { bgMain: '#17192c', surface: '#222540', borderColor: '#363b63' } },
+    okinawa: { bgMain: '#f5e6dc', surface: '#fffaf6', borderColor: '#e0c2b0',
+        dark: { bgMain: '#261a16', surface: '#362520', borderColor: '#523830' } }
 };
 
 const ACCENTS = Object.keys(_accentColors);
@@ -200,7 +206,7 @@ test('all accent×primary×mode combinations produce valid CSS (216 combos)', ()
             }
         }
     }
-    assert.strictEqual(combos, 108, `expected 108 combos (3×6×6), got ${combos}`);
+    assert.strictEqual(combos, 162, `expected 162 combos (3×6×9), got ${combos}`);
 });
 
 test('accent and primary are independent (changing one doesnt affect other)', () => {
@@ -420,7 +426,7 @@ test('radio sync values match stored state after all changes', () => {
 
 console.log('\n=== Full Matrix Stress Test ===\n');
 
-test('walk through ALL 324 unique setting combinations', () => {
+test('walk through ALL 486 unique setting combinations', () => {
     let count = 0;
     for (const mode of MODES) {
         for (const accent of ACCENTS) {
@@ -439,7 +445,7 @@ test('walk through ALL 324 unique setting combinations', () => {
             }
         }
     }
-    assert.strictEqual(count, 324, `expected 324 combinations (3×6×6×3), got ${count}`);
+    assert.strictEqual(count, 486, `expected 486 combinations (3×6×9×3), got ${count}`);
 });
 
 // ═══ CONTRAST / READABILITY CHECK ═══════════════════════════════════

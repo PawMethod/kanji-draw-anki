@@ -101,7 +101,7 @@ test('applyPathStyle resets all style-specific attributes before applying', () =
   assert(fnMatch[0].includes("removeAttribute('filter')"), 'Must clear filter attr');
   assert(fnMatch[0].includes("removeAttribute('paint-order')"), 'Must clear paint-order');
   // Verify drawing attributes reset to defaults before style switch
-  assert(fnMatch[0].includes("setAttribute('stroke-width', '4')"), 'Must reset stroke-width to default 4');
+  assert(fnMatch[0].includes("setAttribute('stroke-width', String(4 * _swf()))"), 'Must reset stroke-width to default 4 (scaled)');
   assert(fnMatch[0].includes("setAttribute('stroke-linecap', 'round')"), 'Must reset stroke-linecap to round');
   assert(fnMatch[0].includes("setAttribute('stroke-linejoin', 'round')"), 'Must reset stroke-linejoin to round');
 });
@@ -377,7 +377,7 @@ test('C1-Back makeStrokePath handles gel style with halo via appendStrokePath', 
 
 test('C1-Back makeStrokePath handles neon style', () => {
   assert(c1b.includes("case 'neon':"), 'makeStrokePath must have neon case');
-  assert(c1b.includes('nightMode'), 'neon must check dark mode for radius');
+  assert(c1b.includes('_kanjiIsDark()'), 'neon must check dark mode for radius');
 });
 
 test('C1-Back makeStrokePath handles ink style', () => {
@@ -410,9 +410,11 @@ test('C2-Back stores stroke style on window._kanjiStrokeStyle', () => {
   assert(c2b.includes('window._kanjiStrokeStyle = ss'), 'Must store stroke style globally');
 });
 
-test('C2-Back gel halos use getComputedStyle for path color', () => {
-  assert(c2b.includes('getComputedStyle(path).stroke') || c2b.includes('getComputedStyle(p).stroke'),
-    'Gel halos must use getComputedStyle for accurate color');
+test('C2-Back gel halos use the resolved per-path color', () => {
+  assert(/var haloC = resolvedColors\[i\] \|\| pathColors\[i\]/.test(c2b),
+    'Gel halos must reuse the per-path color resolved in the first pass');
+  assert(c2b.includes("h2.style.setProperty('stroke', haloC, 'important')"),
+    'Gel halo stroke must be set explicitly from the resolved color');
 });
 
 // ── 7. Style-switch reliability ──
@@ -432,11 +434,11 @@ test('applyThemeSettings uses window._kanjiAddGelHaloToPath (not local ref)', ()
     'Must use window._kanjiAddGelHaloToPath for cross-scope access');
 });
 
-test('applyThemeSettings nuclear cleanup removes ink groups from draw-layer', () => {
+test('applyThemeSettings nuclear cleanup removes gel halos from draw-layer', () => {
   const themeSection = c1f.match(/function applyThemeSettings[\s\S]*?finally/);
   assert(themeSection, 'Must have applyThemeSettings');
-  assert(themeSection[0].includes("querySelectorAll('g').forEach"),
-    'Must remove <g> ink groups from draw-layer during style switch');
+  assert(themeSection[0].includes("drawLay.querySelectorAll('.gel-halo').forEach"),
+    'Must remove gel halos from draw-layer during style switch');
 });
 
 test('applyThemeSettings resets opacity on svg-bg/svg-guide paths', () => {
@@ -446,19 +448,21 @@ test('applyThemeSettings resets opacity on svg-bg/svg-guide paths', () => {
   assert(svgBgReset, 'Must clear inline opacity on svg-bg/svg-guide paths');
 });
 
-test('_addGelHaloToPath uses getComputedStyle first (not fallback)', () => {
-  const fn = c1f.match(/const _addGelHaloToPath[\s\S]*?insertBefore/);
-  assert(fn, 'Must have _addGelHaloToPath');
+test('gel halo colour uses getComputedStyle first (not fallback)', () => {
+  const add = c1f.match(/const _addGelHaloToPath[\s\S]*?insertBefore/);
+  assert(add && add[0].includes('window._kanjiGelColor('), '_addGelHaloToPath must resolve its colour via _kanjiGelColor');
+  const fn = c1f.match(/window\._kanjiGelColor = function[\s\S]*?\n {4}\};/);
+  assert(fn, 'Must have window._kanjiGelColor');
   const csIdx = fn[0].indexOf('getComputedStyle');
   const styleIdx = fn[0].indexOf('refPath.style.stroke');
-  assert(csIdx < styleIdx, 'getComputedStyle must be tried BEFORE inline style fallback');
+  assert(csIdx >= 0 && csIdx < styleIdx, 'getComputedStyle must be tried BEFORE inline style fallback');
 });
 
 test('applyPathStyle resets stroke-width to 4 before gel sets 4.5', () => {
   const fn = c1f.match(/const applyPathStyle[\s\S]*?window\._kanjiApplyPathStyle/);
   assert(fn, 'Must have applyPathStyle');
-  const resetIdx = fn[0].indexOf("setAttribute('stroke-width', '4')");
-  const gelIdx = fn[0].indexOf("setAttribute('stroke-width', '4.5')");
+  const resetIdx = fn[0].indexOf("setAttribute('stroke-width', String(4 * _swf()))");
+  const gelIdx = fn[0].indexOf("setAttribute('stroke-width', String(4.5 * _swf()))");
   assert(resetIdx > -1 && gelIdx > -1 && resetIdx < gelIdx,
     'stroke-width:4 reset must come before gel stroke-width:4.5');
 });
@@ -521,10 +525,10 @@ test('updateThemeSetting calls kanjiSettingsGlobalHandler immediately (C1)', () 
   assert(fn[0].includes('kanjiSettingsGlobalHandler'), 'Must call kanjiSettingsGlobalHandler on every setting change');
 });
 
-test('updateThemeSetting calls kanjiSettingsGlobalHandlerC2 immediately (C2)', () => {
+test('updateThemeSetting calls kanjiSettingsGlobalHandler immediately (C2)', () => {
   const fn = c2f.match(/function updateThemeSetting[\s\S]*?\n    \}/);
   assert(fn, 'Must have updateThemeSetting');
-  assert(fn[0].includes('kanjiSettingsGlobalHandlerC2'), 'Must call kanjiSettingsGlobalHandlerC2 on every setting change');
+  assert(fn[0].includes('kanjiSettingsGlobalHandler'), 'Must call kanjiSettingsGlobalHandler on every setting change');
 });
 
 test('C1-Back applyBackFeatures re-reads stroke style from storage', () => {

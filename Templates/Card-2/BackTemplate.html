@@ -1,6 +1,6 @@
-<script>if (typeof anki !== "undefined") anki.aFade = 0;</script>
+<script>aFade = 0; qFade = 0; if (typeof anki !== "undefined") { anki.aFade = 0; anki.qFade = 0; }</script>
 <style id="kanji-anti-flicker">
-    /* Static rules – applied by the browser IMMEDIATELY on parse, even with innerHTML */
+    /* Static rules - applied by the browser IMMEDIATELY on parse, even with innerHTML */
 
     #svg-bg path {
         stroke-dashoffset: 0 !important;
@@ -21,19 +21,19 @@
         transition: none !important;
     }
 
+    .gear-btn,
+    .order-btn {
+        transition: none !important;
+    }
+
     .info-btn {
         opacity: 0;
         animation: fadeAndSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         animation-delay: 0.08s;
     }
-
-    /* Elements already visible on front — no animation, instant appearance */
-    .gear-btn {
-        transition: none !important;
-    }
 </style>
 <script>
-    /* Dynamic stroke colors – requires localStorage access */
+    /* Dynamic stroke colors - requires localStorage access */
     (function () {
         try {
             var ps = JSON.parse(sessionStorage.getItem('kanjiErrors') || localStorage.getItem('kanjiErrors') || '[]');
@@ -72,164 +72,279 @@
 
 {{FrontSide}}
 
-<button class="info-btn" onclick="openInfoModal(event)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-    </svg>
-    Info & Merkhilfe
-</button>
+<div class="back-actions">
+    <button class="info-btn" onclick="openInfoModal(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" class="fi-cream"></path>
+            <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" class="fi-gold"></path>
+        </svg>
+        Info & Merkhilfe
+    </button>
+</div>
 
-<div class="info-overlay" id="info-overlay" onclick="closeInfoModal(event)">
-    <div class="info-modal" onclick="event.stopPropagation()">
+<div class="info-overlay tappable" id="info-overlay" onclick="closeInfoModal(event)">
+    <div class="info-modal tappable" onclick="event.stopPropagation()">
 
-        <div class="info-modal-header">
-            <span class="info-modal-title">Übersicht</span>
-            <span class="info-modal-meaning">{{Bedeutung}}</span>
-        </div>
-
-        <div class="info-tags">
-            {{#JLPT}}
-            <span class="info-tag">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                </svg>
-                {{JLPT}}
-            </span>
-            {{/JLPT}}
-            {{#Häufigkeit}}
-            <span class="info-tag tag-frequency">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="14" />
-                </svg>
-                {{Häufigkeit}}
-            </span>
-            {{/Häufigkeit}}
-        </div>
-
-        {{#Radikale}}
-        <script id="raw-tree-data" type="text/plain">{{Radikale}}</script>
-        <div class="tree-container custom-tree-box">
-            <div class="tree-root-kanji">{{Kanji}}</div>
-            <div class="tree-children" id="tree-render-target"></div>
-        </div>
-        {{/Radikale}}
-
-        {{#Eselsbrücke}}
-        <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18h6" />
-                <path d="M10 22h4" />
-                <path
-                    d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
-            </svg>
-            Eselsbrücke
-        </div>
-        {{/Eselsbrücke}}
-
-        {{#Merkhilfe}}
-        <div class="visuell-hinweis">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
-            </svg>
-            {{Merkhilfe}}
-        </div>
-        {{/Merkhilfe}}
-
-        {{#Eselsbrücke}}
-        <p class="info-text-story">{{Eselsbrücke}}</p>
-        {{/Eselsbrücke}}
-
-        {{#Wortbeispiel}}
-        <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>
-            Wortbeispiele
-        </div>
-        <div class="hint-word-box">
-            <div id="raw-hint-words" style="display:none;">{{furigana:Wortbeispiel}}</div>
-            <div id="formatted-hint-words" class="word-example-list"></div>
-        </div>
-        {{/Wortbeispiel}}
-
-        <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            Lesungen
-        </div>
-        <div class="readings-container readings-container--backside">
-            {{#Onyomi}}
-            <div class="reading-row">
-                <span class="reading-label onyomi-label">ON</span><span class="reading-value">{{Onyomi}}</span>
+        <div class="settings-page active" id="info-page-main">
+            <div class="info-modal-header">
+                <span class="info-modal-titles">
+                    <span class="info-modal-title">Übersicht</span>
+                    {{#Nummer}}<span class="info-modal-number">Nr. {{Nummer}}</span>{{/Nummer}}
+                </span>
+                <span class="info-modal-meaning">{{Bedeutung}}</span>
             </div>
-            {{/Onyomi}}
-            {{#Kunyomi}}
-            <div class="reading-row">
-                <span class="reading-label kunyomi-label">KUN</span><span class="reading-value">{{Kunyomi}}</span>
+
+            <div class="info-tags">
+                {{#JLPT}}
+                <span class="info-tag">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 10l10-5 10 5-10 5z" class="fi-cream" />
+                        <path d="M6 12v5c3 3 9 3 12 0v-5" class="fi-gold" />
+                        <path d="M22 10v6" />
+                    </svg>
+                    {{JLPT}}
+                </span>
+                {{/JLPT}}
+                {{#Häufigkeit}}
+                <span class="info-tag tag-frequency">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="13" width="4" height="7" rx="1" class="fi-cream" />
+                        <rect x="10" y="5" width="4" height="15" rx="1" class="fi-gold" />
+                        <rect x="16" y="9" width="4" height="11" rx="1" class="fi-teal" />
+                    </svg>
+                    {{Häufigkeit}}
+                </span>
+                {{/Häufigkeit}}
             </div>
-            {{/Kunyomi}}
+
+            {{#Radikale}}
+            <script id="raw-tree-data" type="text/plain">{{Radikale}}</script>
+            <div class="tree-container custom-tree-box">
+                <div class="tree-root-kanji">{{Kanji}}</div>
+                <div class="tree-children" id="tree-render-target"></div>
+            </div>
+            {{/Radikale}}
+
+            {{#Stolperfallen}}
+            <script id="raw-pitfalls-data" type="text/plain">{{Stolperfallen}}</script>
+            {{/Stolperfallen}}
+            <div class="info-tools-grid">
+                <div role="button" tabindex="0" class="info-tool-btn tappable"
+                    onclick="navigateInfoToOrder(this, event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9.5" class="fi-cream"></circle>
+                        <polygon points="9.8,7.4 17.4,12 9.8,16.6" class="fi-coral"></polygon>
+                    </svg>
+                    <span>Strichfolge</span>
+                </div>
+                {{#Stolperfallen}}
+                <div role="button" tabindex="0" class="info-tool-btn tappable"
+                    onclick="navigateInfoToPitfalls(this, event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9.5" class="fi-cream" />
+                        <circle cx="12" cy="12" r="5.6" class="fi-coral" />
+                        <circle cx="12" cy="12" r="2.2" class="fi-gold" />
+                    </svg>
+                    <span>Schreibfehler</span>
+                </div>
+                {{/Stolperfallen}}
+            </div>
+
+            {{#Eselsbrücke}}
+            <div class="info-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M15.1 14.5c.2-.9.6-1.7 1.4-2.5A4.6 4.6 0 0 0 18 8.2a6 6 0 0 0-12 0c0 1 .2 2.2 1.5 3.8.7.8 1.2 1.6 1.4 2.5z"
+                        class="fi-gold" />
+                    <rect x="8.8" y="14.5" width="6.4" height="5.5" rx="1.6" class="fi-cream" />
+                    <line x1="9" y1="17.2" x2="15" y2="17.2" />
+                </svg>
+                Eselsbrücke
+            </div>
+            {{/Eselsbrücke}}
+
+            {{#Merkhilfe}}
+            <div class="visuell-hinweis">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" class="fi-cream" />
+                    <circle cx="12" cy="12" r="3.4" class="fi-teal" />
+                    <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+                </svg>
+                <span class="visuell-hinweis-text">{{Merkhilfe}}</span>
+            </div>
+            {{/Merkhilfe}}
+
+            {{#Eselsbrücke}}
+            <p class="info-text-story">{{Eselsbrücke}}</p>
+            {{/Eselsbrücke}}
+
+            {{#Wortbeispiel}}
+            <div class="info-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" class="fi-teal"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" class="fi-cream"></path>
+                </svg>
+                Wortbeispiele
+            </div>
+            <div class="hint-word-box">
+                <div id="raw-hint-words" style="display:none;">{{furigana:Wortbeispiel}}</div>
+                <div id="formatted-hint-words" class="word-example-list"></div>
+            </div>
+            {{/Wortbeispiel}}
+
+            <div class="info-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M10.5 4C6.4 4 3 6.7 3 10c0 1.8 1 3.4 2.5 4.5L4.5 17l3.2-1.4c.9.3 1.8.4 2.8.4 4.1 0 7.5-2.7 7.5-6S14.6 4 10.5 4z"
+                        class="fi-gold"></path>
+                    <path
+                        d="M16 11.5c-2.8 0-5 2-5 4.4s2.2 4.4 5 4.4c.6 0 1.2-.1 1.8-.3l2.2 1-0.6-2c1-0.8 1.6-1.9 1.6-3.1 0-2.4-2.2-4.4-5-4.4z"
+                        class="fi-cream"></path>
+                    <circle cx="8.2" cy="9.8" r="0.9" fill="currentColor" stroke="none"></circle>
+                    <circle cx="12.2" cy="9.8" r="0.9" fill="currentColor" stroke="none"></circle>
+                    <circle cx="14.5" cy="15.8" r="0.8" fill="currentColor" stroke="none"></circle>
+                    <circle cx="17.5" cy="15.8" r="0.8" fill="currentColor" stroke="none"></circle>
+                </svg>
+                Lesungen
+            </div>
+            <div class="readings-container readings-container--backside">
+                {{#Onyomi}}
+                <div class="reading-row">
+                    <span class="reading-label onyomi-label">ON</span><span class="reading-value">{{Onyomi}}</span>
+                </div>
+                {{/Onyomi}}
+                {{#Kunyomi}}
+                <div class="reading-row">
+                    <span class="reading-label kunyomi-label">KUN</span><span class="reading-value">{{Kunyomi}}</span>
+                </div>
+                {{/Kunyomi}}
+            </div>
+
+            <div class="info-section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" class="fi-teal" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                        class="fi-mint" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                </svg>
+                Externe Links
+            </div>
+            <div class="link-grid" data-kanji="{{Kanji}}">
+                <a class="link-btn tappable" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank"
+                    rel="noopener">
+                    Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                        <line x1="7" y1="17" x2="17" y2="7" />
+                        <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                </a>
+                <a class="link-btn tappable"
+                    href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de" target="_blank"
+                    rel="noopener">
+                    Tatoeba <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                        <line x1="7" y1="17" x2="17" y2="7" />
+                        <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                </a>
+                <a class="link-btn tappable link-btn-wk" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank"
+                    rel="noopener">
+                    <span class="link-btn-label">WaniKani</span> <svg viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        style="width:14px; height:14px; opacity:0.6;">
+                        <line x1="7" y1="17" x2="17" y2="7" />
+                        <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                </a>
+                <a class="link-btn tappable" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank"
+                    rel="noopener">
+                    Koohii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
+                        <line x1="7" y1="17" x2="17" y2="7" />
+                        <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                </a>
+            </div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="closeInfoModal(event)">Schließen
+            </div>
         </div>
 
-        <div class="info-section-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="2" y1="12" x2="22" y2="12" />
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-            </svg>
-            Externe Links
+        <div class="settings-page" id="info-page-order">
+            <div class="subpage-header">
+                <button class="back-btn tappable" onclick="navigateInfoBack(event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Strichfolge</h3>
+                <span class="info-modal-meaning" id="order-progress"></span>
+            </div>
+            <div class="order-stage"><svg id="order-svg" viewBox="0 0 109 109" aria-hidden="true"></svg></div>
+            <div class="order-controls">
+                <button class="order-ctrl tappable" onclick="strokeOrderAction('prev', event)" title="Strich zurück"
+                    aria-label="Strich zurück">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button class="order-ctrl order-ctrl-main tappable" id="order-toggle"
+                    onclick="strokeOrderAction('toggle', event)" title="Abspielen / Pause"
+                    aria-label="Abspielen / Pause"></button>
+                <button class="order-ctrl tappable" onclick="strokeOrderAction('next', event)" title="Nächster Strich"
+                    aria-label="Nächster Strich">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <button class="order-ctrl tappable" id="order-speed" onclick="strokeOrderAction('speed', event)"
+                    title="Geschwindigkeit" aria-label="Geschwindigkeit">1×</button>
+            </div>
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur
+                Übersicht</div>
         </div>
-        <div class="link-grid">
-            <a class="link-btn" href="https://jisho.org/search/{{Kanji}}%20%23kanji" target="_blank">
-                Jisho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="7 7 17 7 17 17" />
-                </svg>
-            </a>
-            <a class="link-btn" href="https://tatoeba.org/de/sentences/search?query={{Kanji}}&from=jpn&to=de"
-                target="_blank">
-                Tatoeba <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="7 7 17 7 17 17" />
-                </svg>
-            </a>
-            <a class="link-btn" href="https://www.wanikani.com/kanji/{{Kanji}}" target="_blank">
-                WaniKani <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="7 7 17 7 17 17" />
-                </svg>
-            </a>
-            <a class="link-btn" href="https://kanji.koohii.com/study/kanji/{{Kanji}}" target="_blank">
-                Koohii <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; opacity:0.6;">
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="7 7 17 7 17 17" />
-                </svg>
-            </a>
+
+        {{#Stolperfallen}}
+        <div class="settings-page" id="info-page-pitfalls">
+            <div class="subpage-header">
+                <button class="back-btn tappable" onclick="navigateInfoBack(event)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Häufige Schreibfehler</h3>
+                <span class="info-modal-meaning">{{Kanji}}</span>
+            </div>
+
+            <div class="pitfalls-stage">
+                <div class="pitfalls-preview-pad" id="pitfalls-preview-pad"></div>
+                <div class="pitfalls-filter-bar" id="pitfalls-filter-bar"></div>
+            </div>
+
+            <div class="pitfalls-list" id="pitfalls-list-target"></div>
+
+            <div role="button" tabindex="0" class="close-settings tappable" onclick="navigateInfoBack(event)">Zurück zur
+                Übersicht</div>
         </div>
-        <div role="button" tabindex="0" class="close-settings" onclick="closeInfoModal(event)">Schließen</div>
+        {{/Stolperfallen}}
     </div>
 </div>
 
 <script>
     // =======================================================================
-    // BackTemplate-Card-2 (Recognition Card – Back Side)
+    // BackTemplate-Card-2 (Recognition Card - Back Side)
     //
     // Anti-flicker <style> above renders stroke colors BEFORE FrontSide loads.
     // FrontSide injection provides: safeGetItem, getGlobalConfig, grid, scroll lock.
@@ -242,16 +357,13 @@
     // Re-apply font-size on back side (class toggle + dynamic style for WKWebView)
     (function () {
         try {
-            var fs = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeFontSize', 'normal')
-                : (localStorage.getItem('kanjiThemeFontSize') || 'normal');
+            var fs = safeGetItem('kanjiThemeFontSize', 'normal');
             document.documentElement.classList.remove('font-small', 'font-large');
             if (fs === 'small') document.documentElement.classList.add('font-small');
             else if (fs === 'large') document.documentElement.classList.add('font-large');
             // Always remove+recreate dynamic style (WKWebView caching workaround)
             var _dynFontId = 'dyn-font-size';
             var _dynEl = document.getElementById(_dynFontId);
-            if (_dynEl) _dynEl.parentNode.removeChild(_dynEl);
             var _fsMap = {
                 '.card': [16, 14, 18], '.card-title': [26, 23, 29], '.info-modal-header': [18, 16, 20],
                 '.info-modal-title': [13, 11, 15], '.info-modal-meaning': [14, 12, 16],
@@ -260,7 +372,7 @@
                 '.reading-row': [16, 14, 18], '.reading-label': [11, 10, 12], '.info-btn': [15, 13, 17],
                 '.info-tag': [12, 10, 14], '.link-btn': [14, 12, 16], '.tree-root-kanji': [36, 32, 40],
                 '.tree-node-char': [28, 24, 32], '.tree-node-tooltip': [13, 11, 15],
-                '.no-tree-data': [13, 11, 15], '.side-by-side-label': [11, 10, 12],
+                '.no-tree-data': [13, 11, 15],
                 '.setting-group-title': [11, 10, 12], '.segment-btn': [12, 10, 14],
                 '.category-name': [15, 13, 17], '.category-desc': [11, 10, 12],
                 '.subpage-header h3': [16, 14, 18], '.settings-main-title': [16, 14, 18],
@@ -269,19 +381,20 @@
             };
             var _fsIdx = fs === 'small' ? 1 : fs === 'large' ? 2 : 0;
             var _cssRules = Object.keys(_fsMap).map(function (_sel) { return _sel + '{font-size:' + _fsMap[_sel][_fsIdx] + 'px!important}'; }).join('');
-            var _newStyle = document.createElement('style');
-            _newStyle.id = _dynFontId;
-            _newStyle.textContent = _cssRules;
-            document.head.appendChild(_newStyle);
+            if (!_dynEl || _dynEl.textContent !== _cssRules || document.documentElement.classList.contains('is-ankimobile')) {
+                if (_dynEl) _dynEl.parentNode.removeChild(_dynEl);
+                var _newStyle = document.createElement('style');
+                _newStyle.id = _dynFontId;
+                _newStyle.textContent = _cssRules;
+                document.head.appendChild(_newStyle);
+            }
         } catch (e) { }
     })();
 
     // Re-apply stroke style class on back side (CSS needs it on .kanji-container)
     (function () {
         try {
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (ss === 'soft') ss = 'gel';
             window._kanjiStrokeStyle = ss;
             var kc = document.querySelector('.kanji-container');
@@ -291,7 +404,9 @@
             }
             // Apply per-path stroke style effects to reference SVGs
             // NOTE: NO gel halos here — applyBackFeatures creates them with correct colors AFTER stroke colors are set
-            var dk = document.documentElement.classList.contains('nightMode') || document.documentElement.classList.contains('night_mode') || document.body.classList.contains('nightMode') || document.body.classList.contains('night_mode');
+            var swf0 = window._kanjiSwFactor();
+            document.documentElement.style.setProperty('--kd-sw', String(swf0));
+            var dk = window._kanjiIsDark();
             var _wk = document.documentElement.classList.contains('is-ankimobile');
             [document.getElementById('svg-bg'), document.getElementById('svg-guide')].forEach(function (svgEl) {
                 if (!svgEl) return;
@@ -303,13 +418,15 @@
                     p.style.removeProperty('opacity');
                     p.removeAttribute('filter');
                     p.removeAttribute('paint-order');
+                    var rw0 = String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf0);
+                    p.setAttribute('stroke-width', rw0);
+                    p.style.strokeWidth = rw0;
                     // Apply basic style properties (halos added later by applyBackFeatures)
                     switch (ss) {
                         case 'neon':
                             p.setAttribute('filter', _wk ? (dk ? 'url(#neon-glow-lite-dk)' : 'url(#neon-glow-lite)') : (dk ? 'url(#neon-glow-dk)' : 'url(#neon-glow)'));
                             break;
                         case 'gel':
-                            p.setAttribute('stroke-width', '4.5');
                             p.setAttribute('paint-order', 'stroke');
                             break;
                         case 'ink':
@@ -327,12 +444,111 @@
         if (e) { e.stopPropagation(); e.preventDefault(); }
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
         var ib = document.querySelector('.info-btn');
-        if (ib) { ib.classList.remove('info-tap'); requestAnimationFrame(function () { ib.classList.add('info-tap'); }); }
+        if (ib) ib.classList.add('info-entered');
         var ol = document.getElementById('info-overlay');
         if (!ol) return;
+        if (window._kanjiOrder) window._kanjiOrder.close();
+        // Always start on main overview page
+        var pMain = document.getElementById('info-page-main');
+        var pOrder = document.getElementById('info-page-order');
+        var pPit = document.getElementById('info-page-pitfalls');
+        if (pOrder) { pOrder.classList.remove('active', 'slide-in-right', 'slide-in-left'); pOrder.style.display = 'none'; }
+        if (pPit) { pPit.classList.remove('active', 'slide-in-right', 'slide-in-left'); pPit.style.display = 'none'; }
+        if (pMain) { pMain.classList.remove('slide-in-right', 'slide-in-left'); pMain.style.display = ''; pMain.classList.add('active'); }
         var im = ol.querySelector('.info-modal');
         if (im) im.scrollTop = 0;
         ol.classList.add('active');
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        if (window._kanjiRefreshTreeViewport) window._kanjiRefreshTreeViewport();
+        if (window._initModalScrollbars) window._initModalScrollbars();
+    }
+
+    function navigateInfoToOrder(sourceCard, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var pMain = document.getElementById('info-page-main');
+        var pOrder = document.getElementById('info-page-order');
+        var pPit = document.getElementById('info-page-pitfalls');
+        if (!pMain || !pOrder) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        var im = pMain.closest('.info-modal');
+        var doNav = function () {
+            pMain.classList.remove('active');
+            pMain.style.display = 'none';
+            if (pPit) { pPit.classList.remove('active', 'slide-in-right', 'slide-in-left'); pPit.style.display = 'none'; }
+            pOrder.style.display = '';
+            pOrder.classList.add('active', 'slide-in-right');
+            if (im) im.scrollTop = 0;
+            if (window._kanjiOrder) window._kanjiOrder.open();
+            pOrder.addEventListener('animationend', function onOrderSlideIn() {
+                pOrder.classList.remove('slide-in-right');
+                pOrder.removeEventListener('animationend', onOrderSlideIn);
+            });
+            if (window._initModalScrollbars) window._initModalScrollbars();
+        };
+        if (sourceCard) {
+            sourceCard.classList.add('tap-active');
+            setTimeout(function () { sourceCard.classList.remove('tap-active'); doNav(); }, 110);
+        } else {
+            doNav();
+        }
+    }
+
+    function navigateInfoToPitfalls(sourceCard, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var pMain = document.getElementById('info-page-main');
+        var pOrder = document.getElementById('info-page-order');
+        var pPit = document.getElementById('info-page-pitfalls');
+        if (!pMain || !pPit) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        var im = pMain.closest('.info-modal');
+        var doNav = function () {
+            if (window._kanjiOrder) window._kanjiOrder.close();
+            pMain.classList.remove('active');
+            pMain.style.display = 'none';
+            if (pOrder) { pOrder.classList.remove('active', 'slide-in-right', 'slide-in-left'); pOrder.style.display = 'none'; }
+            pPit.style.display = '';
+            pPit.classList.add('active', 'slide-in-right');
+            if (im) im.scrollTop = 0;
+            pPit.addEventListener('animationend', function onPitSlideIn() {
+                pPit.classList.remove('slide-in-right');
+                pPit.removeEventListener('animationend', onPitSlideIn);
+            });
+            if (window._initModalScrollbars) window._initModalScrollbars();
+        };
+        if (sourceCard) {
+            sourceCard.classList.add('tap-active');
+            setTimeout(function () { sourceCard.classList.remove('tap-active'); doNav(); }, 110);
+        } else {
+            doNav();
+        }
+    }
+
+    function navigateInfoBack(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var pMain = document.getElementById('info-page-main');
+        var pOrder = document.getElementById('info-page-order');
+        var pPit = document.getElementById('info-page-pitfalls');
+        if (!pMain) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        if (window._kanjiOrder) window._kanjiOrder.close();
+        var im = pMain.closest('.info-modal');
+        if (pOrder) { pOrder.classList.remove('active', 'slide-in-right', 'slide-in-left'); pOrder.style.display = 'none'; }
+        if (pPit) { pPit.classList.remove('active', 'slide-in-right', 'slide-in-left'); pPit.style.display = 'none'; }
+        pMain.style.display = '';
+        pMain.classList.add('active', 'slide-in-left');
+        if (im) im.scrollTop = 0;
+        pMain.addEventListener('animationend', function onInfoSlideBack() {
+            pMain.classList.remove('slide-in-left');
+            pMain.removeEventListener('animationend', onInfoSlideBack);
+        });
+        if (window._initModalScrollbars) window._initModalScrollbars();
     }
 
     function closeInfoModal(e) {
@@ -342,6 +558,9 @@
         if (e && e.target === ol && !ol._bgPointerDown) return;
         ol._bgPointerDown = false;
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiSetTreeFullscreen) window._kanjiSetTreeFullscreen(false);
+        if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+        if (window._kanjiOrder) window._kanjiOrder.close();
         ol.classList.remove('active');
         // Keep overlay clickable briefly to absorb S-Pen/stylus ghost clicks
         ol.style.pointerEvents = 'auto';
@@ -354,12 +573,1118 @@
         var ib = document.querySelector('.info-btn');
         if (ib) {
             ib.addEventListener('animationend', function (e) {
-                if (e.animationName === 'gearTap') ib.classList.remove('info-tap');
+                if (e.animationName === 'fadeAndSlideIn') ib.classList.add('info-entered');
             });
         }
     })();
 
-    // --- Radical Tree Renderer [SHARED with c1-back] ---
+    // [KD-SRC back/primitive-tree.js]
+    // --- Primitive Tree (Kanji-Study style) ---
+    // Field grammar: value[keyword]@strokes{children}, e.g. 吾[Ich]@8-14{五[fünf]@8-11, 口[Mund]@12-14}
+    // Plain "value[keyword], ..." lists (no @/{}) still render, just without stroke colouring.
+
+    window._kanjiRenderPrimitiveTree = function (rawData, target) {
+        const NS = 'http://www.w3.org/2000/svg';
+        const PALETTE = ['#2aa7e0', '#d46be8', '#f0a030', '#3fbf86', '#e8625c', '#8a7cf0'];
+        const R = 26, R_ROOT = 33, LINE_MAX = 12;
+        const wrapLabel = (rawKw) => {
+            const clean = (rawKw || '').replace(/\u00ad/g, '').trim();
+            if (!clean) return [];
+            if (clean.length <= LINE_MAX) return [clean];
+            let best = -1, bestDist = Infinity;
+            for (let i = 1; i < clean.length - 1; i++) {
+                if (clean[i] === ' ' || clean[i] === '-') {
+                    const d = Math.abs(i - clean.length / 2);
+                    if (d < bestDist) { bestDist = d; best = i; }
+                }
+            }
+            if (best > 0) {
+                const l1 = (clean[best] === '-' ? clean.slice(0, best + 1) : clean.slice(0, best)).trim();
+                const l2 = clean.slice(best + 1).trim();
+                return [l1, l2];
+            }
+            const shyParts = (rawKw || '').split('\u00ad').map(p => p.trim()).filter(Boolean);
+            if (shyParts.length > 1) {
+                let bIdx = 1, bDiff = Infinity;
+                for (let i = 1; i < shyParts.length; i++) {
+                    const a = shyParts.slice(0, i).join('');
+                    const b = shyParts.slice(i).join('');
+                    const diff = Math.abs(a.length - b.length);
+                    if (diff < bDiff) { bDiff = diff; bIdx = i; }
+                }
+                return [shyParts.slice(0, bIdx).join('') + '-', shyParts.slice(bIdx).join('')];
+            }
+            if (clean.length > 14) {
+                const mid = Math.ceil(clean.length / 2);
+                return [clean.slice(0, mid) + '-', clean.slice(mid)];
+            }
+            return [clean];
+        };
+
+        const splitTop = (str) => {
+            const out = []; let cur = '', tag = false, br = 0, cb = 0;
+            for (const ch of str) {
+                if (ch === '<') tag = true; else if (ch === '>') tag = false;
+                else if (!tag) { if (ch === '[') br++; else if (ch === ']') br--; else if (ch === '{') cb++; else if (ch === '}') cb--; }
+                if (ch === ',' && !tag && br === 0 && cb === 0) { if (cur.trim()) out.push(cur.trim()); cur = ''; }
+                else cur += ch;
+            }
+            if (cur.trim()) out.push(cur.trim());
+            return out;
+        };
+        const parseStrokes = (s) => {
+            const out = [];
+            s.split('+').forEach(r => {
+                const m = r.match(/^(\d+)(?:-(\d+))?$/);
+                if (!m) return;
+                for (let i = +m[1]; i <= +(m[2] || m[1]); i++) out.push(i - 1);
+            });
+            return out;
+        };
+        const parseItem = (item) => {
+            let s = item.trim(), children = [];
+            if (s.endsWith('}')) {
+                let depth = 0, i = s.length - 1;
+                for (; i >= 0; i--) { if (s[i] === '}') depth++; else if (s[i] === '{' && --depth === 0) break; }
+                if (i > 0) { children = splitTop(s.slice(i + 1, -1)).map(parseItem); s = s.slice(0, i).trim(); }
+            }
+            let strokes = null;
+            const sm = s.match(/@([\d+\-]+)\s*$/);
+            if (sm) { strokes = parseStrokes(sm[1]); s = s.slice(0, sm.index).trim(); }
+            let rawKw = '', keyword = '', isPrimitive = false;
+            const bm = s.match(/\[([^\[\]]*)\]\s*$/);
+            if (bm) {
+                rawKw = bm[1].trim();
+                if (rawKw.endsWith('*')) { isPrimitive = true; rawKw = rawKw.slice(0, -1); }
+                keyword = rawKw.replace(/\u00ad/g, '');
+                s = s.slice(0, bm.index).trim();
+            }
+            return { value: s, rawKeyword: rawKw, keyword, isPrimitive, strokes, children };
+        };
+
+        const svgBg = document.getElementById('svg-bg');
+        const ds = svgBg ? Array.prototype.filter.call(svgBg.children, p => p.tagName.toLowerCase() === 'path' && !p.classList.contains('gel-halo')).map(p => p.getAttribute('d')) : [];
+        const rootChar = (target.closest('.tree-container') || document).querySelector('.tree-root-kanji');
+        const root = { value: rootChar ? rootChar.textContent.trim() : '', rawKeyword: '', keyword: '', strokes: ds.map((_, i) => i), children: splitTop(rawData).map(parseItem), isRoot: true };
+
+        // Measure stroke / markup / label bounding boxes in an off-screen SVG
+        const scratch = document.createElementNS(NS, 'svg');
+        scratch.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:200px;height:200px;visibility:hidden');
+        document.body.appendChild(scratch);
+        const strokeBox = ds.map(d => {
+            const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); scratch.appendChild(p);
+            let b = null; try { b = p.getBBox(); } catch (e) { }
+            return b && { x: b.x, y: b.y, w: b.width, h: b.height };
+        });
+        const markupBox = (markup) => {
+            const g = document.createElementNS(NS, 'g'); g.innerHTML = markup; scratch.appendChild(g);
+            let b = null; try { b = g.getBBox(); } catch (e) { }
+            return b && b.width > 0 ? { x: b.x, y: b.y, w: b.width, h: b.height } : null;
+        };
+        const unionBox = (idx) => {
+            let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+            idx.forEach(i => { const b = strokeBox[i]; if (!b) return; x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); });
+            return x0 === Infinity ? null : { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+        };
+        const squareViewBox = (b, pad) => {
+            const size = Math.max(b.w, b.h, 12) * (1 + pad * 2);
+            return [(b.x + b.w / 2 - size / 2), (b.y + b.h / 2 - size / 2), size, size].map(n => n.toFixed(2)).join(' ');
+        };
+
+        // Pre-measure node label pills and depths
+        let maxDepth = 0;
+        const initNodes = (n, depth) => {
+            n.depth = depth;
+            maxDepth = Math.max(maxDepth, depth);
+            n.lines = (!n.isRoot && n.keyword) ? wrapLabel(n.rawKeyword || n.keyword) : [];
+            if (n.lines.length) {
+                const maxChars = Math.max.apply(null, n.lines.map(l => l.length));
+                let measuredW = maxChars * 6.8;
+                try {
+                    const t = document.createElementNS(NS, 'text');
+                    t.setAttribute('style', 'font-size:11px;font-weight:800;font-family:sans-serif');
+                    n.lines.forEach((ln, li) => {
+                        const ts = document.createElementNS(NS, 'tspan');
+                        ts.setAttribute('x', '0');
+                        if (li > 0) ts.setAttribute('dy', '12');
+                        ts.textContent = ln;
+                        t.appendChild(ts);
+                    });
+                    scratch.appendChild(t);
+                    const tb = t.getBBox();
+                    if (tb && tb.width > 8) measuredW = Math.max(tb.width, maxChars * 6.4);
+                } catch (e) { }
+                n.pillW = Math.max(44, Math.ceil(measuredW + 18));
+                n.pillH = 19 + (n.lines.length - 1) * 12;
+            } else {
+                n.pillW = 0;
+                n.pillH = 0;
+            }
+            const r = n.isRoot ? R_ROOT : R;
+            n.halfW = Math.max(r + 6, n.pillW / 2 + 4);
+            n.children.forEach(c => initNodes(c, depth + 1));
+        };
+        initNodes(root, 0);
+
+        // Contour-aware hierarchical subtree layout (packs subtrees cleanly across depths without wasting columns)
+        const shiftSubtree = (n, dx) => {
+            n.x += dx;
+            Object.keys(n.minX).forEach(d => { n.minX[d] += dx; n.maxX[d] += dx; });
+            n.children.forEach(c => shiftSubtree(c, dx));
+        };
+        const placeSubtree = (n) => {
+            if (!n.children.length) {
+                n.x = 0;
+                n.minX = { [n.depth]: -n.halfW };
+                n.maxX = { [n.depth]: n.halfW };
+                return;
+            }
+            n.children.forEach(placeSubtree);
+            const accMin = Object.assign({}, n.children[0].minX);
+            const accMax = Object.assign({}, n.children[0].maxX);
+            for (let i = 1; i < n.children.length; i++) {
+                const c = n.children[i];
+                let reqDx = 0;
+                Object.keys(c.minX).forEach(d => {
+                    if (accMax[d] !== undefined) {
+                        const gap = (+d === c.depth) ? 14 : 10;
+                        reqDx = Math.max(reqDx, accMax[d] + gap - c.minX[d]);
+                    }
+                });
+                const prevX = n.children[i - 1].x;
+                reqDx = Math.max(reqDx, prevX + 64 - c.x);
+                shiftSubtree(c, reqDx);
+                Object.keys(c.minX).forEach(d => {
+                    accMin[d] = accMin[d] === undefined ? c.minX[d] : Math.min(accMin[d], c.minX[d]);
+                    accMax[d] = accMax[d] === undefined ? c.maxX[d] : Math.max(accMax[d], c.maxX[d]);
+                });
+            }
+            n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2;
+            accMin[n.depth] = accMin[n.depth] === undefined ? (n.x - n.halfW) : Math.min(accMin[n.depth], n.x - n.halfW);
+            accMax[n.depth] = accMax[n.depth] === undefined ? (n.x + n.halfW) : Math.max(accMax[n.depth], n.x + n.halfW);
+            n.minX = accMin;
+            n.maxX = accMax;
+        };
+        placeSubtree(root);
+
+        // Spread narrow trees horizontally and adapt vertical step so the tree fills the box cleanly without button overlap
+        const boxH = maxDepth >= 3 ? 320 : (maxDepth === 2 ? 280 : 225);
+
+        let minEdge = Infinity, maxEdge = -Infinity, minCenter = Infinity, maxCenter = -Infinity;
+        const scanX = (n) => {
+            minEdge = Math.min(minEdge, n.x - n.halfW);
+            maxEdge = Math.max(maxEdge, n.x + n.halfW);
+            if (!n.isRoot) {
+                minCenter = Math.min(minCenter, n.x);
+                maxCenter = Math.max(maxCenter, n.x);
+            }
+            n.children.forEach(scanX);
+        };
+        scanX(root);
+        const rawSpan = maxEdge - minEdge;
+        const centerSpan = maxCenter > minCenter ? (maxCenter - minCenter) : 0;
+
+        const idealSpan = maxDepth === 1 ? 230 : (maxDepth === 2 ? 275 : 300);
+        if (rawSpan < idealSpan && centerSpan > 10) {
+            const midC = (minCenter + maxCenter) / 2;
+            const outerPad = Math.max(52, rawSpan - centerSpan);
+            const stretch = Math.min(2.0, Math.max(1, (idealSpan - outerPad) / centerSpan));
+            if (stretch > 1.02) {
+                const applyStretch = (n) => {
+                    n.x = midC + (n.x - midC) * stretch;
+                    n.children.forEach(applyStretch);
+                };
+                applyStretch(root);
+                minEdge = Infinity; maxEdge = -Infinity;
+                scanX(root);
+            }
+        }
+
+        const padX = 12;
+        const contentW = Math.ceil(maxEdge - minEdge);
+        const width = Math.max(260, contentW + padX * 2);
+        const shiftToPositive = (width - contentW) / 2 - minEdge;
+        const finalizeX = (n) => { n.x += shiftToPositive; n.children.forEach(finalizeX); };
+        finalizeX(root);
+
+        const innerRatio = 310 / Math.max(140, boxH - 52);
+        const neededH = width / innerRatio;
+        const baseHStep = maxDepth === 1 ? 94 : (maxDepth === 2 ? 96 : 98);
+        const H_STEP = maxDepth > 0
+            ? Math.min(165, Math.max(baseHStep, Math.round((neededH - R_ROOT - R - 28) / maxDepth)))
+            : baseHStep;
+
+        const padTop = 6;
+        let maxBottomY = 0;
+        const assignY = (n) => {
+            const r = n.isRoot ? R_ROOT : R;
+            n.y = padTop + R_ROOT + n.depth * H_STEP;
+            n.topY = n.y - r;
+            n.bottomY = n.lines.length ? (n.y + r - 4 + n.pillH) : (n.y + r);
+            maxBottomY = Math.max(maxBottomY, n.bottomY);
+            n.children.forEach(assignY);
+        };
+        assignY(root);
+        const height = Math.ceil(maxBottomY + 6);
+
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('class', 'primitive-tree');
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        const edges = document.createElementNS(NS, 'g'); edges.setAttribute('class', 'pt-edges');
+        const nodes = document.createElementNS(NS, 'g');
+        svg.appendChild(edges); svg.appendChild(nodes);
+
+        const allNodes = [];
+        const draw = (n, parentNode, branchColor) => {
+            n.parent = parentNode || null;
+            n.branchColor = branchColor || 'var(--accent)';
+            const r = n.isRoot ? R_ROOT : R;
+            if (n.children.length) {
+                const startY = n.bottomY;
+                const endY = n.children[0].topY;
+                const midY = startY + (endY - startY) * 0.5;
+                n.children.forEach((c, ci) => {
+                    const childColor = PALETTE[ci % PALETTE.length];
+                    const p = document.createElementNS(NS, 'path');
+                    const dx = c.x - n.x;
+                    let dStr;
+                    if (Math.abs(dx) < 1.5) {
+                        dStr = `M ${n.x.toFixed(1)} ${startY.toFixed(1)} V ${endY.toFixed(1)}`;
+                    } else {
+                        const dir = dx > 0 ? 1 : -1;
+                        const cr = Math.max(0, Math.min(9, Math.abs(dx) / 2, Math.max(2, (endY - startY) / 2 - 1)));
+                        dStr = `M ${n.x.toFixed(1)} ${startY.toFixed(1)} V ${(midY - cr).toFixed(1)} Q ${n.x.toFixed(1)} ${midY.toFixed(1)} ${(n.x + dir * cr).toFixed(1)} ${midY.toFixed(1)} H ${(c.x - dir * cr).toFixed(1)} Q ${c.x.toFixed(1)} ${midY.toFixed(1)} ${c.x.toFixed(1)} ${(midY + cr).toFixed(1)} V ${endY.toFixed(1)}`;
+                    }
+                    p.setAttribute('d', dStr);
+                    c.edgeFromParent = p;
+                    edges.appendChild(p);
+                    draw(c, n, childColor);
+                });
+            }
+
+            const g = document.createElementNS(NS, 'g');
+            g.setAttribute('class', 'pt-node' + (n.isRoot ? ' pt-root' : '') + (n.children.length ? '' : ' pt-leaf'));
+            const circle = document.createElementNS(NS, 'circle');
+            circle.setAttribute('cx', n.x); circle.setAttribute('cy', n.y); circle.setAttribute('r', r);
+            g.appendChild(circle);
+
+            const glyph = document.createElementNS(NS, 'svg');
+            const gs = r * 1.32;
+            glyph.setAttribute('x', (n.x - gs / 2).toFixed(2)); glyph.setAttribute('y', (n.y - gs / 2).toFixed(2));
+            glyph.setAttribute('width', gs.toFixed(2)); glyph.setAttribute('height', gs.toFixed(2));
+            glyph.setAttribute('class', 'pt-glyph');
+            n.glyphEl = glyph;
+            n.glyphPaths = [];
+            const box = n.strokes && n.strokes.length ? unionBox(n.strokes) : null;
+            if (box) {
+                const colorOf = {};
+                n.children.forEach((c, ci) => (c.strokes || []).forEach(s => { if (colorOf[s] == null) colorOf[s] = PALETTE[ci % PALETTE.length]; }));
+                glyph.setAttribute('viewBox', squareViewBox(box, 0.12));
+                n.strokes.forEach(s => {
+                    if (!ds[s]) return;
+                    const p = document.createElementNS(NS, 'path');
+                    p.setAttribute('d', ds[s]);
+                    if (colorOf[s]) p.style.stroke = colorOf[s];
+                    glyph.appendChild(p);
+                    n.glyphPaths.push({ idx: s, pathEl: p, defaultColor: colorOf[s] || '' });
+                });
+            } else if (/<path/i.test(n.value)) {
+                glyph.setAttribute('class', 'pt-glyph pt-glyph-fill');
+                // Rebuild from an inert DOMParser document, keeping only g/path and geometry attributes.
+                const flip = document.createElementNS(NS, 'g');
+                flip.setAttribute('transform', 'scale(1,-1)');
+                const copySafe = (src, dst) => {
+                    Array.prototype.forEach.call(src.children, el => {
+                        const tag = el.localName;
+                        if (tag === 'svg') { copySafe(el, dst); return; }
+                        if (tag !== 'g' && tag !== 'path') return;
+                        const out = document.createElementNS(NS, tag);
+                        ['d', 'transform', 'fill-rule', 'clip-rule'].forEach(a => { if (el.hasAttribute(a)) out.setAttribute(a, el.getAttribute(a)); });
+                        if (tag === 'g') copySafe(el, out);
+                        dst.appendChild(out);
+                    });
+                };
+                copySafe(new DOMParser().parseFromString('<svg>' + n.value + '</svg>', 'text/html').body, flip);
+                glyph.appendChild(flip);
+                const mb = markupBox(glyph.innerHTML);
+                if (mb) glyph.setAttribute('viewBox', squareViewBox(mb, 0.16));
+            } else {
+                glyph.setAttribute('viewBox', '0 0 100 100');
+                const t = document.createElementNS(NS, 'text');
+                t.setAttribute('x', '50'); t.setAttribute('y', '54'); t.setAttribute('class', 'pt-char');
+                t.textContent = n.value;
+                glyph.appendChild(t);
+            }
+            g.appendChild(glyph);
+
+            if (n.lines && n.lines.length) {
+                const pillY = n.y + r - 4;
+                const pillRect = document.createElementNS(NS, 'rect');
+                pillRect.setAttribute('class', 'pt-label-pill');
+                pillRect.setAttribute('x', (n.x - n.pillW / 2).toFixed(1));
+                pillRect.setAttribute('y', pillY.toFixed(1));
+                pillRect.setAttribute('width', n.pillW.toFixed(1));
+                pillRect.setAttribute('height', n.pillH.toFixed(1));
+                pillRect.setAttribute('rx', '8');
+                pillRect.setAttribute('ry', '8');
+                g.appendChild(pillRect);
+
+                const label = document.createElementNS(NS, 'text');
+                label.setAttribute('x', n.x.toFixed(1));
+                label.setAttribute('y', (pillY + 13).toFixed(1));
+                label.setAttribute('class', 'pt-label' + (n.isPrimitive ? ' pt-label-primitive' : ''));
+                n.lines.forEach((ln, li) => {
+                    const ts = document.createElementNS(NS, 'tspan');
+                    ts.setAttribute('x', n.x.toFixed(1));
+                    if (li > 0) ts.setAttribute('dy', '12');
+                    ts.textContent = ln;
+                    label.appendChild(ts);
+                });
+                const title = document.createElementNS(NS, 'title'); title.textContent = n.keyword;
+                g.appendChild(title);
+                g.appendChild(label);
+            }
+            n.el = g;
+            nodes.appendChild(g);
+            allNodes.push({ x: n.x, y: n.y, r: r, el: g, node: n });
+        };
+        draw(root, null, 'var(--accent)');
+        scratch.remove();
+
+        target.innerHTML = '';
+        const container = target.closest('.tree-container');
+        if (container) {
+            container.classList.add('tree-graph-mode');
+            container.classList.remove('tree-zoomed', 'tree-focused', 'tree-panning', 'tree-fullscreen');
+        }
+
+        // --- Interactive +/- Zoom, Fullscreen & Focus-Gated Pan (Double-Tap to Navigate, Tap Outside to Scroll) ---
+        let zoom = 1;
+        const minZoom = 1;
+        const maxZoom = 3.0;
+        let vx = 0, vy = 0, vw = width, vh = height;
+        let panDragged = false;
+        let hasPanned = false;
+        let navActive = false;
+        let isFullscreen = false;
+
+        const ICON_EXPAND = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+        const ICON_COLLAPSE = '<svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'tree-toolbar';
+
+        const btnOut = document.createElement('button');
+        btnOut.type = 'button';
+        btnOut.className = 'tree-zoom-btn tappable disabled';
+        btnOut.title = 'Verkleinern';
+        btnOut.setAttribute('aria-label', 'Verkleinern');
+        btnOut.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
+
+        const btnIn = document.createElement('button');
+        btnIn.type = 'button';
+        btnIn.className = 'tree-zoom-btn tappable';
+        btnIn.title = 'Vergrößern';
+        btnIn.setAttribute('aria-label', 'Vergrößern');
+        btnIn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke-linecap="round"/></svg>';
+
+        const btnFs = document.createElement('button');
+        btnFs.type = 'button';
+        btnFs.className = 'tree-zoom-btn tree-fullscreen-btn tappable';
+        btnFs.title = 'Vollbild umschalten';
+        btnFs.setAttribute('aria-label', 'Vollbild umschalten');
+        btnFs.innerHTML = ICON_EXPAND;
+
+        const updateZoomBtns = () => {
+            btnOut.classList.toggle('disabled', zoom <= 1.02);
+            btnIn.classList.toggle('disabled', zoom >= maxZoom - 0.02);
+        };
+
+        toolbar.appendChild(btnOut);
+        toolbar.appendChild(btnIn);
+
+        const viewport = document.createElement('div');
+        viewport.className = 'tree-viewport tappable';
+        viewport.style.height = boxH + 'px';
+        svg.style.height = boxH + 'px';
+        const shield = document.createElement('div');
+        shield.className = 'tree-touch-shield tappable';
+        viewport.appendChild(svg);
+        viewport.appendChild(shield);
+        viewport.appendChild(toolbar);
+        viewport.appendChild(btnFs);
+
+        target.appendChild(viewport);
+
+        const setNavActive = (active) => {
+            const nextActive = !!active;
+            viewport.style.touchAction = 'none';
+            shield.style.touchAction = 'none';
+            svg.style.touchAction = 'none';
+            if (nextActive === navActive) {
+                updateZoomBtns();
+                return;
+            }
+            navActive = nextActive;
+            if (container) {
+                container.classList.toggle('tree-focused', navActive);
+                if (!navActive) container.classList.remove('tree-panning');
+            }
+            updateZoomBtns();
+        };
+        window._kanjiSetTreeNavActive = setNavActive;
+
+        let savedModalScroll = 0;
+        const setFullscreen = (fs) => {
+            const nextFs = !!fs;
+            if (nextFs === isFullscreen) return;
+            isFullscreen = nextFs;
+            const modalEl = container ? container.closest('.info-modal') : document.querySelector('.info-modal');
+            const overlayEl = modalEl ? modalEl.closest('.info-overlay') : document.getElementById('info-overlay');
+            if (isFullscreen) {
+                if (overlayEl) overlayEl.classList.add('tree-fs-overlay');
+                if (modalEl) {
+                    savedModalScroll = modalEl.scrollTop;
+                    modalEl.scrollTop = 0;
+                    modalEl.classList.add('tree-fs-active');
+                }
+                if (container) container.classList.add('tree-fullscreen');
+                viewport.style.height = '100%';
+                svg.style.height = '100%';
+                btnFs.innerHTML = ICON_COLLAPSE;
+                if (zoom <= 1.02) hasPanned = false;
+                setNavActive(true);
+            } else {
+                if (container) container.classList.remove('tree-fullscreen');
+                if (modalEl) {
+                    modalEl.classList.remove('tree-fs-active');
+                    modalEl.scrollTop = savedModalScroll;
+                }
+                if (overlayEl) overlayEl.classList.remove('tree-fs-overlay');
+                viewport.style.height = boxH + 'px';
+                svg.style.height = boxH + 'px';
+                btnFs.innerHTML = ICON_EXPAND;
+                if (zoom <= 1.02) {
+                    hasPanned = false;
+                    setNavActive(false);
+                }
+            }
+            applyViewBox();
+            requestAnimationFrame(() => applyViewBox());
+        };
+        window._kanjiSetTreeFullscreen = setFullscreen;
+
+        const getBaseBox = () => {
+            const cW = viewport.clientWidth || svg.clientWidth || 0;
+            const cH = viewport.clientHeight || svg.clientHeight || 0;
+            const bW = cW > 40 ? cW : 320;
+            const bH = cH > 40 ? cH : boxH;
+            const leftSafePx = 10, rightSafePx = 10;
+            const botSafePx = isFullscreen ? 46 : 38;
+            const topSafePx = isFullscreen ? 46 : (((root.x + root.halfW) / width > 0.72) ? 36 : 12);
+            const innerW = Math.max(120, bW - leftSafePx - rightSafePx);
+            const innerH = Math.max(100, bH - topSafePx - botSafePx);
+            const unitsPerPx = Math.max(width / innerW, height / innerH);
+            const bVw = bW * unitsPerPx;
+            const bVh = bH * unitsPerPx;
+            const baseVx = (width - bVw) / 2;
+            const baseVy = height / 2 - (topSafePx + innerH / 2) * unitsPerPx;
+            return { bVw: bVw, bVh: bVh, baseVx: baseVx, baseVy: baseVy };
+        };
+
+        const clientToSvg = (clientX, clientY) => {
+            const rect = svg.getBoundingClientRect();
+            if (!rect.width || !rect.height) return { x: root.x, y: root.y };
+            const scale = Math.min(rect.width / vw, rect.height / vh) || 1;
+            const offX = (rect.width - vw * scale) / 2;
+            const offY = (rect.height - vh * scale) / 2;
+            return {
+                x: vx + (clientX - rect.left - offX) / scale,
+                y: vy + (clientY - rect.top - offY) / scale
+            };
+        };
+
+        const clampPan = () => {
+            const padFactor = 0.35;
+            const marginX = Math.max(48, vw * padFactor);
+            const minX = Math.min(0, width - vw) - marginX;
+            const maxX = Math.max(0, width - vw) + marginX;
+            if (vx < minX) vx = minX; else if (vx > maxX) vx = maxX;
+
+            const marginY = Math.max(48, vh * padFactor);
+            const minY = Math.min(0, height - vh) - marginY;
+            const maxY = Math.max(0, height - vh) + marginY;
+            if (vy < minY) vy = minY; else if (vy > maxY) vy = maxY;
+        };
+
+        const applyViewBox = () => {
+            const base = getBaseBox();
+            vw = base.bVw / zoom;
+            vh = base.bVh / zoom;
+            if (zoom <= 1.02 && !hasPanned) {
+                zoom = 1;
+                vx = base.baseVx;
+                vy = base.baseVy;
+                if (container) container.classList.remove('tree-zoomed');
+            } else {
+                if (container) container.classList.toggle('tree-zoomed', zoom > 1.02 || hasPanned);
+                clampPan();
+            }
+            svg.setAttribute('viewBox', `${vx.toFixed(1)} ${vy.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`);
+            updateZoomBtns();
+        };
+        window._kanjiRefreshTreeViewport = applyViewBox;
+
+        const setZoomAround = (newZoom, focusSvgX, focusSvgY, resetPan) => {
+            const targetZoom = Math.max(minZoom, Math.min(maxZoom, Math.round(newZoom * 100) / 100));
+            const base = getBaseBox();
+            if (targetZoom <= 1.02 && resetPan) {
+                zoom = 1;
+                hasPanned = false;
+                applyViewBox();
+                return;
+            }
+            const prevVw = base.bVw / zoom;
+            const prevVh = base.bVh / zoom;
+            const cx = (focusSvgX != null) ? focusSvgX : (vx + prevVw / 2);
+            const cy = (focusSvgY != null) ? focusSvgY : (vy + prevVh / 2);
+            const rx = prevVw > 0 ? (cx - vx) / prevVw : 0.5;
+            const ry = prevVh > 0 ? (cy - vy) / prevVh : 0.5;
+            zoom = targetZoom;
+            const nextVw = base.bVw / zoom;
+            const nextVh = base.bVh / zoom;
+            vx = cx - rx * nextVw;
+            vy = cy - ry * nextVh;
+            applyViewBox();
+        };
+
+        setNavActive(false);
+        applyViewBox();
+
+        const bindTreeBtn = (btn, fn) => {
+            let tStartX = 0, tStartY = 0, lastTouchFire = 0;
+            btn.addEventListener('touchstart', function (e) {
+                if (e.cancelable !== false) e.preventDefault();
+                if (e.touches && e.touches.length === 1) {
+                    tStartX = e.touches[0].clientX;
+                    tStartY = e.touches[0].clientY;
+                }
+            }, { passive: false });
+            btn.addEventListener('touchmove', function (e) {
+                if (e.cancelable !== false) e.preventDefault();
+            }, { passive: false });
+            btn.addEventListener('touchend', function (e) {
+                if (e.cancelable !== false) e.preventDefault();
+                if (e.changedTouches && e.changedTouches.length === 1) {
+                    const dx = e.changedTouches[0].clientX - tStartX;
+                    const dy = e.changedTouches[0].clientY - tStartY;
+                    if (Math.hypot(dx, dy) < 24) {
+                        if (Date.now() - lastTouchFire < 80) return;
+                        lastTouchFire = Date.now();
+                        fn();
+                    }
+                }
+            }, { passive: false });
+            btn.addEventListener('pointerup', function (e) {
+                if (e.pointerType !== 'pen') return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (Date.now() - lastTouchFire < 260) return;
+                lastTouchFire = Date.now();
+                fn();
+            });
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (Date.now() - lastTouchFire < 400) return;
+                fn();
+            });
+        };
+
+        bindTreeBtn(btnIn, () => {
+            setNavActive(true);
+            const next = Math.round((zoom + 0.25) * 4) / 4;
+            setZoomAround(next);
+        });
+        bindTreeBtn(btnOut, () => {
+            const next = Math.round((zoom - 0.25) * 4) / 4;
+            if (next <= 1.02) {
+                setZoomAround(1, null, null, true);
+                if (!isFullscreen) setNavActive(false);
+            } else {
+                setNavActive(true);
+                setZoomAround(next, null, null, false);
+            }
+        });
+        bindTreeBtn(btnFs, () => {
+            setFullscreen(!isFullscreen);
+        });
+
+        let selectedNode = null;
+        const applyNodeSelection = (selNode) => {
+            if (!selNode && !selectedNode) return;
+            allNodes.forEach(item => {
+                const nd = item.node;
+                nd.el.classList.remove('pt-active', 'pt-parent-focus', 'pt-ancestor-focus', 'pt-descendant-focus', 'pt-dimmed', 'pt-dismissed');
+                nd.el.style.removeProperty('--pt-hl-color');
+                if (nd.edgeFromParent) {
+                    nd.edgeFromParent.classList.remove('pt-edge-active', 'pt-edge-ancestor', 'pt-edge-descendant', 'pt-edge-dimmed');
+                    nd.edgeFromParent.style.removeProperty('stroke');
+                }
+                if (nd.glyphPaths && nd.glyphEl) {
+                    nd.glyphPaths.forEach(gp => {
+                        gp.pathEl.classList.remove('pt-stroke-focus', 'pt-stroke-dim');
+                        if (gp.defaultColor) gp.pathEl.style.stroke = gp.defaultColor;
+                        else gp.pathEl.style.removeProperty('stroke');
+                        nd.glyphEl.appendChild(gp.pathEl);
+                    });
+                }
+            });
+
+            if (!selNode) {
+                selectedNode = null;
+                return;
+            }
+            selectedNode = selNode;
+
+            if (selNode.isRoot) {
+                selNode.el.classList.add('pt-active');
+                selNode.el.style.setProperty('--pt-hl-color', 'var(--accent)');
+                allNodes.forEach(item => {
+                    const nd = item.node;
+                    if (nd === selNode) return;
+                    if (nd.parent === selNode) {
+                        nd.el.classList.add('pt-descendant-focus');
+                        nd.el.style.setProperty('--pt-hl-color', nd.branchColor);
+                        if (nd.edgeFromParent) {
+                            nd.edgeFromParent.classList.add('pt-edge-active');
+                            nd.edgeFromParent.style.stroke = nd.branchColor;
+                            edges.appendChild(nd.edgeFromParent);
+                        }
+                    } else {
+                        nd.el.classList.add('pt-dimmed');
+                        if (nd.edgeFromParent) nd.edgeFromParent.classList.add('pt-edge-dimmed');
+                    }
+                });
+                return;
+            }
+
+            const hlColor = selNode.branchColor || 'var(--accent)';
+            const strokeSet = new Set(selNode.strokes || []);
+            const ancestorSet = new Set();
+            const ancestorList = [];
+            for (let p = selNode.parent; p; p = p.parent) {
+                ancestorSet.add(p);
+                ancestorList.push(p);
+            }
+            const descendantSet = new Set();
+            const walkDesc = (n) => {
+                n.children.forEach(c => { descendantSet.add(c); walkDesc(c); });
+            };
+            walkDesc(selNode);
+
+            // 1. Highlight tapped node & its own strokes
+            selNode.el.classList.add('pt-active');
+            selNode.el.style.setProperty('--pt-hl-color', hlColor);
+            if (selNode.glyphPaths && selNode.glyphPaths.length) {
+                selNode.glyphPaths.forEach(gp => {
+                    gp.pathEl.classList.add('pt-stroke-focus');
+                    if (!selNode.children.length) gp.pathEl.style.stroke = hlColor;
+                });
+            }
+
+            // 2. Highlight upward connecting line(s) (bring to front of edges group so shared trunks glow cleanly)
+            for (let i = ancestorList.length - 1; i >= 0; i--) {
+                const anc = ancestorList[i];
+                if (anc.edgeFromParent) {
+                    anc.edgeFromParent.classList.add('pt-edge-ancestor');
+                    anc.edgeFromParent.style.stroke = hlColor;
+                    edges.appendChild(anc.edgeFromParent);
+                }
+            }
+            if (selNode.edgeFromParent) {
+                selNode.edgeFromParent.classList.add('pt-edge-active');
+                selNode.edgeFromParent.style.stroke = hlColor;
+                edges.appendChild(selNode.edgeFromParent);
+            }
+
+            // 3. In parent & ancestor kanjis: spotlight the primitive's strokes & softly dim the rest
+            ancestorList.forEach(anc => {
+                const isDirectParent = (anc === selNode.parent);
+                anc.el.classList.add(isDirectParent ? 'pt-parent-focus' : 'pt-ancestor-focus');
+                anc.el.style.setProperty('--pt-hl-color', hlColor);
+                if (anc.glyphPaths && anc.glyphEl && strokeSet.size > 0) {
+                    anc.glyphPaths.forEach(gp => {
+                        if (!strokeSet.has(gp.idx)) {
+                            gp.pathEl.classList.add('pt-stroke-dim');
+                        }
+                    });
+                    anc.glyphPaths.forEach(gp => {
+                        if (strokeSet.has(gp.idx)) {
+                            gp.pathEl.classList.add('pt-stroke-focus');
+                            gp.pathEl.style.stroke = hlColor;
+                            anc.glyphEl.appendChild(gp.pathEl);
+                        }
+                    });
+                }
+            });
+
+            // 4. Dim unrelated nodes & edges; keep direct subtree readable
+            allNodes.forEach(item => {
+                const nd = item.node;
+                if (nd === selNode || ancestorSet.has(nd)) return;
+                if (descendantSet.has(nd)) {
+                    nd.el.classList.add('pt-descendant-focus');
+                    if (nd.edgeFromParent) {
+                        nd.edgeFromParent.classList.add('pt-edge-descendant');
+                        edges.appendChild(nd.edgeFromParent);
+                    }
+                } else {
+                    nd.el.classList.add('pt-dimmed');
+                    if (nd.edgeFromParent) nd.edgeFromParent.classList.add('pt-edge-dimmed');
+                }
+            });
+        };
+        window._kanjiClearTreeSelection = () => applyNodeSelection(null);
+
+        let prevTapEndTime = 0, prevTapEndX = 0, prevTapEndY = 0;
+        let prevGestureStartTime = 0, prevGestureStartX = 0, prevGestureStartY = 0;
+        let curGestureStartTime = 0, curGestureStartX = 0, curGestureStartY = 0;
+        let lastNavToggleTime = 0, lastPenTime = 0;
+
+        const toggleTreeNavByDoubleTap = () => {
+            const now = Date.now();
+            if (now - lastNavToggleTime < 340) return;
+            lastNavToggleTime = now;
+            prevTapEndTime = 0;
+            prevGestureStartTime = 0;
+            curGestureStartTime = 0;
+            setNavActive(!navActive);
+            if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+            applyNodeSelection(null);
+            if (navActive) applyViewBox();
+        };
+
+        const isSecondTap = (x, y, now) => {
+            if (now - lastNavToggleTime < 340) return false;
+            const byEnd = prevTapEndTime > 0 && (now - prevTapEndTime) < 500 && Math.hypot(x - prevTapEndX, y - prevTapEndY) < 68;
+            const byStart = prevGestureStartTime > 0 && (now - prevGestureStartTime) >= 40 && (now - prevGestureStartTime) < 550 && Math.hypot(x - prevGestureStartX, y - prevGestureStartY) < 68;
+            return byEnd || byStart;
+        };
+
+        const selectNodeAt = (clientX, clientY) => {
+            const pt = clientToSvg(clientX, clientY);
+            let hitItem = null, bestD = Infinity;
+            allNodes.forEach(nd => {
+                const d = Math.hypot(pt.x - nd.x, pt.y - nd.y);
+                const onCircle = d <= nd.r + 10;
+                const onPill = nd.node.pillW > 0 && Math.abs(pt.x - nd.x) <= (nd.node.pillW / 2 + 6) && pt.y >= nd.y && pt.y <= (nd.node.bottomY + 6);
+                if ((onCircle || onPill) && d < bestD) { bestD = d; hitItem = nd; }
+            });
+            if (hitItem) {
+                if (selectedNode === hitItem.node) {
+                    applyNodeSelection(null);
+                    hitItem.el.classList.add('pt-dismissed');
+                    _kdSnd('fx', 'nodeOff');
+                } else {
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8);
+                    applyNodeSelection(hitItem.node);
+                    let depth = 0;
+                    for (let p = hitItem.node.parent; p; p = p.parent) depth++;
+                    _kdSnd('fx', 'node', 0, depth);
+                }
+            } else {
+                if (selectedNode) _kdSnd('fx', 'nodeOff');
+                applyNodeSelection(null);
+            }
+        };
+
+        // Call preventDefault without stopPropagation so AnkiMobile's document-level
+        // .tappable check receives the bubbled touch and suppresses native OS commands
+        const preventTreeDefault = e => {
+            if (e.cancelable !== false) e.preventDefault();
+        };
+
+        let isDown = false, startX = 0, startY = 0, startVx = 0, startVy = 0, lastTouchEnd = 0, lastPointerUp = 0;
+        let maxTapMove = 0, doubleTapToggled = false, startModalScroll = 0;
+        let lastMoveY = 0, lastMoveT = 0, scrollVelY = 0, treeScrollRaf = null;
+        let pinchDist0 = 0, pinchZoom0 = 1, pinchSvgX = root.x, pinchSvgY = root.y;
+        const treeModalEl = container ? container.closest('.info-modal') : document.querySelector('.info-modal');
+        const stopTreeScrollMomentum = () => {
+            if (treeScrollRaf) { cancelAnimationFrame(treeScrollRaf); treeScrollRaf = null; }
+        };
+
+        shield.addEventListener('touchstart', function (e) {
+            preventTreeDefault(e);
+            stopTreeScrollMomentum();
+            if (e.touches.length === 2) {
+                setNavActive(true);
+                isDown = false;
+                panDragged = true;
+                doubleTapToggled = false;
+                prevTapEndTime = 0;
+                prevGestureStartTime = 0;
+                curGestureStartTime = 0;
+                pinchDist0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                pinchZoom0 = zoom;
+                const mid = clientToSvg((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2);
+                pinchSvgX = mid.x;
+                pinchSvgY = mid.y;
+                return;
+            }
+            if (e.touches.length === 1) {
+                const now = Date.now();
+                if (now - lastPenTime < 120) return;
+                const tx = e.touches[0].clientX;
+                const ty = e.touches[0].clientY;
+                isDown = true;
+                panDragged = false;
+                maxTapMove = 0;
+                startX = tx;
+                startY = ty;
+                lastMoveY = ty;
+                lastMoveT = performance.now();
+                scrollVelY = 0;
+                startVx = vx;
+                startVy = vy;
+                startModalScroll = treeModalEl ? treeModalEl.scrollTop : 0;
+                if (isSecondTap(tx, ty, now)) {
+                    doubleTapToggled = true;
+                    toggleTreeNavByDoubleTap();
+                    startVx = vx;
+                    startVy = vy;
+                    return;
+                }
+                doubleTapToggled = false;
+                curGestureStartTime = now;
+                curGestureStartX = tx;
+                curGestureStartY = ty;
+                if (navActive) applyViewBox();
+            }
+        }, { passive: false });
+
+        shield.addEventListener('touchmove', function (e) {
+            preventTreeDefault(e);
+            if (e.touches.length === 2 && pinchDist0 > 10) {
+                const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                panDragged = true;
+                curGestureStartTime = 0;
+                setZoomAround(pinchZoom0 * (d / pinchDist0), pinchSvgX, pinchSvgY, false);
+                return;
+            }
+            if (Date.now() - lastPenTime < 120) return;
+            if (!isDown || e.touches.length !== 1) return;
+            const cx = e.touches[0].clientX;
+            const cy = e.touches[0].clientY;
+            const dx = cx - startX;
+            const dy = cy - startY;
+            const moveDist = Math.hypot(dx, dy);
+            if (moveDist > maxTapMove) maxTapMove = moveDist;
+            if (moveDist > 22) curGestureStartTime = 0;
+            if (!navActive) {
+                if (moveDist > 12) panDragged = true;
+                if (panDragged && treeModalEl && treeModalEl.scrollHeight > treeModalEl.clientHeight) {
+                    const pNow = performance.now();
+                    const dt = pNow - lastMoveT;
+                    if (dt > 0) scrollVelY = (lastMoveY - cy) / dt;
+                    lastMoveY = cy;
+                    lastMoveT = pNow;
+                    treeModalEl.scrollTop = startModalScroll - dy;
+                }
+                return;
+            }
+            if (!panDragged && moveDist > 6) {
+                panDragged = true;
+                hasPanned = true;
+                if (container) container.classList.add('tree-panning');
+            }
+            if (panDragged) {
+                const rect = svg.getBoundingClientRect();
+                const scaleX = rect.width > 10 ? (vw / rect.width) : 1;
+                const scaleY = rect.height > 10 ? (vh / rect.height) : 1;
+                vx = startVx - dx * scaleX;
+                vy = startVy - dy * scaleY;
+                applyViewBox();
+            }
+        }, { passive: false });
+
+        shield.addEventListener('touchend', function (e) {
+            preventTreeDefault(e);
+            const now = Date.now();
+            if (now - lastPenTime < 120) return;
+            lastTouchEnd = now;
+            if (doubleTapToggled) {
+                doubleTapToggled = false;
+            } else if (isDown && !panDragged && e.changedTouches && e.changedTouches.length === 1) {
+                const ex = e.changedTouches[0].clientX;
+                const ey = e.changedTouches[0].clientY;
+                if (curGestureStartTime > 0) {
+                    prevGestureStartTime = curGestureStartTime;
+                    prevGestureStartX = curGestureStartX;
+                    prevGestureStartY = curGestureStartY;
+                }
+                prevTapEndTime = now;
+                prevTapEndX = ex;
+                prevTapEndY = ey;
+                selectNodeAt(ex, ey);
+            } else if (panDragged && !navActive && treeModalEl && Math.abs(scrollVelY) > 0.15) {
+                let v = Math.max(-2.8, Math.min(2.8, scrollVelY)) * 16;
+                const step = () => {
+                    if (!treeModalEl || Math.abs(v) < 0.5) { treeScrollRaf = null; return; }
+                    const prev = treeModalEl.scrollTop;
+                    treeModalEl.scrollTop = prev + v;
+                    if (treeModalEl.scrollTop === prev) { treeScrollRaf = null; return; }
+                    v *= 0.92;
+                    treeScrollRaf = requestAnimationFrame(step);
+                };
+                treeScrollRaf = requestAnimationFrame(step);
+            }
+            isDown = false;
+            pinchDist0 = 0;
+            if (container) container.classList.remove('tree-panning');
+            setTimeout(() => { panDragged = false; }, 40);
+        }, { passive: false });
+
+        shield.addEventListener('touchcancel', function () {
+            if (isDown && !panDragged && maxTapMove < 22 && curGestureStartTime > 0) {
+                prevGestureStartTime = curGestureStartTime;
+                prevGestureStartX = curGestureStartX;
+                prevGestureStartY = curGestureStartY;
+            }
+            doubleTapToggled = false;
+            isDown = false;
+            pinchDist0 = 0;
+            if (container) container.classList.remove('tree-panning');
+            panDragged = false;
+        }, { passive: false });
+
+        shield.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'touch') return;
+            if (e.button !== undefined && e.button !== 0) return;
+            stopTreeScrollMomentum();
+            const now = Date.now();
+            if (e.pointerType === 'pen') lastPenTime = now;
+            const px = e.clientX;
+            const py = e.clientY;
+            isDown = true;
+            panDragged = false;
+            maxTapMove = 0;
+            startX = px;
+            startY = py;
+            startVx = vx;
+            startVy = vy;
+            startModalScroll = treeModalEl ? treeModalEl.scrollTop : 0;
+            if (isSecondTap(px, py, now)) {
+                doubleTapToggled = true;
+                e.preventDefault();
+                toggleTreeNavByDoubleTap();
+                startVx = vx;
+                startVy = vy;
+                if (navActive && e.pointerId !== undefined && shield.setPointerCapture) {
+                    try { shield.setPointerCapture(e.pointerId); } catch (err) { }
+                }
+                return;
+            }
+            doubleTapToggled = false;
+            curGestureStartTime = now;
+            curGestureStartX = px;
+            curGestureStartY = py;
+            if (navActive) {
+                e.preventDefault();
+                if (e.pointerId !== undefined && shield.setPointerCapture) {
+                    try { shield.setPointerCapture(e.pointerId); } catch (err) { }
+                }
+                applyViewBox();
+            } else if (e.pointerType === 'pen') {
+                e.preventDefault();
+            }
+        });
+
+        shield.addEventListener('pointermove', function (e) {
+            if (e.pointerType === 'touch' || !isDown) return;
+            if (e.pointerType === 'pen') lastPenTime = Date.now();
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            const moveDist = Math.hypot(dx, dy);
+            if (moveDist > maxTapMove) maxTapMove = moveDist;
+            if (moveDist > 22) curGestureStartTime = 0;
+            if (!navActive) {
+                if (moveDist > 14) panDragged = true;
+                if (panDragged && e.pointerType === 'pen' && treeModalEl && treeModalEl.scrollHeight > treeModalEl.clientHeight) {
+                    treeModalEl.scrollTop = startModalScroll - dy;
+                }
+                return;
+            }
+            if (!panDragged && moveDist > 6) {
+                panDragged = true;
+                hasPanned = true;
+                if (container) container.classList.add('tree-panning');
+            }
+            if (panDragged) {
+                const rect = svg.getBoundingClientRect();
+                const scaleX = rect.width > 10 ? (vw / rect.width) : 1;
+                const scaleY = rect.height > 10 ? (vh / rect.height) : 1;
+                vx = startVx - dx * scaleX;
+                vy = startVy - dy * scaleY;
+                applyViewBox();
+            }
+        });
+
+        shield.addEventListener('pointerup', function (e) {
+            if (e.pointerType === 'touch' || !isDown) return;
+            const now = Date.now();
+            lastPointerUp = now;
+            if (e.pointerType === 'pen') {
+                lastPenTime = now;
+                e.preventDefault();
+                window._kanjiLastModalPenTap = now;
+            }
+            if (navActive && e.pointerId !== undefined && shield.releasePointerCapture) {
+                try { shield.releasePointerCapture(e.pointerId); } catch (err) { }
+            }
+            if (doubleTapToggled) {
+                doubleTapToggled = false;
+            } else if (!panDragged && (e.pointerType === 'pen' || now - lastTouchEnd > 350)) {
+                if (curGestureStartTime > 0) {
+                    prevGestureStartTime = curGestureStartTime;
+                    prevGestureStartX = curGestureStartX;
+                    prevGestureStartY = curGestureStartY;
+                }
+                prevTapEndTime = now;
+                prevTapEndX = e.clientX;
+                prevTapEndY = e.clientY;
+                selectNodeAt(e.clientX, e.clientY);
+            }
+            isDown = false;
+            if (container) container.classList.remove('tree-panning');
+            setTimeout(() => { panDragged = false; }, 40);
+        });
+
+        shield.addEventListener('pointercancel', function (e) {
+            if (e.pointerType === 'touch') return;
+            if (isDown && !panDragged && maxTapMove < 22 && curGestureStartTime > 0) {
+                prevGestureStartTime = curGestureStartTime;
+                prevGestureStartX = curGestureStartX;
+                prevGestureStartY = curGestureStartY;
+            }
+            doubleTapToggled = false;
+            isDown = false;
+            if (container) container.classList.remove('tree-panning');
+            panDragged = false;
+        });
+
+        shield.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const now = Date.now();
+            if (now - lastTouchEnd < 450 || now - lastPointerUp < 450 || now - lastNavToggleTime < 450) return;
+            if (!panDragged) selectNodeAt(e.clientX, e.clientY);
+        });
+        if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
+    };
+    // [/KD-SRC back/primitive-tree.js]
+
+    // [KD-SRC back/radical-tree.js]
+    // --- Radical Tree Renderer ---
 
     (() => {
         const rawDataEl = document.getElementById('raw-tree-data');
@@ -370,100 +1695,352 @@
         rawData = rawData.replace(/<\/?(?!(?:path|svg|g)\b)[a-z0-9]+[^>]*>/gi, '').trim();
         if (!rawData) return;
 
-        function parseFlatTree(str) {
-            let items = [], currentItem = "", inTag = false, inBracket = false;
-            for (let i = 0; i < str.length; i++) {
-                let char = str[i];
-                if (char === '<') inTag = true; else if (char === '>') inTag = false;
-                else if (char === '[') inBracket = true; else if (char === ']') inBracket = false;
-                if (char === ',' && !inTag && !inBracket) {
-                    if (currentItem.trim()) items.push(currentItem.trim());
-                    currentItem = "";
-                } else currentItem += char;
+        if (window._kanjiTreeOutsideHandler) {
+            document.removeEventListener('touchstart', window._kanjiTreeOutsideHandler, true);
+            document.removeEventListener('pointerdown', window._kanjiTreeOutsideHandler, true);
+            document.removeEventListener('click', window._kanjiTreeOutsideHandler, true);
+        }
+        window._kanjiTreeOutsideHandler = e => {
+            const t = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+            if (!t || !t.closest) return;
+            if (!t.closest('.tree-container')) {
+                if (window._kanjiSetTreeNavActive) window._kanjiSetTreeNavActive(false);
+                if (window._kanjiClearTreeSelection) window._kanjiClearTreeSelection();
             }
-            if (currentItem.trim()) items.push(currentItem.trim());
+        };
+        document.addEventListener('touchstart', window._kanjiTreeOutsideHandler, true);
+        document.addEventListener('pointerdown', window._kanjiTreeOutsideHandler, true);
+        document.addEventListener('click', window._kanjiTreeOutsideHandler, true);
+        try {
+            window._kanjiRenderPrimitiveTree(rawData, target);
+        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Primitive konnten nicht geladen werden.</span>`; }
+    })();
+    // [/KD-SRC back/radical-tree.js]
 
-            return items.map(item => {
-                let keyword = "", isPrimitive = false, displayVal = item;
-                let bracketMatch = item.match(/\[(.*?)\]$/);
-                if (bracketMatch) {
-                    keyword = bracketMatch[1];
-                    if (keyword.endsWith('*')) { isPrimitive = true; keyword = keyword.slice(0, -1); }
-                    displayVal = item.replace(/\[.*?\]$/, '').trim();
+    // [KD-SRC back/pitfalls.js]
+    // --- Pitfalls ("Häufige Schreibfehler" Sub-Page) ---
+    // Field grammar: cat@strokes[title]: desc || ...
+    // Categories with their UI labels: order "Reihenfolge", dir "Strichrichtung", bend "In einem Zug", form "Form & Proportion"
+
+    window._kanjiRenderPitfalls = function (rawData, listTarget, padTarget, filterTarget, countBadge, navDesc) {
+        const NS = 'http://www.w3.org/2000/svg';
+        const CAT_META = {
+            order: { label: 'Reihenfolge', color: '#e8625c' },
+            dir: { label: 'Strichrichtung', color: '#2aa7e0' },
+            bend: { label: 'In einem Zug', color: '#f0a030' },
+            form: { label: 'Form & Proportion', color: '#3fbf86' }
+        };
+
+        const parseRange = spec => {
+            const set = [];
+            if (!spec) return set;
+            spec.split('+').forEach(part => {
+                const m = part.trim().match(/^(\d+)(?:-(\d+))?$/);
+                if (!m) return;
+                const a = parseInt(m[1], 10), b = m[2] ? parseInt(m[2], 10) : a;
+                for (let k = Math.min(a, b); k <= Math.max(a, b); k++) {
+                    if (set.indexOf(k) === -1) set.push(k);
                 }
-                return { value: displayVal, keyword: keyword, isPrimitive: isPrimitive };
+            });
+            return set;
+        };
+
+        const formatStrokesLabel = strokes => {
+            if (!strokes || !strokes.length) return '';
+            if (strokes.length === 1) return 'Strich ' + strokes[0];
+            let contiguous = true;
+            for (let i = 1; i < strokes.length; i++) {
+                if (strokes[i] !== strokes[i - 1] + 1) { contiguous = false; break; }
+            }
+            if (contiguous && strokes.length > 2) return 'Striche ' + strokes[0] + '-' + strokes[strokes.length - 1];
+            if (strokes.length === 2) return 'Strich ' + strokes[0] + ' & ' + strokes[1];
+            return 'Strich ' + strokes.join(', ');
+        };
+
+        const items = rawData.split(/\s*\|\|\s*/).map(chunk => {
+            chunk = chunk.trim();
+            if (!chunk) return null;
+            const m = chunk.match(/^([a-z]+)@([0-9+\-]+)\[(.*?)\]:\s*(.+)$/i);
+            if (!m) return null;
+            const cat = (m[1] || 'form').toLowerCase();
+            const strokeSpec = m[2];
+            const strokes = parseRange(strokeSpec);
+            return {
+                cat: CAT_META[cat] ? cat : 'form',
+                strokeSpec: strokeSpec,
+                strokes: strokes,
+                title: m[3].trim(),
+                desc: m[4].trim()
+            };
+        }).filter(Boolean);
+
+        if (!items.length) return;
+
+        if (countBadge) countBadge.textContent = String(items.length);
+        if (navDesc) {
+            const cats = [];
+            items.forEach(it => {
+                const lbl = CAT_META[it.cat].label;
+                if (cats.indexOf(lbl) === -1) cats.push(lbl);
+            });
+            navDesc.textContent = cats.slice(0, 2).join(' · ') + (cats.length > 2 ? ' · +' + (cats.length - 2) : '');
+        }
+
+        // Gather reference stroke paths from #svg-bg
+        const refPaths = [];
+        const srcSvg = document.getElementById('svg-bg');
+        if (srcSvg) {
+            srcSvg.querySelectorAll('path:not(.gel-halo)').forEach(p => {
+                const d = p.getAttribute('d');
+                if (d) refPaths.push({ d: d, el: p });
             });
         }
 
-        const _esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        let activeIdx = 0;
+        let activeFilter = 'all';
 
-        function renderNode(node) {
-            if (!node || !node.value) return '';
-            const kwAttr = node.keyword ? ` data-keyword="${_esc(node.keyword)}"` : '';
-            let displayVal = node.value;
-            if (displayVal.toLowerCase().includes('<path') && !displayVal.toLowerCase().includes('<svg')) {
-                const isFontRaster = /M\s*\d{3,}/.test(displayVal);
-                displayVal = isFontRaster
-                    ? `<svg class="custom-svg-icon font-stroke-format auto-fit">${displayVal}</svg>`
-                    : `<svg class="custom-svg-icon kanji-stroke-format auto-fit" viewBox="0 0 109 109">${displayVal}</svg>`;
+        const renderPreview = item => {
+            if (!padTarget) return;
+            padTarget.innerHTML = '';
+            const svg = document.createElementNS(NS, 'svg');
+            svg.setAttribute('viewBox', '0 0 109 109');
+
+            // Subtle Kanji grid lines
+            const gridG = document.createElementNS(NS, 'g');
+            gridG.setAttribute('stroke', 'var(--text-muted)');
+            gridG.setAttribute('stroke-opacity', '0.16');
+            gridG.setAttribute('stroke-width', '0.8');
+            gridG.setAttribute('stroke-dasharray', '3,3');
+            const lH = document.createElementNS(NS, 'line');
+            lH.setAttribute('x1', '0'); lH.setAttribute('y1', '54.5'); lH.setAttribute('x2', '109'); lH.setAttribute('y2', '54.5');
+            const lV = document.createElementNS(NS, 'line');
+            lV.setAttribute('x1', '54.5'); lV.setAttribute('y1', '0'); lV.setAttribute('x2', '54.5'); lV.setAttribute('y2', '109');
+            gridG.appendChild(lH); gridG.appendChild(lV);
+            svg.appendChild(gridG);
+
+            const activeSet = {};
+            if (item && item.strokes) item.strokes.forEach(s => { activeSet[s] = true; });
+            const hlColor = item ? CAT_META[item.cat].color : '#e8625c';
+
+            // Base strokes first, then highlighted strokes on top
+            const baseG = document.createElementNS(NS, 'g');
+            const hlG = document.createElementNS(NS, 'g');
+            const markerG = document.createElementNS(NS, 'g');
+
+            refPaths.forEach((rp, idx) => {
+                const sNum = idx + 1;
+                const isHl = !!activeSet[sNum];
+                const p = document.createElementNS(NS, 'path');
+                p.setAttribute('d', rp.d);
+                p.setAttribute('fill', 'none');
+                p.setAttribute('stroke-linecap', 'round');
+                p.setAttribute('stroke-linejoin', 'round');
+                if (isHl) {
+                    p.setAttribute('stroke', hlColor);
+                    p.setAttribute('stroke-width', '5.2');
+                    hlG.appendChild(p);
+                    // Start dot + direction arrow + stroke number badge
+                    try {
+                        const len = rp.el.getTotalLength();
+                        if (len > 2) {
+                            const p0 = rp.el.getPointAtLength(0);
+                            const p1 = rp.el.getPointAtLength(Math.min(len, Math.max(8, len * 0.32)));
+                            const dot = document.createElementNS(NS, 'circle');
+                            dot.setAttribute('cx', p0.x.toFixed(1));
+                            dot.setAttribute('cy', p0.y.toFixed(1));
+                            dot.setAttribute('r', '3.3');
+                            dot.setAttribute('fill', hlColor);
+                            markerG.appendChild(dot);
+
+                            const dx = p1.x - p0.x, dy = p1.y - p0.y;
+                            const dLen = Math.hypot(dx, dy);
+                            if (dLen > 3) {
+                                const ux = dx / dLen, uy = dy / dLen;
+                                const pm = rp.el.getPointAtLength(Math.min(len * 0.55, 22));
+                                const tipX = pm.x + ux * 2.5, tipY = pm.y + uy * 2.5;
+                                const bx = pm.x - ux * 3.5, by = pm.y - uy * 3.5;
+                                const wx = -uy * 3.0, wy = ux * 3.0;
+                                const arr = document.createElementNS(NS, 'polygon');
+                                arr.setAttribute('points', `${tipX.toFixed(1)},${tipY.toFixed(1)} ${(bx + wx).toFixed(1)},${(by + wy).toFixed(1)} ${(bx - wx).toFixed(1)},${(by - wy).toFixed(1)}`);
+                                arr.setAttribute('fill', hlColor);
+                                markerG.appendChild(arr);
+                            }
+
+                            // Stroke index label offset from start point
+                            const nx = Math.max(9, Math.min(100, p0.x - (dx / (dLen || 1)) * 7.5));
+                            const ny = Math.max(10, Math.min(100, p0.y - (dy / (dLen || 1)) * 7.5));
+                            const numBg = document.createElementNS(NS, 'circle');
+                            numBg.setAttribute('cx', nx.toFixed(1));
+                            numBg.setAttribute('cy', ny.toFixed(1));
+                            numBg.setAttribute('r', '6.2');
+                            numBg.setAttribute('fill', 'var(--card-bg)');
+                            numBg.setAttribute('stroke', hlColor);
+                            numBg.setAttribute('stroke-width', '1.4');
+                            markerG.appendChild(numBg);
+
+                            const txt = document.createElementNS(NS, 'text');
+                            txt.setAttribute('x', nx.toFixed(1));
+                            txt.setAttribute('y', ny.toFixed(1));
+                            txt.setAttribute('dy', '0.06em');
+                            txt.setAttribute('text-anchor', 'middle');
+                            txt.setAttribute('dominant-baseline', 'central');
+                            txt.setAttribute('fill', hlColor);
+                            txt.setAttribute('font-size', '7.8');
+                            txt.setAttribute('font-weight', '800');
+                            txt.textContent = String(sNum);
+                            markerG.appendChild(txt);
+                        }
+                    } catch (e) { }
+                } else {
+                    p.setAttribute('stroke', 'var(--text-muted)');
+                    p.setAttribute('stroke-opacity', '0.26');
+                    p.setAttribute('stroke-width', '3.6');
+                    baseG.appendChild(p);
+                }
+            });
+
+            svg.appendChild(baseG);
+            svg.appendChild(hlG);
+            svg.appendChild(markerG);
+            padTarget.appendChild(svg);
+        };
+
+        const renderList = () => {
+            if (!listTarget) return;
+            listTarget.innerHTML = '';
+            const visible = items.map((it, idx) => ({ item: it, idx: idx }))
+                .filter(entry => activeFilter === 'all' || entry.item.cat === activeFilter);
+
+            if (!visible.some(v => v.idx === activeIdx) && visible.length) {
+                activeIdx = visible[0].idx;
             }
-            let primitiveBadge = node.isPrimitive ? `<svg class="primitive-tag-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>` : '';
-            let tooltipHtml = node.keyword ? `<div class="tree-node-tooltip">${_esc(node.keyword)}</div>` : '';
-            return `<div class="tree-node tappable"${kwAttr}>${primitiveBadge}<div class="tree-node-char">${displayVal}</div>${tooltipHtml}</div>`;
+
+            visible.forEach(entry => {
+                const it = entry.item;
+                const idx = entry.idx;
+                const meta = CAT_META[it.cat] || CAT_META.form;
+                const card = document.createElement('div');
+                card.className = 'pitfall-card tappable' + (idx === activeIdx ? ' active' : '');
+                card.setAttribute('data-cat', it.cat);
+
+                const top = document.createElement('div');
+                top.className = 'pitfall-card-top';
+
+                const catBadge = document.createElement('span');
+                catBadge.className = 'pitfall-cat-badge cat-' + it.cat;
+                catBadge.textContent = meta.label;
+                top.appendChild(catBadge);
+
+                const strokeLbl = formatStrokesLabel(it.strokes);
+                if (strokeLbl) {
+                    const stBadge = document.createElement('span');
+                    stBadge.className = 'pitfall-stroke-badge';
+                    stBadge.textContent = strokeLbl;
+                    top.appendChild(stBadge);
+                }
+
+                const titleEl = document.createElement('div');
+                titleEl.className = 'pitfall-title';
+                titleEl.textContent = it.title;
+
+                const descEl = document.createElement('div');
+                descEl.className = 'pitfall-desc';
+                descEl.textContent = it.desc;
+
+                card.appendChild(top);
+                card.appendChild(titleEl);
+                card.appendChild(descEl);
+
+                card.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const same = activeIdx === idx;
+                    activeIdx = idx;
+                    listTarget.querySelectorAll('.pitfall-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    _kdSnd('fx', same ? 'tick' : 'pitfall', 0, visible.indexOf(entry));
+                    if (filterTarget) {
+                        filterTarget.querySelectorAll('.pitfall-filter-btn').forEach(b => {
+                            b.classList.toggle('active', b.getAttribute('data-cat') === it.cat);
+                        });
+                    }
+                    renderPreview(items[activeIdx]);
+                });
+
+                listTarget.appendChild(card);
+            });
+
+            renderPreview(items[activeIdx] || items[0]);
+            if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
+        };
+
+        // Category pills (without "Alle" button; hidden if only 1 category exists)
+        if (filterTarget) {
+            filterTarget.innerHTML = '';
+            const presentCats = [];
+            items.forEach(it => { if (presentCats.indexOf(it.cat) === -1) presentCats.push(it.cat); });
+            if (presentCats.length <= 1) {
+                filterTarget.style.display = 'none';
+            } else {
+                filterTarget.style.display = '';
+                presentCats.forEach((c, ci) => {
+                    const cnt = items.filter(it => it.cat === c).length;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.setAttribute('data-cat', c);
+                    btn.className = 'pitfall-filter-btn tappable' + (ci === 0 ? ' active' : '');
+                    btn.textContent = CAT_META[c].label + ' (' + cnt + ')';
+                    btn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const firstIdx = items.findIndex(it => it.cat === c);
+                        if (firstIdx !== -1) activeIdx = firstIdx;
+                        filterTarget.querySelectorAll('.pitfall-filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        renderList();
+                    });
+                    filterTarget.appendChild(btn);
+                });
+            }
         }
 
+        renderList();
+    };
+
+    (() => {
+        const rawPitEl = document.getElementById('raw-pitfalls-data');
+        const listTarget = document.getElementById('pitfalls-list-target');
+        if (!rawPitEl || !listTarget) return;
+        let rawPit = rawPitEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').trim();
+        if (!rawPit) return;
         try {
-            const parsedItems = parseFlatTree(rawData);
-            target.innerHTML = parsedItems.map(renderNode).join('');
-            setTimeout(() => {
-                target.querySelectorAll('svg.auto-fit').forEach(svg => {
-                    try {
-                        const bbox = svg.getBBox();
-                        if (bbox.width > 0 && bbox.height > 0) {
-                            const isFont = svg.classList.contains('font-stroke-format');
-                            const padX = bbox.width * (isFont ? 0.02 : 0.10);
-                            const padY = bbox.height * (isFont ? 0.02 : 0.10);
-                            svg.setAttribute('viewBox', `${Math.floor(bbox.x - padX)} ${Math.floor(bbox.y - padY)} ${Math.ceil(bbox.width + padX * 2)} ${Math.ceil(bbox.height + padY * 2)}`);
-                        }
-                    } catch (err) { }
-                });
-            }, 100);
-        } catch (e) { target.innerHTML = `<span class="no-tree-data" style="color: var(--stroke-err);">Radikale konnten nicht geladen werden.</span>`; }
-
-        target.addEventListener('click', function (e) {
-            const node = e.target.closest('.tree-node');
-            if (!node || !node.getAttribute('data-keyword')) return;
-            e.stopPropagation();
-            const wasActive = node.classList.contains('show-tooltip');
-            target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip'));
-            target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed'));
-            if (wasActive) {
-                node.classList.add('tooltip-dismissed');
-            } else {
-                node.classList.add('show-tooltip');
-            }
-        });
-
-        if (window.kanjiHideTooltipHandlerC2) document.removeEventListener('click', window.kanjiHideTooltipHandlerC2);
-        window.kanjiHideTooltipHandlerC2 = e => { if (!e.target.closest('.tree-children')) { target.querySelectorAll('.tree-node.show-tooltip').forEach(n => n.classList.remove('show-tooltip')); target.querySelectorAll('.tooltip-dismissed').forEach(n => n.classList.remove('tooltip-dismissed')); } };
-        document.addEventListener('click', window.kanjiHideTooltipHandlerC2);
+            window._kanjiRenderPitfalls(
+                rawPit,
+                listTarget,
+                document.getElementById('pitfalls-preview-pad'),
+                document.getElementById('pitfalls-filter-bar'),
+                document.getElementById('pitfalls-count-badge'),
+                document.getElementById('pitfalls-nav-desc')
+            );
+        } catch (e) { }
     })();
+    // [/KD-SRC back/pitfalls.js]
 
-    // --- Word Examples (furigana toggle) [SHARED with c1-back] ---
+    // [KD-SRC back/word-examples.js]
+    // --- Word Examples (furigana toggle) ---
 
     (() => {
         const rawWordsEl = document.getElementById('raw-hint-words');
         const targetWordsEl = document.getElementById('formatted-hint-words');
         if (rawWordsEl && targetWordsEl) {
             let words = rawWordsEl.innerHTML.split(/\s*,\s*(?![^\(\)]*\))/);
-            const _wesc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            // innerHTML is already entity-escaped; keep only furigana/basic formatting tags, attribute-free.
+            const _wsafe = s => s.replace(/<(\/?)([a-z]+)\b[^>]*>/gi, (m, sl, tag) => /^(ruby|rb|rt|rp|b|i|u|br)$/i.test(tag) ? '<' + sl + tag.toLowerCase() + '>' : '');
             targetWordsEl.innerHTML = words.map(word => {
                 word = word.trim();
                 if (!word) return '';
                 let match = word.match(/^(.*?)\s*\((.*?)\)$/);
                 return match
-                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${match[1]}</div><div class="word-de">${_wesc(match[2])}</div></div></div>`
-                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${word}</div></div></div>`;
+                    ? `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsafe(match[1])}</div><div class="word-de">${_wsafe(match[2])}</div></div></div>`
+                    : `<div class="word-example-item tappable"><div class="word-example-info"><div class="word-jp">${_wsafe(word)}</div></div></div>`;
             }).join('');
             targetWordsEl.addEventListener('click', function (e) {
                 var item = e.target.closest('.word-example-item');
@@ -471,15 +2048,19 @@
                 if (item.classList.contains('show-furigana')) {
                     item.classList.remove('show-furigana');
                     item.classList.add('furigana-dismissed');
+                    _kdSnd('fx', 'furiganaOff');
                 } else {
                     item.classList.remove('furigana-dismissed');
                     item.classList.add('show-furigana');
+                    _kdSnd('fx', 'furigana');
                 }
             });
         }
     })();
+    // [/KD-SRC back/word-examples.js]
 
-    // --- Hide "Lesungen" if no readings exist [SHARED with c1-back] ---
+    // [KD-SRC back/hide-readings.js]
+    // --- Hide "Lesungen" if no readings exist ---
     (() => {
         const rc = document.querySelector('.readings-container--backside');
         if (rc && !rc.querySelector('.reading-row')) {
@@ -488,12 +2069,13 @@
             if (prev && prev.classList.contains('info-section-title')) prev.style.display = 'none';
         }
     })();
+    // [/KD-SRC back/hide-readings.js]
 
     // --- Back Side Features (stroke colors, numbers, colorOrder) ---
 
     (() => {
         // Null stale handler from previous card before registering a new one
-        window.kanjiSettingsGlobalHandlerC2 = null;
+        window.kanjiSettingsGlobalHandler = null;
         if (!document.getElementById('is-back-side-marker')) return;
         const svgBg = document.getElementById('svg-bg');
         if (!svgBg) return;
@@ -538,8 +2120,8 @@
             if (window._kanjiProblemStrokes) problemStrokes = window._kanjiProblemStrokes;
             if (window._kanjiCurrentStroke !== undefined) strokesCompleted = window._kanjiCurrentStroke;
 
-            const errStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiErrors', null) : null;
-            const strokeStr = (typeof safeGetItem === 'function') ? safeGetItem('kanjiCurrentStroke', null) : null;
+            const errStr = safeGetItem('kanjiErrors', null);
+            const strokeStr = safeGetItem('kanjiCurrentStroke', null);
 
             if (problemStrokes.length === 0 && errStr) { try { problemStrokes = JSON.parse(errStr); } catch (e) { } }
             if (strokesCompleted === 0 && strokeStr) { try { strokesCompleted = parseInt(strokeStr, 10); } catch (e) { } }
@@ -587,9 +2169,7 @@
 
             // Apply stroke-style-specific inline effects
             // Re-read from storage (not stale window._kanjiStrokeStyle from page load)
-            var ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (ss === 'soft') ss = 'gel';
             window._kanjiStrokeStyle = ss;
             // Clean old gel halos before re-applying any style
@@ -603,6 +2183,8 @@
                 document.body.classList.contains('night_mode');
             var wk = (ss === 'neon') ? document.documentElement.classList.contains('is-ankimobile') : false;
             var fId = wk ? (dk ? 'neon-glow-lite-dk' : 'neon-glow-lite') : (dk ? 'neon-glow-dk' : 'neon-glow');
+            var swf = window._kanjiSwFactor();
+            document.documentElement.style.setProperty('--kd-sw', String(swf));
             paths.forEach((path, i) => {
                 // Full reset
                 path.style.removeProperty('filter');
@@ -610,13 +2192,15 @@
                 path.style.removeProperty('opacity');
                 path.removeAttribute('filter');
                 path.removeAttribute('paint-order');
+                var rw = String((ss === 'gel' || ss === 'ink' ? 4.5 : 4) * swf);
+                path.setAttribute('stroke-width', rw);
+                path.style.strokeWidth = rw;
                 // Apply new style
                 switch (ss) {
                     case 'neon':
                         path.setAttribute('filter', 'url(#' + fId + ')');
                         break;
                     case 'gel': {
-                        path.setAttribute('stroke-width', '4.5');
                         path.setAttribute('paint-order', 'stroke');
                         var resolvedC = pathColors[i] || 'var(--stroke-active)';
                         resolvedColors[i] = resolvedC;
@@ -634,13 +2218,15 @@
                 paths.forEach(function (path, i) {
                     // Reuse cached color from first pass — avoids a second getComputedStyle call per path
                     var haloC = resolvedColors[i] || pathColors[i] || 'var(--stroke-active)';
+                    var haloOp = (dk && haloC !== 'var(--stroke-active)') ? '0.22' : '0.15';
                     var h2 = path.cloneNode(false);
                     h2.setAttribute('class', 'gel-halo');
-                    h2.setAttribute('stroke-width', '8');
+                    h2.setAttribute('stroke-width', String(8.5 * swf));
                     h2.setAttribute('stroke-linecap', 'round');
                     h2.setAttribute('stroke-linejoin', 'round');
                     h2.style.cssText = '';
-                    h2.style.setProperty('opacity', '0.12', 'important');
+                    h2.style.setProperty('stroke-width', String(8.5 * swf), 'important');
+                    h2.style.setProperty('opacity', haloOp, 'important');
                     h2.style.setProperty('stroke', haloC, 'important');
                     h2.removeAttribute('filter');
                     path.parentNode.insertBefore(h2, path);
@@ -665,11 +2251,9 @@
         // Run synchronously to prevent flicker on card load
         applyBackFeatures();
 
-        window.kanjiSettingsGlobalHandlerC2 = () => {
+        window.kanjiSettingsGlobalHandler = () => {
             // Re-read and apply stroke style class (may have changed)
-            var _ss = (typeof safeGetItem === 'function')
-                ? safeGetItem('kanjiThemeStrokeStyle', 'standard')
-                : (localStorage.getItem('kanjiThemeStrokeStyle') || 'standard');
+            var _ss = safeGetItem('kanjiThemeStrokeStyle', 'standard');
             if (_ss === 'soft') _ss = 'gel';
             window._kanjiStrokeStyle = _ss;
             var _kc = document.querySelector('.kanji-container');
@@ -681,7 +2265,144 @@
         };
     })();
 
-    // --- Cross-Platform Fixes [SHARED with c1-back] ---
+    // [KD-SRC back/stroke-order-player.js]
+    // --- Stroke-Order Player ---
+
+    (function () {
+        var NS = 'http://www.w3.org/2000/svg';
+        if (window._kanjiOrder && window._kanjiOrder.st.raf) cancelAnimationFrame(window._kanjiOrder.st.raf);
+        var st = { n: 0, idx: 0, prog: 0, playing: false, raf: null, speed: 1, last: 0, waitUntil: 0, strokes: [], marks: [], nums: [], lens: [], svg: null };
+        var SPEEDS = [1, 0.5, 2], SPEED_LABELS = { 1: '1×', 0.5: '0,5×', 2: '2×' };
+        var ICONS = {
+            play: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7 4 20 12 7 20 7 4"></polygon></svg>',
+            pause: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"></rect><rect x="14" y="4" width="4" height="16" rx="1"></rect></svg>',
+            replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>'
+        };
+        var reducedMotion = function () {
+            return document.body.classList.contains('reduce-motion') ||
+                !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        };
+        var mk = function (tag, attrs) {
+            var e = document.createElementNS(NS, tag);
+            for (var k in attrs) e.setAttribute(k, attrs[k]);
+            return e;
+        };
+        var build = function () {
+            var svg = document.getElementById('order-svg'), src = document.getElementById('svg-bg');
+            if (!svg || !src) return false;
+            var ds = [];
+            for (var c = 0; c < src.children.length; c++) {
+                var p = src.children[c];
+                if (p.tagName.toLowerCase() === 'path' && p.getAttribute('d') && !p.classList.contains('gel-halo')) ds.push(p.getAttribute('d'));
+            }
+            if (!ds.length) return false;
+            svg.innerHTML = '';
+            svg.appendChild(mk('path', { 'class': 'order-grid', d: 'M54.5 0V109M0 54.5H109' }));
+            var ghosts = ds.map(function (d) { var g = mk('path', { 'class': 'order-ghost', d: d }); svg.appendChild(g); return g; });
+            st.strokes = ds.map(function (d) { var s = mk('path', { 'class': 'order-stroke', d: d, pathLength: '100' }); svg.appendChild(s); return s; });
+            st.lens = []; st.marks = []; st.nums = [];
+            ghosts.forEach(function (g, i) {
+                var L = 0;
+                try { L = g.getTotalLength(); } catch (e) { }
+                st.lens.push(L || 40);
+                var p0 = L ? g.getPointAtLength(0) : { x: 0, y: 0 }, p1 = L ? g.getPointAtLength(Math.min(8, L)) : p0;
+                var dl = Math.hypot(p1.x - p0.x, p1.y - p0.y) || 1, ux = (p1.x - p0.x) / dl, uy = (p1.y - p0.y) / dl;
+                var bx = p0.x + ux * 12, by = p0.y + uy * 12, hx = -ux * 3, hy = -uy * 3, nx = -uy * 2.4, ny = ux * 2.4;
+                var mark = mk('g', {});
+                mark.appendChild(mk('circle', { 'class': 'order-dot', cx: p0.x.toFixed(2), cy: p0.y.toFixed(2), r: '2.4' }));
+                mark.appendChild(mk('path', {
+                    'class': 'order-arrow',
+                    d: 'M' + (p0.x + ux * 5).toFixed(2) + ',' + (p0.y + uy * 5).toFixed(2) + 'L' + bx.toFixed(2) + ',' + by.toFixed(2) +
+                        'M' + (bx + hx + nx).toFixed(2) + ',' + (by + hy + ny).toFixed(2) + 'L' + bx.toFixed(2) + ',' + by.toFixed(2) +
+                        'L' + (bx + hx - nx).toFixed(2) + ',' + (by + hy - ny).toFixed(2)
+                }));
+                svg.appendChild(mark); st.marks.push(mark);
+                var num = mk('text', { 'class': 'order-num', x: (p0.x - ux * 5).toFixed(2), y: (p0.y - uy * 5).toFixed(2) });
+                num.textContent = String(i + 1);
+                svg.appendChild(num); st.nums.push(num);
+            });
+            st.svg = svg; st.n = ds.length;
+            return true;
+        };
+        var render = function () {
+            for (var i = 0; i < st.n; i++) {
+                var off = i < st.idx ? 0 : (i === st.idx ? 105 * (1 - st.prog) : 105);
+                st.strokes[i].style.strokeDashoffset = off.toFixed(2);
+                st.strokes[i].classList.toggle('order-current', i === st.idx);
+                st.marks[i].style.display = (i === st.idx) ? '' : 'none';
+                st.nums[i].style.display = (i < st.idx || (i === st.idx && st.prog > 0)) ? '' : 'none';
+            }
+            var prog = document.getElementById('order-progress');
+            if (prog) prog.textContent = 'Strich ' + Math.min(st.idx + (st.prog > 0 ? 1 : 0), st.n) + ' / ' + st.n;
+            var tg = document.getElementById('order-toggle');
+            if (tg) tg.innerHTML = st.playing ? ICONS.pause : (st.idx >= st.n ? ICONS.replay : ICONS.play);
+            var sp = document.getElementById('order-speed');
+            if (sp) sp.textContent = SPEED_LABELS[st.speed];
+        };
+        var duration = function (i) { return Math.max(450, Math.min(1400, 300 + st.lens[i] * 11)); };
+        var tick = function (ts) {
+            st.raf = null;
+            if (!st.playing || !st.svg || !st.svg.isConnected) { st.playing = false; return; }
+            var dt = st.last ? Math.min(ts - st.last, 100) : 0;
+            st.last = ts;
+            if (st.waitUntil <= ts) {
+                var rm = reducedMotion();
+                st.prog = rm ? 1 : st.prog + dt * st.speed / duration(st.idx);
+                if (st.prog >= 1) {
+                    st.prog = 0; st.idx++;
+                    st.waitUntil = ts + (rm ? 700 : 280) / st.speed;
+                    if (st.idx >= st.n) { st.idx = st.n; st.playing = false; }
+                }
+                render();
+            }
+            if (st.playing) st.raf = requestAnimationFrame(tick);
+        };
+        var pause = function () {
+            st.playing = false;
+            if (st.raf) { cancelAnimationFrame(st.raf); st.raf = null; }
+        };
+        var play = function () {
+            if (st.idx >= st.n) { st.idx = 0; st.prog = 0; }
+            st.playing = true; st.last = 0; st.waitUntil = 0;
+            if (!st.raf) st.raf = requestAnimationFrame(tick);
+            render();
+        };
+        var open = function () {
+            if (st.svg !== document.getElementById('order-svg') && !build()) return;
+            pause(); st.idx = 0; st.prog = 0; render();
+            var pOrder = document.getElementById('info-page-order');
+            setTimeout(function () {
+                if (pOrder && pOrder.classList.contains('active')) play();
+            }, 220);
+        };
+        var close = function () {
+            pause();
+        };
+        var action = function (act) {
+            if (!st.n) return;
+            if (act === 'toggle') { if (st.playing) pause(); else play(); }
+            else if (act === 'next') { pause(); st.idx = Math.min(st.n, st.idx + 1); st.prog = 0; }
+            else if (act === 'prev') { pause(); if (st.prog > 0) st.prog = 0; else st.idx = Math.max(0, st.idx - 1); }
+            else if (act === 'speed') { st.speed = SPEEDS[(SPEEDS.indexOf(st.speed) + 1) % SPEEDS.length]; }
+            render();
+        };
+        window._kanjiOrder = { st: st, open: open, close: close, action: action };
+    })();
+
+    function openStrokeOrder(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiOrder) window._kanjiOrder.open();
+    }
+    function strokeOrderAction(act, e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(10);
+        if (window._kanjiOrder) window._kanjiOrder.action(act);
+    }
+    // [/KD-SRC back/stroke-order-player.js]
+
+    // [KD-SRC back/cross-platform.js]
+    // --- Cross-Platform Fixes ---
 
     // Clean up sparkle particles in case of rapid card transition
     if (window._kanjiSparkleCleanup) { window._kanjiSparkleCleanup(); window._kanjiSparkleCleanup = null; }
@@ -689,9 +2410,8 @@
     // checkScrollability + resize already managed by FrontSide script
     checkScrollability();
 
-    // Scroll guards for info modal (settings modal already guarded by FrontSide)
-    document.querySelectorAll('.settings-modal, .info-modal').forEach(modal => { if (modal._kanjiScrollGuarded) return; modal._kanjiScrollGuarded = true; modal.addEventListener('touchmove', function (e) { if (this.scrollHeight <= this.clientHeight) e.preventDefault(); }, { passive: false }); });
-    document.querySelectorAll('.settings-overlay, .info-overlay').forEach(overlay => { if (overlay._kanjiScrollGuarded) return; overlay._kanjiScrollGuarded = true; overlay.addEventListener('touchmove', function (e) { if (e.target === this) e.preventDefault(); }, { passive: false }); });
+    // Scroll guards & AnkiMobile tappable isolation for info modal
+    if (window._kanjiSetupModalTouchGuards) window._kanjiSetupModalTouchGuards();
 
     // Apple Pencil: pen-to-click for modal controls
     if (typeof PointerEvent !== 'undefined') {
@@ -700,20 +2420,40 @@
         document.querySelectorAll('.settings-modal, .info-modal').forEach(function (modal) {
             if (modal._kanjiPenClick) return;
             modal._kanjiPenClick = true;
+            modal.addEventListener('pointerdown', function (e) {
+                if (e.pointerType !== 'pen') return;
+                modal._penDownX = e.clientX;
+                modal._penDownY = e.clientY;
+            });
             modal.addEventListener('pointerup', function (e) {
                 if (e.pointerType !== 'pen') return;
-                var target = e.target.closest('input, button, label, select, a, .settings-link, [onclick]');
-                if (!target) return;
+                if (modal._penDownX !== undefined && Math.hypot(e.clientX - modal._penDownX, e.clientY - modal._penDownY) > 14) return;
+                var el = (e.target && e.target.nodeType === 1) ? e.target : (e.target && e.target.parentElement);
+                if (el && el.closest && el.closest('.tree-touch-shield, .tree-zoom-btn')) return;
+                var target = el && el.closest ? el.closest('input, button, label, select, a, .settings-link, [onclick], .segment-btn, .category-card, .close-settings, .back-btn, .info-tool-btn, .order-ctrl, .pitfall-filter-btn, .pitfall-card, .tree-node, .pt-node, .word-example-item') : null;
+                if (!target || target === modal) {
+                    if (!el || !el.closest || !el.closest('.tree-children')) {
+                        modal.querySelectorAll('.pt-node.pt-active').forEach(function (n) { n.classList.remove('pt-active'); });
+                        modal.querySelectorAll('.pt-node.pt-dismissed').forEach(function (n) { n.classList.remove('pt-dismissed'); });
+                    }
+                    return;
+                }
                 e.preventDefault();
                 e.stopPropagation();
+                window._kanjiLastModalPenTap = Date.now();
                 if (window._kanjiModalEatClick) {
                     document.removeEventListener('click', window._kanjiModalEatClick, true);
                     clearTimeout(window._kanjiModalEatTimer);
                 }
-                target.click();
-                window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                document.addEventListener('click', window._kanjiModalEatClick, true);
-                window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                var inp = target.tagName === 'LABEL' ? target.querySelector('input[type="radio"], input[type="checkbox"]') : null;
+                if (inp && typeof inp.click === 'function') {
+                    inp.click();
+                } else if (typeof target.click === 'function') {
+                    target.click();
+                } else {
+                    target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                }
+                window._kanjiEatNextClick();
             });
         });
     }
@@ -728,9 +2468,8 @@
                 el.addEventListener('pointerup', function (e) {
                     if (e.pointerType !== 'pen') return;
                     var now = Date.now();
-                    if (handler === 'info' && now - lastInfoOpen < 400) return;
+                    if (handler === 'info' || handler === 'order') { if (now - lastInfoOpen < 400) return; lastInfoOpen = now; }
                     if (handler === 'gear' && now - lastGearOpen < 400) return;
-                    if (handler === 'info') lastInfoOpen = now;
                     if (handler === 'gear') lastGearOpen = now;
                     e.preventDefault(); e.stopPropagation();
                     if (window._kanjiModalEatClick) {
@@ -739,36 +2478,24 @@
                         window._kanjiModalEatClick = null;
                     }
                     if (handler === 'info') openInfoModal(e);
+                    else if (handler === 'order') openStrokeOrder(e);
                     else openSettings(e);
-                    window._kanjiModalEatClick = function (ev) { ev.stopPropagation(); ev.stopImmediatePropagation(); ev.preventDefault(); document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; };
-                    document.addEventListener('click', window._kanjiModalEatClick, true);
-                    window._kanjiModalEatTimer = setTimeout(function () { if (window._kanjiModalEatClick) { document.removeEventListener('click', window._kanjiModalEatClick, true); window._kanjiModalEatClick = null; } }, 300);
+                    window._kanjiEatNextClick();
                 });
             });
         }
         addPenHandler('.info-btn', 'info');
+        addPenHandler('.order-btn', 'order');
         addPenHandler('.gear-btn', 'gear');
-
-        var infoModal = document.querySelector('.info-modal');
-        if (infoModal && !infoModal._ankiPenDelegateFixed) {
-            infoModal._ankiPenDelegateFixed = true;
-            infoModal.addEventListener('pointerup', function (e) {
-                if (e.pointerType !== 'pen') return;
-                var tappable = e.target.closest('.tree-node, .word-example-item, .tappable');
-                if (!tappable) return;
-                e.preventDefault(); e.stopPropagation();
-                tappable.click();
-            });
-        }
     })();
 
     // --- S-Pen / Stylus: backdrop-close verification ---
     document.querySelectorAll('.settings-overlay, .info-overlay').forEach(function (ol) {
         if (ol._kanjiPointerDown) return;
         ol._kanjiPointerDown = true;
-        ol.addEventListener('pointerdown', function (e) {
-            this._bgPointerDown = (e.target === this);
-        });
+        var _trackBg = function (e) { ol._bgPointerDown = (e.target === ol); };
+        ol.addEventListener('pointerdown', _trackBg);
+        ol.addEventListener('touchstart', _trackBg, { passive: true });
     });
 
     // --- Global S-Pen defense ---
@@ -795,49 +2522,90 @@
         }
     } // end guard
 
-    // Link fix: force 1-tap activation on iOS/AnkiDroid (Apple Pencil + finger)
-    document.querySelectorAll('.link-btn[href]').forEach(function (link) {
-        if (link._ankiLinkFixed) return;
-        link._ankiLinkFixed = true;
-        var linkBusy = false;
-        var touchStartX = 0, touchStartY = 0;
-        link.addEventListener('touchstart', function (e) {
-            if (e.touches.length) { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }
-        }, { passive: true });
-        function handleLinkActivation(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            // Scroll detection: if finger moved > 10px, treat as scroll not tap
-            if (e.type === 'touchend' && e.changedTouches && e.changedTouches.length) {
-                var dx = e.changedTouches[0].clientX - touchStartX;
-                var dy = e.changedTouches[0].clientY - touchStartY;
-                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) return;
-            }
-            if (linkBusy) return;
-            linkBusy = true;
-            var btn = this;
-            var url = btn.getAttribute('href');
-            if (!url) { linkBusy = false; return; }
-            btn.classList.add('link-btn-pressed');
-            setTimeout(function () {
-                btn.classList.remove('link-btn-pressed');
-                // iOS-safe: temporary <a target=_blank> opens in Safari from WKWebView
-                var w = window.open(url, '_blank');
-                if (!w) {
-                    var a = document.createElement('a');
-                    a.href = url; a.target = '_blank'; a.rel = 'noopener';
-                    a.style.display = 'none';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+    // External links: URL-encode Kanji, switch non-WaniKani Kanji to JPDB (avoids 404),
+    // and ensure synchronous native <a target="_blank"> navigation on AnkiMobile iOS.
+    (function () {
+        // Exact 237 RTK1 Kanji not in WaniKani's curriculum (wanikani.com/kanji/<k> returns HTTP 404 for these)
+        var _NO_WK = '丑丙串乃之乞亘亥伊但侯侶倣僅儒允冥冶凄函刹剥勃勅勺勾勿匁匂匕卯厘只吏吾咽唾喉喩嗅嗣嘲嚇圭堆塑塞填墾壱妖妬嫉嫡嬌宛宵寅巳幌廿弄弐弘彙彦怨恣惧愁慄慌憬戚抄拉拭拶挨挫捉捗捻摯斑斤斥旭旺昌昧智曖曰曽朋朕杏柏柵柿栗桁桂桐梓梗梢棺椿楠楷楼毀氾汎汐沃沫淫渚溺漕潰濫烏煎爵猪玩璧璽瓜瓦畏畝畿痕痘痩瘍眉硝稽窟窪窯笠笹箇箋篭綻緻繕繭罵羞羨翁耗肘股肢脹腎腫腺膝膳臆臼舷艶苑苛荻菱萎葛蒲蓋蔦蔽薪薫虞蚕蝶衷袖裳裾褐訃詔詣詮諦諧謁謄貌貪賜賦踪蹴辣辰辻逐逓遡遵酉醒采釜銑錘錮阿附韻頁頒頓頬顎餅餌骸鯉鳩麓麺';
+        document.querySelectorAll('.link-grid[data-kanji]').forEach(function (grid) {
+            var kj = (grid.getAttribute('data-kanji') || '').trim();
+            if (!kj) return;
+            var enc = encodeURIComponent(kj);
+            var links = grid.querySelectorAll('a.link-btn');
+            if (links[0]) links[0].setAttribute('href', 'https://jisho.org/search/' + enc + '%20%23kanji');
+            if (links[1]) links[1].setAttribute('href', 'https://tatoeba.org/de/sentences/search?query=' + enc + '&from=jpn&to=de');
+            if (links[2]) {
+                if (_NO_WK.indexOf(kj) !== -1) {
+                    links[2].setAttribute('href', 'https://jpdb.io/kanji/' + enc);
+                    var lbl = links[2].querySelector('.link-btn-label');
+                    if (lbl) lbl.textContent = 'JPDB';
+                } else {
+                    links[2].setAttribute('href', 'https://www.wanikani.com/kanji/' + enc);
                 }
-                linkBusy = false;
-            }, 120);
+            }
+            if (links[3]) links[3].setAttribute('href', 'https://kanji.koohii.com/study/kanji/' + enc);
+        });
+
+        document.querySelectorAll('.link-btn[href]').forEach(function (link) {
+            if (link._ankiLinkFixed) return;
+            link._ankiLinkFixed = true;
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+            link.addEventListener('touchstart', function (e) {
+                e.stopPropagation();
+                this.classList.add('link-btn-pressed');
+            }, { passive: true });
+            link.addEventListener('touchend', function (e) {
+                e.stopPropagation();
+                var self = this;
+                setTimeout(function () { self.classList.remove('link-btn-pressed'); }, 150);
+            }, { passive: true });
+            link.addEventListener('touchcancel', function () {
+                this.classList.remove('link-btn-pressed');
+            }, { passive: true });
+            link.addEventListener('pointerdown', function (e) {
+                e.stopPropagation();
+                this.classList.add('link-btn-pressed');
+            });
+            link.addEventListener('pointerup', function (e) {
+                e.stopPropagation();
+                var self = this;
+                setTimeout(function () { self.classList.remove('link-btn-pressed'); }, 150);
+            });
+            link.addEventListener('click', function (e) {
+                // Stop propagation so AnkiMobile tap-zones don't flip the card,
+                // but do NOT call preventDefault() so WKWebView natively opens href in Safari on every tap.
+                e.stopPropagation();
+                this.classList.remove('link-btn-pressed');
+            });
+        });
+
+        // Re-synchronize iOS WKWebView ScrollingTree hit-test offset & lock viewport when returning from Safari
+        if (!window._kanjiModalScrollResyncAdded) {
+            window._kanjiModalScrollResyncAdded = true;
+            var resyncModalScroll = function () {
+                if (document.documentElement.classList.contains('is-ankimobile')) {
+                    document.body.classList.add('no-scroll');
+                    document.documentElement.style.setProperty('overflow-y', 'hidden', 'important');
+                    if (window._amStableVH > 100) {
+                        document.documentElement.style.setProperty('--am-vh', window._amStableVH + 'px');
+                    }
+                    try { window.scrollTo(0, 0); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch (e) { }
+                }
+                document.querySelectorAll('.info-overlay.active .info-modal, .settings-overlay.active .settings-modal').forEach(function (m) {
+                    var st = m.scrollTop;
+                    if (st > 0) {
+                        m.scrollTop = st - 1;
+                        m.scrollTop = st;
+                    }
+                });
+            };
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) { resyncModalScroll(); setTimeout(resyncModalScroll, 50); setTimeout(resyncModalScroll, 200); }
+            });
+            window.addEventListener('pageshow', function () { resyncModalScroll(); setTimeout(resyncModalScroll, 50); });
+            window.addEventListener('focus', function () { resyncModalScroll(); setTimeout(resyncModalScroll, 50); });
         }
-        link.addEventListener('touchend', handleLinkActivation, { passive: false });
-        link.addEventListener('pointerup', function (e) {
-            if (e.pointerType === 'pen') handleLinkActivation.call(this, e);
-        }, { passive: false });
-        link.addEventListener('click', function (e) { e.preventDefault(); handleLinkActivation.call(this, e); });
-    });
+    })();
+    // [/KD-SRC back/cross-platform.js]
 </script>

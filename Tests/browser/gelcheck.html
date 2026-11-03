@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<body>
+<script>
+// Runtime check: gel pen + dark mode on the real card harnesses (shared helpers _kanjiGelColor/_kanjiMakeGelHalo/_kanjiIsDark)
+localStorage.setItem('kanjiThemeStrokeStyle', 'gel');
+localStorage.setItem('kanjiThemeMode', 'dark');
+var pages = ['harness_c1.html', 'harness_c2.html', 'harness_c1b.html'], done = 0;
+pages.forEach(function (p) {
+    var f = document.createElement('iframe');
+    f.style.cssText = 'width:420px;height:800px';
+    f.src = p;
+    document.body.appendChild(f);
+    setTimeout(function () {
+        var d = f.contentDocument, w = f.contentWindow, r = {};
+        try {
+            w.safeSetItem('kanjiThemeStrokeStyle', 'gel');
+            r.style = w.safeGetItem('kanjiThemeStrokeStyle', '?');
+            var ref = d.querySelector('#svg-bg path:not(.gel-halo)');
+            if (typeof w._c2AddGelHaloToPath === 'function') w._c2AddGelHaloToPath(ref);
+            else if (typeof w._kanjiAddGelHaloToPath === 'function') w._kanjiAddGelHaloToPath(ref);
+            r.halos = d.querySelectorAll('.gel-halo').length;
+            r.dark = w._kanjiIsDark();
+            r.helpers = ['_kanjiIsDark', '_kanjiSwFactor', '_kanjiEatNextClick', '_kanjiGelColor', '_kanjiMakeGelHalo'].every(function (n) { return typeof w[n] === 'function'; });
+            r.swf = w._kanjiSwFactor('thick');
+            var h = d.querySelector('.gel-halo');
+            r.haloStroke = h ? h.style.getPropertyValue('stroke') : null;
+        } catch (e) { r.err = String(e); }
+        console.log('KDR gel/' + p + ' ' + JSON.stringify(r));
+        if (++done === pages.length) console.log('KDR DONE');
+    }, 20000);
+});
+</script>
+</body>

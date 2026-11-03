@@ -16,6 +16,7 @@ The templates work fine without this add-on (settings just reset on restart).
 import json
 import logging
 import os
+import re
 import threading
 
 from aqt import gui_hooks
@@ -25,8 +26,28 @@ _log = logging.getLogger(__name__)
 _SETTINGS_FILE = os.path.join(
     os.path.dirname(__file__), "user_files", "settings.json"
 )
+# Kanji Draw note types are identified by this field (see README: Notiztyp-Felder).
+_MARKER_FIELD = "SVGPfade"
+# Real settings stay far below this (templates cap their cookie at ~3.8 KB).
+_MAX_MESSAGE_LEN = 64 * 1024
+# Template keys look like kanjiThemeMode, c1_kanjiGridType, c2f_kanjiOptNumbers.
+_KEY_RE = re.compile(r"^(?:c1_|c2_|c2f_)?kanji[A-Za-z]{1,40}$")
+_MAX_VALUE_LEN = 64
 _settings_cache = None
 _lock = threading.Lock()
+
+
+def _sanitize(data):
+    if not isinstance(data, dict):
+        return {}
+    return {
+        k: v
+        for k, v in data.items()
+        if isinstance(k, str)
+        and _KEY_RE.match(k)
+        and isinstance(v, str)
+        and len(v) <= _MAX_VALUE_LEN
+    }
 
 
 def _load():
@@ -37,14 +58,15 @@ def _load():
             return _settings_cache
         try:
             with open(_SETTINGS_FILE, "r", encoding="utf-8") as f:
-                _settings_cache = json.load(f)
+                _settings_cache = _sanitize(json.load(f))
                 return _settings_cache
         except FileNotFoundError:
             _settings_cache = {}
             return _settings_cache
         except (json.JSONDecodeError, OSError) as e:
             _log.warning("Failed to load settings: %s", e)
-            return {}
+            _settings_cache = {}
+            return _settings_cache
 
 
 def _save(data):
@@ -70,17 +92,30 @@ def _on_js_message(handled, message, context):
     """Intercept pycmd('kdp:{...}') from card templates."""
     if not isinstance(message, str) or not message.startswith("kdp:"):
         return handled
+    if len(message) > _MAX_MESSAGE_LEN:
+        _log.warning("Ignoring oversized kdp message (%d bytes)", len(message))
+        return (True, None)
     try:
         data = json.loads(message[4:])
         if isinstance(data, dict):
-            _save(data)
+            _save(_sanitize(data))
     except (json.JSONDecodeError, TypeError) as e:
         _log.debug("Malformed kdp message: %s", e)
     return (True, None)
 
 
+def _is_kanji_draw_card(card):
+    try:
+        fields = card.note_type()["flds"]
+    except Exception:
+        return False
+    return any(f.get("name") == _MARKER_FIELD for f in fields)
+
+
 def _on_card_will_show(text, card, kind):
     """Inject saved settings before template scripts run."""
+    if not _is_kanji_draw_card(card):
+        return text
     settings = _load()
     # Always inject sentinel so templates can detect that the addon is present.
     # Also restore persisted settings into window._ks and localStorage when available.

@@ -1,0 +1,133 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>KD Audio Selftest</title></head>
+<body>
+<script src="kd-audio-engine.js"></script>
+<script>
+function stats(buf, win) {
+    win = win || 0.4;
+    var sr = buf.sampleRate, n = buf.length, L = buf.getChannelData(0), R = buf.getChannelData(1);
+    var peak = 0, sum = 0, nan = 0, w = Math.floor(sr * win), wins = [], acc = 0, cnt = 0;
+    for (var i = 0; i < n; i++) {
+        var l = L[i], r = R[i];
+        if (!isFinite(l) || !isFinite(r)) { nan++; continue; }
+        var a = Math.max(Math.abs(l), Math.abs(r)); if (a > peak) peak = a;
+        var e = (l * l + r * r) / 2; sum += e; acc += e; cnt++;
+        if (cnt === w) { wins.push(Math.sqrt(acc / w)); acc = 0; cnt = 0; }
+    }
+    var db = function (x) { return x > 0 ? Math.round(200 * Math.log10(x)) / 10 : -999; };
+    // Roughness: frame-to-frame flutter of the high-band envelope (10 ms frames) — rustle/crackle shows up here
+    var fw = Math.floor(sr * 0.01), env = [], prev = 0, accH = 0, c2 = 0;
+    for (var h = 1; h < n; h++) { var dx = L[h] - L[h - 1]; accH += dx * dx; if (++c2 === fw) { env.push(Math.sqrt(accH / fw)); accH = 0; c2 = 0; } }
+    var fl = 0, me = 0; for (var e2 = 1; e2 < env.length; e2++) { fl += Math.abs(env[e2] - env[e2 - 1]); me += env[e2]; }
+    var rough = me > 0 ? Math.round(1000 * fl / me) / 1000 : 0;
+    var s = wins.slice().sort(function (a, b) { return a - b; });
+    var q = function (p) { return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };
+    return { peak: db(peak), rms: db(Math.sqrt(sum / n)), max: db(q(0.999)), med: db(q(0.5)), p10: db(q(0.1)), nan: nan, rough: rough };
+}
+function strokeEvents(style, t0, dur, pressure) {
+    var ev = [{ at: t0, fn: 'strokeStart', args: [style, 20, 30, pressure, 'pen'] }];
+    for (var t = 0.016; t < dur; t += 0.016) {
+        var k = t / dur;
+        ev.push({ at: t0 + t, fn: 'strokeMove', args: [20 + 70 * k, 30 + 50 * k + 6 * Math.sin(k * 6), pressure] });
+    }
+    ev.push({ at: t0 + dur, fn: 'strokeEnd', args: [] });
+    return ev;
+}
+async function run(name, o) {
+    var only = (new URLSearchParams(location.search).get('only') || '').split(',').filter(Boolean);
+    if (only.length && !only.some(function (p) { return name.indexOf(p) === 0; })) return;
+    var t0 = performance.now(), r;
+    try { r = stats(await window.__kdAudio._offline(o)); r.ms = Math.round(performance.now() - t0); }
+    catch (e) { r = { err: String(e && e.stack || e).slice(0, 300) }; }
+    console.log('KDR ' + name + ' ' + JSON.stringify(r));
+}
+(async function () {
+    if (!window.__kdAudio) { console.log('KDR FATAL engine missing'); return; }
+    if (/cost/.test(location.search)) {
+        var T = window.__kdAudio._t, cost = {};
+        [['piano', 40], ['piano', 60], ['piano', 84], ['koto', 56], ['koto', 84], ['sanshin', 64], ['bass', 28]].forEach(function (z) {
+            var t1 = performance.now(), d = z[0] === 'piano' ? T.renderPiano(22050, z[1]) : T.renderString(22050, z[1], z[0]);
+            cost[z[0] + z[1]] = Math.round(performance.now() - t1) + 'ms/' + (d.length / 22050).toFixed(1) + 's';
+        });
+        console.log('KDR cost ' + JSON.stringify(cost));
+    }
+    var genres = ['ambient', 'zen', 'piano', 'lofi', 'nature'];
+    var T4 = window.__kdAudio._t, only0 = (new URLSearchParams(location.search).get('only') || '').split(',').filter(Boolean);
+    if (T4.songErrors) console.log('KDR songs ' + JSON.stringify(T4.songErrors()));
+    // Every song in every genre: full rendition from the intro
+    if (T4.SONGS) for (var so of T4.SONGS) for (var sg of ['zen', 'piano', 'lofi', 'ambient']) await run('song/' + so.id + '/' + sg, { seconds: 30, music: sg, theme: so.th[0], song: so.id, immersion: 'low' });
+    // Fast review: a random landscape every 2 s. Envelope jump between 1 s windows shows how much the music lurches
+    var themes9 = ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa'];
+    for (var rg of ['zen', 'piano', 'lofi']) for (var rv of [0, 1]) {
+        if (only0.length && !only0.some(function (p) { return ('review/' + rg).indexOf(p) === 0; })) continue;
+        var evr = []; if (rv) for (var ri = 0; ri < 14; ri++) evr.push({ at: 4 + ri * 2, fn: 'setScene', args: [themes9[(ri * 4 + 1) % 9], ri % 5 === 3] });
+        var bR = await window.__kdAudio._offline({ seconds: 36, music: rg, theme: 'neutral', song: 'sakura', events: evr, noEvents: true }), sR = stats(bR);
+        var LR = bR.getChannelData(0), wR = bR.sampleRate, eR = [];
+        for (var kR = 0; kR + wR <= LR.length; kR += wR) { var aR = 0; for (var jR = kR; jR < kR + wR; jR += 4) aR += LR[jR] * LR[jR]; eR.push(20 * Math.log10(Math.sqrt(aR / (wR / 4)) + 1e-9)); }
+        var jump = 0; for (var q2 = 5; q2 < eR.length; q2++) jump = Math.max(jump, Math.abs(eR[q2] - eR[q2 - 1]));
+        sR.maxJump1s = Math.round(jump * 10) / 10;
+        console.log('KDR review/' + rg + (rv ? '/flip' : '/still') + ' ' + JSON.stringify(sR));
+    }
+    var scenes = [['neutral', false], ['tokyo', true], ['okinawa', false], ['hokkaido', true], ['sepia', true], ['sage', false]];
+    for (var g of genres) for (var sc of scenes) await run('music/' + g + '/' + sc[0] + (sc[1] ? '-n' : '-d'), { seconds: 24, music: g, theme: sc[0], dark: sc[1] });
+    for (var g2 of genres) await run('xfade/' + g2 + '/warm-d>tokyo-n', { seconds: 30, music: g2, theme: 'warm', events: [{ at: 12, fn: 'setScene', args: ['tokyo', true] }] });
+    for (var th of ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa']) for (var dk of [false, true]) await run('nat/' + th + (dk ? '-n' : '-d'), { seconds: 16, music: 'nature', theme: th, dark: dk });
+    for (var th2 of ['neutral', 'warm', 'cool', 'sepia', 'rose', 'sage', 'hokkaido', 'tokyo', 'okinawa']) for (var dk2 of [false, true]) await run('bed/' + th2 + (dk2 ? '-n' : '-d'), { seconds: 16, music: 'nature', theme: th2, dark: dk2, noEvents: true });
+    for (var st of ['standard', 'gel', 'ink', 'neon']) await run('stroke/' + st, { seconds: 2.5, events: strokeEvents(st, 0.3, 0.7, 0.5) });
+    for (var fx of ['tap', 'tick', 'select', 'open', 'close', 'nav', 'back', 'tab', 'page', 'play', 'reveal', 'hide', 'hint', 'reset', 'undo', 'skip', 'cardFront', 'cardBack', 'node', 'nodeOff', 'furigana', 'furiganaOff', 'pitfall'])
+        await run('fx/' + fx, { seconds: 2, events: [{ at: 0.1, fn: 'fx', args: [fx, 0, 2] }] });
+    await run('result/ok', { seconds: 2, events: [{ at: 0.1, fn: 'strokeResult', args: [true, 2] }] });
+    await run('result/bad', { seconds: 2, events: [{ at: 0.1, fn: 'strokeResult', args: [false, 0] }] });
+    await run('complete', { seconds: 4, events: [{ at: 0.1, fn: 'complete', args: [] }] });
+    await run('mix/piano+strokes', { seconds: 8, music: 'piano', theme: 'rose', events: strokeEvents('ink', 2, 0.6, 0.6).concat(strokeEvents('gel', 3.5, 0.6, 0.6), [{ at: 4.3, fn: 'strokeResult', args: [true, 1] }]) });
+    // ── Flow (v1.1) ──
+    for (var fg of genres) for (var e = 0; e <= 4; e++) await run('flowE/' + fg + '/E' + e, { seconds: 16, music: fg, theme: 'neutral', immersion: 'high', E: e });
+    for (var rs of ['standard', 'gel', 'ink', 'neon']) for (var im of ['off', 'high'])
+        await run('flowres/' + rs + '/' + im, { seconds: 2.5, music: 'piano', muteMusic: true, immersion: im, events: strokeEvents(rs, 0.3, 0.7, 0.5) });
+    var play8 = function () {
+        var ev = [];
+        for (var i = 0; i < 8; i++) {
+            var t0 = 3 + i * 1.6;
+            ev = ev.concat(strokeEvents('ink', t0, 0.6, 0.6));
+            ev.push({ at: t0 + 0.75, fn: 'strokeResult', args: [i !== 3, i] });
+        }
+        ev.push({ at: 16.2, fn: 'complete', args: [] });
+        return ev;
+    };
+    for (var pg of genres) for (var pi of ['off', 'high']) await run('flowplay/' + pg + '/' + pi, { seconds: 26, music: pg, theme: 'okinawa', immersion: pi, events: play8() });
+    // Burst: 20 strokes in 4 s with results (the "overloaded" case) — peaks must stay close to the plain music
+    var burst = function () {
+        var ev = [];
+        for (var i = 0; i < 20; i++) { var t0 = 4 + i * 0.2; ev = ev.concat(strokeEvents('standard', t0, 0.12, 0.6)); ev.push({ at: t0 + 0.14, fn: 'strokeResult', args: [true, i] }); }
+        ev.push({ at: 8.3, fn: 'complete', args: [] });
+        return ev;
+    };
+    for (var bg of ['zen', 'piano', 'lofi']) await run('burst/' + bg, { seconds: 14, music: bg, theme: 'neutral', immersion: 'high', events: burst() });
+    for (var xg of ['ambient', 'lofi']) await run('flowxfade/' + xg, { seconds: 24, music: xg, theme: 'warm', immersion: 'high', events: [{ at: 8, fn: 'strokeResult', args: [true, 0] }, { at: 10, fn: 'setScene', args: ['tokyo', true] }] });
+    for (var fg2 of ['ambient', 'zen', 'piano', 'lofi']) {
+        var only2 = (new URLSearchParams(location.search).get('only') || '').split(',').filter(Boolean);
+        if (only2.length && !only2.some(function (p) { return ('form/' + fg2).indexOf(p) === 0; })) continue;
+        var t1 = performance.now(), bufF = await window.__kdAudio._offline({ seconds: 150, music: fg2, theme: 'rose' }), st = stats(bufF);
+        var LF = bufF.getChannelData(0), wF = bufF.sampleRate * 10, envF = [];
+        for (var kF = 0; kF + wF <= LF.length; kF += wF) { var aF = 0; for (var jF = kF; jF < kF + wF; jF += 4) aF += LF[jF] * LF[jF]; envF.push(Math.round(20 * Math.log10(Math.sqrt(aF / (wF / 4)) + 1e-9))); }
+        st.env10s = envF.join('/'); st.ms = Math.round(performance.now() - t1);
+        console.log('KDR form/' + fg2 + ' ' + JSON.stringify(st));
+    }
+    if (/prof/.test(location.search)) {
+        var env1 = function (buf, win) {
+            var L = buf.getChannelData(0), w = Math.floor(buf.sampleRate * win), env = [];
+            for (var k = 0; k + w <= L.length; k += w) { var a = 0; for (var j = k; j < k + w; j += 2) a += L[j] * L[j]; env.push(Math.round(20 * Math.log10(Math.sqrt(a / (w / 2)) + 1e-9))); }
+            return env;
+        };
+        var buf = await window.__kdAudio._offline({ seconds: 26, music: 'piano', theme: 'okinawa', immersion: 'high', events: play8() });
+        console.log('KDR profile/piano ' + JSON.stringify(env1(buf, 0.25)));
+        // Jo-ha-kyū stages: 1 s envelope per stage, music only (no nature events)
+        for (var pg2 of ['zen', 'ambient', 'piano', 'lofi']) for (var stg = 0; stg <= 2; stg++) {
+            var bs = await window.__kdAudio._offline({ seconds: 40, music: pg2, theme: 'neutral', immersion: 'high', stage: stg, flow: stg === 2 ? 0.8 : 0.3, noEvents: true });
+            console.log('KDR stage/' + pg2 + '/' + stg + ' ' + JSON.stringify(env1(bs, 1)));
+        }
+    }
+    console.log('KDR DONE');
+})();
+</script>
+</body></html>

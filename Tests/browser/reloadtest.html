@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>window.__kdT0 = performance.now();</script>
+<script src="kd-audio-engine.js"></script>
+<script>
+// Page reload per card side (AnkiDroid Legacy): soft cut on pagehide, the song resumes only after the page has loaded
+(function () {
+    var A = window.__kdAudio, log = function (k, v) { console.log('KDR ' + k + ' ' + JSON.stringify(v)); };
+    var conf = { level: 'mid', music: 'zen', musicLevel: 'mid', immersion: 'low' };
+    var phase = sessionStorage.getItem('kdReloadPhase');
+    if (!phase) {
+        sessionStorage.removeItem('kdAudioState');
+        A.configure(conf); A.setScene('tokyo', true); A.cardShown(false);
+        setTimeout(function () {
+            log('before', A.state().scenes);
+            sessionStorage.setItem('kdReloadPhase', '1');
+            var t = performance.now();
+            // Registered after the engine's handler: measures the time its fade-out holds the page
+            window.addEventListener('pagehide', function () { sessionStorage.setItem('kdHideMs', String(Math.round(performance.now() - t))); });
+            location.reload();
+        }, 4000);
+        return;
+    }
+    sessionStorage.removeItem('kdReloadPhase');
+    // What the card script does on every card
+    A.configure(conf); A.setScene('tokyo', true); A.cardShown(false);
+    log('duringParse', { readyState: document.readyState, hideMs: +sessionStorage.getItem('kdHideMs'), scenes: A.state().scenes });
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            log('afterLoad', { ms: Math.round(performance.now() - window.__kdT0), scenes: A.state().scenes, ctx: A.state().ctx });
+            console.log('KDR DONE');
+        }, 600);
+    });
+})();
+</script>

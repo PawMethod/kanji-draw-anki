@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+// Renders one engine version offline and hands a WAV back to the parent page
+(function () {
+    var q = new URLSearchParams(location.search), v = q.get('v');
+    if (!/^[0-9.]+$/.test(v || '')) return;
+    var s = document.createElement('script');
+    s.src = 'versions/kd-audio-' + v + '.js';
+    s.onload = async function () {
+        var buf = await window.__kdAudio._offline({ seconds: +q.get('sec') || 45, music: q.get('genre'), theme: q.get('theme'), dark: q.get('dark') === '1', immersion: 'off' });
+        var n = buf.length, L = buf.getChannelData(0), R = buf.getChannelData(1), ab = new ArrayBuffer(44 + n * 4), dv = new DataView(ab), p = 0;
+        var str = function (x) { for (var i = 0; i < x.length; i++) dv.setUint8(p++, x.charCodeAt(i)); }, u32 = function (x) { dv.setUint32(p, x, true); p += 4; }, u16 = function (x) { dv.setUint16(p, x, true); p += 2; };
+        str('RIFF'); u32(36 + n * 4); str('WAVEfmt '); u32(16); u16(1); u16(2); u32(buf.sampleRate); u32(buf.sampleRate * 4); u16(4); u16(16); str('data'); u32(n * 4);
+        for (var i = 0; i < n; i++) { dv.setInt16(p, Math.max(-1, Math.min(1, L[i])) * 32767, true); p += 2; dv.setInt16(p, Math.max(-1, Math.min(1, R[i])) * 32767, true); p += 2; }
+        parent.postMessage({ v: v, wav: ab }, location.origin, [ab]);
+    };
+    document.head.appendChild(s);
+})();
+</script>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>KanjiDraw – Klangvergleich</title>
+<style>
+    body { font: 15px system-ui, sans-serif; max-width: 760px; margin: 2em auto; padding: 0 1em; background: #f6f3ee; color: #222; }
+    select, button { font: inherit; padding: 0.35em 0.6em; margin: 0.2em; }
+    .row { display: flex; align-items: center; gap: 1em; margin: 0.8em 0; padding: 0.8em; background: #fff; border-radius: 8px; }
+    .row b { width: 9em; }
+    audio { flex: 1; }
+    .hint { color: #666; font-size: 0.9em; }
+</style></head>
+<body>
+<h2>KanjiDraw – Klangvergleich der Engine-Versionen</h2>
+<p class="hint">Gleiche Einstellungen, verschiedene Versionen. Jede Probe ist 45 s lang und wird hier im Browser berechnet (kann ein paar Sekunden dauern).</p>
+<div>
+    <select id="genre">
+        <option value="zen">Zen</option><option value="ambient">Ambient</option><option value="piano">Klavier</option>
+        <option value="lofi">Lo-Fi</option><option value="nature">Natur</option>
+    </select>
+    <select id="theme">
+        <option value="neutral">Neutral</option><option value="warm">Warm</option><option value="cool">Kühl</option>
+        <option value="sepia">Sepia</option><option value="rose">Rosé (Sakura)</option><option value="sage">Salbei (Wald)</option>
+        <option value="hokkaido">Hokkaido</option><option value="tokyo">Tokio</option><option value="okinawa">Okinawa</option>
+    </select>
+    <select id="dark"><option value="0">Tag</option><option value="1">Nacht</option></select>
+    <button id="go">Proben berechnen</button>
+</div>
+<div id="out"></div>
+<script>
+var VERS = [['2.0.1', 'Entwurf (älter)'], ['3.0.0', 'Entwurf (vorher)'], ['1.0.0', 'Jetzt (1.0.0)']], out = document.getElementById('out');
+window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin || !e.data || !e.data.wav) return;
+    var row = document.getElementById('v' + e.data.v.replace(/\./g, '_'));
+    if (!row) return;
+    var a = document.createElement('audio');
+    a.controls = true; a.src = URL.createObjectURL(new Blob([e.data.wav], { type: 'audio/wav' }));
+    row.querySelector('span').replaceWith(a);
+    // Only one sample plays at a time
+    a.addEventListener('play', function () { document.querySelectorAll('audio').forEach(function (o) { if (o !== a) o.pause(); }); });
+});
+document.getElementById('go').onclick = function () {
+    out.innerHTML = '';
+    document.querySelectorAll('iframe').forEach(function (f) { f.remove(); });
+    var q = 'genre=' + genre.value + '&theme=' + theme.value + '&dark=' + dark.value + '&sec=45';
+    VERS.forEach(function (v, i) {
+        var row = document.createElement('div');
+        row.className = 'row'; row.id = 'v' + v[0].replace(/\./g, '_');
+        row.innerHTML = '<b>' + v[1] + '</b><span class="hint">wird berechnet …</span>';
+        out.appendChild(row);
+        // One version after another keeps the page responsive
+        setTimeout(function () {
+            var f = document.createElement('iframe');
+            f.style.display = 'none'; f.src = 'render.html?v=' + v[0] + '&' + q;
+            document.body.appendChild(f);
+        }, i * 1500);
+    });
+};
+</script>
+</body></html>
