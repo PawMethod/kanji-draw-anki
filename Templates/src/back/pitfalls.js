@@ -301,3 +301,4 @@ window._kanjiRenderPitfalls = function (rawData, listTarget, padTarget, filterTa
             document.getElementById('pitfalls-nav-desc')
         );
     } catch (e) { }
+})();
