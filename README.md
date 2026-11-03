@@ -13,14 +13,14 @@ Interaktives Anki-Template zum Erlernen der japanischen Kanji-Schriftzeichen —
 
 <table align="center">
   <tr>
-    <td align="center"><img src="Media/demos/demo-guided.webp" width="200" alt="Geführter Modus: Kanji Menge Strich für Strich"><br><sub>✍️ Geführter Modus</sub></td>
-    <td align="center"><img src="Media/demos/demo-freehand.webp" width="200" alt="Freihand-Modus: Kanji Liebe mit Bewertung"><br><sub>🖊️ Freihand-Modus</sub></td>
-    <td align="center"><img src="Media/demos/demo-strokeorder.webp" width="200" alt="Animierte Strichfolge"><br><sub>🔢 Strichfolge</sub></td>
+    <td align="center"><img src="Media/demos/demo-guided.gif" width="200" alt="Geführter Modus: Kanji Menge Strich für Strich"><br><sub>✍️ Geführter Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-freehand.gif" width="200" alt="Freihand-Modus: Kanji Liebe mit Bewertung"><br><sub>🖊️ Freihand-Modus</sub></td>
+    <td align="center"><img src="Media/demos/demo-strokeorder.gif" width="200" alt="Animierte Strichfolge"><br><sub>🔢 Strichfolge</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="Media/demos/demo-tree.webp" width="200" alt="Komponentenbaum eines Kanji"><br><sub>🌳 Komponentenbaum</sub></td>
-    <td align="center"><img src="Media/demos/demo-gallery.webp" width="200" alt="Diashow: Zeichnen, Info-Modal, Komponentenbaum, Schreibfehler, Einstellungen"><br><sub>🖼️ Galerie</sub></td>
-    <td align="center"><img src="Media/demos/demo-landscapes.webp" width="200" alt="Diashow: alle Landschaften in Hell und Dunkel"><br><sub>🏞️ Landschaften</sub></td>
+    <td align="center"><img src="Media/demos/demo-tree.gif" width="200" alt="Komponentenbaum eines Kanji"><br><sub>🌳 Komponentenbaum</sub></td>
+    <td align="center"><img src="Media/demos/demo-gallery.gif" width="200" alt="Diashow: Zeichnen, Info-Modal, Komponentenbaum, Schreibfehler, Einstellungen"><br><sub>🖼️ Galerie</sub></td>
+    <td align="center"><img src="Media/demos/demo-landscapes.gif" width="200" alt="Diashow: alle Landschaften in Hell und Dunkel"><br><sub>🏞️ Landschaften</sub></td>
   </tr>
 </table>
 
@@ -375,7 +375,7 @@ kanji-draw-anki/
 │   └── anki_addon_stress_helper/   ← Hilfs-Add-on dafür (nur zum Testen installieren, token-geschützt)
 │
 ├── Media/
-│   └── demos/                      ← Demo-Animationen (WebP) für README
+│   └── demos/                      ← Demo-Animationen (GIF) für README
 │
 ├── LICENSE
 └── README.md
