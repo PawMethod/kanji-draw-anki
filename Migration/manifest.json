@@ -1,0 +1,8 @@
+{
+    "package": "kanji_draw_migration",
+    "name": "KanjiDraw: Lernfortschritt übernehmen",
+    "version": "1.0.0",
+    "author": "MrM0bi",
+    "homepage": "https://github.com/MrM0bi/kanji-draw-anki",
+    "min_point_version": 231000
+}

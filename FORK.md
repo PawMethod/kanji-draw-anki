@@ -10,7 +10,7 @@ text with only a fork note at the top.
 
 **Contents:** [How the fork is organised](#how-the-fork-is-organised) · [Fields](#fields) ·
 [Deck data](#deck-data) · [Changes](#changes) · [Settings and defaults](#settings-and-defaults) ·
-[Fork files](#fork-files) · [Upstream candidates](#upstream-candidates)
+[Switching from upstream's deck](#switching-from-upstreams-deck) · [Fork files](#fork-files) · [Upstream candidates](#upstream-candidates)
 
 ## How the fork is organised
 
@@ -247,6 +247,34 @@ always win over the CSS defaults; deck defaults are the `--default-*` variables 
 
 Music still needs a first tap where the browser blocks autoplay.
 
+## Switching from upstream's deck
+
+The add-on in [`Migration/`](Migration/README.md) ("KanjiDraw: Lernfortschritt übernehmen", Anki Desktop 23.10+) is for
+people who studied with upstream's deck and import this one, or the other way round. It moves their progress onto the
+other deck's cards in one go, so they keep their reviews. It's a one-time tool, separate from the persistence add-on.
+The ready package is [`Migration/dist/kanji_draw_migration.ankiaddon`](Migration/dist/kanji_draw_migration.ankiaddon),
+built by `Tools/build_migration_addon.py` (a test fails if it is stale).
+
+- **Matching:** same glyph in `Kanji` (upstream's 篭 = this deck's 籠), Card 1 → Card 1, Card 2 → Card 2. Note types
+  are found by their fields, so renamed ones work, and upstream v1's old field names too.
+- **Direction:** chosen in the dialog, preselected away from the deck with more studied cards. Fork → upstream
+  transfers the same scheduling, history, states and tags, but no own edits (upstream has no free fields for them).
+  The fork's primitives have no upstream partner; they keep their progress and stay in the fork's deck.
+- **Transferred:** the scheduling of studied cards, including FSRS memory state, through Anki's card API, so a normal
+  sync uploads it. Also suspended, buried and flagged new cards, tags, and optionally the old deck's options preset.
+  The review history is *copied* with new ids, because AnkiWeb ignores entries it already has, so a move would not
+  sync. As a result, collection-wide stats count those reviews twice (more on a round trip).
+- **Own edits** (upstream → fork only): fields that differ from upstream v3's text go to `Merksatz-Custom` (`Eselsbrücke`),
+  `Bedeutung-Override` (`Bedeutung`) or a labelled line in `Notiz`, appended to existing text.
+  [`upstream_v3_hashes.json`](Migration/upstream_v3_hashes.json) holds short hashes of upstream's v3 values (no
+  text), made by `Tools/make_migration_hashes.py`. For older upstream versions only notes changed after import count.
+- **Safety:** preview first, then an Anki backup, the transfer and a check of every card. Fork cards that are already
+  studied are skipped, a second run changes nothing, and cards in filtered decks block the run. Only after a clean
+  check does it offer to delete the old notes and their empty deck.
+- **Tests:** [`Tests/migration/`](Tests/migration/test_migration.py) covers SM-2 and FSRS, all card states, re-runs,
+  deletion, filtered decks, older versions and the way back. It also syncs to a second device through Anki's own sync
+  server, there and back, and checks that a normal sync is enough each time.
+
 ## Fork files
 
 New files (everything else is a marked edit of an upstream file):
@@ -262,6 +290,10 @@ New files (everything else is a marked edit of an upstream file):
 | `src/front/kd-fork-pen-scroll.js` | Pen scrolling on Anki Desktop |
 | `Tests/js/test_fork_settings.js`, `test_audio_scheduling.js` | Node tests: settings/defaults resolution, audio scheduling |
 | `Tests/browser/check_fork_*.py` | Playwright checks against Anki-rendered cards (back options, mobile title, strokes, reveal timing); see [Tests/browser/README.md](Tests/browser/README.md) |
+| `Migration/` | Add-on to switch between upstream's deck and this one (see [above](#switching-from-upstreams-deck)); the built package is in `Migration/dist/` |
+| `Tools/build_migration_addon.py` | Builds `Migration/dist/kanji_draw_migration.ankiaddon`; `--check` verifies it |
+| `Tools/make_migration_hashes.py` | Builds `Migration/upstream_v3_hashes.json` from upstream's v3 deck |
+| `Tests/migration/test_migration.py` | Tests for the migration add-on, incl. a sync round trip (needs `anki` from PyPI) |
 | `FORK.md` | This file |
 
 Paths under `src/` are relative to `Templates/`. `.gitignore` additionally ignores the local agent instruction files

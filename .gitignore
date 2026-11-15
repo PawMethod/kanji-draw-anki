@@ -9,6 +9,7 @@ Desktop.ini
 *.apkg
 *.colpkg
 *.ankiaddon
+!Migration/dist/kanji_draw_migration.ankiaddon
 
 # Backups
 Backup/
