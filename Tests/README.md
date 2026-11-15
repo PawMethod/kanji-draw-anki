@@ -9,6 +9,7 @@ Automatische Tests für die Templates und das Add-on.
 | [js/](js/) | Node-Tests (`node --test`), kein Browser nötig |
 | [browser/](browser/README.md) | Headless-Chromium-Tests: Selbsttest der Audio-Engine, Harness-Seiten aus den echten Templates |
 | [live_stress_test.py](live_stress_test.py) | Stresstest im laufenden Anki (echte WebView) |
+| [migration/](migration/test_migration.py) | Tests für das Umstiegs-Add-on [Migration/](../Migration/README.md), mit Ankis Python-Paket: `uv run --no-project --with anki==26.5 python -I -m unittest discover -s Tests/migration -v` |
 | [anki_addon_stress_helper/](anki_addon_stress_helper/) | Hilfs-Add-on für den Stresstest: führt JavaScript in der Karten-WebView aus |
 
 ## js/ – Node-Tests
