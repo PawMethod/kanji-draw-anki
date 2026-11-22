@@ -837,6 +837,47 @@
             <button type="button" class="kd-layout-btn tappable" id="kd-layout-edit" onclick="kdLayoutEdit(event)">Layout bearbeiten</button>
             <p class="kd-layout-note" id="kd-layout-edit-note" hidden>Dreh die Karte um, um das Layout zu bearbeiten.</p>
             <button type="button" class="kd-layout-btn kd-layout-reset tappable" id="kd-layout-reset" onclick="kdLayoutResetAll(event)">Alle Layouts zurücksetzen</button>
+            <div class="setting-group-title">Spalten</div>
+            <p class="kd-layout-note">Auf breiten Bildschirmen stehen die Abschnitte in Spalten, so breit wie die Zeichenfläche. Auto: 1 auf dem Handy, sonst so viele wie ins Fenster passen.</p>
+            <div class="visual-options-grid kd-layout-cols" style="grid-template-columns: repeat(3, 1fr);">
+                <label><input type="radio" name="opt-kd-layout-cols" value="auto" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z" /><path d="M9 6v12M15 6v12" /><path d="M10.5 12h3" /></svg><span>Auto</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-cols" value="1" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.50" y="5" width="19.00" height="14" class="fi-gold" stroke="none" /><rect x="2.5" y="5" width="19" height="14" rx="2" /></svg><span>1</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-cols" value="3" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="8.83" y="5" width="6.33" height="14" class="fi-gold" stroke="none" /><rect x="2.5" y="5" width="19" height="14" rx="2" /><path d="M8.83 5v14M15.17 5v14" stroke-width="1.9" /></svg><span>3</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-cols" value="5" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="10.10" y="5" width="3.80" height="14" class="fi-gold" stroke="none" /><rect x="2.5" y="5" width="19" height="14" rx="2" /><path d="M6.30 5v14M10.10 5v14M13.90 5v14M17.70 5v14" stroke-width="1.6" /></svg><span>5</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-cols" value="7" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="10.64" y="5" width="2.71" height="14" class="fi-gold" stroke="none" /><rect x="2.5" y="5" width="19" height="14" rx="2" /><path d="M5.21 5v14M7.93 5v14M10.64 5v14M13.36 5v14M16.07 5v14M18.79 5v14" stroke-width="1.2" /></svg><span>7</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-cols" value="9" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="10.94" y="5" width="2.11" height="14" class="fi-gold" stroke="none" /><rect x="2.5" y="5" width="19" height="14" rx="2" /><path d="M4.61 5v14M6.72 5v14M8.83 5v14M10.94 5v14M13.06 5v14M15.17 5v14M17.28 5v14M19.39 5v14" stroke-width="1" /></svg><span>9</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Seitenspalten beginnen</div>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-kd-layout-side" value="below" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="7" rx="1.2" class="fi-gold" /><path d="M3 13h5v8H3zM9.5 13h5v8h-5zM16 13h5v8h-5z" /></svg><span>Unter dem Kopf</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-side" value="top" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="7" rx="1.2" class="fi-gold" /><path d="M3 3h4.5v18H3zM9.5 12h5v9h-5zM16.5 3H21v18h-4.5z" /></svg><span>Neben dem Kopf</span></div>
+                </label>
+            </div>
+            <div class="setting-group-title">Scrollen</div>
+            <p class="kd-layout-note">Lange Spalten allein: Spalten, die ganz sichtbar sind, bleiben stehen; nur zu lange Spalten scrollen weiter.</p>
+            <div class="visual-options-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <label><input type="radio" name="opt-kd-layout-scroll" value="page" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18H5z" /><path d="M12 8v8M9.5 13.5L12 16l2.5-2.5" class="fi-gold" /></svg><span>Ganze Seite</span></div>
+                </label>
+                <label><input type="radio" name="opt-kd-layout-scroll" value="sticky" onchange="kdLayoutSetOption(this)">
+                    <div class="visual-option"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h5v8H3zM9.5 3h5v18h-5zM16 3h5v6h-5z" /><path d="M12 8v8M10 14l2 2 2-2" class="fi-gold" /></svg><span>Lange Spalten allein</span></div>
+                </label>
+            </div>
             <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
                 Übersicht</div>
         </div>
@@ -7305,6 +7346,12 @@
         var live = !!kdLayoutLive(), btn = document.getElementById('kd-layout-edit'), note = document.getElementById('kd-layout-edit-note');
         if (btn) btn.disabled = !live;
         if (note) note.hidden = live;
+        var gc = typeof getGlobalConfig === 'function' ? getGlobalConfig() : {};
+        [['cols', 'auto'], ['side', 'below'], ['scroll', 'page']].forEach(function (o) {
+            var cap = o[0].charAt(0).toUpperCase() + o[0].slice(1);
+            var val = safeGetItem('kdLayout' + cap, '') || gc['layout' + cap] || o[1];
+            document.querySelectorAll('input[name="opt-kd-layout-' + o[0] + '"]').forEach(function (r) { r.checked = r.value === val; });
+        });
         var reset = document.getElementById('kd-layout-reset');
         if (reset) { reset.textContent = 'Alle Layouts zurücksetzen'; reset._kdArmed = false; }
     }
@@ -7334,6 +7381,12 @@
         else ['kdLayout1', 'kdLayout3', 'kdLayout5', 'kdLayout7', 'kdLayout9', 'kdSecHidden'].forEach(function (k) { safeSetItem(k, ''); });
         kdSectionsPageSync();
         if (btn) btn.textContent = 'Zurückgesetzt';
+    }
+    // Spalten / Seitenspalten / Scrollen radios (name opt-kd-layout-<cols|side|scroll>); redraws the visible back.
+    function kdLayoutSetOption(input) {
+        var name = input.name.replace('opt-kd-layout-', ''), key = 'kdLayout' + name.charAt(0).toUpperCase() + name.slice(1);
+        var L = kdLayoutLive();
+        if (L) L.setOption(key, input.value); else safeSetItem(key, input.value);
     }
     // [/KD-SRC front/kd-fork-sections-settings.js]
 
@@ -7449,6 +7502,9 @@
             heisig: getVar('--default-opt-heisig', 'on'), // fork
             nanori: getVar('--default-opt-nanori', 'off'), // fork
             sideBySide: getVar('--default-opt-side-by-side', 'on'), // fork
+            layoutCols: getVar('--default-layout-cols', 'auto'), // fork: Abschnitte
+            layoutSide: getVar('--default-layout-side', 'below'), // fork
+            layoutScroll: getVar('--default-layout-scroll', 'page'), // fork
             strictness: getVar('--default-opt-strictness', 'normal'),
             celebration: getVar('--default-opt-celebration', 'on'),
             displayStyle: getVar('--default-opt-display-style', 'standard'),

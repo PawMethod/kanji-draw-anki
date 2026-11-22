@@ -57,6 +57,11 @@
     --default-opt-heisig: on;
     --default-opt-nanori: off;
     --default-opt-side-by-side: on;
+    /* fork: Abschnitte – Spalten 'auto' (Handy 1, sonst so viele wie passen), '1', '3', '5', '7', '9';
+       Seitenspalten 'below' (unter dem Kopf) oder 'top' (neben dem Kopf); Scrollen 'page' oder 'sticky' */
+    --default-layout-cols: auto;
+    --default-layout-side: below;
+    --default-layout-scroll: page;
 
     /* Startpunkt-Hilfe (Nur Zeichnen-Karte, Geführt-Modus): 'on' (An), 'off' (Aus) */
     --default-opt-start-hint: off;
@@ -5837,6 +5842,49 @@ html:has(.kd-info-inline .tree-fullscreen) {
 
 html.kd-design-minimal .category-icon.cat-sections {
     background: #5856d6;
+}
+
+/* Several columns: every column is as wide as the drawing area; the sections area spans the page */
+.kd-info-inline.kd-wide {
+    width: auto;
+}
+
+.kd-wide.kd-side-top .kd-col:not([data-slot="C"]) {
+    margin-top: calc(-1 * var(--kd-lift, 0px));
+}
+
+.kd-wide.kd-sticky .kd-col {
+    position: sticky;
+}
+
+.kd-wide.kd-editing .kd-col {
+    min-height: 140px;
+    outline: 2px dashed var(--border-color);
+    outline-offset: 6px;
+    border-radius: var(--border-rad-main);
+}
+
+.kd-wide .kd-hidden-strip {
+    width: calc(var(--kd-cols) * var(--dynamic-size) + (var(--kd-cols) - 1) * 16px);
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.kd-wide.kd-editing .kd-hidden-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 16px;
+    margin-top: 16px;
+}
+
+.kd-wide .kd-hidden-strip-label {
+    flex-basis: 100%;
+}
+
+.kd-wide .kd-hidden-strip .kd-section {
+    width: var(--dynamic-size);
 }
 
 /* The back is taller than one screen: the landscape sits at the bottom of the page (not of the
