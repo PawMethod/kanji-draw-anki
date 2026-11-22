@@ -16,6 +16,7 @@
         ['.category-icon.cat-grid > svg', '<path d="M4 6h16M4 12h16M4 18h7"><' + '/path>'],
         ['.category-icon.cat-front > svg', '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"><' + '/path><polyline points="22 4 12 14.01 9 11.01"><' + '/polyline>'],
         ['.category-icon.cat-back > svg', '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"><' + '/rect><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)"><' + '/path>'],
+        ['.category-icon.cat-sections > svg', '<rect x="3" y="3" width="7" height="18" rx="1.5"><' + '/rect><rect x="14" y="3" width="7" height="8" rx="1.5"><' + '/rect><rect x="14" y="15" width="7" height="6" rx="1.5"><' + '/rect>'],
         ['#settings-main .category-icon.cat-theme > svg', '<circle cx="12" cy="12" r="10"><' + '/circle><path d="M12 2a10 10 0 0 1 0 20z"><' + '/path>'],
         ['#settings-main .category-icon.cat-sound > svg', '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"><' + '/polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"><' + '/path>'],
         // Danke uses the same category classes as the settings menu, but different actions.

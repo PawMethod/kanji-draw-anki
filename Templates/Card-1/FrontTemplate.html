@@ -183,6 +183,26 @@
                         <path d="M9 18l6-6-6-6"></path>
                     </svg>
                 </div>
+                <!-- fork: section layout ("Abschnitte"), page in src/front/kd-fork-sections-settings.html -->
+                <div role="button" tabindex="0" class="category-card tappable"
+                    onclick="navigateToPage('page-sections', this, event); kdSectionsPageSync()">
+                    <div class="category-icon cat-sections">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3.5" y="3.5" width="7.5" height="10" rx="2" class="fi-gold"></rect>
+                            <rect x="13" y="3.5" width="7.5" height="6" rx="2" class="fi-teal"></rect>
+                            <rect x="13" y="11.5" width="7.5" height="9" rx="2" class="fi-cream"></rect>
+                            <rect x="3.5" y="15.5" width="7.5" height="5" rx="2" class="fi-coral"></rect>
+                        </svg>
+                    </div>
+                    <div class="category-info">
+                        <span class="category-name">Abschnitte</span>
+                        <span class="category-desc">Reihenfolge, Ausblenden, Spalten</span>
+                    </div>
+                    <svg class="category-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </div>
             </div>
             <div class="setting-group-title">Allgemein</div>
             <div class="category-list">
@@ -799,6 +819,28 @@
             <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
                 Übersicht</div>
         </div>
+
+        <!-- [KD-SRC front/kd-fork-sections-settings.html] -->
+        <!-- fork: "Abschnitte" settings page (section layout, src/back/kd-fork-layout.js); shared by both card types -->
+        <div class="settings-page" id="page-sections">
+            <div class="subpage-header">
+                <button class="back-btn" onclick="navigateBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <h3>Abschnitte</h3>
+            </div>
+            <div class="setting-group-title">Anordnung</div>
+            <p class="kd-layout-note">Verschiebe und blende Abschnitte direkt auf der Rückseite aus. Jede Spaltenzahl merkt sich ihre eigene Anordnung.</p>
+            <button type="button" class="kd-layout-btn tappable" id="kd-layout-edit" onclick="kdLayoutEdit(event)">Layout bearbeiten</button>
+            <p class="kd-layout-note" id="kd-layout-edit-note" hidden>Dreh die Karte um, um das Layout zu bearbeiten.</p>
+            <button type="button" class="kd-layout-btn kd-layout-reset tappable" id="kd-layout-reset" onclick="kdLayoutResetAll(event)">Alle Layouts zurücksetzen</button>
+            <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+                Übersicht</div>
+        </div>
+        <!-- [/KD-SRC front/kd-fork-sections-settings.html] -->
 
         <!-- ═══ Sub-Page: Vorderseite Erkennen (c2-only) ═══ -->
         <div class="settings-page c2-only-setting" style="display:none" id="page-front-c2">
@@ -7252,6 +7294,49 @@
     }
     // [/KD-SRC front/kd-fork-source-settings.js]
 
+    // [KD-SRC front/kd-fork-sections-settings.js]
+    // fork: "Abschnitte" settings page. The layout itself is back-only (src/back/kd-fork-layout.js); on the front
+    // window._kdLayout is missing or belongs to a back that is no longer shown.
+    function kdLayoutLive() {
+        var L = window._kdLayout;
+        return L && L.alive && L.alive() ? L : null;
+    }
+    function kdSectionsPageSync() {
+        var live = !!kdLayoutLive(), btn = document.getElementById('kd-layout-edit'), note = document.getElementById('kd-layout-edit-note');
+        if (btn) btn.disabled = !live;
+        if (note) note.hidden = live;
+        var reset = document.getElementById('kd-layout-reset');
+        if (reset) { reset.textContent = 'Alle Layouts zurücksetzen'; reset._kdArmed = false; }
+    }
+    function kdLayoutEdit(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var L = kdLayoutLive();
+        if (!L) return;
+        // closeSettings ignores calls right after a page change (S-Pen ghost clicks)
+        var wait = Math.max(0, 520 - (Date.now() - (typeof _lastNavTime === 'number' ? _lastNavTime : 0)));
+        setTimeout(function () {
+            closeSettings();
+            L.edit(true);
+        }, wait);
+    }
+    // Two taps: the first arms the button, the second resets.
+    function kdLayoutResetAll(e) {
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        var btn = document.getElementById('kd-layout-reset');
+        if (btn && !btn._kdArmed) {
+            btn._kdArmed = true;
+            btn.textContent = 'Wirklich alle zurücksetzen?';
+            clearTimeout(btn._kdTimer);
+            btn._kdTimer = setTimeout(kdSectionsPageSync, 4000);
+            return;
+        }
+        if (window._kdLayout && window._kdLayout.resetAll) window._kdLayout.resetAll();
+        else ['kdLayout1', 'kdLayout3', 'kdLayout5', 'kdLayout7', 'kdLayout9', 'kdSecHidden'].forEach(function (k) { safeSetItem(k, ''); });
+        kdSectionsPageSync();
+        if (btn) btn.textContent = 'Zurückgesetzt';
+    }
+    // [/KD-SRC front/kd-fork-sections-settings.js]
+
     function refreshSettingsRadios() {
         const globalConf = getGlobalConfig();
         const radioValues = {
@@ -10059,6 +10144,7 @@
             ['.category-icon.cat-grid > svg', '<path d="M4 6h16M4 12h16M4 18h7"><' + '/path>'],
             ['.category-icon.cat-front > svg', '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"><' + '/path><polyline points="22 4 12 14.01 9 11.01"><' + '/polyline>'],
             ['.category-icon.cat-back > svg', '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"><' + '/rect><path d="M9 18l6-6-6-6" transform="rotate(180 12 12)"><' + '/path>'],
+            ['.category-icon.cat-sections > svg', '<rect x="3" y="3" width="7" height="18" rx="1.5"><' + '/rect><rect x="14" y="3" width="7" height="8" rx="1.5"><' + '/rect><rect x="14" y="15" width="7" height="6" rx="1.5"><' + '/rect>'],
             ['#settings-main .category-icon.cat-theme > svg', '<circle cx="12" cy="12" r="10"><' + '/circle><path d="M12 2a10 10 0 0 1 0 20z"><' + '/path>'],
             ['#settings-main .category-icon.cat-sound > svg', '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"><' + '/polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"><' + '/path>'],
             // Danke uses the same category classes as the settings menu, but different actions.

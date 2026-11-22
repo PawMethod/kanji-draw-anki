@@ -5557,6 +5557,288 @@ html:has(.kd-info-inline .tree-fullscreen) {
     overflow: hidden !important;
 }
 
+/* ==========================================================================
+   fork: section layout (src/back/kd-fork-layout.js): columns, hidden sections and the edit mode.
+   Markup: .kd-info-inline > .kd-info-tags + .kd-cols > .kd-col[data-slot] > .kd-section, then .kd-hidden-strip
+   ========================================================================== */
+.kd-cols {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.kd-col {
+    width: var(--dynamic-size);
+    max-width: 100%;
+    min-width: 0;
+    flex: none;
+}
+
+.kd-section.kd-sec-empty,
+.kd-hidden-strip,
+.kd-edit-grip,
+.kd-edit-ctl,
+.kd-edit-empty {
+    display: none;
+}
+
+/* Edit mode: the normal back plus handles; sections without content on this card show as a bare header */
+.kd-info-inline.kd-editing {
+    z-index: 30;
+    scroll-margin-top: 64px;
+}
+
+.kd-editing .kd-section[hidden],
+.kd-editing .kd-section.kd-sec-empty {
+    display: block;
+}
+
+.kd-editing .kd-section[hidden],
+.kd-editing .kd-section.kd-sec-empty,
+.kd-hidden-strip .kd-section {
+    opacity: 0.62;
+}
+
+.kd-editing .kd-section[hidden] .kd-section-body,
+.kd-editing .kd-section.kd-sec-empty .kd-section-body,
+.kd-hidden-strip .kd-section .kd-section-body,
+.kd-hidden-strip .kd-section .kd-section-chevron {
+    display: none;
+}
+
+.kd-editing .kd-section[hidden] .kd-edit-empty,
+.kd-editing .kd-section.kd-sec-empty .kd-edit-empty {
+    display: inline;
+}
+
+.kd-edit-empty {
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-faint);
+}
+
+.kd-editing .kd-section-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kd-editing .kd-edit-grip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 30px;
+    height: 38px;
+    margin: -8px -6px -8px -8px;
+    border-radius: 9px;
+    color: var(--text-muted);
+    cursor: grab;
+    touch-action: none;
+}
+
+.kd-edit-grip:active {
+    cursor: grabbing;
+    background: var(--bg-main);
+}
+
+.kd-edit-grip svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.kd-editing .kd-edit-ctl {
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: 3px;
+}
+
+.kd-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    background: var(--bg-main);
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.kd-edit-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.kd-edit-btn:focus-visible,
+.kd-edit-bar-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+.kd-edit-eye[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.kd-info-inline:not(.kd-wide) .kd-edit-left,
+.kd-info-inline:not(.kd-wide) .kd-edit-right {
+    display: none;
+}
+
+.kd-editing .kd-hidden-strip {
+    display: block;
+    margin-top: 6px;
+    padding: 12px 12px 0;
+    min-height: 66px;
+    box-sizing: border-box;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-rad-main);
+}
+
+.kd-hidden-strip-label {
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
+.kd-hidden-strip-label span {
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.kd-drop-ph {
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    border: 2px dashed var(--accent);
+    border-radius: var(--border-rad-main);
+    background: var(--accent-bg, transparent);
+}
+
+.kd-section.kd-dragging {
+    position: fixed;
+    z-index: 1001;
+    margin: 0;
+    opacity: 0.96;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.kd-section.kd-dragging .kd-section-body {
+    display: none;
+}
+
+.kd-edit-bar {
+    position: fixed;
+    z-index: 1002;
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100vw - 24px);
+    box-sizing: border-box;
+    padding: 6px 6px 6px 16px;
+    background: var(--surface);
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
+    border-radius: 999px;
+    box-shadow: var(--filter-hover);
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.kd-edit-count {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kd-edit-bar-btn {
+    flex-shrink: 0;
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font: inherit;
+    cursor: pointer;
+}
+
+.kd-edit-bar-btn.kd-edit-done {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+/* "Abschnitte" settings page */
+.kd-layout-note {
+    margin: 4px 2px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.kd-layout-btn {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    margin: 0 0 12px;
+    box-sizing: border-box;
+    border: 2px solid var(--border-color);
+    border-bottom-width: 3.5px;
+    border-radius: var(--border-rad-sm);
+    background: var(--surface);
+    color: var(--text-main);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.kd-layout-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.kd-layout-btn.kd-layout-reset {
+    background: var(--bg-main);
+    color: var(--text-muted);
+}
+
+.kd-layout-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.category-icon.cat-sections {
+    background: #c9b8a0;
+    color: #2b180e;
+}
+
+.nightMode .category-icon.cat-sections,
+.night_mode .category-icon.cat-sections {
+    background: #bcaa90;
+    color: #26150c;
+}
+
+html.kd-design-minimal .category-icon.cat-sections {
+    background: #5856d6;
+}
+
 /* The back is taller than one screen: the landscape sits at the bottom of the page (not of the
    viewport) and the sections leave room for it. .card is position:relative and at least 100vh tall. */
 .card:has(#kd-info-inline) .forest-scenery {

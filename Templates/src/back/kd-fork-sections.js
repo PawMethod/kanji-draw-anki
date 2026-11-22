@@ -1,7 +1,8 @@
 // fork: inline info sections on the back (replaces upstream's info modal, docs/fork/v3-migration.md D3).
 // KD_SECTIONS is the single source for order, titles, icons and the default collapsed state; the markup
 // in the back templates only holds the section bodies. Each section remembers its state in kdSec_<key>
-// ('1' = collapsed). Lazy sections (Strichfolge, Schreibfehler) initialise on first open.
+// ('1' = collapsed; kdSecW_<key> with several columns). Lazy sections (Strichfolge, Schreibfehler) initialise
+// on first open. Order, hiding, columns and the edit mode live in kd-fork-layout.js.
 (function () {
     var host = document.getElementById('kd-info-inline');
     if (!host || host._kdReady) return;
@@ -48,7 +49,7 @@
     var KD_SECTIONS = [
         { key: 'elemente', title: 'Elemente' },
         { key: 'eselsbruecken', title: 'Eselsbrücken' },
-        { key: 'strichfolge', title: 'Strichfolge', collapsed: true, onOpen: openOrder, onClose: closeOrder },
+        { key: 'strichfolge', title: 'Strichfolge', collapsed: true, wideCollapsed: false, onOpen: openOrder, onClose: closeOrder },
         { key: 'notiz', title: 'Notiz' },
         { key: 'schreibfehler', title: 'Schreibfehler', collapsed: true, onOpen: openPitfalls },
         { key: 'wortbeispiele', title: 'Wortbeispiele' },
@@ -60,12 +61,12 @@
     var get = function (k, d) { try { return typeof safeGetItem === 'function' ? safeGetItem(k, d) : d; } catch (e) { return d; } };
     var set = function (k, v) { try { if (typeof safeSetItem === 'function') safeSetItem(k, v); } catch (e) { } };
     var buzz = function () { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(8); };
-    var isOpen = function (sec) { return sec && !sec.classList.contains('collapsed') && sec.style.display !== 'none'; };
+    var isOpen = function (sec) { return sec && !sec.classList.contains('collapsed') && !sec.classList.contains('kd-sec-empty') && sec.style.display !== 'none'; };
 
     // --- Lazy content ---
     var orderTimer = null;
     function openOrder(sec) {
-        if (!window._kanjiOrder) return;
+        if (!window._kanjiOrder || sec.classList.contains('kd-sec-empty')) return;
         window._kanjiOrder.open();
         clearTimeout(orderTimer);
         // upstream's open() only autoplays inside its modal page, so start playback here
@@ -92,8 +93,8 @@
         } catch (e) { }
     }
 
-    // --- Empty content: drop groups/sections that would only show a header ---
-    var hide = function (key) { var s = host.querySelector('.kd-section[data-sec="' + key + '"]'); if (s) s.remove(); };
+    // --- Empty content: drop groups; mark sections that would only show a header (the edit mode still lists them) ---
+    var hide = function (key) { var s = host.querySelector('.kd-section[data-sec="' + key + '"]'); if (s) s.classList.add('kd-sec-empty'); };
     host.querySelectorAll('.kd-story-group').forEach(function (g) {
         if (!g.querySelector('.story-box, .visuell-hinweis, .info-text-story')) g.remove();
     });
@@ -135,6 +136,12 @@
     window._kdApplyHandwriting();
 
     // --- Headers, order and collapse state ---
+    var layout = window._kdLayout && window._kdLayout.attach ? window._kdLayout.attach(host, KD_SECTIONS) : null;
+    var stateKey = function (key) { return layout ? layout.secKey(key) : 'kdSec_' + key; };
+    var startsCollapsed = function (cfg) {
+        var def = layout && layout.wide() && cfg.wideCollapsed !== undefined ? cfg.wideCollapsed : cfg.collapsed;
+        return get(stateKey(cfg.key), def ? '1' : '0') === '1';
+    };
     var CHEVRON = '<svg class="kd-section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>';
     var initialOpen = [];
     KD_SECTIONS.forEach(function (cfg) {
@@ -151,10 +158,11 @@
         header.querySelector('.kd-section-title').textContent = cfg.title;
         sec.insertBefore(header, body);
 
-        var collapsed = get('kdSec_' + cfg.key, cfg.collapsed ? '1' : '0') === '1';
+        var collapsed = startsCollapsed(cfg);
         if (collapsed) sec.classList.add('collapsed');
         header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
         if (!collapsed && cfg.onOpen) initialOpen.push([cfg, sec]);
+        sec._kdCfg = cfg;
 
         // after a height transition settle into a clean steady state (no half-set inline cap)
         body.addEventListener('transitionend', function (e) {
@@ -185,7 +193,7 @@
                 if (cfg.key === 'elemente' && window._kanjiRefreshTreeViewport) window._kanjiRefreshTreeViewport();
             }
             header.setAttribute('aria-expanded', willCollapse ? 'false' : 'true');
-            set('kdSec_' + cfg.key, willCollapse ? '1' : '0');
+            set(stateKey(cfg.key), willCollapse ? '1' : '0');
             if (typeof _kdSnd === 'function') _kdSnd('fx', 'tick');
         };
         header.addEventListener('click', toggle);
@@ -201,6 +209,21 @@
         initialOpen.forEach(function (p) { if (isOpen(p[1])) p[0].onOpen(p[1]); });
     };
     if (initialOpen.length) setTimeout(runInitial, 0);
+    // fork: one column and several columns keep separate open/closed states; switch without animation.
+    var syncCollapsed = function () {
+        host.querySelectorAll('.kd-section[data-sec]').forEach(function (sec) {
+            var cfg = sec._kdCfg, header = sec.querySelector('.kd-section-header'), body = sec.querySelector('.kd-section-body');
+            if (!cfg || !header || !body) return;
+            var collapsed = startsCollapsed(cfg);
+            if (collapsed === sec.classList.contains('collapsed')) return;
+            sec.classList.toggle('collapsed', collapsed);
+            body.style.maxHeight = collapsed ? '' : 'none';
+            header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+            if (collapsed && cfg.onClose) cfg.onClose(sec);
+            if (!collapsed && cfg.onOpen) cfg.onOpen(sec);
+        });
+    };
+    if (layout) layout.start(syncCollapsed);
     // fork: optional back content follows the host card, even when the other settings tab is open.
     window._kdApplyBackOptions = function () {
         if (!host.isConnected) return;

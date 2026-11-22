@@ -1,0 +1,19 @@
+<!-- fork: "Abschnitte" settings page (section layout, src/back/kd-fork-layout.js); shared by both card types -->
+<div class="settings-page" id="page-sections">
+    <div class="subpage-header">
+        <button class="back-btn" onclick="navigateBack()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+        </button>
+        <h3>Abschnitte</h3>
+    </div>
+    <div class="setting-group-title">Anordnung</div>
+    <p class="kd-layout-note">Verschiebe und blende Abschnitte direkt auf der Rückseite aus. Jede Spaltenzahl merkt sich ihre eigene Anordnung.</p>
+    <button type="button" class="kd-layout-btn tappable" id="kd-layout-edit" onclick="kdLayoutEdit(event)">Layout bearbeiten</button>
+    <p class="kd-layout-note" id="kd-layout-edit-note" hidden>Dreh die Karte um, um das Layout zu bearbeiten.</p>
+    <button type="button" class="kd-layout-btn kd-layout-reset tappable" id="kd-layout-reset" onclick="kdLayoutResetAll(event)">Alle Layouts zurücksetzen</button>
+    <div role="button" tabindex="0" class="close-settings back-to-main" onclick="navigateBack(event)">Zurück zur
+        Übersicht</div>
+</div>

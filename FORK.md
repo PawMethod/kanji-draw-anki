@@ -117,9 +117,9 @@ Each entry: what it does, then where the code is. *Upstream candidate* marks gen
 
 ### Back side
 
-- **Inline sections instead of the info modal.** The back shows everything as collapsible sections in this order:
-  Elemente, Eselsbrücken, Strichfolge, Notiz, Schreibfehler, Wortbeispiele, Lesungen, Externe Links. Each section
-  remembers whether it is open. Strichfolge and Schreibfehler start closed and load on first open. The header
+- **Inline sections instead of the info modal.** The back shows everything as collapsible sections, by default in
+  this order: Elemente, Eselsbrücken, Strichfolge, Notiz, Schreibfehler, Wortbeispiele, Lesungen, Externe Links. Each
+  section remembers whether it is open. Strichfolge and Schreibfehler start closed and load on first open. The header
   shows JLPT, frequency and the book number. Dragging vertically over the tree scrolls the page.
   *Code:* `src/back/kd-fork-sections.js` (`KD_SECTIONS` sets order, titles, icons and default state),
   `#kd-info-inline` / `.kd-section` in both back templates, one fork line in `src/back/primitive-tree.js`
@@ -133,6 +133,15 @@ Each entry: what it does, then where the code is. *Upstream candidate* marks gen
   section hides when all three are off. All story texts are upright. Empty groups are removed.
   *Code:* `.kd-story-group-*` in the back templates, `src/front/kd-fork-back-settings.html`,
   `src/front/kd-fork-source-settings.js`.
+- **Custom section order and hiding.** "Layout bearbeiten" on the new "Abschnitte" settings page switches the back
+  into an edit mode. The card looks as usual, plus a grab handle, arrow buttons and an eye button on each section
+  header, a bar with "Bearbeite: 1 Spalte", "Zurücksetzen" and "Fertig", and an "Ausgeblendet" area below the
+  sections. Sections are dragged by the handle (mouse, touch or pen; the page scrolls near the screen edges) or moved
+  with the arrows. Sections without content on the current card show as a bare header ("leer auf dieser Karte") so
+  they can still be placed. Every change is saved at once; answering the card ends the edit mode. Hiding is global
+  on the device; the order is saved per column count. "Alle Layouts zurücksetzen" (two taps) restores the defaults.
+  *Code:* `src/back/kd-fork-layout.js` (`window._kdLayout`), `src/front/kd-fork-sections-settings.html`,
+  `src/front/kd-fork-sections-settings.js`, the "Abschnitte" category card in both fronts, `.kd-cols` / `.kd-edit-*`.
 - **Notiz.** A free-form note section, hidden when the field is empty or holds only line breaks.
   *Code:* `.kd-note-box`, section key `notiz`.
 - **Nanori.** A third reading row with a muted outlined `NANORI` label. Can be switched on or off per card type;
@@ -239,6 +248,8 @@ always win over the CSS defaults; deck defaults are the `--default-*` variables 
 | Handschriftbeispiele (Rückseite) | `kanjiOptHandwriting` | `--default-opt-handwriting` | `on` | per card |
 | Comparison (Rückseite) | `kanjiOptSideBySide` | `--default-opt-side-by-side` | `on` (Nebeneinander) | Card 1 |
 | Section open/closed | `kdSec_<key>` | `collapsed` in `KD_SECTIONS` | Strichfolge, Schreibfehler closed | global |
+| Hidden sections (Abschnitte) | `kdSecHidden` | – | none (comma-separated keys) | global |
+| Section order, 1 column (Abschnitte) | `kdLayout1` | `KD_SECTIONS` order | comma-separated keys | global |
 | Volume (Klang & Musik) | `kanjiSoundLevel` | `--default-sound-level` | `low` (upstream: `off`) | global |
 | Music style | `kanjiSoundMusic` | `--default-sound-music` | `lofi` (upstream: `off`) | global |
 | Music volume | `kanjiSoundMusicLevel` | `--default-sound-music-level` | `low` (upstream: `mid`) | global |
@@ -282,14 +293,16 @@ New files (everything else is a marked edit of an upstream file):
 | File | Purpose |
 |---|---|
 | `src/back/kd-fork-sections.js` | Inline back sections, `KD_SECTIONS`, lazy Strichfolge/Schreibfehler, Notiz/empty-group handling |
+| `src/back/kd-fork-layout.js` | Section order, hiding and the edit mode (`window._kdLayout`) |
+| `src/front/kd-fork-sections-settings.html`, `kd-fork-sections-settings.js` | "Abschnitte" settings page |
 | `src/back/kd-fork-comparison.js`, `kd-fork-comparison-grid.js` | Side-by-side comparison and its grid |
 | `src/front/kd-fork-primitive-chips.js` | Primitive-meaning pills, `PRIMITIVE` tag, keyword fitting |
 | `src/front/kd-fork-design-early.js`, `kd-fork-design.js` | Design switch (Verspielt / Minimal), icon swap |
 | `src/front/kd-fork-back-settings.html`, `kd-fork-source-settings.js` | "Rückseite" settings: source chips, Nanori |
 | `src/front/kd-fork-svg-paths.js` | Inert stroke source → SVG paths |
 | `src/front/kd-fork-pen-scroll.js` | Pen scrolling on Anki Desktop |
-| `Tests/js/test_fork_settings.js`, `test_audio_scheduling.js` | Node tests: settings/defaults resolution, audio scheduling |
-| `Tests/browser/check_fork_*.py` | Playwright checks against Anki-rendered cards (back options, mobile title, strokes, reveal timing); see [Tests/browser/README.md](Tests/browser/README.md) |
+| `Tests/js/test_fork_settings.js`, `test_audio_scheduling.js`, `test_fork_layout.js` | Node tests: settings/defaults resolution, audio scheduling, section layout helpers |
+| `Tests/browser/check_fork_*.py` | Playwright checks against Anki-rendered cards (back options, mobile title, strokes, reveal timing); `check_fork_layout.py` renders the templates itself; see [Tests/browser/README.md](Tests/browser/README.md) |
 | `Migration/` | Add-on to switch between upstream's deck and this one (see [above](#switching-from-upstreams-deck)); the built package is in `Migration/dist/` |
 | `Tools/build_migration_addon.py` | Builds `Migration/dist/kanji_draw_migration.ankiaddon`; `--check` verifies it |
 | `Tools/make_migration_hashes.py` | Builds `Migration/upstream_v3_hashes.json` from upstream's v3 deck |
